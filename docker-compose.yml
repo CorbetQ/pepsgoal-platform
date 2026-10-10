@@ -1,0 +1,35 @@
+# Environnement local : base PostgreSQL + serveur PepsGoal
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pepsgoal
+      POSTGRES_PASSWORD: pepsgoal
+      POSTGRES_DB: pepsgoal
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pepsgoal"]
+      interval: 5s
+      retries: 10
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    env_file: apps/server/.env
+    environment:
+      DATABASE_URL: postgres://pepsgoal:pepsgoal@db:5432/pepsgoal
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media:/app/apps/server/media
+
+volumes:
+  pgdata:
+  media:

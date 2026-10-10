@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+apps/server/media/
+apps/app/.expo/
+apps/app/ios/
+apps/app/android/
+*.log
+.DS_Store

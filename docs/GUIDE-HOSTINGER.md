@@ -1,0 +1,128 @@
+# Déployer le serveur PepsGoal sur Hostinger
+
+Résultat : `https://api.pepsgoal.fr` (API de l'app) et `https://pepsgoal.fr` (site et pages légales), en HTTPS, avec sauvegardes quotidiennes.
+
+## 0. Quel produit Hostinger ?
+
+Il faut un **VPS** (offre « KVM 1 » suffisante pour démarrer : 1 vCPU, 4 Go de RAM).
+L'hébergement web mutualisé (Premium, Business, Cloud) ne convient pas : il ne propose pas PostgreSQL, indispensable au serveur.
+
+## 1. Préparer le code sur GitHub (sur ton ordinateur)
+
+1. Crée un dépôt **privé** sur github.com, par exemple `pepsgoal-platform`.
+2. Dans le dossier `pepsgoal-platform` :
+   ```bash
+   npm install
+   git init
+   git add .
+   git commit -m "PepsGoal 1.0.0"
+   git branch -M main
+   git remote add origin https://github.com/TON-COMPTE/pepsgoal-platform.git
+   git push -u origin main
+   ```
+   `npm install` crée `package-lock.json` : garde-le dans le dépôt, les compilations seront identiques partout.
+
+## 2. Installer le VPS
+
+1. hPanel › **VPS** › **Gérer** › **OS & Panel** › **Système d'exploitation** › **Changer d'OS** : cherche **Docker**, choisis le modèle *Ubuntu 24.04 with Docker* (environ 10 minutes).
+2. Note l'**adresse IP** du VPS (page d'accueil du VPS) et définis le mot de passe root.
+3. hPanel › VPS › **Pare-feu** : crée une règle qui autorise uniquement les ports **22** (SSH), **80** et **443** (TCP), plus **443 UDP** si proposé. Active-la.
+4. Connecte-toi depuis ton ordinateur (PowerShell) :
+   ```bash
+   ssh root@IP-DU-VPS
+   ```
+5. Vérifie Docker : `docker --version` puis `docker compose version`.
+
+## 3. Configurer le DNS de pepsgoal.fr
+
+hPanel › **Domaines** › pepsgoal.fr › **DNS / Serveurs de noms** › **Gérer les enregistrements DNS**.
+Supprime d'abord les enregistrements `A` existants pour `@` et `www` (page de parking), puis ajoute :
+
+| Type | Nom | Valeur | TTL |
+| --- | --- | --- | --- |
+| A | `@` | IP du VPS | 3600 |
+| A | `api` | IP du VPS | 3600 |
+| CNAME | `www` | `pepsgoal.fr` | 3600 |
+| A | `app` | IP du VPS (facultatif, version web) | 3600 |
+
+La propagation prend de quelques minutes à quelques heures. Vérifie avec `nslookup api.pepsgoal.fr` : l'IP du VPS doit s'afficher.
+**Attends que ce soit le cas avant l'étape 5** : sinon Caddy ne peut pas obtenir les certificats HTTPS.
+
+## 4. Récupérer le code et créer les secrets (sur le VPS)
+
+```bash
+apt update && apt install -y git
+git clone https://github.com/TON-COMPTE/pepsgoal-platform.git /opt/pepsgoal
+cd /opt/pepsgoal/deploy
+cp .env.example .env
+openssl rand -hex 24   # à coller dans POSTGRES_PASSWORD
+openssl rand -hex 48   # à coller dans JWT_SECRET
+nano .env
+```
+Dans `nano` : remplace chaque `CHANGE-MOI`. Pour `ADMIN_BOOTSTRAP_PASSWORD`, choisis un mot de passe d'au moins 12 caractères. Enregistre avec Ctrl+O, Entrée, puis quitte avec Ctrl+X.
+Conserve ces valeurs dans un gestionnaire de mots de passe : sans `POSTGRES_PASSWORD`, la base est inaccessible.
+
+Pour GitHub, un dépôt privé demande un identifiant : utilise un *Personal Access Token* (GitHub › Settings › Developer settings › Fine-grained tokens, accès en lecture au dépôt) à la place du mot de passe.
+
+## 5. Lancer PepsGoal
+
+```bash
+cd /opt/pepsgoal/deploy
+chmod +x backup.sh update.sh
+docker compose up -d --build
+docker compose logs -f server   # Ctrl+C pour quitter
+```
+Au premier démarrage :
+- les tables sont créées : `Migrations appliquées` apparaît dans les logs ;
+- les comptes `admin` et PepsGoal Officiel sont créés ;
+- Caddy obtient les certificats HTTPS.
+
+Vérifie :
+```bash
+curl https://api.pepsgoal.fr/v1/status
+```
+La réponse attendue : `{"ok":true,…,"minAppVersion":"1.0.0"}`. Ouvre aussi https://pepsgoal.fr dans un navigateur.
+
+Ensuite, connecte-toi dans l'app avec `admin` et le mot de passe de `ADMIN_BOOTSTRAP_PASSWORD`, puis change-le (route `POST /v1/auth/password`, voir docs/API.md).
+
+## 6. Pages légales
+
+Dépose les pages dans `deploy/site/` : `cgu.html`, `mentions-legales.html` et `confidentialite.html`. Elles seront servies sur `https://pepsgoal.fr/cgu`, etc.
+Les stores exigent ces adresses, et l'app les ouvre depuis Profil.
+Dans les mentions légales de la version mobile, indique l'hébergeur du serveur : Hostinger (raison sociale et adresse figurant dans ton contrat ou sur hostinger.fr).
+
+## 7. Sauvegardes
+
+1. Sauvegarde quotidienne de la base et des photos (14 jours conservés dans `/root/pepsgoal-backups`) :
+   ```bash
+   crontab -e
+   ```
+   Ajoute la ligne : `30 3 * * * /opt/pepsgoal/deploy/backup.sh >> /var/log/pepsgoal-backup.log 2>&1`
+2. Teste-la une fois à la main : `/opt/pepsgoal/deploy/backup.sh`.
+3. Active aussi les **sauvegardes/instantanés** du VPS dans hPanel.
+4. Copie régulièrement une sauvegarde hors du VPS (depuis ton PC) : `scp root@IP-DU-VPS:/root/pepsgoal-backups/db-AAAA-MM-JJ.dump .`
+
+Restaurer une sauvegarde de la base :
+```bash
+cd /opt/pepsgoal/deploy
+docker compose exec -T db pg_restore -U pepsgoal -d pepsgoal --clean --if-exists < /root/pepsgoal-backups/db-AAAA-MM-JJ.dump
+```
+
+## 8. Mettre à jour
+
+Sur ton PC : `git push`. Puis sur le VPS :
+```bash
+/opt/pepsgoal/deploy/update.sh
+```
+Le script récupère le code, reconstruit l'API, applique les migrations et redémarre (quelques secondes d'interruption). Les données sont conservées dans les volumes Docker.
+
+## Dépannage
+
+| Symptôme | Vérification |
+| --- | --- |
+| HTTPS ne fonctionne pas | `docker compose logs caddy` : le DNS doit pointer vers le VPS et les ports 80/443 être ouverts dans le pare-feu hPanel |
+| Le serveur redémarre en boucle | `docker compose logs server` : un `CHANGE-MOI` resté dans `.env` ou un mot de passe admin trop court |
+| L'app reste « hors ligne » | `curl https://api.pepsgoal.fr/v1/status` depuis ton PC |
+| Disque plein | `df -h`, puis `docker system prune` (ne supprime pas les volumes) |
+
+Ne lance **jamais** `docker compose down -v` : l'option `-v` supprime la base et les photos.

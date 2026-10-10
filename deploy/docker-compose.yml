@@ -1,0 +1,60 @@
+# Production PepsGoal sur un VPS (Hostinger ou autre) : PostgreSQL + API + Caddy (HTTPS automatique).
+# Usage, depuis ce dossier : docker compose up -d --build   (voir docs/GUIDE-HOSTINGER.md)
+name: pepsgoal
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pepsgoal
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant dans deploy/.env}
+      POSTGRES_DB: pepsgoal
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pepsgoal"]
+      interval: 5s
+      retries: 20
+    # Aucun port publié : la base n'est joignable que par le serveur
+
+  server:
+    build:
+      context: ..
+      dockerfile: apps/server/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      DATABASE_URL: postgres://pepsgoal:${POSTGRES_PASSWORD}@db:5432/pepsgoal
+      MEDIA_DIR: /app/apps/server/media
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media:/app/apps/server/media
+    # Port 8080 accessible uniquement par Caddy (réseau interne Docker)
+    expose:
+      - "8080"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./site:/srv/site:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - server
+
+volumes:
+  pgdata:
+  media:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,22 @@
+{
+  "name": "pepsgoal-platform",
+  "private": true,
+  "version": "1.0.0",
+  "description": "PepsGoal : serveur de synchronisation, fonctions sociales, modération et application iOS / Android / web.",
+  "workspaces": [
+    "packages/*",
+    "apps/server",
+    "apps/app"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w apps/server",
+    "dev:app": "npm run start -w apps/app",
+    "db:generate": "npm run db:generate -w apps/server",
+    "db:migrate": "npm run db:migrate -w apps/server",
+    "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/server",
+    "test": "npm run test -w packages/shared && npm run test -w apps/server"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

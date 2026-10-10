@@ -1,0 +1,35 @@
+# Caddy obtient et renouvelle seul les certificats HTTPS (Let's Encrypt) dès que le DNS pointe vers le VPS.
+{
+	email quentin-corbet@outlook.fr
+}
+
+# API utilisée par l'application mobile
+api.pepsgoal.fr {
+	encode zstd gzip
+	reverse_proxy server:8080
+}
+
+# Site public : accueil et pages légales (/cgu, /mentions-legales, /confidentialite)
+pepsgoal.fr {
+	root * /srv/site
+	encode zstd gzip
+	try_files {path} {path}.html {path}/index.html
+	file_server
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+}
+
+www.pepsgoal.fr {
+	redir https://pepsgoal.fr{uri} permanent
+}
+
+# Facultatif : version web de l'app (copier apps/app/dist-web dans deploy/app, monter ./app:/srv/app dans docker-compose.yml)
+# app.pepsgoal.fr {
+# 	root * /srv/app
+# 	encode zstd gzip
+# 	try_files {path} /index.html
+# 	file_server
+# }
