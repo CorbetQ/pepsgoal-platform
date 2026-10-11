@@ -5,7 +5,7 @@
 set -eu
 cd "$(dirname "$0")"
 git -C .. pull --ff-only
-[ "${1:-}" = "--web" ] && ./web-build.sh
+[ "${1:-}" = "--web" ] && sh ./web-build.sh
 docker compose up -d --build
 docker image prune -f > /dev/null
 sleep 5
