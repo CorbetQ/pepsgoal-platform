@@ -73,5 +73,5 @@ node apps/server/test/e2e.mjs
 | [docs/API.md](docs/API.md) | Liste des routes de l'API |
 | [docs/STORES.md](docs/STORES.md) | Publication App Store / Google Play : checklist et exigences |
 | [docs/E2E.md](docs/E2E.md) | Chiffrement de bout en bout des messages privés |
-| [docs/GUIDE-HOSTINGER.md](docs/GUIDE-HOSTINGER.md) · [docs/GUIDE-STORES.md](docs/GUIDE-STORES.md) | Guides pas à pas : serveur sur Hostinger, publication sur les stores |
+| [docs/GUIDE-HOSTINGER.md](docs/GUIDE-HOSTINGER.md) · [docs/GUIDE-WEB-HOSTINGER.md](docs/GUIDE-WEB-HOSTINGER.md) · [docs/GUIDE-STORES.md](docs/GUIDE-STORES.md) | Guides pas à pas : serveur sur Hostinger, version web (VPS ou hébergement web), publication sur les stores |
 | [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) | Mise en production du serveur, sauvegardes |

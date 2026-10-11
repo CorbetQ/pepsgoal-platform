@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import type { PublicUser } from '@pepsgoal/shared';
 import { api } from '../src/lib/api';
 import { useSession } from '../src/state/session';
-import { Button, Card, Muted, Screen, Title } from '../src/ui/kit';
+import { Button, Card, Muted, Screen, tell, Txt } from '../src/ui/kit';
 import { useTheme } from '../src/ui/theme';
 
 interface Overview { users: number; banned: number; warned: number; pending_posts: number; open_reports: number; open_appeals: number }
@@ -26,23 +26,23 @@ export default function Moderation() {
       setOv(await api<Overview>('GET', '/v1/admin/overview'));
       setPending(await api<AdminPost[]>('GET', '/v1/admin/posts?scope=pending'));
       setReported(await api<AdminPost[]>('GET', '/v1/admin/posts?scope=reported'));
-    } catch (e) { Alert.alert('Modération indisponible', e instanceof Error ? e.message : ''); }
+    } catch (e) { tell('Modération indisponible', e instanceof Error ? e.message : ''); }
   }, []);
   useFocusEffect(useCallback(() => { void load(); }, [load]));
 
   if (user?.role !== 'admin') { router.replace('/(tabs)/profile'); return null; }
-  const act = async (path: string) => { try { await api('POST', path, {}); await load(); } catch (e) { Alert.alert('Action impossible', e instanceof Error ? e.message : ''); } };
+  const act = async (path: string) => { try { await api('POST', path, {}); await load(); } catch (e) { tell('Action impossible', e instanceof Error ? e.message : ''); } };
 
   return (
-    <Screen>
-      <Title>Modération</Title>
+    <Screen title="Modération" tabs={false}>
+      <Button label="Profil" icon="x" kind="plain" small onPress={() => router.back()} />
       {ov && (
         <Card>
           <Muted>{ov.users} comptes · {ov.banned} bannis · {ov.warned} avertis</Muted>
           <Muted>{ov.pending_posts} à valider · {ov.open_reports} signalements · {ov.open_appeals} contestations</Muted>
         </Card>
       )}
-      <Text style={{ color: t.ink, fontWeight: '900', fontSize: 17 }}>Publications à valider</Text>
+      <Txt v="h2">Publications à valider</Txt>
       {pending.length === 0 && <Muted>Rien en attente.</Muted>}
       {pending.map(p => (
         <Card key={p.id}>
@@ -54,7 +54,7 @@ export default function Moderation() {
           </View>
         </Card>
       ))}
-      <Text style={{ color: t.ink, fontWeight: '900', fontSize: 17 }}>Signalements</Text>
+      <Txt v="h2">Signalements</Txt>
       {reported.length === 0 && <Muted>Rien à signaler.</Muted>}
       {reported.map(p => (
         <Card key={p.id}>

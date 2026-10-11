@@ -80,3 +80,18 @@ aujourd'hui (validation hors ligne + série), objectifs (routine et abstinence),
 4. Récaps semaine / mois / année, journée parfaite, animations.
 5. Paramètres (apparence, rappels via expo-notifications, données, aide et documents légaux), import / export .zip.
 6. Modération complète : comptes, contestations, maintenances, annonces PepsGoal Officiel.
+
+## Interface (app iOS, Android et web)
+
+L'app reprend le design du prototype web (`apps/web-legacy/pepsgoal.html`). Les mêmes composants servent sur iOS, Android et le navigateur.
+
+| Élément | Fichier | Contenu |
+| --- | --- | --- |
+| Thème | `apps/app/src/ui/theme.tsx` | Couleurs claires et sombres, halos, 12 accents, couleurs des 14 types d'objectifs, palette daltonienne, contraste élevé. Le thème et l'accent sont des réglages synchronisés. |
+| Composants | `apps/app/src/ui/kit.tsx` | Panneaux vitrés, boutons en dégradé, puces de type, flamme, anneau de progression, avatars, barre du haut, bandeaux d'état, dialogues compatibles web (`ask` et `tell`). |
+| Pictogrammes | `apps/app/src/ui/icons.ts` | Tracés de l'objet `P` du prototype, rendus en SVG natif. |
+| Logique d'affichage | `apps/app/src/ui/goals.ts` | Niveaux de flammes, objectifs du jour, lignes d'information, semaine en cours. |
+| Navigation | `apps/app/app/(tabs)/_layout.tsx` | Grand écran (860 px et plus) : barre latérale vitrée. Mobile : barre d'onglets flottante et bouton « + ». |
+
+Polices : Unbounded pour les titres et les chiffres, Manrope pour le texte, chargées au démarrage par `expo-font`.
+Pour garder l'app et le prototype alignés, toute nouvelle couleur ou tout nouveau composant s'ajoute d'abord à `theme.tsx` ou `kit.tsx`.

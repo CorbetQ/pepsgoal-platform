@@ -26,10 +26,20 @@ www.pepsgoal.fr {
 	redir https://pepsgoal.fr{uri} permanent
 }
 
-# Facultatif : version web de l'app (copier apps/app/dist-web dans deploy/app, monter ./app:/srv/app dans docker-compose.yml)
-# app.pepsgoal.fr {
-# 	root * /srv/app
-# 	encode zstd gzip
-# 	try_files {path} /index.html
-# 	file_server
-# }
+# Version web de l'app (compilée par deploy/web-build.sh dans deploy/app)
+app.pepsgoal.fr {
+	root * /srv/app
+	encode zstd gzip
+	# Application d'une seule page : toute adresse inconnue (/goals, /profile…) renvoie index.html
+	try_files {path} /index.html
+	file_server
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+	@html path / /index.html
+	header @html Cache-Control "no-cache"
+	@static path /_expo/* /assets/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+}

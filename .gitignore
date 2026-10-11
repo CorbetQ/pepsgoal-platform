@@ -9,3 +9,7 @@ apps/app/ios/
 apps/app/android/
 *.log
 .DS_Store
+# Version web compilée (générée par deploy/web-build.sh)
+deploy/app/*
+!deploy/app/.gitkeep
+apps/app/dist-web/

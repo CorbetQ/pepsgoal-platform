@@ -43,7 +43,7 @@ Supprime d'abord les enregistrements `A` existants pour `@` et `www` (page de pa
 | A | `@` | IP du VPS | 3600 |
 | A | `api` | IP du VPS | 3600 |
 | CNAME | `www` | `pepsgoal.fr` | 3600 |
-| A | `app` | IP du VPS (facultatif, version web) | 3600 |
+| A | `app` | IP du VPS (version web, voir GUIDE-WEB-HOSTINGER.md ; à omettre si l'app web est sur l'hébergement mutualisé) | 3600 |
 
 La propagation prend de quelques minutes à quelques heures. Vérifie avec `nslookup api.pepsgoal.fr` : l'IP du VPS doit s'afficher.
 **Attends que ce soit le cas avant l'étape 5** : sinon Caddy ne peut pas obtenir les certificats HTTPS.

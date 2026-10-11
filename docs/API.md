@@ -32,7 +32,7 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | Méthode | Route | Rôle |
 | --- | --- | --- |
 | GET | `/users/search?q=` | Recherche de comptes |
-| GET | `/friends` | Amis, demandes reçues et envoyées |
+| GET | `/friends` | Amis (avec leur série en cours, pour le classement des flammes), demandes reçues et envoyées, `myStreak` |
 | POST | `/friends/requests` · `/friends/requests/:id/accept` · `/decline` | Demandes d'amis |
 | DELETE | `/friends/:userId` | Retirer un ami |
 | POST / DELETE | `/users/:id/block` | Bloquer / débloquer |

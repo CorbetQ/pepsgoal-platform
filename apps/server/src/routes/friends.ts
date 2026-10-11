@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { Id } from '@pepsgoal/shared';
+import { globalStreak, Id } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { badRequest, conflict, forbidden, notFound } from '../lib/errors.js';
 import { isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
@@ -30,8 +30,16 @@ export default async function friendRoutes(app: FastifyInstance) {
       from friendships f join users x on x.id = case when f.requester_id = ${u.id} then f.addressee_id else f.requester_id end
       where (f.requester_id = ${u.id} or f.addressee_id = ${u.id}) and x.deleted_at is null`;
     const pick = (r: Row) => ({ friendshipId: r.friendship_id, user: toPublicUser(r) });
+    // Séries des amis, pour le classement des flammes (jours avec au moins une réussite)
+    const ids = [...rows.filter(r => r.status === 'accepted').map(r => r.id as string), u.id];
+    const days = await sql<Row[]>`
+      select user_id, array_agg(distinct date::text) as days from checkins
+      where user_id in ${sql(ids)} and deleted_at is null and pending = false and kind not in ('relapse', 'use') and date >= current_date - 400
+      group by user_id`;
+    const streakOf = (id: string) => globalStreak(new Set((days.find(d => d.user_id === id)?.days as string[] | undefined) ?? [])).n;
     return {
-      friends: rows.filter(r => r.status === 'accepted').map(pick),
+      myStreak: streakOf(u.id),
+      friends: rows.filter(r => r.status === 'accepted').map(r => ({ ...pick(r), streak: streakOf(r.id) })),
       incoming: rows.filter(r => r.status === 'pending' && r.requester_id !== u.id).map(pick),
       outgoing: rows.filter(r => r.status === 'pending' && r.requester_id === u.id).map(pick)
     };
