@@ -164,6 +164,9 @@ Les deux commandes doivent répondre `200`. Ouvre ensuite le site, connecte-toi 
 
 ## Dépannage
 
+Sur le VPS, `/opt/pepsgoal/deploy/diagnose.sh` rassemble en une fois l'état des conteneurs, la validation du Caddyfile, les journaux utiles, les ports, le pare-feu, le DNS et les réponses HTTP.
+
+
 | Symptôme | Cause | Correction |
 | --- | --- | --- |
 | `HTTP ERROR 404` sur la page d'accueil | pas d'`index.html` à la racine du dossier servi | voir l'étape 0, puis A2 ou B4 |
@@ -171,6 +174,7 @@ Les deux commandes doivent répondre `200`. Ouvre ensuite le site, connecte-toi 
 | Page blanche | fichiers `_expo/…` introuvables (sous-dossier) | les fichiers doivent être à la racine du sous-domaine |
 | L'app reste « Hors ligne » | API injoignable, ou origine refusée | `curl.exe https://api.pepsgoal.fr/v1/status`, puis `CORS_ORIGINS=https://app.pepsgoal.fr` dans `deploy/.env` et `docker compose up -d`. Dans le navigateur (F12 › Console), une erreur « CORS » confirme la cause. |
 | Le navigateur affiche une erreur de certificat | certificat pas encore émis (DNS récent) | attendre la propagation ; VPS : `docker compose logs caddy` ; hébergement web : hPanel › SSL |
+| `ERR_CONNECTION_TIMED_OUT`, et `curl -sI` n'affiche rien | Caddy redémarre en boucle (`docker compose ps` : `Restarting`) ou ports 80/443 fermés | lancer `diagnose.sh` : la validation du Caddyfile et les journaux indiquent l'erreur ; vérifier le pare-feu hPanel (TCP 80 et 443 autorisés) |
 | Ancienne version affichée | cache | Ctrl+F5 ; hébergement web : vider le cache dans hPanel |
 
 ## Récapitulatif des adresses
