@@ -1,0 +1,6 @@
+# Fins de ligne Unix partout (le serveur et Caddy tournent sous Linux) ; Git convertit si besoin
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.ttf binary
