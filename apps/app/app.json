@@ -18,7 +18,9 @@
       "buildNumber": "1",
       "supportsTablet": true,
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "PepsGoal accède à tes photos pour ta photo de profil, tes publications et tes stories.",
+        "NSCameraUsageDescription": "PepsGoal utilise l'appareil photo pour ta photo de profil, tes publications et tes stories."
       }
     },
     "android": {
@@ -28,20 +30,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#07081A"
       },
-      "permissions": []
+      "permissions": [],
+      "softwareKeyboardLayoutMode": "resize"
     },
-    "web": {
-      "bundler": "metro",
-      "output": "single",
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-secure-store",
-      "expo-font"
-    ],
-    "experiments": {
-      "typedRoutes": false
-    }
+    "plugins": []
   }
 }

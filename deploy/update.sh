@@ -1,7 +1,7 @@
 #!/bin/sh
 # Met en ligne la dernière version du code (depuis GitHub) : reconstruit l'API, applique les migrations, redémarre.
 # Usage : /opt/pepsgoal/deploy/update.sh          (API seulement)
-#         /opt/pepsgoal/deploy/update.sh --web    (API + version web app.pepsgoal.fr, quelques minutes de plus)
+#         /opt/pepsgoal/deploy/update.sh --web    (API + version web app.pepsgoal.fr, une minute de plus)
 set -eu
 cd "$(dirname "$0")"
 git -C .. pull --ff-only

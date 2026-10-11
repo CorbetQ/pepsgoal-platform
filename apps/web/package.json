@@ -1,0 +1,16 @@
+{
+  "name": "@pepsgoal/web",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Version publiée de PepsGoal (web et application mobile) : l'interface d'origine reliée au serveur.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@fontsource/manrope": "^5.1.0",
+    "@fontsource/unbounded": "^5.1.0",
+    "jszip": "3.10.1",
+    "tweetnacl": "^1.0.3"
+  }
+}

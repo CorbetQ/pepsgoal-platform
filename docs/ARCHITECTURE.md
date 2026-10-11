@@ -5,15 +5,12 @@
 ```mermaid
 flowchart LR
   subgraph Appareil
-    UI[Écrans Expo<br/>iOS · Android · web] --> Repo[Écritures locales]
-    Repo --> Local[(Base locale<br/>SQLite / navigateur)]
-    Repo --> Outbox[(File d'attente)]
-    Sync[Moteur de synchro] --> Outbox
-    Sync --> Local
-    Net[Surveillance réseau<br/>NetInfo + /v1/status] --> Sync
+    UI[Interface PepsGoal<br/>web · iOS · Android] --> Local[(Données locales<br/>stockage de la page)]
+    Cloud[Couche connectée<br/>cloud.js] --> Local
+    Net[Surveillance réseau<br/>navigator.onLine + /v1/status] --> Cloud
   end
-  Sync -- "push / pull<br/>(HTTPS, JWT)" --> API
-  UI -- "social en direct<br/>(en ligne uniquement)" --> API
+  Cloud -- "synchro push / pull<br/>(HTTPS, JWT)" --> API
+  Cloud -- "social, messages chiffrés,<br/>modération" --> API
   subgraph Serveur
     API[API Fastify] --> PG[(PostgreSQL)]
     API --> Media[(Images<br/>disque ou S3)]
@@ -35,10 +32,12 @@ synchroniser plusieurs appareils, à sauvegarder et à faire fonctionner les fon
 
 | Élément | Choix | Pourquoi |
 | --- | --- | --- |
-| App | Expo SDK 51 + expo-router | Une seule base de code pour iOS, Android et web ; builds et publication via EAS |
-| Base locale | expo-sqlite (mobile), stockage navigateur (web) | Même interface `LocalStore`, choisie automatiquement par Metro (`local.ts` / `local.web.ts`) |
-| Réseau | @react-native-community/netinfo + `GET /v1/status` | Distingue « pas d'internet » de « serveur injoignable » ou « en maintenance » |
-| Jetons | expo-secure-store (Keychain / Keystore) | Les jetons ne sont jamais stockés en clair sur mobile |
+| Interface | `apps/web-legacy/pepsgoal.html` (HTML, CSS et JavaScript sans framework) | Une seule interface, identique sur le web, iOS et Android |
+| Couche connectée | `apps/web/src/cloud.js` | Branche l'interface sur le serveur sans la modifier : comptes, synchro, social, messages chiffrés, modération |
+| App mobile | Expo SDK 51 + react-native-webview | Coque native qui embarque l'interface (hors ligne) ; builds et publication via EAS |
+| Données locales | stockage de la page (`localStorage`, origine `https://app.pepsgoal.fr`) | Même format que le prototype ; fonctionne sans connexion |
+| Réseau | `navigator.onLine` + `GET /v1/status` (nouvel essai à 5 s, 10 s, 20 s, 40 s puis chaque minute) | Distingue « pas d'internet » de « serveur injoignable » ou « en maintenance » |
+| Jetons | stockage de la page, jeton de renouvellement à usage unique | Un jeton volé et réutilisé révoque toutes les sessions du compte |
 | API | Fastify 4 + zod | Rapide, validation stricte de chaque entrée, schémas partagés avec l'app |
 | Base serveur | PostgreSQL 16 ; schéma et migrations avec Drizzle | Transactions, séquence de révision pour la synchro, suppressions en cascade (RGPD) |
 | Requêtes | postgres.js (requêtes paramétrées) | Pas d'injection SQL possible ; requêtes lisibles |
@@ -67,31 +66,23 @@ et validés à l'identique par le serveur et l'app.
 - Blocage entre utilisateurs (`POST /v1/users/:id/block`) : exigé par les stores pour toute app avec contenus d'utilisateurs.
 - Suppression de compte depuis l'app (`DELETE /v1/me`) : exigée par Apple et Google ; supprime toutes les données en cascade.
 
-## Écrans à porter depuis le prototype
+## Interface (web, iOS et Android)
 
-L'app couvre aujourd'hui : connexion, inscription, mode sans compte, création d'un compte depuis le mode sans compte,
-aujourd'hui (validation hors ligne + série), objectifs (routine et abstinence), feed, amis, messagerie chiffrée de bout en bout, profil
-(état de la synchronisation), modération (vue d'ensemble, publications à valider, signalements).
+Toute l'interface est celle du prototype, sans réécriture : `apps/web-legacy/pepsgoal.html` est la référence unique
+(écrans, animations, 14 types d'objectifs, flammes, gels, récaps, stories, messagerie, modération, paramètres, accessibilité, documents légaux).
 
-À porter depuis `apps/web-legacy/pepsgoal.html`, dans cet ordre conseillé :
-1. Formulaires des 12 autres types (limite, durée + minuteur, mesure + courbe, horaire, projet, challenge, paliers, mensuel, objectif chiffré, deadline, défi de groupe, duel).
-2. Fiche objectif (calendrier, historique, groupes d'objectifs), flammes, niveaux, gels de série, badges.
-3. Stories (création et lecture), conversation complète, commentaires, notifications.
-4. Récaps semaine / mois / année, journée parfaite, animations.
-5. Paramètres (apparence, rappels via expo-notifications, données, aide et documents légaux), import / export .zip.
-6. Modération complète : comptes, contestations, maintenances, annonces PepsGoal Officiel.
-
-## Interface (app iOS, Android et web)
-
-L'app reprend le design du prototype web (`apps/web-legacy/pepsgoal.html`). Les mêmes composants servent sur iOS, Android et le navigateur.
-
-| Élément | Fichier | Contenu |
+| Élément | Fichier | Rôle |
 | --- | --- | --- |
-| Thème | `apps/app/src/ui/theme.tsx` | Couleurs claires et sombres, halos, 12 accents, couleurs des 14 types d'objectifs, palette daltonienne, contraste élevé. Le thème et l'accent sont des réglages synchronisés. |
-| Composants | `apps/app/src/ui/kit.tsx` | Panneaux vitrés, boutons en dégradé, puces de type, flamme, anneau de progression, avatars, barre du haut, bandeaux d'état, dialogues compatibles web (`ask` et `tell`). |
-| Pictogrammes | `apps/app/src/ui/icons.ts` | Tracés de l'objet `P` du prototype, rendus en SVG natif. |
-| Logique d'affichage | `apps/app/src/ui/goals.ts` | Niveaux de flammes, objectifs du jour, lignes d'information, semaine en cours. |
-| Navigation | `apps/app/app/(tabs)/_layout.tsx` | Grand écran (860 px et plus) : barre latérale vitrée. Mobile : barre d'onglets flottante et bouton « + ». |
+| Interface | `apps/web-legacy/pepsgoal.html` | Tous les écrans. Seuls quelques points d'accroche y ont été ajoutés (démarrage, identifiants UUID), inactifs sans serveur. |
+| Couche connectée | `apps/web/src/cloud.js` | Chargée avant l'interface ; remplace certaines fonctions (enregistrement, validations, actions sociales et de modération) par des appels à l'API. Ne fait rien si aucune API n'est configurée. |
+| Construction | `apps/web/build.mjs` | Assemble interface + couche connectée + tweetnacl + JSZip + polices locales (Unbounded, Manrope). Produit `apps/web/dist/` (web) et `apps/app/src/webapp.generated.ts` (mobile, un seul fichier). |
+| App mobile | `apps/app/App.tsx` | WebView plein écran, bouton retour Android, liens externes, partage des fichiers exportés, zones sûres. |
 
-Polices : Unbounded pour les titres et les chiffres, Manrope pour le texte, chargées au démarrage par `expo-font`.
-Pour garder l'app et le prototype alignés, toute nouvelle couleur ou tout nouveau composant s'ajoute d'abord à `theme.tsx` ou `kit.tsx`.
+Fonctionnement de la couche connectée :
+- **Synchro** : l'état connu du serveur est mémorisé ; à chaque enregistrement, les différences (objectifs, validations, réglages) partent vers `/v1/sync/push`, puis `/v1/sync/pull` récupère les changements des autres appareils (le plus récent gagne).
+- **Social** : amis, feed, stories, notifications et conversations sont relus depuis le serveur (au démarrage, en changeant d'onglet, chaque minute ; la conversation ouverte toutes les 8 s).
+- **Hors ligne** : l'interface continue de fonctionner ; la déconnexion et le changement de compte sont bloqués tant que le serveur n'a pas confirmé la synchronisation.
+- **Sans compte** : l'interface fonctionne comme le prototype, entièrement sur l'appareil ; créer un compte envoie ensuite toutes les données.
+
+Pour modifier l'interface : éditer `apps/web-legacy/pepsgoal.html`, puis `npm run build:web` (web) ; l'app mobile est reconstruite automatiquement par EAS.
+L'ancienne réécriture React Native est conservée dans `archive/app-react-native/` pour référence ; elle n'est plus utilisée.

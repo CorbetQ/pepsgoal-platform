@@ -797,7 +797,8 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
 /* ================= utilitaires ================= */
 const DAY = 864e5;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+// Version publiée (serveur PepsGoal) : identifiants au format UUID attendu par le serveur
+const uid = () => window.PEPSGOAL_CONFIG?.api && window.crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const pad = n => String(n).padStart(2, '0');
 const ymd = d => { d = new Date(d); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
 const parseYmd = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m-1, d); };
@@ -1257,7 +1258,7 @@ const userCheckins = id => ckIndex().byUser.get(id) || [];
 const hasCheck = (gid, date, kind='done') => ckIndex().keys.has(gid + '|' + date + '|' + kind);
 const friendship = (a, b) => DB.friendships.find(f => (f.from === a && f.to === b) || (f.from === b && f.to === a));
 const areFriends = (a, b) => { const f = friendship(a, b); return !!f && f.status === 'accepted'; };
-const friendsOf = id => DB.friendships.filter(f => f.status === 'accepted' && (f.from === id || f.to === id)).map(f => f.from === id ? f.to : f.from);
+function friendsOf(id){ return DB.friendships.filter(f => f.status === 'accepted' && (f.from === id || f.to === id)).map(f => f.from === id ? f.to : f.from); }
 const canSeeGoal = (g, v) => (g.members || []).includes(v) || g.buddy === v || g.userId === v || g.visibility === 'public' || (g.visibility === 'friends' && areFriends(g.userId, v));
 const canSeePost = (p, v) => p.userId === v || p.visibility === 'public' || (p.visibility === 'friends' && areFriends(p.userId, v));
 
@@ -3499,7 +3500,8 @@ function securityCard(u){
 }
 // Crée le compte administrateur au premier lancement (mot de passe initial : « password »)
 async function ensureAdmin(){
-  if (DB.users.some(isAdmin)) return;
+  // Version publiée : le compte admin est celui du serveur
+  if (window.PEPSGOAL_CONFIG?.api || DB.users.some(isAdmin)) return;
   const salt = uid() + uid(), username = DB.users.some(u => u.username === 'admin') ? 'moderation' : 'admin';
   const a = Object.assign({ id:uid(), username, name:'Modération PepsGoal', hue:8, bio:'Compte administrateur de la plateforme.', demo:false, role:'admin', salt, passHash:await hashPw('password', salt), defaultPw:true, createdAt:Date.now(), settings:defSettings(), milestones:[] }, newUserFields(8));
   Object.assign(a, { tutorialDone:true, tutoBonus:true, avatar:{ kind:'picto', picto:'shield', color:8, emoji:'😎', photo:'' } });
@@ -3561,7 +3563,7 @@ async function e2eDecrypt(m){
   catch(e){ return null; }
 }
 const msgText = m => !m.e2e ? (m.text || '') : !E2E.cache.has(m.id) ? '🔒 …' : (E2E.cache.get(m.id) ?? '🔒 Message chiffré : sa clé n’est pas sur cet appareil.');
-const keyPrint = async (a, b) => { const k = currentKey(a, b, false); if (!k) return null; const h = new Uint8Array(await crypto.subtle.digest('SHA-256', b64d(k.k))); return Array.from({ length:5 }, (_, i) => String(((h[i * 3] << 16) | (h[i * 3 + 1] << 8) | h[i * 3 + 2]) % 100000).padStart(5, '0')).join(' '); };
+async function keyPrint(a, b){ const k = currentKey(a, b, false); if (!k) return null; const h = new Uint8Array(await crypto.subtle.digest('SHA-256', b64d(k.k))); return Array.from({ length:5 }, (_, i) => String(((h[i * 3] << 16) | (h[i * 3 + 1] << 8) | h[i * 3 + 2]) % 100000).padStart(5, '0')).join(' '); }
 // Déchiffre les messages pas encore en cache, puis rafraîchit l'affichage
 async function decryptPending(){
   if (!E2E.busy) E2E.busy = (async () => {
@@ -4704,8 +4706,8 @@ Object.assign(ACT, { 'set-cat-go': id => { UI.view = 'settings'; UI.setCat = id;
 
 /* ================= démarrage ================= */
 if (me() && !me().tutorialDone) UI.modal = { type:'tuto', step:0 };
-render();
-ensureAdmin();
+// Version publiée : la couche connectée (apps/web/src/cloud.js) prend le relais au démarrage
+if (window.PGCloud) PGCloud.boot(); else { render(); ensureAdmin(); }
 setTimeout(checkReminders, 1200);
 if (BOOT_WARN) setTimeout(() => toast(BOOT_WARN, 'archive'), 600);
 void encryptLegacy();

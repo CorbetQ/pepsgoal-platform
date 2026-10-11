@@ -234,6 +234,18 @@ export default async function adminRoutes(app: FastifyInstance) {
     });
   });
 
+  /** Nouveautés envoyées aux nouveaux inscrits (les 3 plus récentes accompagnent le message de bienvenue). */
+  app.get('/v1/admin/announcements', pre, async () => {
+    const rows = await sql<Row[]>`select id, text, tag, created_at from announcements where for_new_users order by created_at desc limit 50`;
+    return rows.map(a => ({ id: a.id, text: a.text, tag: a.tag, createdAt: iso(a.created_at) }));
+  });
+
+  app.delete('/v1/admin/announcements/:id', pre, async req => {
+    const { id } = params(req.params);
+    await sql`update announcements set for_new_users = false where id = ${id}`;
+    return { ok: true };
+  });
+
   app.get('/v1/admin/modlog', pre, async () => {
     const rows = await sql<Row[]>`select m.*, a.display_name as admin_name from mod_actions m left join users a on a.id = m.admin_id order by m.created_at desc limit 100`;
     return rows.map(m => ({ id: m.id, action: m.action, detail: m.detail, adminName: m.admin_name, targetUserId: m.target_user_id, createdAt: iso(m.created_at) }));

@@ -4,7 +4,7 @@ import { globalStreak, Id } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { badRequest, conflict, forbidden, notFound } from '../lib/errors.js';
 import { isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
-import { toPublicUser, type Row } from '../lib/mappers.js';
+import { iso, toCheckin, toGoal, toPublicUser, type Row } from '../lib/mappers.js';
 import { notify } from '../lib/notify.js';
 
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
@@ -36,10 +36,13 @@ export default async function friendRoutes(app: FastifyInstance) {
       select user_id, array_agg(distinct date::text) as days from checkins
       where user_id in ${sql(ids)} and deleted_at is null and pending = false and kind not in ('relapse', 'use') and date >= current_date - 400
       group by user_id`;
-    const streakOf = (id: string) => globalStreak(new Set((days.find(d => d.user_id === id)?.days as string[] | undefined) ?? [])).n;
+    const pts = await sql<Row[]>`select user_id, coalesce(sum(points), 0)::int as points from checkins where user_id in ${sql(ids)} and deleted_at is null and pending = false group by user_id`;
+    const daysOf = (id: string) => (days.find(d => d.user_id === id)?.days as string[] | undefined) ?? [];
+    const streakOf = (id: string) => globalStreak(new Set(daysOf(id))).n;
     return {
       myStreak: streakOf(u.id),
-      friends: rows.filter(r => r.status === 'accepted').map(r => ({ ...pick(r), streak: streakOf(r.id) })),
+      // Jours d'activité et flammes de chaque ami : séries, classement et niveaux affichés comme dans l'application
+      friends: rows.filter(r => r.status === 'accepted').map(r => ({ ...pick(r), streak: streakOf(r.id), days: daysOf(r.id), points: pts.find(p => p.user_id === r.id)?.points ?? 0, since: iso(r.created_at) })),
       incoming: rows.filter(r => r.status === 'pending' && r.requester_id !== u.id).map(pick),
       outgoing: rows.filter(r => r.status === 'pending' && r.requester_id === u.id).map(pick)
     };
@@ -81,6 +84,38 @@ export default async function friendRoutes(app: FastifyInstance) {
     const u = me(req);
     await sql`delete from friendships where (requester_id = ${u.id} and addressee_id = ${id}) or (requester_id = ${id} and addressee_id = ${u.id})`;
     return { ok: true };
+  });
+
+  /**
+   * Profil d'une personne : objectifs visibles (publics, réservés aux amis si vous êtes amis, ou partagés avec toi),
+   * leurs validations récentes, et pour les amis les jours d'activité et les flammes (série, niveau).
+   */
+  app.get('/v1/users/:id', { preHandler: requireUser }, async req => {
+    const { id } = params(req.params);
+    const u = me(req);
+    const [x] = await sql<Row[]>`select id, username, display_name, avatar, role, bio, created_at from users where id = ${id} and deleted_at is null`;
+    if (!x || (id !== u.id && (await isBlocked(u.id, id)))) throw notFound('Compte introuvable.');
+    const [f] = await sql<Row[]>`select id, status, requester_id from friendships where (requester_id = ${u.id} and addressee_id = ${id}) or (requester_id = ${id} and addressee_id = ${u.id})`;
+    const friend = f?.status === 'accepted' || id === u.id;
+    const goals = await sql<Row[]>`
+      select g.*, coalesce((select array_agg(m.user_id) from goal_members m where m.goal_id = g.id), '{}') as member_ids from goals g
+      where g.owner_id = ${id} and g.deleted_at is null and (
+        g.visibility = 'public' or (g.visibility = 'friends' and ${friend}) or g.buddy_id = ${u.id}
+        or exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id}))
+      order by g.created_at limit 200`;
+    const gids = goals.map(g => g.id as string);
+    const checkins = gids.length ? await sql<Row[]>`
+      select * from checkins where goal_id = any(${gids}) and deleted_at is null and date >= current_date - 400 order by date limit 5000` : [];
+    const [act] = friend ? await sql<Row[]>`
+      select array_agg(distinct date::text) as days, coalesce(sum(points), 0)::int as points from checkins
+      where user_id = ${id} and deleted_at is null and pending = false and date >= current_date - 400 and kind not in ('relapse', 'use')` : [];
+    return {
+      user: { ...toPublicUser(x), bio: x.bio, createdAt: iso(x.created_at) },
+      friendship: f ? { id: f.id, status: f.status, outgoing: f.requester_id === u.id } : null,
+      days: (act?.days as string[] | null) ?? [], points: act?.points ?? 0,
+      friendCount: (await sql<Row[]>`select count(*)::int as n from friendships where status = 'accepted' and (requester_id = ${id} or addressee_id = ${id})`)[0]?.n ?? 0,
+      goals: goals.map(toGoal), checkins: checkins.map(toCheckin)
+    };
   });
 
   /** Bloquer un compte : supprime l'amitié, masque ses contenus et empêche tout contact. */

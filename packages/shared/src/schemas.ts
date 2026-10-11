@@ -28,21 +28,25 @@ const days = z.array(z.number().int().min(0).max(6)).max(7);
 const unit = z.string().max(20);
 const optionalDay = z.union([DayKeySchema, z.literal('')]);
 
+/**
+ * Réglages propres à chaque type. Les champs connus sont validés ; les autres (paliers atteints, mois réussis,
+ * vainqueur d'un duel…) sont conservés tels quels pour que l'application retrouve exactement son état.
+ */
 export const GoalDataByType = {
-  routine: z.object({ mode: z.enum(['days', 'count']), days, perWeek: z.number().int().min(1).max(7) }),
-  objective: z.object({ target: z.number().positive(), unit, endDate: optionalDay.default('') }),
-  deadline: z.object({ due: DayKeySchema }),
-  abstinence: z.object({ since: DayKeySchema }),
-  monthly: z.object({ target: z.number().positive(), unit, cumulate: z.boolean() }),
-  limit: z.object({ max: z.number().min(0), unit, period: z.enum(['day', 'week']) }),
-  duration: z.object({ minutes: z.number().positive().max(1440) }),
-  measure: z.object({ unit, dir: z.enum(['up', 'down']), timeFmt: z.boolean(), target: z.number().nullable() }),
-  timed: z.object({ mode: z.enum(['before', 'after', 'notafter']), time: TimeOfDay, days }),
-  project: z.object({ due: optionalDay, tasks: z.array(z.object({ id: z.string().min(1).max(64), t: z.string().max(120), done: z.boolean() })).max(200) }),
-  challenge: z.object({ length: z.number().int().min(2).max(365), start: DayKeySchema }),
-  program: z.object({ unit, base: z.number().positive(), step: z.number(), weeks: z.number().int().min(2).max(52), start: DayKeySchema }),
-  group: z.object({ target: z.number().positive(), unit, endDate: optionalDay }),
-  duel: z.object({ unit, endDate: DayKeySchema })
+  routine: z.object({ mode: z.enum(['days', 'count']), days, perWeek: z.number().int().min(1).max(7) }).passthrough(),
+  objective: z.object({ target: z.number().positive(), unit, endDate: optionalDay.default('') }).passthrough(),
+  deadline: z.object({ due: DayKeySchema }).passthrough(),
+  abstinence: z.object({ since: DayKeySchema }).passthrough(),
+  monthly: z.object({ target: z.number().positive(), unit, cumulate: z.boolean() }).passthrough(),
+  limit: z.object({ max: z.number().min(0), unit, period: z.enum(['day', 'week']) }).passthrough(),
+  duration: z.object({ minutes: z.number().positive().max(1440) }).passthrough(),
+  measure: z.object({ unit, dir: z.enum(['up', 'down']), timeFmt: z.boolean(), target: z.number().nullable() }).passthrough(),
+  timed: z.object({ mode: z.enum(['before', 'after', 'notafter']), time: TimeOfDay, days }).passthrough(),
+  project: z.object({ due: optionalDay, tasks: z.array(z.object({ id: z.string().min(1).max(64), t: z.string().max(120), done: z.boolean() })).max(200) }).passthrough(),
+  challenge: z.object({ length: z.number().int().min(2).max(365), start: DayKeySchema }).passthrough(),
+  program: z.object({ unit, base: z.number().positive(), step: z.number(), weeks: z.number().int().min(2).max(52), start: DayKeySchema }).passthrough(),
+  group: z.object({ target: z.number().positive(), unit, endDate: optionalDay }).passthrough(),
+  duel: z.object({ unit, endDate: DayKeySchema }).passthrough()
 } satisfies Record<GoalType, z.ZodTypeAny>;
 
 export function parseGoalData(type: GoalType, data: unknown): Record<string, unknown> {
@@ -62,7 +66,7 @@ export const GoalSchema = z.object({
   archived: z.boolean().default(false),
   completedAt: IsoDate.nullable().default(null),
   failedAt: IsoDate.nullable().default(null),
-  data: z.record(z.unknown()),
+  data: z.record(z.unknown()).refine(d => JSON.stringify(d).length <= 20_000, 'Données de l’objectif trop volumineuses'),
   memberIds: z.array(Id).max(20).default([]),
   buddyId: Id.nullable().default(null),
   buddyVerify: z.boolean().default(false),
@@ -103,6 +107,8 @@ export const UserSettingsSchema = z.object({
   defaultVisibility: Visibility.default('friends'),
   morning: z.object({ on: z.boolean(), time: TimeOfDay }).default({ on: true, time: '08:30' }),
   evening: z.object({ on: z.boolean(), time: TimeOfDay }).default({ on: true, time: '20:30' }),
+  /** État de l'interface propre au compte (tutoriel, groupes d'objectifs, jours protégés par un gel…), synchronisé tel quel. */
+  extra: z.record(z.unknown()).default({}).refine(d => JSON.stringify(d).length <= 64_000, 'Réglages trop volumineux'),
   updatedAt: IsoDate.optional()
 });
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
@@ -114,7 +120,9 @@ export const PublicUser = z.object({ id: Id, username: z.string(), displayName: 
 export type PublicUser = z.infer<typeof PublicUser>;
 
 /* ---------- social ---------- */
-export const PostBody = z.object({ text: z.string().trim().min(1).max(500), visibility: z.enum(['friends', 'public']), goalId: Id.nullable().default(null) });
+export const PostBody = z.object({ text: z.string().trim().min(1).max(500), visibility: z.enum(['friends', 'public']), goalId: Id.nullable().default(null), kind: z.enum(['manual', 'milestone']).default('manual') });
+/** Notification envoyée à un ami ou à un membre d'un objectif partagé (défi de groupe, duel, binôme). */
+export const NotifyBody = z.object({ to: Id, text: z.string().trim().min(1).max(300), type: z.enum(['badge', 'verify', 'friend', 'info']).default('info'), goalId: Id.nullable().default(null) });
 export const CommentBody = z.object({ text: z.string().trim().min(1).max(280) });
 /** Messages privés : uniquement chiffrés de bout en bout (voir e2e.ts). */
 export const MessageBody = z.object({ e2e: E2EPayload });

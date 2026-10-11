@@ -7,12 +7,12 @@ Seuls les messages du compte PepsGoal Officiel (annonces et modération) circule
 
 | Élément | Où il vit | Rôle |
 | --- | --- | --- |
-| Paire de clés X25519 de l'appareil | Secrète : trousseau de l'appareil (`expo-secure-store`). Publique : serveur (`e2e_devices`) | Recevoir des clés de conversation |
-| Clé de paire (32 octets aléatoires) | Trousseau des appareils des deux amis uniquement | Chiffrer les messages d'une paire d'amis |
+| Paire de clés X25519 de l'appareil | Secrète : stockage local de l'app sur l'appareil (`pepsgoal.e2e.v1`), jamais envoyée. Publique : serveur (`e2e_devices`) | Recevoir des clés de conversation |
+| Clé de paire (32 octets aléatoires) | Stockage local des appareils des deux amis uniquement | Chiffrer les messages d'une paire d'amis |
 | Enveloppe | Serveur (`e2e_envelopes`) | Clé de paire chiffrée pour **un** appareil (`crypto_box`), illisible par les autres |
 | Message | Serveur (`messages.e2e`) | `crypto_secretbox` (XSalsa20-Poly1305) du texte avec la clé de paire |
 
-Primitives : [tweetnacl](https://github.com/dchest/tweetnacl-js), une implémentation auditée de NaCl, dans `packages/shared/src/e2e.ts`. L'aléa vient de `expo-crypto` sur mobile et de `crypto.getRandomValues` ailleurs.
+Primitives : [tweetnacl](https://github.com/dchest/tweetnacl-js), une implémentation auditée de NaCl, intégrée à l'app par `apps/web/build.mjs` et utilisée par `apps/web/src/cloud.js` (le serveur et ses tests utilisent les mêmes formats, `packages/shared/src/e2e.ts`). L'aléa vient de `crypto.getRandomValues`.
 
 ## Déroulé
 
@@ -35,9 +35,9 @@ S'il diffère, un appareil inconnu participe à la conversation.
 - Les métadonnées restent visibles par le serveur : qui écrit à qui, quand, et la taille des messages.
 - La modération ne peut pas lire les messages privés. Le blocage et la suppression d'amitié restent possibles.
 
-## Version web (prototype `apps/web-legacy`)
+## Sans serveur (artefact et mode sans compte)
 
-Tous les comptes vivent dans le même navigateur. Chaque paire d'amis y a une clé AES-256-GCM (WebCrypto), rangée à part (`pepsgoal.keys.v1`), jamais dans la base.
+Quand l'interface fonctionne sans serveur, tous les comptes vivent dans le même navigateur. Chaque paire d'amis y a une clé AES-256-GCM (WebCrypto), rangée à part (`pepsgoal.keys.v1`), jamais dans la base.
 Les données associées lient chaque message à sa conversation. L'export .zip d'un compte inclut ses clés (`keys.json`) pour relire ses conversations après restauration. Les sauvegardes complètes n'en contiennent aucune.
 Les messages en clair des versions précédentes sont chiffrés automatiquement au premier lancement de la 1.1.0.
 

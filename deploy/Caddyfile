@@ -30,7 +30,7 @@ www.pepsgoal.fr {
 app.pepsgoal.fr {
 	root * /srv/app
 	encode zstd gzip
-	# Application d'une seule page : toute adresse inconnue (/goals, /profile…) renvoie index.html
+	# Application d'une seule page : toute adresse inconnue renvoie index.html
 	try_files {path} /index.html
 	file_server
 	header {
@@ -40,6 +40,6 @@ app.pepsgoal.fr {
 	}
 	@html path / /index.html
 	header @html Cache-Control "no-cache"
-	@static path /_expo/* /assets/*
+	@static path /fonts/*
 	header @static Cache-Control "public, max-age=31536000, immutable"
 }

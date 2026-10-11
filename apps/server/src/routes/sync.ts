@@ -138,12 +138,12 @@ export default async function syncRoutes(app: FastifyInstance) {
     const goals = await sql<Row[]>`
       select g.*, coalesce((select array_agg(m.user_id) from goal_members m where m.goal_id = g.id), '{}') as member_ids
       from goals g
-      where g.rev > ${cursor} and (g.owner_id = ${u.id} or exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id}))
+      where g.rev > ${cursor} and (g.owner_id = ${u.id} or g.buddy_id = ${u.id} or exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id}))
       order by g.rev limit ${LIMIT}`;
     const checkins = await sql<Row[]>`
       select c.* from checkins c
       where c.rev > ${cursor} and (c.user_id = ${u.id} or c.goal_id in (
-        select id from goals where owner_id = ${u.id} union select goal_id from goal_members where user_id = ${u.id}))
+        select id from goals where owner_id = ${u.id} or buddy_id = ${u.id} union select goal_id from goal_members where user_id = ${u.id}))
       order by c.rev limit ${LIMIT}`;
     const groups = await sql<Row[]>`select * from goal_groups where owner_id = ${u.id} and rev > ${cursor} order by rev limit ${LIMIT}`;
     const [settingsRow] = await sql<Row[]>`select settings, settings_rev from users where id = ${u.id} and settings_rev > ${cursor}`;

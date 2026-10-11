@@ -2,6 +2,10 @@
 
 La compilation se fait dans le cloud avec **EAS** (Expo) : pas besoin de Mac ni d'Android Studio. Prérequis : le serveur est en ligne (`https://api.pepsgoal.fr`, voir GUIDE-HOSTINGER.md) et les pages légales sont publiées sur pepsgoal.fr.
 
+L'app mobile est une coque native (`apps/app/App.tsx`) qui embarque l'interface PepsGoal, la même que l'artefact et que `app.pepsgoal.fr`.
+L'interface est intégrée à l'app (et non chargée depuis internet) : elle s'ouvre instantanément et fonctionne hors ligne.
+EAS la reconstruit automatiquement à chaque compilation (script `eas-build-post-install`, qui lance `apps/web/build.mjs`).
+
 ## 1. Comptes à créer
 
 | Compte | Coût | Remarques |
@@ -21,6 +25,7 @@ eas init
 `eas init` ajoute l'identifiant du projet dans `app.json`. Valide ce changement dans git.
 L'identifiant de l'app est `fr.pepsgoal.app` (iOS et Android) et devient définitif à la première publication.
 Pour essayer l'app sur ton téléphone avant tout, lance `eas build --platform android --profile preview` et installe l'APK obtenu.
+Pour l'essayer pendant le développement avec Expo Go : `npm run start -w apps/app`, puis scanne le QR code (l'API utilisée est celle du build web : `PEPSGOAL_API=http://IP-DE-TON-PC:8080 npm run webapp -w apps/app` pour un serveur local).
 
 ## 3. Compiler
 
@@ -29,7 +34,7 @@ cd pepsgoal-platform/apps/app
 npm run build:android
 npm run build:ios
 ```
-- Le profil `production` (fichier `eas.json`) utilise `https://api.pepsgoal.fr` et augmente automatiquement le numéro de build.
+- Le profil `production` (fichier `eas.json`, variable `EXPO_PUBLIC_API_URL`) utilise `https://api.pepsgoal.fr` et augmente automatiquement le numéro de build.
 - Android : à la première compilation, accepte qu'EAS génère la **clé de signature** ; il la conserve pour toi.
 - iOS : EAS te demande ton identifiant Apple et crée seul les certificats et profils.
 - Chaque compilation prend de 10 à 30 minutes ; le lien de téléchargement apparaît sur expo.dev.
@@ -54,7 +59,8 @@ Points déjà couverts par l'app :
 - signalement et blocage, modération ;
 - utilisation sans compte ;
 - liens vers les CGU et la confidentialité ;
-- chiffrement standard uniquement, déjà déclaré.
+- chiffrement standard uniquement, déjà déclaré ;
+- fonctionnement hors ligne, interface embarquée dans l'app, partage natif des exports (règle 4.2 d'Apple sur les apps qui se contentent d'afficher un site : PepsGoal n'en est pas une, mais mentionne-le dans les notes de vérification si besoin).
 
 ## 5. Google Play (Android)
 
@@ -88,7 +94,7 @@ Garde la clé JSON comme un mot de passe : jamais dans git.
 
 ## 6. Publier une mise à jour
 
-1. Augmente `version` dans `apps/app/app.json` (ex. 1.0.1), et `APP_VERSION` dans `apps/app/src/lib/config.ts`.
+1. Augmente `version` dans `apps/app/app.json` (ex. 1.1.1) : elle est reprise par l'interface au moment de la construction.
 2. `npm run build:android && npm run build:ios`, puis `npm run submit:android` et `npm run submit:ios`.
 3. Soumets les nouvelles versions dans les deux consoles.
 4. Si l'API change de façon incompatible, déploie d'abord le serveur, puis augmente `MIN_APP_VERSION` dans `deploy/.env` une fois la nouvelle app disponible.
@@ -100,4 +106,5 @@ Garde la clé JSON comme un mot de passe : jamais dans git.
 - [ ] Mot de passe `admin` changé
 - [ ] Compte de test créé sur le serveur de production
 - [ ] Testé hors ligne sur un vrai téléphone : mode avion, valider un objectif, réactiver le réseau, vérifier la synchronisation
+- [ ] Android : bouton retour (ferme la fenêtre ouverte, revient à « Jour », puis quitte) ; export .zip proposé dans la feuille de partage
 - [ ] Captures d'écran prêtes

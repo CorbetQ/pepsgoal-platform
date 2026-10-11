@@ -7,14 +7,15 @@ Ce dépôt contient le **serveur** (comptes, synchronisation, social, modératio
 pepsgoal-platform/
 ├── packages/shared/   Modèle de données, validation (zod), protocole de synchronisation, calcul des séries
 ├── apps/server/       API Node.js (Fastify + PostgreSQL)
-├── apps/app/          Application Expo (React Native) : iOS, Android et web, hors ligne d'abord
-├── apps/web-legacy/   Prototype web d'origine (un seul fichier HTML), référence fonctionnelle et visuelle
+├── apps/web-legacy/   Interface PepsGoal (celle de l'artefact) : tous les écrans, web et mobile
+├── apps/web/          Couche connectée (cloud.js) et construction : version web + interface embarquée de l'app
+├── apps/app/          App iOS / Android (Expo) : coque native qui embarque l'interface, hors ligne d'abord
 └── docs/              Architecture, API, synchronisation, publication sur les stores, déploiement
 ```
 
 ## Démarrer en local
 
-Prérequis : Node.js 20+, Docker (pour PostgreSQL), et l'app Expo Go sur un téléphone ou un simulateur.
+Prérequis : Node.js 20+, Docker (pour PostgreSQL), et l'app Expo Go sur un téléphone ou un simulateur pour l'app mobile.
 
 ```bash
 npm install
@@ -40,9 +41,25 @@ npm run db:migrate
 npm run dev:server
 ```
 
+Version web, branchée sur le serveur local (ouvre ensuite http://localhost:8767) :
+
 ```bash
-npm run dev:app
+PEPSGOAL_API=http://localhost:8080 npm run build:web
 ```
+
+```bash
+npx serve apps/web/dist -l 8767
+```
+
+App mobile avec Expo Go (remplace l'adresse par celle de ton PC sur le réseau local) :
+
+```bash
+PEPSGOAL_API=http://192.168.1.10:8080 npm run dev:app
+```
+
+Sous PowerShell, définis la variable d'abord : `$env:PEPSGOAL_API="http://localhost:8080"`, puis lance la commande sans le préfixe.
+
+L'interface se modifie dans `apps/web-legacy/pepsgoal.html` ; relance `npm run build:web` pour la voir dans la version connectée.
 
 Au premier démarrage, le serveur crée le compte **PepsGoal Officiel** et le compte **admin**. En développement, le mot de passe admin est `password` (un avertissement s'affiche) ; en production, `ADMIN_BOOTSTRAP_PASSWORD` est obligatoire.
 

@@ -1,12 +1,12 @@
 # Mettre en ligne la version web de PepsGoal sur Hostinger
 
-Objectif : `https://app.pepsgoal.fr` affiche l'application. C'est la même app que sur iPhone et Android, compilée pour le navigateur.
+Objectif : `https://app.pepsgoal.fr` affiche l'application. C'est exactement l'interface de l'artefact PepsGoal, branchée sur le serveur ; les apps iPhone et Android embarquent la même.
 
-La version web n'est qu'un ensemble de fichiers statiques : un `index.html`, un dossier `_expo/` (le code) et un dossier `assets/`.
+La version web n'est qu'un ensemble de fichiers statiques : un `index.html` (toute l'application), un dossier `fonts/`, deux icônes, un manifeste et un `.htaccess`.
 Elle peut donc être hébergée **sur le VPS** (à côté de l'API) **ou sur l'hébergement web mutualisé** Hostinger.
 Dans les deux cas, elle parle à l'API `https://api.pepsgoal.fr`, qui reste sur le VPS (voir GUIDE-HOSTINGER.md).
 
-> L'artefact claude.ai (prototype `apps/web-legacy`) et `app.pepsgoal.fr` sont deux choses distinctes : republier l'artefact ne change rien sur ton domaine.
+> L'artefact claude.ai et `app.pepsgoal.fr` restent deux publications distinctes : republier l'artefact ne change rien sur ton domaine. Pour modifier l'application, on modifie `apps/web-legacy/pepsgoal.html` puis on reconstruit (A5 ou B7).
 
 ---
 
@@ -21,7 +21,7 @@ curl.exe -sI https://app.pepsgoal.fr
 | Ligne `server:` de la réponse | Qui répond | Cause probable et correction |
 | --- | --- | --- |
 | `Caddy` | ton VPS | Le bloc `app.pepsgoal.fr` était commenté dans l'ancien `deploy/Caddyfile`, ou le dossier `deploy/app` est vide. Suis l'**option A**. |
-| `LiteSpeed`, `hcdn` ou `hostinger` | l'hébergement web mutualisé | Le dossier du sous-domaine est vide, ou les fichiers sont dans un sous-dossier (`app/dist-web/index.html` au lieu de `app/index.html`). Suis l'**option B**. |
+| `LiteSpeed`, `hcdn` ou `hostinger` | l'hébergement web mutualisé | Le dossier du sous-domaine est vide, ou les fichiers sont dans un sous-dossier (`app/dist/index.html` au lieu de `app/index.html`). Suis l'**option B**. |
 
 À retenir : **un sous-domaine ne pointe que vers un seul endroit**. Si le DNS de `app` pointe vers le VPS, ce que tu déposes sur l'hébergement web ne sera jamais affiché, et inversement.
 
@@ -44,7 +44,7 @@ curl.exe -sI https://app.pepsgoal.fr
 2. **L'API accepte le site** : dans `deploy/.env` sur le VPS, `CORS_ORIGINS=https://app.pepsgoal.fr`.
    - Après une modification : `cd /opt/pepsgoal/deploy && docker compose up -d`.
    - Sans ce réglage, l'app s'ouvre mais reste « hors ligne » : le navigateur bloque les appels à l'API.
-3. **Le code est à jour** : version 1.1.0 ou plus récente. Elle inclut le fichier `.htaccess`, le script `deploy/web-build.sh` et l'adresse de l'API par défaut. Envoie-le sur GitHub depuis ton PC :
+3. **Le code est à jour** : version 1.1.0 ou plus récente. Elle inclut `apps/web/build.mjs`, le fichier `.htaccess`, le script `deploy/web-build.sh` et l'adresse de l'API par défaut. Envoie-le sur GitHub depuis ton PC :
    ```bash
    git add .
    git commit -m "Version web"
@@ -70,10 +70,10 @@ git pull
 chmod +x deploy/web-build.sh deploy/update.sh
 ./deploy/web-build.sh
 ```
-Le script compile l'app dans un conteneur Node jetable (rien à installer), puis la dépose dans `deploy/app/`.
-- La première fois, compte 3 à 6 minutes.
+Le script construit l'app dans un conteneur Node jetable (rien à installer), puis la dépose dans `deploy/app/`.
+- Compte moins d'une minute.
 - La dernière ligne doit être `Version web publiée (… ), API : https://api.pepsgoal.fr`.
-- Vérifie le résultat : `ls deploy/app` doit afficher `index.html  _expo  assets  favicon.ico…`.
+- Vérifie le résultat : `ls deploy/app` doit afficher `favicon.png  fonts  icon-512.png  index.html  manifest.webmanifest`.
 
 ### A3. Prendre en compte la nouvelle configuration de Caddy
 Le `Caddyfile` sert désormais `app.pepsgoal.fr`, et `docker-compose.yml` monte le dossier `deploy/app`. Pour que Caddy relise les deux :
@@ -87,9 +87,9 @@ Dans les journaux doit apparaître l'obtention du certificat pour `app.pepsgoal.
 ### A4. Vérifier
 ```bash
 curl -sI https://app.pepsgoal.fr | head -5
-curl -sI https://app.pepsgoal.fr/goals | head -1
+curl -sI https://app.pepsgoal.fr/fonts/manrope-latin-400.woff2 | head -1
 ```
-- Les deux doivent répondre `HTTP/2 200` avec `server: Caddy`. La seconde ligne vérifie que le rechargement d'une page interne fonctionne.
+- Les deux doivent répondre `HTTP/2 200` avec `server: Caddy`. La seconde vérifie que les polices sont bien servies.
 - Ouvre ensuite https://app.pepsgoal.fr : l'écran de connexion PepsGoal s'affiche.
 
 ### A5. Mettre à jour plus tard
@@ -103,24 +103,20 @@ Sans `--web`, seule l'API est mise à jour.
 
 ## Option B — Sur l'hébergement web mutualisé
 
-### B1. Compiler sur ton PC
+### B1. Construire sur ton PC
 1. Installe **Node.js 20 LTS** depuis nodejs.org, une seule fois.
 2. Dans le dossier `pepsgoal-platform` (PowerShell) :
    ```bash
-   npm install
+   npm install -w apps/web
    ```
    ```bash
-   cd apps/app
+   npm run build:web
    ```
-   ```bash
-   npx expo export --platform web --clear --output-dir dist-web
-   ```
-   L'option `--clear` est importante : sans elle, Expo peut réutiliser une compilation précédente et garder une mauvaise adresse d'API.
-3. Ouvre `apps/app/dist-web`. Tu dois y voir :
-   - `index.html` ;
-   - `.htaccess` (fichier caché : dans l'Explorateur, menu **Affichage › Afficher › Éléments masqués**) ;
-   - `_expo`, `assets`, `favicon.ico` et `metadata.json`.
-4. **Sélectionne tout le contenu** de `dist-web`, pas le dossier lui-même. Fais un clic droit › **Compresser dans un fichier ZIP** et nomme le fichier `pepsgoal-web.zip`.
+   La dernière ligne affiche l'adresse de l'API utilisée (`https://api.pepsgoal.fr` par défaut).
+3. Ouvre `apps/web/dist`. Tu dois y voir :
+   - `index.html`, `manifest.webmanifest`, `favicon.png`, `icon-512.png` et le dossier `fonts` ;
+   - `.htaccess` (fichier caché : dans l'Explorateur, menu **Affichage › Afficher › Éléments masqués**).
+4. **Sélectionne tout le contenu** de `dist`, pas le dossier lui-même. Fais un clic droit › **Compresser dans un fichier ZIP** et nomme le fichier `pepsgoal-web.zip`.
 
 ### B2. Créer le sous-domaine
 hPanel › **Sites web** › pepsgoal.fr › **Tableau de bord** › **Domaines** › **Sous-domaines** :
@@ -137,11 +133,11 @@ hPanel › **Fichiers** › **Gestionnaire de fichiers** :
 1. Ouvre le dossier noté à l'étape B2, par exemple `public_html/app`.
 2. Supprime les fichiers par défaut s'il y en a (`default.php`, `index.php`).
 3. Clique sur **Importer** et envoie `pepsgoal-web.zip`. Fais ensuite un clic droit sur le fichier › **Extraire**, en laissant le dossier de destination tel quel (`.`), puis supprime le .zip.
-4. Contrôle : directement dans `public_html/app`, tu dois voir `index.html`, `.htaccess`, `_expo` et `assets`.
-   - Si tu vois un dossier `dist-web`, c'est que le dossier a été zippé au lieu de son contenu. Déplace son contenu d'un niveau vers le haut.
+4. Contrôle : directement dans `public_html/app`, tu dois voir `index.html`, `.htaccess` et `fonts`.
+   - Si tu vois un dossier `dist`, c'est que le dossier a été zippé au lieu de son contenu. Déplace son contenu d'un niveau vers le haut.
    - Si `.htaccess` n'apparaît pas, active « Afficher les fichiers cachés » dans les réglages du gestionnaire.
 
-Envoi par **FTP** (FileZilla) : les identifiants sont dans hPanel › **Fichiers** › **Comptes FTP**. Envoie le contenu de `dist-web` dans le même dossier.
+Envoi par **FTP** (FileZilla) : les identifiants sont dans hPanel › **Fichiers** › **Comptes FTP**. Envoie le contenu de `apps/web/dist` dans le même dossier.
 
 ### B5. HTTPS
 hPanel › **Sécurité** › **SSL** : installe le certificat gratuit pour `app.pepsgoal.fr`. Le délai va de quelques minutes à quelques heures après la mise en place du DNS. Le `.htaccess` redirige ensuite automatiquement vers HTTPS.
@@ -151,12 +147,12 @@ hPanel › **Sécurité** › **SSL** : installe le certificat gratuit pour `app
 curl.exe -sI https://app.pepsgoal.fr
 ```
 ```bash
-curl.exe -sI https://app.pepsgoal.fr/goals
+curl.exe -sI https://app.pepsgoal.fr/fonts/manrope-latin-400.woff2
 ```
-Les deux commandes doivent répondre `200`. Ouvre ensuite le site, connecte-toi et recharge la page sur l'onglet Objectifs : elle doit se réafficher normalement.
+Les deux commandes doivent répondre `200`. Ouvre ensuite le site et connecte-toi : tu retrouves l'interface de l'artefact avec tes données du serveur.
 
 ### B7. Mettre à jour plus tard
-1. Recompile (étape B1), puis supprime tout le contenu du dossier `public_html/app` (il ne contient que l'app).
+1. Reconstruis (étape B1), puis supprime tout le contenu du dossier `public_html/app` (il ne contient que l'app).
 2. Importe et extrais le nouveau .zip.
 3. Si une ancienne version s'affiche encore : hPanel › **Performances** › **Cache** (ou **CDN**) › **Vider le cache**, puis recharge avec Ctrl+F5.
 
@@ -170,8 +166,7 @@ Sur le VPS, `/opt/pepsgoal/deploy/diagnose.sh` rassemble en une fois l'état des
 | Symptôme | Cause | Correction |
 | --- | --- | --- |
 | `HTTP ERROR 404` sur la page d'accueil | pas d'`index.html` à la racine du dossier servi | voir l'étape 0, puis A2 ou B4 |
-| La page d'accueil marche, mais `/goals` ou `/profile` donne 404 au rechargement | réécriture vers `index.html` absente | VPS : `Caddyfile` à jour (A3). Hébergement web : `.htaccess` présent (B4). |
-| Page blanche | fichiers `_expo/…` introuvables (sous-dossier) | les fichiers doivent être à la racine du sous-domaine |
+| Polices différentes de l'artefact | dossier `fonts/` absent ou dans un sous-dossier | les fichiers doivent être à la racine du sous-domaine, `fonts/` compris |
 | L'app reste « Hors ligne » | API injoignable, ou origine refusée | `curl.exe https://api.pepsgoal.fr/v1/status`, puis `CORS_ORIGINS=https://app.pepsgoal.fr` dans `deploy/.env` et `docker compose up -d`. Dans le navigateur (F12 › Console), une erreur « CORS » confirme la cause. |
 | Le navigateur affiche une erreur de certificat | certificat pas encore émis (DNS récent) | attendre la propagation ; VPS : `docker compose logs caddy` ; hébergement web : hPanel › SSL |
 | `ERR_CONNECTION_TIMED_OUT`, et `curl -sI` n'affiche rien | Caddy redémarre en boucle (`docker compose ps` : `Restarting`) ou ports 80/443 fermés | lancer `diagnose.sh` : la validation du Caddyfile et les journaux indiquent l'erreur ; vérifier le pare-feu hPanel (TCP 80 et 443 autorisés) |

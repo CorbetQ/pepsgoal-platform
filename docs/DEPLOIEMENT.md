@@ -13,7 +13,7 @@
 | `pepsgoal.fr` | Site vitrine et pages légales publiques (`/cgu`, `/mentions-legales`, `/confidentialite`), exigées par les stores | vers l'hébergement du site |
 | `api.pepsgoal.fr` | API de production (`EXPO_PUBLIC_API_URL` du profil `production` dans `apps/app/eas.json`) | vers le serveur de production (HTTPS obligatoire) |
 | `staging-api.pepsgoal.fr` | API de test (profil `preview`) | vers le serveur de test |
-| `app.pepsgoal.fr` | Version web de l'app (export Expo `dist-web`), facultative | vers un hébergement statique avec repli sur `index.html` |
+| `app.pepsgoal.fr` | Version web de l'app (`apps/web/dist`, construite par `deploy/web-build.sh`), facultative | vers un hébergement statique avec repli sur `index.html` |
 
 ## Mise en production
 

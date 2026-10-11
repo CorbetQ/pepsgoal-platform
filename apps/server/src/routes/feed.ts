@@ -54,10 +54,15 @@ export default async function feedRoutes(app: FastifyInstance) {
     const comments = ids.length ? await sql<Row[]>`
       select c.*, a.username, a.display_name, a.avatar, a.role from comments c join users a on a.id = c.author_id
       where c.post_id = any(${ids}) and c.deleted_at is null and a.deleted_at is null order by c.created_at` : [];
+    // Qui a encouragé chaque publication (affiché sous la publication, comme dans l'application)
+    const likers = ids.length ? await sql<Row[]>`
+      select l.post_id, a.id, a.username, a.display_name, a.avatar, a.role from post_likes l join users a on a.id = l.user_id
+      where l.post_id = any(${ids}) and a.deleted_at is null order by l.created_at` : [];
     return {
       posts: posts.map(p => ({
         id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, visibility: p.visibility, goalId: p.goal_id, kind: p.kind,
         status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), likeCount: p.like_count, liked: p.liked,
+        likers: likers.filter(l => l.post_id === p.id).slice(0, 100).map(toPublicUser),
         comments: comments.filter(c => c.post_id === p.id).slice(-20).map(c => ({ id: c.id, author: toPublicUser({ ...c, id: c.author_id }), text: c.text, createdAt: iso(c.created_at) }))
       })),
       nextBefore: posts.length === 20 ? iso(posts[posts.length - 1]!.created_at) : null
@@ -73,7 +78,7 @@ export default async function feedRoutes(app: FastifyInstance) {
     }
     // Compte sous avertissement : la publication attend la validation de la modération
     const status = u.warnedAt ? 'pending' : 'visible';
-    const [p] = await sql<Row[]>`insert into posts (author_id, text, visibility, goal_id, status) values (${u.id}, ${body.text}, ${body.visibility}, ${body.goalId}, ${status}) returning id`;
+    const [p] = await sql<Row[]>`insert into posts (author_id, text, visibility, goal_id, status, kind) values (${u.id}, ${body.text}, ${body.visibility}, ${body.goalId}, ${status}, ${body.kind}) returning id`;
     if (status === 'pending') await notifyAdmins(sql, `Nouvelle publication de ${u.displayName} à valider.`);
     reply.status(201);
     return { id: p!.id, status };

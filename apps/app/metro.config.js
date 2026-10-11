@@ -1,4 +1,4 @@
-// Configuration Metro pour le monorepo : l'app importe le paquet partagé @pepsgoal/shared
+// Configuration Metro pour le monorepo : les dépendances sont installées à la racine (workspaces npm)
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 

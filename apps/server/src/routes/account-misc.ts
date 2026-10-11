@@ -2,12 +2,12 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { FastifyInstance } from 'fastify';
-import { AppealBody } from '@pepsgoal/shared';
+import { AppealBody, NotifyBody } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { badRequest, conflict, forbidden } from '../lib/errors.js';
-import { isBanned, me, requireSocial, requireUser } from '../lib/guards.js';
+import { areFriends, isBanned, isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
 import { iso, type Row } from '../lib/mappers.js';
-import { notifyAdmins } from '../lib/notify.js';
+import { notify, notifyAdmins } from '../lib/notify.js';
 import { currentMaintenance } from '../lib/maintenance.js';
 import { env } from '../env.js';
 
@@ -32,6 +32,26 @@ export default async function miscRoutes(app: FastifyInstance) {
 
   app.post('/v1/notifications/read-all', { preHandler: requireUser }, async req => {
     await sql`update notifications set read_at = now() where user_id = ${me(req).id} and read_at is null`;
+    return { ok: true };
+  });
+
+  /**
+   * Notification vers une autre personne (défi de groupe, duel, binôme, rappel d'un ami) :
+   * uniquement entre amis ou membres d'un même objectif, et jamais si l'un a bloqué l'autre.
+   */
+  app.post('/v1/notify', { preHandler: requireUser, config: { rateLimit: { max: 60, timeWindow: '1 hour' } } }, async (req, reply) => {
+    const b = NotifyBody.parse(req.body);
+    const u = me(req);
+    if (b.to === u.id) return { ok: true };
+    const [shared] = await sql`
+      select 1 from goals g where g.deleted_at is null and (
+        (g.owner_id = ${u.id} and (g.buddy_id = ${b.to} or exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${b.to})))
+        or (g.owner_id = ${b.to} and (g.buddy_id = ${u.id} or exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id})))
+        or (exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id}) and exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${b.to}))
+      ) limit 1`;
+    if ((!shared && !(await areFriends(u.id, b.to))) || (await isBlocked(u.id, b.to))) throw forbidden('Notification impossible vers ce compte.');
+    await notify(sql, b.to, b.type, b.text, b.goalId ? { goalId: b.goalId, from: u.id } : { from: u.id });
+    reply.status(201);
     return { ok: true };
   });
 

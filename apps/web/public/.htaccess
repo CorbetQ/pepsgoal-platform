@@ -1,0 +1,31 @@
+# PepsGoal (version web) sur un hébergement Apache / LiteSpeed (hébergement web Hostinger).
+# Ce fichier est copié tel quel dans apps/web/dist par apps/web/build.mjs.
+
+# HTTPS obligatoire
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Application d'une seule page : toute adresse inconnue renvoie index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+DirectoryIndex index.html
+Options -Indexes
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=31536000"
+  # index.html jamais mis en cache (les nouvelles versions arrivent tout de suite) ; polices gardées un an, icônes un jour
+  <FilesMatch "^(index\.html|manifest\.webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.woff2$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.png$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>

@@ -21,6 +21,8 @@ export const users = pgTable('users', {
   settings: jsonb('settings').$type<Record<string, unknown>>().notNull().default({}),
   settingsRev: bigint('settings_rev', { mode: 'number' }).notNull().default(0),
   freezes: integer('freezes').notNull().default(0),
+  /** Cadeau de bienvenue (5 gels de série à la fin du tutoriel) : accordé une seule fois par compte. */
+  welcomeBonusAt: ts('welcome_bonus_at'),
   warnedAt: ts('warned_at'),
   warnReason: text('warn_reason'),
   commentsRestricted: boolean('comments_restricted').notNull().default(false),

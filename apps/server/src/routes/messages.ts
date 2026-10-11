@@ -35,7 +35,7 @@ export default async function messageRoutes(app: FastifyInstance) {
         and created_at < ${before ?? new Date(Date.now() + 60_000).toISOString()}
       order by created_at desc limit 50`;
     await sql`update messages set read_at = now() where sender_id = ${id} and recipient_id = ${u.id} and read_at is null`;
-    return rows.reverse().map(m => ({ id: m.id, mine: m.sender_id === u.id, text: m.text, e2e: m.e2e, official: m.official, tag: m.tag, createdAt: iso(m.created_at) }));
+    return rows.reverse().map(m => ({ id: m.id, mine: m.sender_id === u.id, text: m.text, e2e: m.e2e, official: m.official, tag: m.tag, createdAt: iso(m.created_at), read: !!m.read_at }));
   });
 
   app.post('/v1/conversations/:id', { preHandler: requireSocial, config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req, reply) => {

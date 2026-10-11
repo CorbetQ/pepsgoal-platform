@@ -15,6 +15,13 @@
       "when": 1791705779259,
       "tag": "0001_e2e_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791724726435,
+      "tag": "0002_welcome_bonus",
+      "breakpoints": true
     }
   ]
 }

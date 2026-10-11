@@ -6,11 +6,13 @@
   "workspaces": [
     "packages/*",
     "apps/server",
+    "apps/web",
     "apps/app"
   ],
   "scripts": {
     "dev:server": "npm run dev -w apps/server",
     "dev:app": "npm run start -w apps/app",
+    "build:web": "node apps/web/build.mjs",
     "db:generate": "npm run db:generate -w apps/server",
     "db:migrate": "npm run db:migrate -w apps/server",
     "typecheck": "npm run typecheck -w packages/shared && npm run typecheck -w apps/server",

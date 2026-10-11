@@ -12,4 +12,5 @@ apps/app/android/
 # Version web compilée (générée par deploy/web-build.sh)
 deploy/app/*
 !deploy/app/.gitkeep
-apps/app/dist-web/
+# Interface embarquée dans l'app mobile (générée par « node apps/web/build.mjs »)
+apps/app/src/webapp.generated.ts

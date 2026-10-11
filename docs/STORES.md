@@ -9,7 +9,7 @@ Les builds et l'envoi aux stores passent par **EAS** (service d'Expo) : `npm run
 | Compte Apple Developer (99 $/an) et compte Google Play Console (25 $ une fois) | — | à créer |
 | Identifiants de l'app : `fr.pepsgoal.app` (iOS et Android, d'après le domaine pepsgoal.fr) | `apps/app/app.json` | fait (définitif après la première publication) |
 | Icône 1024×1024, écran de démarrage, icône adaptative Android, favicon | `apps/app/assets/` + `app.json` (`icon`, `splash`, `android.adaptiveIcon`, `web.favicon`) | fait (flamme PepsGoal) |
-| Adresse de l'API de production | `apps/app/eas.json` (`EXPO_PUBLIC_API_URL`) | `https://api.pepsgoal.fr` (test : `https://staging-api.pepsgoal.fr`) |
+| Adresse de l'API de production | `apps/app/eas.json` (`EXPO_PUBLIC_API_URL`), sinon celle du build web (`PEPSGOAL_API`) | `https://api.pepsgoal.fr` (test : `https://staging-api.pepsgoal.fr`) |
 | Identifiant App Store Connect | — | automatique : `eas submit` retrouve ou crée la fiche App Store à partir de l'identifiant de l'app (connexion avec l'identifiant Apple) |
 | Captures d'écran (6,7" et 5,5" iPhone, téléphone Android, tablette si prise en charge) | consoles des stores | à produire |
 | Pages publiques : CGU, mentions légales, charte de confidentialité (URL accessibles sans compte) | site web | textes prêts (éditeur : Quentin CORBET, Angers, quentin-corbet@outlook.fr), à publier sur `https://pepsgoal.fr/cgu`, `/mentions-legales` et `/confidentialite` |

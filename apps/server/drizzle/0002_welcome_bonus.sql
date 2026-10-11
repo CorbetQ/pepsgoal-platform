@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "welcome_bonus_at" timestamp with time zone;
