@@ -74,5 +74,6 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | GET | `/admin/appeals?status=` · POST `/admin/appeals/:id/accept` · `refuse` | Contestations |
 | GET / POST | `/admin/maintenance` · POST `/admin/maintenance/end` | Maintenances |
 | GET / POST | `/admin/announcements` | Annonces de PepsGoal Officiel : liste / publier |
+| GET | `/admin/official` | Compte PepsGoal Officiel (expéditeur des annonces) |
 | DELETE | `/admin/announcements/:id` | Retirer une annonce du message de bienvenue des nouveaux comptes |
 | GET | `/admin/modlog` | Journal de modération |

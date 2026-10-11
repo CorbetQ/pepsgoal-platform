@@ -452,6 +452,8 @@
       api('GET', '/v1/admin/users'), api('GET', '/v1/admin/posts?scope=pending'), api('GET', '/v1/admin/posts?scope=reported'), api('GET', '/v1/admin/posts?scope=recent'),
       api('GET', '/v1/admin/appeals?status=pending'), api('GET', '/v1/admin/appeals?status=done'), api('GET', '/v1/admin/modlog'), api('GET', '/v1/admin/maintenance'), api('GET', '/v1/admin/announcements')
     ]);
+    // Le formulaire d'annonces a besoin du compte Officiel, même sans conversation avec lui
+    try { upsertUser(await api('GET', '/v1/admin/official')); } catch (e) { /* serveur plus ancien : formulaire masqué */ }
     const mine = meId();
     for (const x of users) {
       const u = upsertUser(x, { createdAt: msOf(x.createdAt) || Date.now(), noComments: !!x.commentsRestricted });

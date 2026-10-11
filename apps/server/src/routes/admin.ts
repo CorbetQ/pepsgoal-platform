@@ -240,6 +240,13 @@ export default async function adminRoutes(app: FastifyInstance) {
     return rows.map(a => ({ id: a.id, text: a.text, tag: a.tag, createdAt: iso(a.created_at) }));
   });
 
+  /** Compte PepsGoal Officiel, rattaché aux admins (expéditeur des annonces et des messages de modération). */
+  app.get('/v1/admin/official', pre, async () => {
+    const [u] = await sql<Row[]>`select * from users where role = 'official' and deleted_at is null limit 1`;
+    if (!u) throw notFound('Compte PepsGoal Officiel introuvable.');
+    return toPublicUser(u);
+  });
+
   app.delete('/v1/admin/announcements/:id', pre, async req => {
     const { id } = params(req.params);
     await sql`update announcements set for_new_users = false where id = ${id}`;
