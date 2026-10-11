@@ -1,13 +1,14 @@
 import { useCallback, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
-import type { PublicUser } from '@pepsgoal/shared';
+import { Alert, Pressable, Text, View } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import type { E2EPayload, PublicUser } from '@pepsgoal/shared';
+import { decrypt } from '../../src/e2e/client';
 import { api } from '../../src/lib/api';
 import { Button, Card, Field, Muted, Screen, Title } from '../../src/ui/kit';
 import { useTheme } from '../../src/ui/theme';
 
 interface Friends { friends: { friendshipId: string; user: PublicUser }[]; incoming: { friendshipId: string; user: PublicUser }[]; outgoing: { friendshipId: string; user: PublicUser }[] }
-interface Conversation { peer: PublicUser; lastText: string; unread: number }
+interface Conversation { peer: PublicUser; lastText: string | null; lastE2e: E2EPayload | null; unread: number; preview?: string }
 
 /** Amis, demandes et conversations (dont PepsGoal Officiel, épinglé en premier). Nécessite un compte et une connexion. */
 export default function FriendsScreen() {
@@ -20,7 +21,10 @@ export default function FriendsScreen() {
   const load = useCallback(async () => {
     try {
       setData(await api<Friends>('GET', '/v1/friends'));
-      setConvs(await api<Conversation[]>('GET', '/v1/conversations'));
+      const list = await api<Conversation[]>('GET', '/v1/conversations');
+      // Aperçus déchiffrés sur l'appareil ; « message chiffré » si la clé n'est pas encore là
+      for (const c of list) c.preview = c.lastE2e ? ((await decrypt(c.lastE2e)) ?? '🔒 Message chiffré') : c.lastText ?? '';
+      setConvs(list);
     } catch { /* hors ligne : l'onglet sera masqué */ }
   }, []);
   useFocusEffect(useCallback(() => { void load(); }, [load]));
@@ -38,7 +42,14 @@ export default function FriendsScreen() {
       {convs.length > 0 && (
         <Card>
           <Text style={{ color: t.ink, fontWeight: '900' }}>Messages</Text>
-          {convs.map(c => <Muted key={c.peer.id}>{c.peer.role === 'official' ? '✓ ' : ''}{c.peer.displayName}{c.unread ? ` (${c.unread})` : ''} : {c.lastText}</Muted>)}
+          {convs.map(c => (
+            <Pressable key={c.peer.id} accessibilityRole="button" accessibilityLabel={`Conversation avec ${c.peer.displayName}${c.unread ? `, ${c.unread} non lus` : ''}`}
+              onPress={() => router.push({ pathname: '/chat/[id]', params: { id: c.peer.id, name: c.peer.displayName, official: c.peer.role === 'official' ? '1' : '0' } })}
+              style={{ paddingVertical: 6 }}>
+              <Text style={{ color: t.ink, fontWeight: c.unread ? '900' : '700' }}>{c.peer.role === 'official' ? '✓ ' : '🔒 '}{c.peer.displayName}{c.unread ? ` (${c.unread})` : ''}</Text>
+              <Muted>{(c.preview ?? '').slice(0, 80)}</Muted>
+            </Pressable>
+          ))}
         </Card>
       )}
       {data.incoming.length > 0 && (
@@ -59,6 +70,7 @@ export default function FriendsScreen() {
         {data.friends.map(f => (
           <View key={f.friendshipId} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Text style={{ color: t.ink, flex: 1 }}>{f.user.displayName} · @{f.user.username}</Text>
+            <Button label="Écrire" kind="ghost" onPress={() => router.push({ pathname: '/chat/[id]', params: { id: f.user.id, name: f.user.displayName, official: '0' } })} />
             <Button label="Bloquer" kind="danger" onPress={() => block(f.user)} />
           </View>
         ))}

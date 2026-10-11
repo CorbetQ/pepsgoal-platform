@@ -1,5 +1,6 @@
 import { API_URL } from './config';
 import { secure } from './secure';
+import { reportServerUnreachable } from '../state/network';
 
 export class ApiError extends Error {
   constructor(public status: number, public code: string, message: string) { super(message); }
@@ -47,8 +48,10 @@ export async function api<T>(method: string, path: string, body?: unknown, retry
       body: body === undefined ? undefined : JSON.stringify(body)
     });
   } catch {
+    reportServerUnreachable();
     throw new ApiError(0, 'offline', 'Connexion impossible au serveur PepsGoal.');
   } finally { clearTimeout(timer); }
+  if (res.status === 502 || res.status === 504) reportServerUnreachable();
   if (res.status === 401 && retry && (await refresh())) return api<T>(method, path, body, false);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(res.status, (data as any).error ?? 'error', (data as any).message ?? 'Erreur inattendue.');

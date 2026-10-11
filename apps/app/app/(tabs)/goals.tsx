@@ -7,7 +7,7 @@ import { createGoal, deleteGoal } from '../../src/db/repo';
 import { refreshPending } from '../../src/sync/engine';
 import { useSession } from '../../src/state/session';
 import { Button, Card, Field, Muted, Screen, Title } from '../../src/ui/kit';
-import { typeColor, useTheme } from '../../src/ui/theme';
+import { useTheme, useTypeColor } from '../../src/ui/theme';
 
 const DAYS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 const DAY_NAMES = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
@@ -19,6 +19,7 @@ const DAY_NAMES = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 
  */
 export default function Goals() {
   const t = useTheme();
+  const typeColor = useTypeColor();
   const { userId, dataVersion } = useSession();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [title, setTitle] = useState('');

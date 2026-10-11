@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { E2EPayload } from './e2e.js';
 
 /* ---------- valeurs de base ---------- */
 export const Id = z.string().uuid();
@@ -115,7 +116,8 @@ export type PublicUser = z.infer<typeof PublicUser>;
 /* ---------- social ---------- */
 export const PostBody = z.object({ text: z.string().trim().min(1).max(500), visibility: z.enum(['friends', 'public']), goalId: Id.nullable().default(null) });
 export const CommentBody = z.object({ text: z.string().trim().min(1).max(280) });
-export const MessageBody = z.object({ text: z.string().trim().min(1).max(500) });
+/** Messages privés : uniquement chiffrés de bout en bout (voir e2e.ts). */
+export const MessageBody = z.object({ e2e: E2EPayload });
 export const ReportBody = z.object({ reason: z.enum(['spam', 'hate', 'harass', 'other']) });
 export const StoryBody = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('photo'), mediaUrl: z.string().url().max(500), text: z.string().max(140).default('') }),

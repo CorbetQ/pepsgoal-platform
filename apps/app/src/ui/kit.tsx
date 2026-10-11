@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNetwork } from '../state/network';
 import { useSession } from '../state/session';
@@ -25,12 +25,12 @@ export function StatusBanner() {
   else if (maintenance) text = maintenance.mode === 'full' ? `Maintenance en cours. ${maintenance.message}` : 'Maintenance : fonctions sociales en lecture seule.';
   else if (mode === 'guest') text = 'Sans compte : données sur cet appareil uniquement, sans synchronisation ni fonctions sociales.';
   if (!text) return null;
-  return <View style={[styles.banner, { borderColor: t.line }]} accessibilityRole="alert"><Text style={{ color: t.ink2, fontSize: 13 }}>{text}</Text></View>;
+  return <View style={[styles.banner, { borderColor: t.line, borderWidth: t.borderWidth }]} accessibilityRole="alert"><Text style={{ color: t.ink2, fontSize: 13 }}>{text}</Text></View>;
 }
 
 export function Card({ children, style }: { children: ReactNode; style?: ViewStyle }) {
   const t = useTheme();
-  return <View style={[styles.card, { backgroundColor: t.card, borderColor: t.line }, style]}>{children}</View>;
+  return <View style={[styles.card, { backgroundColor: t.card, borderColor: t.line, borderWidth: t.borderWidth }, style]}>{children}</View>;
 }
 
 export function Title({ children }: { children: ReactNode }) {
@@ -49,7 +49,7 @@ export function Button({ label, onPress, kind = 'primary', busy, disabled }: { l
   const color = kind === 'primary' ? accent.onAccent : kind === 'danger' ? t.danger : t.ink;
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} disabled={disabled || busy} onPress={onPress}
-      style={({ pressed }) => [styles.btn, { backgroundColor: bg, borderColor: kind === 'primary' ? bg : t.line, opacity: disabled ? 0.5 : pressed ? 0.85 : 1 }]}>
+      style={({ pressed }) => [styles.btn, { backgroundColor: bg, borderColor: kind === 'primary' ? bg : t.line, borderWidth: t.borderWidth, opacity: disabled ? 0.5 : pressed ? 0.85 : 1 }]}>
       {busy ? <ActivityIndicator color={color} /> : <Text style={{ color, fontWeight: '800', fontSize: 15 }}>{label}</Text>}
     </Pressable>
   );
@@ -61,8 +61,23 @@ export function Field(props: TextInputProps & { label: string }) {
     <View style={{ gap: 6 }}>
       <Text style={{ color: t.ink2, fontWeight: '800', fontSize: 13 }}>{props.label}</Text>
       <TextInput placeholderTextColor={t.ink3} {...props} accessibilityLabel={props.label}
-        style={[styles.input, { color: t.ink, borderColor: t.line, backgroundColor: t.card }]} />
+        style={[styles.input, { color: t.ink, borderColor: t.line, backgroundColor: t.card, borderWidth: t.borderWidth + 0.5 }]} />
     </View>
+  );
+}
+
+/** Interrupteur avec titre et explication, lisible par les lecteurs d'écran. */
+export function Toggle({ label, hint, value, onChange }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void }) {
+  const t = useTheme();
+  return (
+    <Pressable accessibilityRole="switch" accessibilityState={{ checked: value }} aria-checked={value} accessibilityLabel={label} accessibilityHint={hint}
+      onPress={() => onChange(!value)} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 48 }}>
+      <View style={{ flex: 1 }}>
+        <Text style={{ color: t.ink, fontWeight: '800', fontSize: 15 }}>{label}</Text>
+        {!!hint && <Text style={{ color: t.ink2, fontSize: 13 }}>{hint}</Text>}
+      </View>
+      <Switch value={value} onValueChange={onChange} trackColor={{ true: accent.flame, false: t.ink3 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden aria-hidden />
+    </Pressable>
   );
 }
 

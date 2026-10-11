@@ -15,7 +15,7 @@ L'hébergement web mutualisé (Premium, Business, Cloud) ne convient pas : il ne
    npm install
    git init
    git add .
-   git commit -m "PepsGoal 1.0.0"
+   git commit -m "PepsGoal 1.1.0"
    git branch -M main
    git remote add origin https://github.com/TON-COMPTE/pepsgoal-platform.git
    git push -u origin main
@@ -81,7 +81,7 @@ Vérifie :
 ```bash
 curl https://api.pepsgoal.fr/v1/status
 ```
-La réponse attendue : `{"ok":true,…,"minAppVersion":"1.0.0"}`. Ouvre aussi https://pepsgoal.fr dans un navigateur.
+La réponse attendue : `{"ok":true,…,"minAppVersion":"1.1.0"}`. Ouvre aussi https://pepsgoal.fr dans un navigateur.
 
 Ensuite, connecte-toi dans l'app avec `admin` et le mot de passe de `ADMIN_BOOTSTRAP_PASSWORD`, puis change-le (route `POST /v1/auth/password`, voir docs/API.md).
 
@@ -89,7 +89,7 @@ Ensuite, connecte-toi dans l'app avec `admin` et le mot de passe de `ADMIN_BOOTS
 
 Dépose les pages dans `deploy/site/` : `cgu.html`, `mentions-legales.html` et `confidentialite.html`. Elles seront servies sur `https://pepsgoal.fr/cgu`, etc.
 Les stores exigent ces adresses, et l'app les ouvre depuis Profil.
-Dans les mentions légales de la version mobile, indique l'hébergeur du serveur : Hostinger (raison sociale et adresse figurant dans ton contrat ou sur hostinger.fr).
+Hébergeur à indiquer dans les mentions légales (déjà fait dans l'app web) : **Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre** (www.hostinger.fr). Vérifie ces coordonnées et ajoute le numéro de téléphone figurant sur ta facture Hostinger : la loi (LCEN) demande le téléphone de l'hébergeur.
 
 ## 7. Sauvegardes
 

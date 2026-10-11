@@ -7,7 +7,7 @@ import { toggleDone } from '../../src/db/repo';
 import { refreshPending } from '../../src/sync/engine';
 import { useSession } from '../../src/state/session';
 import { Card, Muted, Screen, Title } from '../../src/ui/kit';
-import { accent, typeColor, useTheme } from '../../src/ui/theme';
+import { accent, useTheme, useTypeColor } from '../../src/ui/theme';
 
 /** Objectifs à valider aujourd'hui : fonctionne entièrement hors ligne. */
 function dueToday(g: Goal): boolean {
@@ -19,6 +19,7 @@ function dueToday(g: Goal): boolean {
 
 export default function Today() {
   const t = useTheme();
+  const typeColor = useTypeColor();
   const { userId, dataVersion } = useSession();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [checkins, setCheckins] = useState<Checkin[]>([]);

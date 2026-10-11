@@ -50,7 +50,7 @@ synchroniser plusieurs appareils, à sauvegarder et à faire fonctionner les fon
 - **Personnel, synchronisé** : `goals` (14 types, réglages propres au type dans `data`), `checkins`, `goal_groups`, réglages du compte (`users.settings`).
   Chaque ligne porte `rev` (séquence `sync_rev_seq`) et `deleted_at` (suppression transmise aux autres appareils).
 - **Partagé** : `goal_members` (défis de groupe et duels), binôme de motivation (`goals.buddy_id`, validations `pending`).
-- **Social** : `friendships`, `blocks`, `posts`, `post_likes`, `cheer_credits` (gels de série), `comments`, `stories` (expirent après 24 h), `story_views`, `messages`, `notifications`.
+- **Social** : `friendships`, `blocks`, `posts`, `post_likes`, `cheer_credits` (gels de série), `comments`, `stories` (expirent après 24 h), `story_views`, `messages` (chiffrés de bout en bout, colonne `e2e` ; seul PepsGoal Officiel écrit en clair), `e2e_devices`, `e2e_pair_keys`, `e2e_envelopes` (voir E2E.md), `notifications`.
 - **Modération** : `reports`, `appeals`, `mod_actions` (journal), `maintenance`, `announcements` ; colonnes de sanction sur `users` (`warned_at`, `ban_until`, `ban_permanent`, `comments_restricted`).
 
 Les types d'objectifs et leurs réglages sont définis une seule fois dans `packages/shared/src/schemas.ts` (`GoalDataByType`)
@@ -70,7 +70,7 @@ et validés à l'identique par le serveur et l'app.
 ## Écrans à porter depuis le prototype
 
 L'app couvre aujourd'hui : connexion, inscription, mode sans compte, création d'un compte depuis le mode sans compte,
-aujourd'hui (validation hors ligne + série), objectifs (routine et abstinence), feed, amis, messages (lecture), profil
+aujourd'hui (validation hors ligne + série), objectifs (routine et abstinence), feed, amis, messagerie chiffrée de bout en bout, profil
 (état de la synchronisation), modération (vue d'ensemble, publications à valider, signalements).
 
 À porter depuis `apps/web-legacy/pepsgoal.html`, dans cet ordre conseillé :

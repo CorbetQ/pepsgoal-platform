@@ -8,6 +8,13 @@
       "when": 1791645759231,
       "tag": "0000_careful_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791705779259,
+      "tag": "0001_e2e_messages",
+      "breakpoints": true
     }
   ]
 }

@@ -18,6 +18,7 @@ import storyRoutes from './routes/stories.js';
 import messageRoutes from './routes/messages.js';
 import miscRoutes from './routes/account-misc.js';
 import adminRoutes from './routes/admin.js';
+import e2eRoutes from './routes/e2e.js';
 
 export async function buildApp() {
   const app = Fastify({ logger: { level: env.NODE_ENV === 'production' ? 'info' : 'debug', redact: ['req.headers.authorization'] }, trustProxy: true });
@@ -43,7 +44,7 @@ export async function buildApp() {
     return reply.status(500).send({ error: 'server', message: 'Erreur interne, réessaie plus tard.' });
   });
 
-  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, miscRoutes, adminRoutes]) {
+  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
     await app.register(routes);
   }
   return app;

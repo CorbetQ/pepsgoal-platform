@@ -175,7 +175,10 @@ export const messages = pgTable('messages', {
   id: uuid('id').primaryKey().defaultRandom(),
   senderId: uuid('sender_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   recipientId: uuid('recipient_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  text: text('text').notNull(),
+  /** Texte en clair : uniquement les messages du compte PepsGoal Officiel. */
+  text: text('text'),
+  /** Messages entre amis : chiffrés de bout en bout ({ v, keyId, nonce, ct }), illisibles par le serveur. */
+  e2e: jsonb('e2e').$type<{ v: number; keyId: string; nonce: string; ct: string }>(),
   official: boolean('official').notNull().default(false),
   tag: text('tag'),
   auto: boolean('auto').notNull().default(false),
@@ -242,3 +245,32 @@ export const announcements = pgTable('announcements', {
   createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
   createdAt: ts('created_at').notNull().defaultNow()
 });
+
+/* ---------- chiffrement de bout en bout des messages privés (docs/E2E.md) ---------- */
+/** Clé publique X25519 d'un appareil connecté ; la clé secrète reste sur l'appareil. */
+export const e2eDevices = pgTable('e2e_devices', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  publicKey: text('public_key').notNull(),
+  createdAt: ts('created_at').notNull().defaultNow(),
+  lastSeenAt: ts('last_seen_at').notNull().defaultNow()
+}, t => ({ userIdx: index('e2e_devices_user_idx').on(t.userId) }));
+
+/** Version de clé d'une paire d'amis (user_a < user_b). La clé elle-même n'est jamais stockée en clair. */
+export const e2ePairKeys = pgTable('e2e_pair_keys', {
+  keyId: uuid('key_id').primaryKey(),
+  userA: uuid('user_a').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userB: uuid('user_b').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({ pairIdx: index('e2e_pair_keys_pair_idx').on(t.userA, t.userB, t.createdAt) }));
+
+/** Clé de paire chiffrée pour un appareil précis (crypto_box). */
+export const e2eEnvelopes = pgTable('e2e_envelopes', {
+  keyId: uuid('key_id').notNull().references(() => e2ePairKeys.keyId, { onDelete: 'cascade' }),
+  deviceId: uuid('device_id').notNull().references(() => e2eDevices.id, { onDelete: 'cascade' }),
+  senderPublicKey: text('sender_public_key').notNull(),
+  nonce: text('nonce').notNull(),
+  box: text('box').notNull(),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.keyId, t.deviceId] }) }));

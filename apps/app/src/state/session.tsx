@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppState } from 'react-native';
 import type { PublicUser } from '@pepsgoal/shared';
 import { api, tokens } from '../lib/api';
@@ -6,6 +6,7 @@ import { SYNC_INTERVAL_MS } from '../lib/config';
 import { store } from '../db/local';
 import { newId } from '../db/repo';
 import { refreshPending, subscribeSync, syncNow } from '../sync/engine';
+import { ensureDevice, forgetDevice, shareMissingKeys } from '../e2e/client';
 import { useNetwork } from './network';
 
 type Mode = 'loading' | 'signedOut' | 'guest' | 'account';
@@ -19,6 +20,8 @@ interface SessionState {
   dataVersion: number;
   /** Fonctions sociales visibles : compte connecté, en ligne, pas de maintenance complète. */
   socialAvailable: boolean;
+  /** Se déconnecter ou changer de compte : uniquement en ligne (rien ne doit rester bloqué sur l'appareil). */
+  canSwitchAccount: boolean;
   login(username: string, password: string): Promise<void>;
   register(username: string, displayName: string, password: string): Promise<void>;
   continueAsGuest(): Promise<void>;
@@ -43,6 +46,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [dataVersion, setDataVersion] = useState(0);
   const bump = useCallback(() => setDataVersion(v => v + 1), []);
+  const userRef = useRef<string | null>(null);
+  userRef.current = mode === 'account' ? userId : null;
 
   // Démarrage : la base locale d'abord, l'interface fonctionne avant toute réponse du réseau
   useEffect(() => {
@@ -60,7 +65,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     tokens.onLost(() => { setMode('signedOut'); setUser(null); });
     // Après chaque synchronisation réussie, les écrans relisent la base locale (changements venus d'autres appareils)
     let prev = 'idle';
-    const unsub = subscribeSync(s => { if (prev === 'syncing' && s.status === 'idle') bump(); prev = s.status; });
+    const unsub = subscribeSync(s => {
+      if (prev === 'syncing' && s.status === 'idle') {
+        bump();
+        // Clés de conversation à transmettre à un appareil arrivé depuis (le sien ou celui d'un ami)
+        if (userRef.current) void shareMissingKeys(userRef.current).catch(() => undefined);
+      }
+      prev = s.status;
+    });
     return unsub;
   }, [bump]);
 
@@ -86,12 +98,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     await store.setMeta('user', JSON.stringify(res.user));
     setUser(res.user); setUserId(res.user.id); setMode('account');
     bump();
+    void ensureDevice(res.user.id).catch(() => undefined);
     void syncNow();
   }, [bump]);
 
   const value = useMemo<SessionState>(() => ({
     mode, userId, user, dataVersion,
     socialAvailable: mode === 'account' && online && maintenance?.mode !== 'full',
+    canSwitchAccount: online,
     async login(username, password) { await signIn(await api<AuthResponse>('POST', '/v1/auth/login', { username: username.trim().toLowerCase(), password })); },
     async register(username, displayName, password) { await signIn(await api<AuthResponse>('POST', '/v1/auth/register', { username: username.trim().toLowerCase(), displayName, password, acceptTerms: true })); },
     async continueAsGuest() {
@@ -100,9 +114,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setUserId(id); setMode('guest');
     },
     async logout() {
+      if (!online) return { ok: false, reason: 'Hors ligne : tu ne peux pas te déconnecter ni changer de compte tant que le serveur PepsGoal n’est pas joignable.' };
       if (mode === 'account') {
         await syncNow();
         if ((await store.pendingCount()) > 0) return { ok: false, reason: 'Des modifications ne sont pas encore synchronisées. Connecte-toi à internet puis réessaie.' };
+        if (userId) await forgetDevice(userId, true);
         const r = await tokens.refreshToken();
         if (r) await api('POST', '/v1/auth/logout', { refreshToken: r }).catch(() => undefined);
         await tokens.clear();
@@ -113,6 +129,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     },
     async deleteAccount(password) {
       await api('DELETE', '/v1/me', { password });
+      if (userId) await forgetDevice(userId, false);
       await tokens.clear();
       await store.wipe();
       setUser(null); setUserId(null); setMode('signedOut');

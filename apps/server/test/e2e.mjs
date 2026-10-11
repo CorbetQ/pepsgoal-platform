@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { decryptMessage, encryptMessage, newDeviceKeys, newPairKey, unwrapPairKey, wrapPairKey } from '@pepsgoal/shared';
 // Scénario de bout en bout contre un serveur de développement vierge (mot de passe admin « password »).
 // Usage : API_URL=http://localhost:8080 [ADMIN_PASSWORD=…] node test/e2e.mjs
 const B = process.env.API_URL ?? 'http://localhost:8080';
@@ -67,9 +68,35 @@ await call('POST', `/v1/posts/${post.data.id}/like`, {}, Bt);
 await call('POST', `/v1/posts/${post.data.id}/comments`, { text: 'Bravo !' }, Bt);
 const feedB = await call('GET', '/v1/feed?tab=friends', null, Bt);
 ok(feedB.data.posts?.[0]?.likeCount === 1 && feedB.data.posts?.[0]?.comments.length === 1, 'feed : encouragement et commentaire', JSON.stringify(feedB.data).slice(0, 200));
-const msg = await call('POST', `/v1/conversations/${aId}`, { text: 'Salut Alice' }, Bt);
+// messagerie chiffrée de bout en bout : clés d'appareil, clé de paire, enveloppes
+const kA = newDeviceKeys(), kB = newDeviceKeys();
+const devA = (await call('POST', '/v1/e2e/devices', { publicKey: kA.publicKey }, A)).data.deviceId;
+const devB = (await call('POST', '/v1/e2e/devices', { publicKey: kB.publicKey }, Bt)).data.deviceId;
+const pk = newPairKey(), keyId = randomUUID();
+const upKey = await call('POST', `/v1/e2e/peers/${bId}/keys`, { keyId, envelopes: [
+  { deviceId: devA, senderDeviceId: devA, ...wrapPairKey(pk, kA.publicKey, kA.secretKey) },
+  { deviceId: devB, senderDeviceId: devA, ...wrapPairKey(pk, kB.publicKey, kA.secretKey) }] }, A);
+const stB = await call('GET', `/v1/e2e/peers/${aId}?deviceId=${devB}`, null, Bt);
+const envB = stB.data.keys?.[0]?.envelope;
+ok(upKey.status === 201 && envB && unwrapPairKey(envB, envB.senderPublicKey, kB.secretKey) === pk, 'chiffrement : cle de paire transmise a l’ami par enveloppe', JSON.stringify(stB.data).slice(0, 200));
+const plain = await call('POST', `/v1/conversations/${aId}`, { text: 'Salut Alice' }, Bt);
+ok(plain.status === 400, 'chiffrement : message en clair refuse');
+const msg = await call('POST', `/v1/conversations/${aId}`, { e2e: encryptMessage('Salut Alice 🔥', pk, keyId) }, Bt);
 const convA = await call('GET', `/v1/conversations/${bId}`, null, A);
-ok(msg.status === 201 && convA.data.some(m => m.text === 'Salut Alice'), 'messagerie entre amis');
+const lastA = convA.data?.find(m => m.e2e);
+ok(msg.status === 201 && lastA && lastA.text === null && decryptMessage(lastA.e2e, pk) === 'Salut Alice 🔥', 'messagerie chiffree entre amis', JSON.stringify(convA.data).slice(0, 200));
+const listA = await call('GET', '/v1/conversations', null, A);
+ok(listA.data.some(c => c.lastE2e && c.lastText === null), 'liste des conversations : apercu chiffre');
+const badKey = await call('POST', `/v1/conversations/${aId}`, { e2e: encryptMessage('x', pk, randomUUID()) }, Bt);
+ok(badKey.status === 403, 'chiffrement : cle inconnue refusee');
+const devA2keys = newDeviceKeys();
+const devA2 = (await call('POST', '/v1/e2e/devices', { publicKey: devA2keys.publicKey }, A)).data.deviceId;
+const pend = await call('GET', `/v1/e2e/pending?deviceId=${devA}`, null, A);
+const miss = pend.data.find(x => x.keyId === keyId)?.missingDevices.find(d => d.id === devA2);
+await call('POST', `/v1/e2e/peers/${bId}/keys`, { keyId, envelopes: [{ deviceId: devA2, senderDeviceId: devA, ...wrapPairKey(pk, miss?.publicKey ?? kA.publicKey, kA.secretKey) }] }, A);
+const stA2 = await call('GET', `/v1/e2e/peers/${bId}?deviceId=${devA2}`, null, A);
+const envA2 = stA2.data.keys?.[0]?.envelope;
+ok(miss && envA2 && unwrapPairKey(envA2, envA2.senderPublicKey, devA2keys.secretKey) === pk, 'chiffrement : nouvel appareil recoit la cle par re-chiffrement');
 const story = await call('POST', '/v1/stories', { kind: 'recap', data: { title: 'Ma semaine', n: 5, pts: 50, best: 3, reg: 70, persona: 'Metronome', e: 'x' }, text: 'Belle semaine' }, A);
 const storiesB = await call('GET', '/v1/stories', null, Bt);
 ok(story.status === 201 && storiesB.data.length === 1 && storiesB.data[0].unseen, 'story visible par un ami', JSON.stringify(story.data));
@@ -114,6 +141,8 @@ const ann = await call('POST', '/v1/admin/announcements', { text: 'Nouveau : les
 ok(ann.data.sent >= 2, 'annonce envoyee a tous les comptes', JSON.stringify(ann.data));
 const carol = await call('POST', '/v1/auth/register', { username: 'carol' + suffix, displayName: 'Carol', password: 'motdepasse3', acceptTerms: true });
 const convC = await call('GET', `/v1/conversations/${convB.data[0]?.peer.id}`, null, carol.data.accessToken);
+const carolKey = await call('POST', `/v1/e2e/peers/${aId}/keys`, { keyId: randomUUID(), envelopes: [{ deviceId: devA, senderDeviceId: devA, nonce: 'AAAA', box: 'AAAA' }] }, carol.data.accessToken);
+ok(carolKey.status === 403, 'chiffrement : impossible de deposer une cle sans etre ami');
 ok(convC.data.some(m => m.text.includes('stories')), 'nouveaux inscrits : recoivent les dernieres nouveautes');
 const delMe = await call('DELETE', '/v1/me', { password: 'motdepasse3' }, carol.data.accessToken);
 const carolLogin = await call('POST', '/v1/auth/login', { username: 'carol' + suffix, password: 'motdepasse3' });

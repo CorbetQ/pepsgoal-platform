@@ -28,7 +28,7 @@ Les builds et l'envoi aux stores passent par **EAS** (service d'Expo) : `npm run
 
 **Apple « App Privacy » / Google « Sécurité des données »** — données collectées, toutes liées au compte, non utilisées pour le suivi publicitaire :
 - Identifiants : nom d'utilisateur, identifiant de compte.
-- Contenus de l'utilisateur : objectifs et progression, publications, commentaires, messages, photos (stories, avatar).
+- Contenus de l'utilisateur : objectifs et progression, publications, commentaires, photos (stories, avatar). Les messages privés sont chiffrés de bout en bout : illisibles par l'éditeur, ils n'ont pas à être déclarés comme données collectées (règle Apple et Google pour le chiffrement de bout en bout).
 - Données d'usage : aucune mesure d'audience.
 - Données de diagnostic : aucune (à mettre à jour si un outil de rapport de plantage est ajouté).
 
@@ -36,6 +36,6 @@ Mode sans compte : aucune donnée ne quitte l'appareil.
 
 ## Avant chaque version
 
-1. Incrémenter `version` dans `app.json` (actuellement 1.0.0) (le numéro de build est géré automatiquement par EAS).
+1. Incrémenter `version` dans `app.json` (actuellement 1.1.0) (le numéro de build est géré automatiquement par EAS).
 2. Si l'API change de façon incompatible, augmenter `MIN_APP_VERSION` côté serveur pour inviter à mettre à jour.
 3. Tester hors ligne : mode avion, valider des objectifs, réactiver le réseau, vérifier la synchronisation.

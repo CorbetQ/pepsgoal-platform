@@ -46,7 +46,7 @@ npm run dev:app
 
 Au premier démarrage, le serveur crée le compte **PepsGoal Officiel** et le compte **admin**. En développement, le mot de passe admin est `password` (un avertissement s'affiche) ; en production, `ADMIN_BOOTSTRAP_PASSWORD` est obligatoire.
 
-Version 1.0.0 : aucune donnée de démonstration côté serveur ; chaque installation démarre vide.
+Version 1.1.0 : messagerie chiffrée de bout en bout, mode hors ligne automatique, options d'accessibilité. Aucune donnée de démonstration côté serveur ; chaque installation démarre vide.
 
 ## Vérifications
 
@@ -72,4 +72,6 @@ node apps/server/test/e2e.mjs
 | [docs/SYNC.md](docs/SYNC.md) | Mode hors ligne, file d'attente, conflits, passage « sans compte » → compte |
 | [docs/API.md](docs/API.md) | Liste des routes de l'API |
 | [docs/STORES.md](docs/STORES.md) | Publication App Store / Google Play : checklist et exigences |
+| [docs/E2E.md](docs/E2E.md) | Chiffrement de bout en bout des messages privés |
+| [docs/GUIDE-HOSTINGER.md](docs/GUIDE-HOSTINGER.md) · [docs/GUIDE-STORES.md](docs/GUIDE-STORES.md) | Guides pas à pas : serveur sur Hostinger, publication sur les stores |
 | [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) | Mise en production du serveur, sauvegardes |

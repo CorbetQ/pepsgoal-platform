@@ -9,7 +9,7 @@ const Env = z.object({
   PUBLIC_URL: z.string().url().default('http://localhost:8080'),
   MEDIA_DIR: z.string().default('./media'),
   ADMIN_BOOTSTRAP_PASSWORD: z.string().optional(),
-  MIN_APP_VERSION: z.string().default('1.0.0'),
+  MIN_APP_VERSION: z.string().default('1.1.0'),
   DB_POOL_MAX: z.coerce.number().int().min(1).max(100).default(10),
   // false derrière PgBouncer en mode « transaction » (pas de requêtes préparées nommées)
   DB_PREPARE: z.enum(['true', 'false']).default('true').transform(v => v === 'true')

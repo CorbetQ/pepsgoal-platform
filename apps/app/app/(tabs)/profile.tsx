@@ -5,13 +5,15 @@ import { APP_VERSION, LEGAL_URLS } from '../../src/lib/config';
 import { subscribeSync, syncNow, type SyncState } from '../../src/sync/engine';
 import { useNetwork } from '../../src/state/network';
 import { useSession } from '../../src/state/session';
-import { Button, Card, Field, Muted, Screen, Title } from '../../src/ui/kit';
+import { Button, Card, Field, Muted, Screen, Title, Toggle } from '../../src/ui/kit';
+import { useA11y } from '../../src/ui/prefs';
 import { useTheme } from '../../src/ui/theme';
 
 export default function Profile() {
   const t = useTheme();
-  const { mode, user, register, logout, deleteAccount } = useSession();
+  const { mode, user, register, logout, deleteAccount, canSwitchAccount } = useSession();
   const { online } = useNetwork();
+  const { prefs, set } = useA11y();
   const [sync, setSync] = useState<SyncState | null>(null);
   const [form, setForm] = useState({ name: '', username: '', password: '' });
   const [busy, setBusy] = useState(false);
@@ -72,7 +74,8 @@ export default function Profile() {
       )}
 
       {user?.role === 'admin' && <Button label="Modération" onPress={() => router.push('/moderation')} />}
-      <Button label={mode === 'guest' ? 'Quitter le mode sans compte' : 'Se déconnecter'} kind="ghost" onPress={signOut} />
+      <Button label={mode === 'guest' ? 'Quitter le mode sans compte' : 'Se déconnecter'} kind="ghost" onPress={signOut} disabled={!canSwitchAccount} />
+      {!canSwitchAccount && <Muted>Hors ligne : la déconnexion et le changement de compte reviendront avec la connexion au serveur.</Muted>}
 
       {mode === 'account' && user?.role !== 'admin' && (
         <Card>
@@ -87,6 +90,14 @@ export default function Profile() {
           )}
         </Card>
       )}
+
+      <Card>
+        <Text style={{ color: t.ink, fontWeight: '900' }} accessibilityRole="header">Accessibilité</Text>
+        <Toggle label="Contraste élevé" hint="Texte et bordures en noir et blanc purs." value={prefs.highContrast} onChange={v => set({ highContrast: v })} />
+        <Toggle label="Mode daltonien" hint="Couleurs des types d’objectifs distinguables avec tous les daltonismes courants." value={prefs.colorblind} onChange={v => set({ colorblind: v })} />
+        <Toggle label="Désactiver les animations" hint="Aucune transition entre les écrans." value={prefs.reduceMotion} onChange={v => set({ reduceMotion: v })} />
+        <Toggle label="Désactiver la transparence" hint="Cartes et fonds opaques." value={prefs.noTransparency} onChange={v => set({ noTransparency: v })} />
+      </Card>
 
       <Card>
         <Text style={{ color: t.ink, fontWeight: '900' }}>Informations légales</Text>

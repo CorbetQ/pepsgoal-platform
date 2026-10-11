@@ -59,7 +59,7 @@ export default async function meRoutes(app: FastifyInstance) {
     const goals = await sql<Row[]>`select * from goals where owner_id = ${id} and deleted_at is null`;
     const checkins = await sql<Row[]>`select * from checkins where user_id = ${id} and deleted_at is null`;
     const posts = await sql<Row[]>`select id, text, visibility, created_at from posts where author_id = ${id} and deleted_at is null`;
-    const messages = await sql<Row[]>`select sender_id, recipient_id, text, created_at from messages where sender_id = ${id} or recipient_id = ${id}`;
+    const messages = await sql<Row[]>`select sender_id, recipient_id, text, e2e, created_at from messages where sender_id = ${id} or recipient_id = ${id}`;
     return { exportedAt: new Date().toISOString(), profile: u, goals: goals.map(toGoal), checkins: checkins.map(toCheckin), posts, messages };
   });
 }

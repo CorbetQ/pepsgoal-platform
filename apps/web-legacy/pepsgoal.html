@@ -745,6 +745,36 @@ fieldset{border:0;padding:0;margin:0;min-width:0}
 .plus{position:absolute;font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--flame);text-shadow:0 2px 10px rgba(0,0,0,.25);animation:up 1s ease-out forwards;transform:translate(-50%,-50%)}
 @keyframes up{to{transform:translate(-50%,-160%);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ===== accessibilité (Paramètres › Accessibilité), réglages propres à l'appareil ===== */
+/* Animations désactivées */
+:root[data-a11y-motion="off"] *,:root[data-a11y-motion="off"] *::before,:root[data-a11y-motion="off"] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+/* Transparence désactivée : panneaux opaques, sans flou ni halos */
+:root[data-a11y-transp="off"]{--glass:#FFFFFF;--glass-strong:#FFFFFF;--glass-card:#FFFFFF;--glass-edge:#C9CBE0;--blob-op:0}
+@media (prefers-color-scheme: dark){:root[data-a11y-transp="off"]:not([data-theme="light"]){--glass:#1C1E4C;--glass-strong:#1C1E4C;--glass-card:#1C1E4C;--glass-edge:#33366B}}
+:root[data-theme="dark"][data-a11y-transp="off"]{--glass:#1C1E4C;--glass-strong:#1C1E4C;--glass-card:#1C1E4C;--glass-edge:#33366B}
+:root[data-a11y-transp="off"] *,:root[data-a11y-contrast="high"] *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+:root[data-a11y-transp="off"] .pf-stats div,:root[data-a11y-transp="off"] .st-card{background:var(--glass-strong);color:var(--ink)}
+/* Contraste élevé : noir et blanc purs, bordures pleines */
+:root[data-a11y-contrast="high"]{--bg:#FFFFFF;--ink:#000000;--ink-2:#000000;--ink-3:#1F1F1F;--glass:#FFFFFF;--glass-strong:#FFFFFF;--glass-card:#FFFFFF;--glass-edge:#000000;--line:#000000;--blob-op:0;--shadow:none;--focus:#0040C0;--scrim:rgba(0,0,0,.7)}
+@media (prefers-color-scheme: dark){:root[data-a11y-contrast="high"]:not([data-theme="light"]){--bg:#000000;--ink:#FFFFFF;--ink-2:#FFFFFF;--ink-3:#E8E8E8;--glass:#000000;--glass-strong:#000000;--glass-card:#000000;--glass-edge:#FFFFFF;--line:#FFFFFF;--focus:#FFD400}}
+:root[data-theme="dark"][data-a11y-contrast="high"]{--bg:#000000;--ink:#FFFFFF;--ink-2:#FFFFFF;--ink-3:#E8E8E8;--glass:#000000;--glass-strong:#000000;--glass-card:#000000;--glass-edge:#FFFFFF;--line:#FFFFFF;--focus:#FFD400}
+:root[data-a11y-contrast="high"] .glass,:root[data-a11y-contrast="high"] .sheet,:root[data-a11y-contrast="high"] .btn{border-width:2px}
+:root[data-a11y-contrast="high"] a,:root[data-a11y-contrast="high"] .linkbtn{text-decoration:underline}
+/* Mode daltonien : palette Okabe-Ito, distinguable avec deutéranopie, protanopie et tritanopie ; succès en bleu, alerte en vermillon */
+:root[data-a11y-cvd="on"]{
+  --t-goal:#E69F00;--t-goal-ink:#8A5A00;--t-deadline:#D55E00;--t-deadline-ink:#A04400;--t-routine:#56B4E9;--t-routine-ink:#0B5E8F;
+  --t-abst:#CC79A7;--t-abst-ink:#8E3F6B;--t-month:#F0E442;--t-month-ink:#6E6400;--t-limit:#F5B94D;--t-limit-ink:#8A5300;
+  --t-dur:#009E73;--t-dur-ink:#006B4E;--t-proj:#0072B2;--t-proj-ink:#005080;--t-meas:#E3A6C8;--t-meas-ink:#8E3F6B;
+  --t-group:#2BBF95;--t-group-ink:#006B4E;--t-duel:#F08C4A;--t-duel-ink:#9A4A10;--t-chal:#F7EE7F;--t-chal-ink:#6E6400;
+  --t-prog:#9AD0F0;--t-prog-ink:#0B5E8F;--t-timed:#BBBBBB;--t-timed-ink:#4D4D4D;--ok:#0072B2;--danger:#D55E00}
+@media (prefers-color-scheme: dark){:root[data-a11y-cvd="on"]:not([data-theme="light"]){
+  --t-goal-ink:#FFC24D;--t-deadline-ink:#FF8A4D;--t-routine-ink:#8FD0F5;--t-abst-ink:#E7A6CB;--t-month-ink:#F5EC6E;--t-limit-ink:#FFD08A;--t-dur-ink:#3FD9AE;
+  --t-proj-ink:#6CB6E8;--t-meas-ink:#F0C2DB;--t-group-ink:#5FE0B8;--t-duel-ink:#FFB07A;--t-chal-ink:#FAF29A;--t-prog-ink:#B7E0F7;--t-timed-ink:#DDDDDD;--ok:#56B4E9;--danger:#FF8A4D}}
+:root[data-theme="dark"][data-a11y-cvd="on"]{
+  --t-goal-ink:#FFC24D;--t-deadline-ink:#FF8A4D;--t-routine-ink:#8FD0F5;--t-abst-ink:#E7A6CB;--t-month-ink:#F5EC6E;--t-limit-ink:#FFD08A;--t-dur-ink:#3FD9AE;
+  --t-proj-ink:#6CB6E8;--t-meas-ink:#F0C2DB;--t-group-ink:#5FE0B8;--t-duel-ink:#FFB07A;--t-chal-ink:#FAF29A;--t-prog-ink:#B7E0F7;--t-timed-ink:#DDDDDD;--ok:#56B4E9;--danger:#FF8A4D}
+.e2e-note{display:flex;gap:8px;align-items:flex-start;margin:-4px 0 10px;font-size:12.5px;color:var(--ink-2)}
+.e2e-note svg{width:16px;height:16px;flex:none;margin-top:2px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -782,7 +812,16 @@ const pl = (n, one, many) => `${n} ${n > 1 ? many : one}`;
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const first = n => (n || '').split(/\s+/)[0];
 const fmtDate = s => parseYmd(s).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year: parseYmd(s).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined });
-const reduced = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Accessibilité : réglages propres à cet appareil, actifs dès l'écran de connexion
+const A11Y_KEY = 'pepsgoal.a11y';
+const A11Y = (() => { const d = { contrast:false, cvd:false, motion:false, transp:false }; try { return Object.assign(d, JSON.parse(localStorage.getItem(A11Y_KEY) || '{}')); } catch(e){ return d; } })();
+function applyA11y(){
+  const r = document.documentElement, set = (k, on, v) => on ? r.setAttribute(k, v) : r.removeAttribute(k);
+  set('data-a11y-contrast', A11Y.contrast, 'high'); set('data-a11y-cvd', A11Y.cvd, 'on');
+  set('data-a11y-motion', A11Y.motion, 'off'); set('data-a11y-transp', A11Y.transp, 'off');
+}
+applyA11y();
+const reduced = () => A11Y.motion || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 function ago(ts){
   const s = (Date.now() - ts) / 1000;
   if (s < 60) return "à l'instant";
@@ -795,6 +834,7 @@ function ago(ts){
 
 /* ================= icônes ================= */
 const P = {
+  eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
   feed:'<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h10M7 17h6"/>',
@@ -923,7 +963,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -2257,7 +2297,7 @@ function viewAuth(){
       <p class="auth-legal" style="text-align:center;margin-top:-6px">Sans compte : données sur cet appareil uniquement, sans synchronisation ni fonctions sociales.</p>
       <button class="btn block" data-act="demo-login">${flame(18)}Mode démonstration</button>
       <button class="btn btn-ghost block" data-act="zip-import" data-id="account">${icon('folder')}Restaurer un compte (.zip)</button>
-      <p class="auth-legal"><button class="linkbtn" data-act="open-legal" data-id="cgu">CGU</button> · <button class="linkbtn" data-act="open-legal" data-id="mentions">Mentions légales</button> · <button class="linkbtn" data-act="open-legal" data-id="privacy">Confidentialité</button></p>
+      <p class="auth-legal"><button class="linkbtn" data-act="open-legal" data-id="cgu">CGU</button> · <button class="linkbtn" data-act="open-legal" data-id="mentions">Mentions légales</button> · <button class="linkbtn" data-act="open-legal" data-id="privacy">Confidentialité</button> · <button class="linkbtn" data-act="open-a11y">Accessibilité</button></p>
       <p class="auth-legal" style="text-align:center">Mode démonstration : profils et données d’exemple, rien n’est enregistré. · PepsGoal ${APP_VERSION}</p>
     </section>
   </div>`;
@@ -2488,14 +2528,15 @@ function gelProgress(u, compact){
 /* ---------- modales ---------- */
 function renderModal(){
   const m = UI.modal;
-  if (!m || (!me() && !['importPreview','legal'].includes(m.type))) { modalRoot.innerHTML = ''; lockScroll(); return; }
-  const body = { goalForm:mGoalForm, goal:mGoal, progress:mProgress, user:mUser, notifs:mNotifs, confirm:mConfirm, share:mShare, avatar:mAvatar, tuto:mTuto, importPreview:mImport, legal:mLegal, shareText:mShareText, groups:mGroups, modUser:mModUser, appeal:mAppeal, report:mReport, chat:mChat, compose:mCompose, storyNew:mStoryNew, exportData:mExport }[m.type]();
+  if (!m || (!me() && !['importPreview','legal','a11y'].includes(m.type))) { modalRoot.innerHTML = ''; lockScroll(); return; }
+  const body = { goalForm:mGoalForm, goal:mGoal, progress:mProgress, user:mUser, notifs:mNotifs, confirm:mConfirm, share:mShare, avatar:mAvatar, tuto:mTuto, importPreview:mImport, legal:mLegal, a11y:mA11y, shareText:mShareText, groups:mGroups, modUser:mModUser, appeal:mAppeal, report:mReport, chat:mChat, compose:mCompose, storyNew:mStoryNew, exportData:mExport }[m.type]();
   modalRoot.innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-title">${body}</div></div>`;
   lockScroll();
   if (m.type === 'goalForm') syncGoalForm();
   const f = modalRoot.querySelector('[autofocus]') || modalRoot.querySelector('.sheet');
   if (f) { f.setAttribute('tabindex', f.getAttribute('tabindex') || '-1'); f.focus({ preventScroll:true }); }
 }
+function mA11y(){ return `${sheetHead('Accessibilité')}<div class="settings">${a11yRows()}</div>`; }
 const sheetHead = t => `<div class="sheet-h"><h2 id="m-title">${t}</h2><button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>`;
 
 function typeTile(k, checked, disabled, wide){
@@ -2994,13 +3035,14 @@ function enter(u){
 const ACT = {
   nav: id => { UI.view = id; UI.modal = null; render(); scrollTo({ top:0 }); },
   'auth-tab': id => { UI.authTab = id; UI.authError = ''; render(); },
-  'demo-login': () => { SANDBOX = true; DB = migrate(seed()); enter(DB.users.find(u => u.username === 'camille')); toast('Mode démonstration : rien n’est enregistré.', 'star'); },
+  'demo-login': () => { SANDBOX = true; ksReset(); DB = migrate(seed()); enter(DB.users.find(u => u.username === 'camille')); void encryptLegacy(); toast('Mode démonstration : rien n’est enregistré.', 'star'); },
   logout: () => {
+    if (!SANDBOX && !NET.online) return toast('Hors ligne : la déconnexion et le changement de compte reviendront avec la connexion.', 'cloudoff');
     if (DB.timers?.[me()?.id]) stopTimer(me(), true); closeFs(); UI.renderedView = null; UI.lastStreak = null;
-    if (SANDBOX) { SANDBOX = false; DB = migrate(load() || emptyDB()); DB.session = null; UI.view = 'today'; render(); ensureAdmin(); return; }
+    if (SANDBOX) { SANDBOX = false; ksReset(); DB = migrate(load() || emptyDB()); DB.session = null; void decryptPending(); UI.view = 'today'; render(); ensureAdmin(); return; }
     DB.session = null; save(); render();
   },
-  reset: () => { if (SANDBOX) return toast('Indisponible en mode démonstration.', 'star'); UI.modal = { type:'confirm', title:'Réinitialiser les données ?', text:'Tous les comptes, objectifs et publications de ce navigateur seront effacés définitivement.', ok:'Tout réinitialiser', danger:true, run: () => { DB = migrate(emptyDB()); ensureAdmin(); save(); UI.view = 'today'; render(); toast('Données réinitialisées.'); } }; renderModal(); },
+  reset: () => { if (SANDBOX) return toast('Indisponible en mode démonstration.', 'star'); UI.modal = { type:'confirm', title:'Réinitialiser les données ?', text:'Tous les comptes, objectifs et publications de ce navigateur seront effacés définitivement.', ok:'Tout réinitialiser', danger:true, run: () => { DB = migrate(emptyDB()); try { localStorage.removeItem(KEYSTORE_KEY); } catch(e){} ksReset(); ensureAdmin(); save(); UI.view = 'today'; render(); toast('Données réinitialisées.'); } }; renderModal(); },
   'new-goal': id => { UI.modal = { type:'goalForm', preType: id && TYPES[id] ? id : null }; renderModal(); },
   'edit-goal': id => { UI.modal = { type:'goalForm', editId:id }; renderModal(); },
   'open-goal': id => { UI.modal = { type:'goal', id }; renderModal(); },
@@ -3177,6 +3219,7 @@ document.addEventListener('change', e => {
 
 const FORMS = {
   async login(f){
+    if (!NET.online) { UI.authError = 'Hors ligne : la connexion à un compte nécessite internet. Tu peux continuer sans compte en attendant.'; return render(); }
     const d = Object.fromEntries(new FormData(f)), un = (d.username || '').trim().toLowerCase();
     const u = DB.users.find(x => x.username === un);
     if (!un || !d.password) { UI.authError = "Indique ton nom d'utilisateur et ton mot de passe."; return render(); }
@@ -3187,6 +3230,7 @@ const FORMS = {
     enter(u);
   },
   async signup(f){
+    if (!NET.online) { UI.authError = 'Hors ligne : la connexion à un compte nécessite internet. Tu peux continuer sans compte en attendant.'; return render(); }
     const d = Object.fromEntries(new FormData(f)), un = (d.username || '').trim().toLowerCase(), name = (d.name || '').trim();
     if (name.length < 2) { UI.authError = 'Indique ton nom (2 caractères minimum).'; return render(); }
     if (!/^[a-z0-9._]{3,20}$/.test(un)) { UI.authError = "Le nom d'utilisateur doit faire 3 à 20 caractères : lettres, chiffres, point ou tiret bas."; return render(); }
@@ -3346,6 +3390,7 @@ function modLog(action, targetId, detail = ''){
   DB.modlog.push({ id:uid(), at:Date.now(), admin:me().id, action, target:targetId, detail });
 }
 function deleteUserData(id){
+  ksForget(id);
   const owned = new Set(DB.goals.filter(g => g.userId === id).map(g => g.id));
   DB.goals = DB.goals.filter(g => !owned.has(g.id));
   DB.goals.forEach(g => {
@@ -3461,6 +3506,84 @@ async function ensureAdmin(){
   DB.users.push(a); save();
 }
 
+/* ================= chiffrement de bout en bout des messages privés ================= */
+// Chaque paire d'amis a sa propre clé AES-256-GCM, tirée au hasard sur l'appareil au premier message.
+// Les clés sont rangées à part (KEYSTORE_KEY), jamais dans la base ni dans les sauvegardes complètes :
+// la base ne contient que des messages chiffrés, liés à leur conversation (données associées). PepsGoal Officiel écrit en clair.
+const KEYSTORE_KEY = 'pepsgoal.keys.v1';
+const E2E = { store:null, cache:new Map(), keys:new Map(), busy:null };
+const pairId = (a, b) => [a, b].sort().join('|');
+const b64e = buf => { let s = ''; new Uint8Array(buf).forEach(c => { s += String.fromCharCode(c); }); return btoa(s); };
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const enc8 = t => new TextEncoder().encode(t);
+function ksLoad(){
+  if (E2E.store) return E2E.store;
+  let st = null;
+  if (!SANDBOX) { try { st = JSON.parse(localStorage.getItem(KEYSTORE_KEY) || 'null'); } catch(e){} }
+  return E2E.store = st && typeof st === 'object' && st.pairs && typeof st.pairs === 'object' ? st : { v:1, pairs:{} };
+}
+function ksSave(){ if (SANDBOX) return; try { localStorage.setItem(KEYSTORE_KEY, JSON.stringify(ksLoad())); } catch(e){ toast('Stockage plein : la clé de conversation n’a pas pu être enregistrée.', 'lock'); } }
+function ksReset(){ E2E.store = null; E2E.cache.clear(); E2E.keys.clear(); }
+// Clés des conversations d'un compte (export .zip du compte, pour relire ses messages après restauration)
+function ksFor(userId){ return Object.fromEntries(Object.entries(ksLoad().pairs).filter(([id]) => id.split('|').includes(userId))); }
+function ksMerge(pairs){
+  const st = ksLoad(); let n = 0;
+  for (const [id, list] of Object.entries(pairs || {})) {
+    if (!/^[\w-]{1,64}\|[\w-]{1,64}$/.test(id) || !Array.isArray(list)) continue;
+    const cur = st.pairs[id] = st.pairs[id] || [];
+    for (const k of list.slice(0, 20)) {
+      if (!k || typeof k.keyId !== 'string' || typeof k.k !== 'string' || !/^[A-Za-z0-9+/]{43}=$/.test(k.k) || cur.some(x => x.keyId === k.keyId)) continue;
+      cur.push({ keyId:k.keyId.slice(0, 64), k:k.k, at:Number(k.at) || Date.now() }); n++;
+    }
+    cur.sort((a, b) => a.at - b.at);
+  }
+  if (n) ksSave();
+  return n;
+}
+function ksForget(userId){ const st = ksLoad(); Object.keys(st.pairs).forEach(id => { if (id.split('|').includes(userId)) delete st.pairs[id]; }); ksSave(); }
+async function cryptoKey(k){
+  if (!E2E.keys.has(k.keyId)) E2E.keys.set(k.keyId, await crypto.subtle.importKey('raw', b64d(k.k), 'AES-GCM', false, ['encrypt', 'decrypt']));
+  return E2E.keys.get(k.keyId);
+}
+function currentKey(a, b, create){
+  const st = ksLoad(), id = pairId(a, b), list = st.pairs[id] || [];
+  if (!list.length && create) { list.push({ keyId:uid(), k:b64e(crypto.getRandomValues(new Uint8Array(32))), at:Date.now() }); st.pairs[id] = list; ksSave(); }
+  return list[list.length - 1] || null;
+}
+async function e2eEncrypt(from, to, text){
+  const k = currentKey(from, to, true), iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name:'AES-GCM', iv, additionalData:enc8(pairId(from, to)) }, await cryptoKey(k), enc8(text));
+  return { v:1, keyId:k.keyId, iv:b64e(iv), ct:b64e(ct) };
+}
+async function e2eDecrypt(m){
+  const k = (ksLoad().pairs[pairId(m.from, m.to)] || []).find(x => x.keyId === m.e2e.keyId); if (!k) return null;
+  try { return new TextDecoder().decode(await crypto.subtle.decrypt({ name:'AES-GCM', iv:b64d(m.e2e.iv), additionalData:enc8(pairId(m.from, m.to)) }, await cryptoKey(k), b64d(m.e2e.ct))); }
+  catch(e){ return null; }
+}
+const msgText = m => !m.e2e ? (m.text || '') : !E2E.cache.has(m.id) ? '🔒 …' : (E2E.cache.get(m.id) ?? '🔒 Message chiffré : sa clé n’est pas sur cet appareil.');
+const keyPrint = async (a, b) => { const k = currentKey(a, b, false); if (!k) return null; const h = new Uint8Array(await crypto.subtle.digest('SHA-256', b64d(k.k))); return Array.from({ length:5 }, (_, i) => String(((h[i * 3] << 16) | (h[i * 3 + 1] << 8) | h[i * 3 + 2]) % 100000).padStart(5, '0')).join(' '); };
+// Déchiffre les messages pas encore en cache, puis rafraîchit l'affichage
+async function decryptPending(){
+  if (!E2E.busy) E2E.busy = (async () => {
+    let n = 0;
+    for (const m of [...(DB.messages || [])]) if (m.e2e && !E2E.cache.has(m.id)) { E2E.cache.set(m.id, await e2eDecrypt(m)); n++; }
+    return n;
+  })().finally(() => { E2E.busy = null; });
+  const n = await E2E.busy;
+  if (n && me()) { updateChat(); if (UI.view === 'friends' || UI.view === 'settings') softRender(); }
+}
+// Messages en clair des versions précédentes (et données d'exemple) : chiffrés une fois pour toutes
+async function encryptLegacy(){
+  if (!window.crypto?.subtle) return;
+  const db = DB; let n = 0;
+  for (const m of [...(db.messages || [])]) {
+    if (m.official || m.e2e || !m.text) continue;
+    const text = m.text; m.e2e = await e2eEncrypt(m.from, m.to, text); delete m.text; E2E.cache.set(m.id, text); n++;
+  }
+  if (n && db === DB) save();
+  await decryptPending();
+}
+
 /* ================= messagerie entre amis ================= */
 const DEMO_REPLIES = ['Trop bien ! Continue comme ça 🔥', 'Haha, je te suis de près 😄', 'On se motive ensemble cette semaine ?', 'Bien joué, tu m’inspires.', 'Je viens de valider ma routine, à ton tour !', 'Merci, ça me fait plaisir 🙌', 'Demain je m’y remets, promis.', 'Tu lâches rien, j’adore.'];
 const convo = (a, b) => (DB.messages || []).filter(m => (m.from === a && m.to === b) || (m.from === b && m.to === a)).sort((x, y) => x.at - y.at);
@@ -3471,7 +3594,7 @@ function chatLog(){
   let lastDay = '';
   const body = list.map(m => {
     const d = ymd(m.at), sep = d !== lastDay ? `<p class="chat-day">${d === today() ? "Aujourd'hui" : esc(fmtDate(d))}</p>` : ''; lastDay = d;
-    return `${sep}<div class="msg ${m.from === u.id ? 'me' : 'them'} ${m.official ? 'official' : ''}">${m.official && OFFICIAL_TAGS[m.tag] ? otag(m.tag) : ''}${esc(m.text)}<small>${new Date(m.at).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}</small></div>`;
+    return `${sep}<div class="msg ${m.from === u.id ? 'me' : 'them'} ${m.official ? 'official' : ''}">${m.official && OFFICIAL_TAGS[m.tag] ? otag(m.tag) : ''}${esc(msgText(m))}<small>${new Date(m.at).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}</small></div>`;
   }).join('');
   return (body || `<p class="muted small chat-empty">Aucun message pour l'instant. Lance la conversation !</p>`) + (UI.typing === w ? `<div class="msg them typing" aria-label="En train d'écrire"><i></i><i></i><i></i></div>` : '');
 }
@@ -3486,23 +3609,31 @@ function mChat(){
   markRead(x.id);
   const blocked = isBanned(u), friends = areFriends(u.id, x.id);
   setTimeout(() => { const el = document.getElementById('chat-log'); if (el) el.scrollTop = el.scrollHeight; }, 0);
+  if (!isOfficial(x)) keyPrint(u.id, x.id).then(p => { const el = document.getElementById('e2e-print'); if (el && p) el.textContent = `Empreinte de la clé : ${p}.`; }).catch(() => {});
+  void decryptPending();
   return `<div class="sheet-h"><div class="who">${avatar(x, 40)}<span><b id="m-title">${esc(x.name)}${isOfficial(x) ? verified() : ''}</b>${x.demo ? '<span class="demo">démo</span>' : ''}<small>${isOfficial(x) ? 'Compte officiel' : '@' + esc(x.username)}</small></span></div><button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>
+  ${isOfficial(x) ? '' : `<p class="e2e-note">${icon('lock')}<span>Chiffrée de bout en bout : une clé propre à votre paire, stockée uniquement sur cet appareil. <span id="e2e-print"></span></span></p>`}
   <div class="chat-log" id="chat-log" aria-live="polite">${chatLog()}</div>
   ${isOfficial(x) ? `<p class="muted small">Compte officiel : il ne reçoit pas de réponses. Pour contester une décision de modération, utilise la demande de débannissement dans le Feed.</p>`
     : blocked ? `<p class="muted small">Ta messagerie est suspendue ${esc(banText(u))}.</p>` : !friends ? `<p class="muted small">Vous n'êtes plus amis : la conversation est en lecture seule.</p>`
     : `<form class="c-form" data-form="chat" data-id="${x.id}"><label class="sr" for="chat-input">Message</label><input type="text" id="chat-input" name="text" placeholder="Écrire un message…" maxlength="500" autocomplete="off" autofocus><button class="btn btn-primary sm" type="submit" aria-label="Envoyer">${icon('send')}</button></form>`}`;
 }
-function sendMessage(to, text){
-  const u = me();
+async function sendMessage(to, text){
+  const u = me(), id = uid();
+  if (!window.crypto?.subtle) { toast('Ce navigateur ne permet pas le chiffrement : message non envoyé.', 'lock'); return; }
+  const e2e = await e2eEncrypt(u.id, to, text);
   DB.messages = DB.messages || [];
-  DB.messages.push({ id:uid(), from:u.id, to, text, at:Date.now(), read:false });
+  E2E.cache.set(id, text);
+  DB.messages.push({ id, from:u.id, to, e2e, at:Date.now(), read:false });
   save(); updateChat(); updateBadges();
   const x = userById(to);
   if (x?.demo) {
     setTimeout(() => { UI.typing = to; updateChat(); }, 700);
-    setTimeout(() => {
+    setTimeout(async () => {
       UI.typing = null;
-      DB.messages.push({ id:uid(), from:to, to:u.id, text:DEMO_REPLIES[Math.floor(Math.random() * DEMO_REPLIES.length)], at:Date.now(), read:false });
+      const rid = uid(), reply = DEMO_REPLIES[Math.floor(Math.random() * DEMO_REPLIES.length)];
+      E2E.cache.set(rid, reply);
+      DB.messages.push({ id:rid, from:to, to:u.id, e2e:await e2eEncrypt(to, u.id, reply), at:Date.now(), read:false });
       save();
       if (UI.modal?.type === 'chat' && UI.modal.with === to) updateChat();
       else { toast(`Nouveau message de ${first(x.name)}`, 'comment'); updateBadges(); if (UI.view === 'friends') softRender(); }
@@ -3514,7 +3645,7 @@ function messagesSection(u){
   if (!others.length) return '';
   const rows = others.map(id => { const c = convo(u.id, id); return { x:userById(id), last:c[c.length - 1], n:unreadFrom(u.id, id) }; }).sort((a, b) => (isOfficial(b.x) - isOfficial(a.x)) || b.last.at - a.last.at);
   return `<section class="glass card"><div class="card-h"><h2>Messages</h2>${unreadMsgs(u.id) ? `<span class="chip t-deadline">${unreadMsgs(u.id)} non lus</span>` : ''}</div>
-    <ul class="people">${rows.map(r => `<li class="person ${isOfficial(r.x) ? 'pinned' : ''}"><button class="who conv" data-act="open-chat" data-id="${r.x.id}">${avatar(r.x, 44)}<span><b>${esc(r.x.name)}${isOfficial(r.x) ? verified() : ''}</b><small class="${r.n ? 'unread' : ''}">${r.last.from === u.id ? 'Toi : ' : ''}${esc(r.last.text.slice(0, 60))}${r.last.text.length > 60 ? '…' : ''} · ${ago(r.last.at)}</small></span></button>${r.n ? `<span class="badge static">${r.n}</span>` : ''}</li>`).join('')}</ul></section>`;
+    <ul class="people">${rows.map(r => `<li class="person ${isOfficial(r.x) ? 'pinned' : ''}"><button class="who conv" data-act="open-chat" data-id="${r.x.id}">${avatar(r.x, 44)}<span><b>${esc(r.x.name)}${isOfficial(r.x) ? verified() : ''}</b><small class="${r.n ? 'unread' : ''}">${r.last.from === u.id ? 'Toi : ' : ''}${esc(msgText(r.last).slice(0, 60))}${msgText(r.last).length > 60 ? '…' : ''} · ${ago(r.last.at)}</small></span></button>${r.n ? `<span class="badge static">${r.n}</span>` : ''}</li>`).join('')}</ul></section>`;
 }
 // Met à jour les pastilles de navigation sans reconstruire la page
 function updateBadges(){
@@ -3766,7 +3897,7 @@ function viewMaintenance(u){
   return `<div class="auth"><section class="auth-hero">${logo()}<h1>On revient <em>très vite.</em></h1>
     <p class="lead">PepsGoal est en maintenance${m.until ? ` jusqu'au ${esc(fmtDT(m.until))}` : ''}. ${m.message ? esc(m.message) : 'Tes objectifs, ta série et tes flammes sont en sécurité.'}</p>
     <p class="muted">Ta série est protégée : les jours de maintenance ne la cassent pas.</p>
-    <div><button class="btn" data-act="logout">${icon('logout')}Se déconnecter</button></div></section></div>`;
+    <div><button class="btn" data-act="logout" ${switchOk() ? '' : 'disabled'}>${icon('logout')}Se déconnecter</button></div></section></div>`;
 }
 function maintStartNow(m){
   DB.maintenance = m;
@@ -4003,9 +4134,18 @@ const SET_CATS = [
   ['account', 'Compte', 'Profil, mot de passe, déconnexion', 'user'],
   ['privacy', 'Social et confidentialité', 'Fonctions sociales, visibilité, stories', 'lock'],
   ['data', 'Données', 'Export, stockage, réinitialisation', 'archive'],
+  ['a11y', 'Accessibilité', 'Contraste élevé, mode daltonien, animations, transparence', 'eye'],
   ['help', 'Aide', 'Tutoriel et à propos', 'star']
 ];
+const A11Y_OPTS = [
+  ['contrast', 'Contraste élevé', 'Texte et bordures en noir et blanc purs, liens soulignés.'],
+  ['cvd', 'Mode daltonien', 'Couleurs des types d’objectifs et des états distinguables avec tous les daltonismes courants.'],
+  ['motion', 'Désactiver les animations', 'Aucune animation ni transition, y compris les célébrations plein écran.'],
+  ['transp', 'Désactiver la transparence', 'Panneaux opaques, sans flou ni halos colorés en arrière-plan.']
+];
+const a11yRows = () => A11Y_OPTS.map(([k, l, d]) => `<div class="set-row"><div><b id="a11y-${k}-l">${l}</b><small>${d}</small></div><span class="switch"><input type="checkbox" data-a11y="${k}" ${A11Y[k] ? 'checked' : ''} aria-labelledby="a11y-${k}-l"><span></span></span></div>`).join('');
 const SET_BODY = {
+  a11y(){ return `<section class="glass card"><div class="settings">${a11yRows()}</div><p class="muted small" style="margin-top:10px">Ces réglages s’appliquent à cet appareil, pour tous les comptes, dès l’écran de connexion.</p></section>`; },
   appearance(u){ const s = u.settings; return `<section class="glass card"><div class="settings">
     <div class="set-row"><div><b>Thème</b><small>Clair, sombre ou selon ton appareil</small></div>
       <div class="seg">${[['system','Auto'],['light','Clair'],['dark','Sombre']].map(([k, l]) => `<label><input type="radio" name="theme" value="${k}" data-set="theme" ${s.theme === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
@@ -4031,7 +4171,7 @@ const SET_BODY = {
     ${securityCard(u)}
     <section class="glass card"><div class="settings">
       ${isGuest(u) ? `<div class="set-row"><div><b>Mode sans compte</b><small>Profil local créé ${ago(u.createdAt)}. Tu peux le reprendre depuis l'écran d'accueil avec « Reprendre sans compte ».</small></div></div>` : `<div class="set-row"><div><b>Nom d'utilisateur</b><small>@${esc(u.username)} · inscrit ${ago(u.createdAt)}</small></div></div>`}
-      <div class="set-row"><div><b>Se déconnecter</b><small>Tes données restent dans ce navigateur.</small></div><button class="btn sm" data-act="logout">${icon('logout')}Se déconnecter</button></div>
+      <div class="set-row"><div><b>Se déconnecter</b><small>${switchOk() ? 'Tes données restent dans ce navigateur.' : 'Hors ligne : la déconnexion et le changement de compte reviendront avec la connexion.'}</small></div><button class="btn sm" data-act="logout" ${switchOk() ? '' : 'disabled'}>${icon('logout')}Se déconnecter</button></div>
       ${isAdmin(u) ? '' : `<div class="set-row"><div><b>Supprimer mon compte</b><small>Supprime ton profil, tes objectifs, tes publications, tes stories et tes messages. Définitif.</small></div><button class="btn btn-danger sm" data-act="delete-me">${icon('trash')}Supprimer</button></div>`}
     </div></section>`; },
   privacy(u){ const s = u.settings; return `<section class="glass card"><div class="settings">
@@ -4066,7 +4206,8 @@ function myExport(u){
     profil:{ nom:u.name, utilisateur:u.username, bio:u.bio, inscription:new Date(u.createdAt).toISOString(), reglages:u.settings, groupes:u.goalGroups },
     objectifs:DB.goals.filter(g => g.userId === u.id), validations:DB.checkins.filter(c => c.userId === u.id),
     publications:DB.posts.filter(p => p.userId === u.id), stories:(DB.stories || []).filter(s => s.userId === u.id),
-    messages:(DB.messages || []).filter(m => m.from === u.id || m.to === u.id)
+    // Portabilité : les messages sont déchiffrés sur l'appareil pour que tu puisses les lire
+    messages:(DB.messages || []).filter(m => m.from === u.id || m.to === u.id).map(m => ({ id:m.id, de:m.from, a:m.to, date:new Date(m.at).toISOString(), texte:msgText(m), chiffre:!!m.e2e }))
   });
 }
 function mExport(){
@@ -4228,7 +4369,9 @@ const cleanStory = s => { s = sobj(s); const kind = oneOf(s.kind, ['photo','reca
   if (kind === 'recap') o.data = { title:sstr(d.title, 30), n:snum(d.n), pts:snum(d.pts), best:snum(d.best), reg:snum(d.reg), persona:sstr(d.persona, 30), e:sstr(d.e, 8) };
   if (kind === 'progress') o.data = { type:TYPES[d.type] ? d.type : 'routine', icon:sstr(d.icon, 16), title:sstr(d.title, 80), v:sstr(String(d.v ?? ''), 24), l:sstr(d.l, 60), label:sstr(d.label, 30), meta:sstr(d.meta, 140), pct:d.pct == null ? null : Math.min(1, Math.max(0, snum(d.pct))) };
   return o; };
-const cleanMessage = m => { m = sobj(m); return { id:sid(m.id), from:sid(m.from), to:sid(m.to), text:sstr(m.text, 600), at:snum(m.at, Date.now()), read:!!m.read, official:!!m.official, tag:oneOf(m.tag, ['news','mod','info'], 'info'), bid:sidOpt(m.bid), auto:!!m.auto, by:sidOpt(m.by) }; };
+const B64RE = /^[A-Za-z0-9+/]*={0,2}$/;
+const cleanE2E = e => { e = sobj(e); const ok = (v, n) => typeof v === 'string' && v.length <= n && B64RE.test(v); return ok(e.iv, 24) && ok(e.ct, 4000) && sidOpt(e.keyId) ? { v:1, keyId:sid(e.keyId), iv:e.iv, ct:e.ct } : null; };
+const cleanMessage = m => { m = sobj(m); const e2e = m.e2e ? cleanE2E(m.e2e) : null; return { id:sid(m.id), from:sid(m.from), to:sid(m.to), ...(e2e ? { e2e } : { text:sstr(m.text, 600) }), at:snum(m.at, Date.now()), read:!!m.read, official:!!m.official, tag:oneOf(m.tag, ['news','mod','info'], 'info'), bid:sidOpt(m.bid), auto:!!m.auto, by:sidOpt(m.by) }; };
 const cleanNotif = n => { n = sobj(n); return { id:sid(n.id), userId:sid(n.userId), text:sstr(n.text, 300), at:snum(n.at, Date.now()), read:!!n.read, type:sstr(n.type, 20), goalId:sidOpt(n.goalId) }; };
 // Base complète (restauration admin)
 function sanitizeDB(raw){
@@ -4323,6 +4466,8 @@ async function exportZip(scope){
       : { objectifs:data.goals.length, validations:data.checkins.length, publications:data.posts.length, stories:data.stories.length, messages:data.messages.length };
     zip.file('manifest.json', JSON.stringify({ app:'PepsGoal', format:1, appVersion:APP_VERSION, scope, exportedAt:new Date().toISOString(), dbVersion:DB.version, account:scope === 'account' ? { id:u.id, username:u.username, name:u.name } : null, counts }, null, 2));
     zip.file('data.json', JSON.stringify(data));
+    // Compte : ses clés de conversation l'accompagnent (sauvegarde personnelle). Sauvegarde complète : aucune clé, les messages restent chiffrés.
+    if (scope === 'account') zip.file('keys.json', JSON.stringify({ v:1, pairs:ksFor(u.id) }));
     zip.file('LISEZMOI.txt', `Sauvegarde PepsGoal (${scope === 'full' ? 'complète' : 'compte @' + u.username}) du ${new Date().toLocaleString('fr-FR')}.\n\nPour la restaurer : ${scope === 'full' ? 'compte admin › Modération › Maintenances › Restaurer une sauvegarde complète' : 'Paramètres › Données › Importer un compte, ou « Restaurer un compte » sur l’écran de connexion'}.\nLes photos se trouvent dans le dossier photos/.\nNe modifie pas data.json : un fichier modifié sera refusé à l’import.\n`);
     const blob = await zip.generateAsync({ type:'blob', compression:'DEFLATE', compressionOptions:{ level:6 } });
     await saveFile(scope === 'full' ? `pepsgoal-sauvegarde-${today()}.zip` : `pepsgoal-${u.username}-${today()}.zip`, blob);
@@ -4341,7 +4486,8 @@ async function readZip(file, scope){
     if (man.scope !== scope) throw new Error(man.scope === 'full' ? 'Ce fichier est une sauvegarde complète : restaure-la depuis le compte admin (Modération › Maintenances).' : 'Ce fichier contient un seul compte : importe-le depuis Paramètres › Données ou depuis l’écran de connexion.');
     const raw = JSON.parse(await zip.file('data.json')?.async('string') || 'null');
     const data = await restoreImages(raw, zip);
-    UI.importData = { scope, clean:scope === 'full' ? sanitizeDB(data) : sanitizeAccount(data), man };
+    const keys = scope === 'account' ? JSON.parse(await zip.file('keys.json')?.async('string') || 'null') : null;
+    UI.importData = { scope, clean:scope === 'full' ? sanitizeDB(data) : sanitizeAccount(data), man, keys:keys && typeof keys === 'object' ? keys.pairs : null };
     UI.modal = { type:'importPreview' }; renderModal();
   } catch(e){
     const known = e?.message && /^(Ce fichier|Fichier invalide)/.test(e.message);
@@ -4396,15 +4542,22 @@ Object.assign(ACT, {
       DB = migrate(repairRefs(d.clean));
       if (!DB.users.some(isAdmin)) DB.users.push(adminUser);
       DB.session = DB.users.some(x => x.id === adminId) ? adminId : DB.users.find(isAdmin)?.id || null;
-      UI.importData = null; UI.modal = null; UI.view = 'mod'; save(); render(); toast('Sauvegarde restaurée.', 'archive');
+      UI.importData = null; UI.modal = null; UI.view = 'mod'; save(); render(); toast('Sauvegarde restaurée.', 'archive'); E2E.cache.clear(); void decryptPending();
       return;
     }
     const a = d.clean;
     if (!importAccount(a)) { toast("Import impossible : ce nom d'utilisateur est déjà pris.", 'archive'); return; }
-    UI.importData = null; UI.modal = null; save();
+    if (d.keys) { const ids = new Set([a.user.id]); ksMerge(Object.fromEntries(Object.entries(d.keys).filter(([id]) => id.split('|').some(x => ids.has(x))))); }
+    UI.importData = null; UI.modal = null; save(); void decryptPending();
     if (!me() && !a.user.passHash) { enter(userById(a.user.id)); toast('Compte importé.', 'archive'); return; }
     render(); toast(me() ? (me().id === a.user.id ? 'Compte restauré.' : `Compte @${a.user.username} importé : connecte-toi avec son mot de passe.`) : `Compte @${a.user.username} importé : connecte-toi avec ton mot de passe.`, 'archive');
   }
+});
+document.addEventListener('change', e => {
+  const k = e.target?.dataset?.a11y; if (!k || !(k in A11Y)) return;
+  A11Y[k] = e.target.checked; applyA11y();
+  try { localStorage.setItem(A11Y_KEY, JSON.stringify(A11Y)); } catch(_){}
+  toast(`${A11Y_OPTS.find(o => o[0] === k)[1]} : ${A11Y[k] ? 'activé' : 'désactivé'}.`, 'eye');
 });
 document.addEventListener('change', e => { const t = e.target; if (t.id === 'zip-file' && t.files?.[0]) readZip(t.files[0], UI.zipScope || 'account'); });
 
@@ -4412,7 +4565,7 @@ document.addEventListener('change', e => { const t = e.target; if (t.id === 'zip
 /* ================= documents légaux ================= */
 // Textes fixes (aucune donnée utilisateur). Éditeur : Quentin CORBET, particulier, Angers.
 const LEGAL_MAIL = '<a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a>';
-const LEGAL_UPDATED = '10 octobre 2026';
+const LEGAL_UPDATED = '11 octobre 2026';
 const LEGAL = {
   cgu:{ title:'Conditions générales d’utilisation', short:'CGU', sections:[
     ['1. Objet', `<p>Les présentes conditions générales d’utilisation (CGU) encadrent l’accès à l’application PepsGoal et son utilisation. PepsGoal permet de planifier des objectifs, de valider sa progression, de suivre des séries (« flammes ») et, si tu le souhaites, de partager ta progression avec d’autres personnes.</p><p>En créant un compte ou en utilisant l’application, tu acceptes les présentes CGU. Si tu ne les acceptes pas, n’utilise pas PepsGoal.</p>`],
@@ -4429,19 +4582,19 @@ const LEGAL = {
   ]},
   mentions:{ title:'Mentions légales', short:'Mentions légales', sections:[
     ['Éditeur', `<p>L’application PepsGoal (version ${APP_VERSION}) est éditée par Quentin CORBET, particulier agissant à titre non professionnel, domicilié à Angers (Maine-et-Loire, France).</p><ul><li>Immatriculation : sans objet (éditeur particulier, aucune activité commerciale)</li><li>Numéro de TVA intracommunautaire : sans objet</li><li>Adresse électronique : ${LEGAL_MAIL}</li><li>Directeur de la publication : Quentin CORBET</li></ul>`],
-    ['Hébergement', `<p>La version web de l’application est hébergée par Anthropic, PBC, 548 Market Street, PMB 90375, San Francisco, CA 94104, États-Unis (www.anthropic.com).</p><p>Dans la version actuelle, les comptes et contenus ne sont pas stockés sur un serveur de PepsGoal : ils restent dans le navigateur de chaque utilisateur.</p>`],
+    ['Hébergement', `<p>L’application et son serveur sont hébergés par Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre (www.hostinger.fr).</p><p>Dans la version actuelle, les comptes et contenus ne sont pas stockés sur un serveur de PepsGoal : ils restent dans le navigateur de chaque utilisateur.</p>`],
     ['Propriété intellectuelle', `<p>Le nom PepsGoal, le logo, l’interface, les textes, illustrations et le code de l’application sont protégés par le droit de la propriété intellectuelle. Toute reproduction ou réutilisation sans autorisation de l’éditeur est interdite.</p><p>Les contenus publiés par les utilisateurs restent la propriété de leurs auteurs.</p>`],
     ['Crédits', `<ul><li>Polices de caractères : Unbounded et Manrope, distribuées par Google Fonts sous licence SIL Open Font License.</li><li>Création des archives .zip : bibliothèque JSZip (licence MIT), chargée depuis cdnjs uniquement lors d’un import ou d’un export.</li><li>Les émojis sont affichés par le système de ton appareil.</li></ul>`],
     ['Signaler un contenu illicite', `<p>Tu peux signaler une publication avec le bouton « Signaler » présent sur chaque publication, ou écrire à ${LEGAL_MAIL} en précisant le contenu concerné, sa date et la raison du signalement. L’équipe de modération traite les signalements dans les meilleurs délais.</p>`],
     ['Contact', `<p>Pour toute question sur l’application : ${LEGAL_MAIL}.</p>`]
   ]},
   privacy:{ title:'Charte de confidentialité', short:'Confidentialité', sections:[
-    ['En résumé', `<ul><li>Tes données restent dans le navigateur de ton appareil : PepsGoal ne les envoie à aucun serveur dans la version actuelle.</li><li>Tu choisis ce que tu partages, et avec qui (privé, amis ou public).</li><li>Aucune publicité, aucun cookie de suivi, aucune revente de données.</li><li>Tu peux exporter ou supprimer tes données à tout moment depuis les Paramètres.</li></ul>`],
+    ['En résumé', `<ul><li>Tes données restent dans le navigateur de ton appareil : PepsGoal ne les envoie à aucun serveur dans la version actuelle.</li><li>Tu choisis ce que tu partages, et avec qui (privé, amis ou public).</li><li>Tes messages privés sont chiffrés de bout en bout : seuls ton ami et toi pouvez les lire.</li><li>Aucune publicité, aucun cookie de suivi, aucune revente de données.</li><li>Tu peux exporter ou supprimer tes données à tout moment depuis les Paramètres.</li></ul>`],
     ['Responsable du traitement', `<p>Le responsable du traitement est Quentin CORBET, particulier domicilié à Angers (France), éditeur de PepsGoal. Contact pour toute question relative à tes données : ${LEGAL_MAIL}. Aucun délégué à la protection des données n’a été désigné, cette désignation n’étant pas obligatoire.</p>`],
     ['Données utilisées', `<ul><li><b>Compte :</b> nom affiché, nom d’utilisateur, bio, icône ou photo de profil, mot de passe (enregistré uniquement sous forme chiffrée, jamais en clair).</li><li><b>Progression :</b> objectifs, validations, mesures, séries, flammes, gels, badges, groupes d’objectifs.</li><li><b>Fonctions sociales :</b> amis, publications, commentaires, encouragements, stories, messages, défis partagés, binômes.</li><li><b>Réglages :</b> thème, couleur, rappels, préférences de visibilité.</li><li><b>Modération :</b> signalements, avertissements, suspensions, contestations et journal des décisions.</li></ul><p>PepsGoal ne collecte pas ta localisation, tes contacts ni de données publicitaires.</p>`],
     ['Pourquoi et sur quelle base', `<ul><li>Faire fonctionner ton compte, tes objectifs et tes rappels : exécution des CGU.</li><li>Afficher tes contenus aux personnes que tu as choisies : exécution des CGU.</li><li>Assurer la sécurité et la modération de l’espace social : intérêt légitime.</li><li>Afficher des notifications système du navigateur : ton consentement, que tu peux retirer à tout moment dans ton navigateur.</li></ul>`],
-    ['Où sont tes données', `<p>Toutes les données sont enregistrées dans le stockage local du navigateur de l’appareil utilisé. Elles ne sont pas transmises à un serveur de PepsGoal.</p><p>Plusieurs comptes peuvent coexister sur un même navigateur ; dans ce cas, les personnes qui utilisent cet appareil peuvent y accéder techniquement. Sur un appareil partagé, déconnecte-toi après usage.</p>`],
-    ['Qui peut voir quoi', `<ul><li><b>Privé :</b> toi seul.</li><li><b>Amis :</b> tes amis acceptés.</li><li><b>Public :</b> toute personne utilisant l’application.</li><li><b>Stories :</b> tes amis uniquement, pendant 24 heures.</li><li><b>Messages :</b> toi et ton interlocuteur.</li><li><b>Modération :</b> l’équipe de modération peut consulter les contenus publiés et signalés afin de faire respecter les CGU.</li></ul>`],
+    ['Où sont tes données', `<p>Toutes les données sont enregistrées dans le stockage local du navigateur de l’appareil utilisé. Elles ne sont pas transmises à un serveur de PepsGoal.</p><p>Les clés de chiffrement des messages sont rangées à part dans ce navigateur : elles accompagnent l’export .zip de ton compte (pour relire tes conversations après une restauration) mais jamais les sauvegardes complètes.</p><p>Plusieurs comptes peuvent coexister sur un même navigateur ; dans ce cas, les personnes qui utilisent cet appareil peuvent y accéder techniquement. Sur un appareil partagé, déconnecte-toi après usage.</p>`],
+    ['Qui peut voir quoi', `<ul><li><b>Privé :</b> toi seul.</li><li><b>Amis :</b> tes amis acceptés.</li><li><b>Public :</b> toute personne utilisant l’application.</li><li><b>Stories :</b> tes amis uniquement, pendant 24 heures.</li><li><b>Messages :</b> toi et ton interlocuteur uniquement. Ils sont chiffrés de bout en bout (AES-256-GCM) avec une clé propre à chaque paire d’amis, créée et conservée uniquement sur vos appareils : ni l’éditeur, ni l’hébergeur, ni la modération ne peuvent les lire. Seuls les messages du compte PepsGoal Officiel sont en clair.</li><li><b>Modération :</b> l’équipe de modération peut consulter les contenus publiés et signalés afin de faire respecter les CGU.</li></ul>`],
     ['Durées de conservation', `<ul><li>Compte et progression : jusqu’à la suppression de ton compte ou des données du navigateur.</li><li>Stories : 24 heures.</li><li>Notifications : les 150 plus récentes.</li><li>Données de modération : le temps nécessaire au traitement et au suivi des décisions.</li></ul>`],
     ['Services tiers', `<ul><li><b>Google Fonts</b> (Google) fournit les polices de caractères : ton navigateur se connecte à ses serveurs, ce qui leur transmet ton adresse IP.</li><li><b>cdnjs</b> (Cloudflare) fournit l’outil de création d’archives .zip, chargé uniquement lorsque tu importes ou exportes une sauvegarde.</li></ul><p>Ces services ne reçoivent aucune donnée de ton compte.</p>`],
     ['Cookies et traceurs', `<p>PepsGoal n’utilise aucun cookie publicitaire ni outil de mesure d’audience. Le stockage local du navigateur sert uniquement à faire fonctionner l’application (comptes, objectifs, préférences) : il est strictement nécessaire et ne requiert donc pas de consentement.</p>`],
@@ -4471,6 +4624,7 @@ SET_BODY.help = function(){ return `<section class="glass card"><div class="sett
     <div class="set-row"><div><b>Charte de confidentialité</b><small>Données utilisées, stockage, partage et tes droits</small></div><button class="btn sm" data-act="open-legal" data-id="privacy">${icon('lock')}Lire</button></div>
   </div></section>`; };
 Object.assign(ACT, {
+  'open-a11y': () => { UI.modal = { type:'a11y' }; renderModal(); },
   'open-legal': id => { if (!LEGAL[id]) return; UI.modal = { type:'legal', doc:id }; renderModal(); modalRoot.querySelector('.sheet')?.scrollTo({ top:0 }); },
   'legal-jump': id => { const el = document.getElementById('lg-' + id); if (el) el.scrollIntoView({ behavior:reduced() ? 'auto' : 'smooth', block:'start' }); }
 });
@@ -4478,6 +4632,10 @@ Object.assign(ACT, {
 /* ================= mode sans compte et réseau ================= */
 const NET = { online:navigator.onLine !== false };
 const isGuest = u => !!u?.guest;
+// Changer de compte (déconnexion, connexion) : uniquement en ligne ; le mode démonstration se quitte toujours
+const switchOk = () => SANDBOX || NET.online;
+// Vérification régulière de la connexion (certains navigateurs n'émettent pas toujours les événements online/offline)
+setInterval(() => { if (navigator.onLine !== NET.online) window.dispatchEvent(new Event(navigator.onLine ? 'online' : 'offline')); }, 15000);
 // Base vierge : comptes admin et PepsGoal Officiel uniquement
 function emptyDB(){
   const db = { version:8, users:[], friendships:[], goals:[], checkins:[], posts:[], notifs:[], session:null, reminderLog:{}, messages:[], appeals:[], reports:[], modlog:[], stories:[], news:[], timers:{} };
@@ -4523,6 +4681,7 @@ Object.assign(FORMS, {
     const fd = new FormData(f), u = me(), err = f.querySelector('#gu-err'), fail = m => { err.textContent = m; err.hidden = false; };
     const name = String(fd.get('name') || '').trim(), un = String(fd.get('username') || '').trim().toLowerCase(), pw = String(fd.get('password') || '');
     if (!isGuest(u)) return;
+    if (!NET.online) return fail('Hors ligne : la création du compte nécessite internet.');
     if (name.length < 2) return fail('Indique ton nom (2 caractères minimum).');
     if (!/^[a-z0-9._]{3,20}$/.test(un)) return fail("Le nom d'utilisateur doit faire 3 à 20 caractères : lettres, chiffres, point ou tiret bas.");
     if (DB.users.some(x => x.username === un && x.id !== u.id)) return fail("Ce nom d'utilisateur est déjà pris.");
@@ -4532,9 +4691,9 @@ Object.assign(FORMS, {
     welcomeOfficial(u); save(); render(); toast('Compte créé : toutes tes données sont conservées.', 'check');
   }
 });
-window.addEventListener('online', () => { NET.online = true; if (me()) { toast('Connexion rétablie : fonctions sociales de retour.', 'cloud'); softRender(); } });
+window.addEventListener('online', () => { NET.online = true; if (me()) { toast('Connexion rétablie : fonctions sociales de retour.', 'cloud'); softRender(); } else render(); });
 window.addEventListener('offline', () => {
-  NET.online = false; if (!me()) return;
+  NET.online = false; if (!me()) return render();
   if (UI.view === 'feed' || UI.view === 'friends') UI.view = 'today';
   if (UI.modal && ['chat','compose','storyNew','user','report','share','shareText'].includes(UI.modal.type)) UI.modal = null;
   if (UI.fs?.type === 'storyview') closeFs();
@@ -4549,10 +4708,13 @@ render();
 ensureAdmin();
 setTimeout(checkReminders, 1200);
 if (BOOT_WARN) setTimeout(() => toast(BOOT_WARN, 'archive'), 600);
+void encryptLegacy();
 // Un autre onglet a modifié les données : on recharge pour ne pas écraser ses changements
 window.addEventListener('storage', e => {
-  if (SANDBOX || e.key !== KEY || !e.newValue) return;
-  try { DB = migrate(JSON.parse(e.newValue)); softRender(); } catch(_){}
+  if (SANDBOX) return;
+  if (e.key === KEYSTORE_KEY) { E2E.store = null; [...E2E.cache].forEach(([id, v]) => { if (v === null) E2E.cache.delete(id); }); void decryptPending(); return; }
+  if (e.key !== KEY || !e.newValue) return;
+  try { DB = migrate(JSON.parse(e.newValue)); softRender(); void decryptPending(); } catch(_){}
 });
 setInterval(checkReminders, 30000);
 </script>

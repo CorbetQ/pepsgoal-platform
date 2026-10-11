@@ -1,6 +1,6 @@
 {
   "name": "@pepsgoal/app",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "main": "expo-router/entry",
   "description": "Application PepsGoal (iOS, Android et web) : fonctionne hors ligne, synchronise dès que la connexion revient.",

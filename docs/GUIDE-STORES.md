@@ -42,7 +42,7 @@ npm run build:ios
    - **URL de confidentialité** : `https://pepsgoal.fr/confidentialite`. **URL d'assistance** : `https://pepsgoal.fr`.
    - **Confidentialité de l'app** : données collectées, toutes liées à l'identité de l'utilisateur et aucune utilisée pour le suivi :
      - identifiants (nom d'utilisateur) ;
-     - contenu utilisateur (objectifs, publications, messages, photos).
+     - contenu utilisateur (objectifs, publications, photos). Les messages privés, chiffrés de bout en bout et illisibles par l'éditeur, n'ont pas à être déclarés.
    - **Classification par âge** : réponds au questionnaire en signalant les contenus générés par les utilisateurs et la messagerie.
    - **Statut de commerçant (DSA, Union européenne)** : déclare-toi *non-commerçant* (particulier, app gratuite, aucune activité commerciale).
    - **Captures d'écran** : au minimum iPhone 6,9" (1320 × 2868) ; ajoute iPad si tu laisses la prise en charge des tablettes (`supportsTablet` dans app.json).
@@ -65,7 +65,7 @@ Points déjà couverts par l'app :
    - annonces : non ;
    - classification du contenu : questionnaire IARC, en signalant les interactions entre utilisateurs ;
    - public cible : 16 ans et plus recommandé ;
-   - **Sécurité des données** : mêmes données que pour Apple, chiffrées en transit, suppression possible depuis l'app ou par e-mail.
+   - **Sécurité des données** : mêmes données que pour Apple, chiffrées en transit, suppression possible depuis l'app ou par e-mail ; messagerie chiffrée de bout en bout.
 3. **Fiche Play Store** :
    - icône 512 × 512 : redimensionne `apps/app/assets/icon.png` ;
    - image de présentation 1024 × 500 ;
