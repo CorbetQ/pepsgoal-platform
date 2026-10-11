@@ -1,0 +1,11 @@
+# Contexte de build Docker : uniquement le code source (les dépendances sont installées dans l'image)
+**/node_modules
+**/dist
+**/dist-web
+deploy/app
+deploy/site
+deploy/.env
+apps/app/.expo
+apps/app/ios
+apps/app/android
+.git
