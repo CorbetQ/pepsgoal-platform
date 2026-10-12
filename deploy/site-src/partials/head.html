@@ -1,0 +1,37 @@
+<a class="skip" href="#main">Aller au contenu</a>
+<div class="progress" aria-hidden="true"></div>
+<div class="backdrop" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="grain"></div></div>
+<div class="glow" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--pink)"/><stop offset=".5" style="stop-color:var(--flame)"/><stop offset="1" style="stop-color:var(--flame-2)"/></linearGradient>
+  <linearGradient id="gCore" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--flame-2)"/><stop offset="1" stop-color="#FFF6CC"/></linearGradient>
+  <symbol id="flame" viewBox="0 0 24 24"><path fill="url(#gFlame)" d="M12 22.5c-4.4 0-7.6-3.1-7.6-7.3 0-3.6 2.4-5.8 4-7.8.4 1.9 1.3 3.2 2.6 3.7-.4-3.2.7-6.4 3.6-8.6-.3 3.5 1.6 5.5 3.2 7.7 1.2 1.6 1.8 3.3 1.8 5.2 0 4.2-3.2 7.1-7.6 7.1z"/><path fill="url(#gCore)" d="M12 21.6c-2 0-3.4-1.4-3.4-3.3 0-1.6 1-2.7 2-3.7.2 1 .7 1.6 1.3 1.8.1-1.7.8-3 2.1-3.9 0 1.7.6 2.7 1.1 3.6.3.6.5 1.2.5 2.1 0 1.9-1.6 3.4-3.6 3.4z"/></symbol>
+</defs></svg>
+<header class="site-h glass">
+  <a class="logo" href="index.html" aria-label="PepsGoal, accueil"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></a>
+  <nav class="nav" aria-label="Navigation principale">
+    <a href="index.html" data-nav="index">Accueil</a>
+    <a href="fonctionnalites.html" data-nav="fonctionnalites">Fonctionnalités</a>
+    <a href="design-system.html" data-nav="design-system">Design system</a>
+    <a href="technique.html" data-nav="technique">Technique</a>
+    <a href="informations-legales.html" data-nav="informations-legales">Légal</a>
+  </nav>
+  <div class="h-acts">
+    <button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="Changer de thème"><svg class="i moon"><use href="assets/icons.svg#moon"/></svg><svg class="i sun"><use href="assets/icons.svg#sun"/></svg></button>
+    <a class="btn btn-primary sm btn-app" href="https://app.pepsgoal.fr" data-magnet><svg class="i"><use href="assets/icons.svg#bolt"/></svg><span>Ouvrir l’app</span></a>
+    <button class="icon-btn menu-btn" type="button" data-menu aria-label="Ouvrir le menu"><svg class="i"><use href="assets/icons.svg#menu"/></svg></button>
+  </div>
+</header>
+<div class="drawer" aria-hidden="true">
+  <div class="drawer-in" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer-top"><span class="logo"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></span><button class="icon-btn" type="button" data-close aria-label="Fermer le menu"><svg class="i"><use href="assets/icons.svg#x"/></svg></button></div>
+    <nav aria-label="Navigation mobile">
+      <a href="index.html" data-nav="index"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Accueil</a>
+      <a href="fonctionnalites.html" data-nav="fonctionnalites"><svg class="i"><use href="assets/icons.svg#sparkle"/></svg>Fonctionnalités</a>
+      <a href="design-system.html" data-nav="design-system"><svg class="i"><use href="assets/icons.svg#palette"/></svg>Design system</a>
+      <a href="technique.html" data-nav="technique"><svg class="i"><use href="assets/icons.svg#code"/></svg>Technique</a>
+      <a href="informations-legales.html" data-nav="informations-legales"><svg class="i"><use href="assets/icons.svg#scale"/></svg>Informations légales</a>
+    </nav>
+    <a class="btn btn-primary block lg" href="https://app.pepsgoal.fr" style="width:100%"><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir l’app</a>
+  </div>
+</div>

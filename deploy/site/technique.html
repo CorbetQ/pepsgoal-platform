@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Détails techniques · PepsGoal</title>
+<meta name="description" content="Sous le capot de PepsGoal : architecture hors ligne d’abord, synchronisation sans conflit, chiffrement de bout en bout (NaCl), API Fastify et PostgreSQL, app iOS et Android avec Expo.">
+<meta name="theme-color" content="#07081A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ECEEFF" media="(prefers-color-scheme: light)">
+<meta property="og:title" content="Détails techniques · PepsGoal">
+<meta property="og:description" content="Sous le capot de PepsGoal : architecture hors ligne d’abord, synchronisation sans conflit, chiffrement de bout en bout (NaCl), API Fastify et PostgreSQL, app iOS et Android avec Expo.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/unbounded-latin-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/manrope-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('pepsgoal.site.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<div class="progress" aria-hidden="true"></div>
+<div class="backdrop" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="grain"></div></div>
+<div class="glow" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--pink)"/><stop offset=".5" style="stop-color:var(--flame)"/><stop offset="1" style="stop-color:var(--flame-2)"/></linearGradient>
+  <linearGradient id="gCore" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--flame-2)"/><stop offset="1" stop-color="#FFF6CC"/></linearGradient>
+  <symbol id="flame" viewBox="0 0 24 24"><path fill="url(#gFlame)" d="M12 22.5c-4.4 0-7.6-3.1-7.6-7.3 0-3.6 2.4-5.8 4-7.8.4 1.9 1.3 3.2 2.6 3.7-.4-3.2.7-6.4 3.6-8.6-.3 3.5 1.6 5.5 3.2 7.7 1.2 1.6 1.8 3.3 1.8 5.2 0 4.2-3.2 7.1-7.6 7.1z"/><path fill="url(#gCore)" d="M12 21.6c-2 0-3.4-1.4-3.4-3.3 0-1.6 1-2.7 2-3.7.2 1 .7 1.6 1.3 1.8.1-1.7.8-3 2.1-3.9 0 1.7.6 2.7 1.1 3.6.3.6.5 1.2.5 2.1 0 1.9-1.6 3.4-3.6 3.4z"/></symbol>
+</defs></svg>
+<header class="site-h glass">
+  <a class="logo" href="index.html" aria-label="PepsGoal, accueil"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></a>
+  <nav class="nav" aria-label="Navigation principale">
+    <a href="index.html" data-nav="index">Accueil</a>
+    <a href="fonctionnalites.html" data-nav="fonctionnalites">Fonctionnalités</a>
+    <a href="design-system.html" data-nav="design-system">Design system</a>
+    <a href="technique.html" data-nav="technique" aria-current="page">Technique</a>
+    <a href="informations-legales.html" data-nav="informations-legales">Légal</a>
+  </nav>
+  <div class="h-acts">
+    <button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="Changer de thème"><svg class="i moon"><use href="assets/icons.svg#moon"/></svg><svg class="i sun"><use href="assets/icons.svg#sun"/></svg></button>
+    <a class="btn btn-primary sm btn-app" href="https://app.pepsgoal.fr" data-magnet><svg class="i"><use href="assets/icons.svg#bolt"/></svg><span>Ouvrir l’app</span></a>
+    <button class="icon-btn menu-btn" type="button" data-menu aria-label="Ouvrir le menu"><svg class="i"><use href="assets/icons.svg#menu"/></svg></button>
+  </div>
+</header>
+<div class="drawer" aria-hidden="true">
+  <div class="drawer-in" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer-top"><span class="logo"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></span><button class="icon-btn" type="button" data-close aria-label="Fermer le menu"><svg class="i"><use href="assets/icons.svg#x"/></svg></button></div>
+    <nav aria-label="Navigation mobile">
+      <a href="index.html" data-nav="index"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Accueil</a>
+      <a href="fonctionnalites.html" data-nav="fonctionnalites"><svg class="i"><use href="assets/icons.svg#sparkle"/></svg>Fonctionnalités</a>
+      <a href="design-system.html" data-nav="design-system"><svg class="i"><use href="assets/icons.svg#palette"/></svg>Design system</a>
+      <a href="technique.html" data-nav="technique" aria-current="page"><svg class="i"><use href="assets/icons.svg#code"/></svg>Technique</a>
+      <a href="informations-legales.html" data-nav="informations-legales"><svg class="i"><use href="assets/icons.svg#scale"/></svg>Informations légales</a>
+    </nav>
+    <a class="btn btn-primary block lg" href="https://app.pepsgoal.fr" style="width:100%"><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir l’app</a>
+  </div>
+</div>
+
+<main id="main">
+<style>
+  .arch{display:grid;grid-template-columns:minmax(0,1fr) 170px minmax(0,1fr);gap:0;align-items:stretch}
+  .node{display:flex;flex-direction:column;gap:12px;padding:22px}
+  .node h3{display:flex;align-items:center;gap:10px;font-size:20px}
+  .node h3 svg{width:24px;height:24px}
+  .block{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:var(--r-md);background:var(--glass-strong);border:1px solid var(--line);transition:transform .3s var(--ease-bounce),border-color .3s}
+  .block:hover{transform:translateX(4px);border-color:var(--c,var(--flame))}
+  .block .bi{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:12px;background:color-mix(in srgb,var(--c,var(--flame)) 22%,transparent);color:var(--c-ink,var(--ink))}
+  .block .bi svg{width:20px;height:20px}
+  .block b{display:block;font-weight:800}
+  .block small{color:var(--ink-2);font-size:13px;line-height:1.4;display:block}
+  .wire{position:relative;display:flex;flex-direction:column;justify-content:center;gap:56px;padding:0 6px}
+  .lane{position:relative;height:4px;border-radius:4px;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--ink) 25%,transparent) 0 8px,transparent 8px 14px);background-size:14px 4px;animation:dash 1s linear infinite}
+  .lane.back{animation-direction:reverse}
+  @keyframes dash{to{background-position:14px 0}}
+  .lane span{position:absolute;left:50%;transform:translateX(-50%);top:-30px;white-space:nowrap;font-size:11.5px;font-weight:800;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+  .lane i{position:absolute;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:var(--brand);box-shadow:0 0 14px var(--flame);animation:packet 2.4s var(--ease-out) infinite}
+  .lane.back i{background:var(--t-goal);box-shadow:0 0 14px var(--t-goal);animation-name:packet-back}
+  .lane i:nth-of-type(2){animation-delay:1.2s}
+  @keyframes packet{from{left:0;opacity:0}15%{opacity:1}85%{opacity:1}to{left:calc(100% - 14px);opacity:0}}
+  @keyframes packet-back{from{left:calc(100% - 14px);opacity:0}15%{opacity:1}85%{opacity:1}to{left:0;opacity:0}}
+  @media (max-width:900px){.arch{grid-template-columns:minmax(0,1fr)}.wire{flex-direction:row;justify-content:center;gap:24px;height:150px;padding:0}.lane{width:4px;height:100%;background:repeating-linear-gradient(180deg,color-mix(in srgb,var(--ink) 25%,transparent) 0 8px,transparent 8px 14px);background-size:4px 14px;animation-name:dash-v}.lane span{top:50%;left:14px;transform:translateY(-50%)}.lane i{left:50%!important;margin:0 0 0 -7px;animation-name:packet-v}.lane.back i{animation-name:packet-v-back}.lane span{white-space:normal;width:110px;font-size:10.5px;left:auto;right:14px;text-align:right}.lane.back span{right:auto;left:14px;text-align:left}}
+  @keyframes dash-v{to{background-position:0 14px}}
+  @keyframes packet-v{from{top:0;opacity:0}15%{opacity:1}85%{opacity:1}to{top:calc(100% - 14px);opacity:0}}
+  @keyframes packet-v-back{from{top:calc(100% - 14px);opacity:0}15%{opacity:1}85%{opacity:1}to{top:0;opacity:0}}
+  .stack{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .tech{display:flex;flex-direction:column;gap:8px;padding:18px}
+  .tech .top{display:flex;align-items:center;gap:10px}
+  .tech .top .bi{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--c,var(--flame)) 22%,transparent);color:var(--c-ink,var(--ink))}
+  .tech .top .bi svg{width:21px;height:21px}
+  .tech b{font-family:var(--font-display);font-size:16px}
+  .tech .role{font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  .tech p{color:var(--ink-2);font-size:14px}
+  .flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;counter-reset:f}
+  .flow .card{display:flex;flex-direction:column;gap:10px}
+  .flow .card::before{counter-increment:f;content:counter(f);display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--brand);color:var(--on-accent);font-family:var(--font-display);font-weight:800}
+  .flow h3{font-size:18px}
+  .flow p{color:var(--ink-2);font-size:14.5px}
+  @media (max-width:860px){.flow{grid-template-columns:minmax(0,1fr)}}
+  .code{position:relative;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13px;line-height:1.75;padding:18px 20px;border-radius:var(--r-md);background:#0B0C22;color:#E6E7FF;overflow-x:auto;white-space:pre;border:1px solid rgba(255,255,255,.08)}
+  .code .k{color:#FF9FE4}.code .s{color:#C6FF5C}.code .n{color:#FFC94D}.code .c{color:#8A8DC0}.code .p{color:#5FE0FF}
+  .code .cursor{display:inline-block;width:8px;height:1.1em;vertical-align:-2px;background:#FFB000;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .e2e{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;position:relative}
+  .e2e::before{content:"";position:absolute;left:8%;right:8%;top:30px;height:3px;background:var(--brand);border-radius:3px;transform-origin:0 50%;transform:scaleX(0);transition:transform 1.8s var(--ease-out)}
+  .e2e.in::before,:root:not(.js) .e2e::before{transform:scaleX(1)}
+  .e2e-step{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+  .e2e-step .dot{position:relative;z-index:1;display:grid;place-items:center;width:62px;height:62px;border-radius:50%;background:var(--glass-strong);border:2px solid var(--flame);box-shadow:var(--shadow);transition:transform .4s var(--ease-bounce)}
+  .e2e-step:hover .dot{transform:scale(1.12) rotate(-8deg)}
+  .e2e-step .dot svg{width:26px;height:26px}
+  .e2e-step b{font-family:var(--font-display);font-size:14.5px}
+  .e2e-step p{font-size:13px;color:var(--ink-2)}
+  @media (max-width:860px){.e2e{grid-template-columns:minmax(0,1fr)}.e2e::before{display:none}.e2e-step{flex-direction:row;text-align:left;align-items:flex-start}.e2e-step .dot{flex:none}}
+  .cipher{font-family:ui-monospace,Menlo,monospace;font-size:13px;word-break:break-all;color:var(--ink-2);padding:14px;border-radius:var(--r-md);border:1px dashed var(--line);min-height:68px}
+  .cipher b{color:var(--ink)}
+  .sec-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .sec-item{display:flex;gap:12px;padding:16px;border-radius:var(--r-md);background:var(--glass-card);border:1px solid var(--glass-edge)}
+  .sec-item svg{width:22px;height:22px;flex:none;color:var(--ok)}
+  .sec-item b{display:block}
+  .sec-item p{color:var(--ink-2);font-size:14px}
+  @media (max-width:700px){.sec-list{grid-template-columns:minmax(0,1fr)}}
+  .tree{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;line-height:1.9;white-space:pre;overflow-x:auto}
+  .tree .d{color:var(--t-proj-ink);font-weight:700}
+  .tree .c{color:var(--ink-3)}
+  .models{display:flex;flex-wrap:wrap;gap:8px}
+  .models span{padding:6px 12px;border-radius:var(--r-pill);background:var(--glass-strong);border:1px solid var(--line);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:600;transition:transform .2s var(--ease-bounce)}
+  .models span:hover{transform:translateY(-3px) rotate(-2deg)}
+  .models h4{width:100%;font-family:var(--font-body);font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:10px}
+  .tl{position:relative;display:flex;flex-direction:column;gap:18px;padding-left:34px}
+  .tl::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:3px;border-radius:3px;background:linear-gradient(var(--flame-2),var(--flame),var(--pink))}
+  .tl-i{position:relative}
+  .tl-i::before{content:"";position:absolute;left:-30px;top:20px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:4px solid var(--flame)}
+  .tl-i .card{padding:18px 20px}
+  .tl-i h3{font-size:19px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .tl-i ul{margin-top:8px;display:flex;flex-direction:column;gap:4px;list-style:disc;padding-left:20px;color:var(--ink-2);font-size:14.5px}
+</style>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow rv">Détails techniques</span>
+    <h1 data-split>Hors ligne d’abord, <span class="grad-text">chiffré de bout en bout.</span></h1>
+    <p class="lead rv" style="--d:2">Une seule interface pour le web, iOS et Android, qui lit et écrit toujours sur l’appareil. Un serveur qui synchronise, sauvegarde et fait vivre le social, sans jamais pouvoir lire tes messages.</p>
+    <div class="crumbs rv" style="--d:3"><a href="#architecture">Architecture</a><a href="#synchro">Synchronisation</a><a href="#e2e">Chiffrement</a><a href="#securite">Sécurité</a></div>
+  </div>
+</section>
+
+<section class="section" id="architecture">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Architecture</span><h2 class="rv" style="--d:1">L’écran ne <span class="grad-text">attend jamais le réseau.</span></h2><p class="rv" style="--d:2">L’interface écrit dans la base locale de l’appareil, puis une couche connectée envoie les différences au serveur et récupère celles des autres appareils.</p></div>
+    <div class="arch rv zoom">
+      <div class="node glass">
+        <h3><svg class="i"><use href="assets/icons.svg#phone"/></svg>Appareil</h3>
+        <div class="block t-routine"><span class="bi"><svg class="i"><use href="assets/icons.svg#layers"/></svg></span><span><b>Interface PepsGoal</b><small>HTML, CSS et JavaScript sans framework, identique sur web, iOS et Android</small></span></div>
+        <div class="block t-objective"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><span><b>Données locales</b><small>Stockage de la page, copie complète pour le hors ligne</small></span></div>
+        <div class="block t-project"><span class="bi"><svg class="i"><use href="assets/icons.svg#cloud"/></svg></span><span><b>Couche connectée · cloud.js</b><small>Comptes, synchro, social, messages chiffrés, modération</small></span></div>
+        <div class="block t-limit"><span class="bi"><svg class="i"><use href="assets/icons.svg#heartbeat"/></svg></span><span><b>Surveillance réseau</b><small>navigator.onLine + /v1/status : 5 s, 10 s, 20 s, 40 s puis chaque minute</small></span></div>
+      </div>
+      <div class="wire" aria-hidden="true">
+        <div class="lane"><span>push · HTTPS + JWT</span><i></i><i></i></div>
+        <div class="lane back"><span>pull · curseur</span><i></i><i></i></div>
+      </div>
+      <div class="node glass">
+        <h3><svg class="i"><use href="assets/icons.svg#server"/></svg>Serveur</h3>
+        <div class="block t-duration"><span class="bi"><svg class="i"><use href="assets/icons.svg#shield"/></svg></span><span><b>Caddy</b><small>HTTPS automatique (Let’s Encrypt), compression, en-têtes de sécurité</small></span></div>
+        <div class="block t-measure"><span class="bi"><svg class="i"><use href="assets/icons.svg#bolt"/></svg></span><span><b>API Fastify 4 + zod</b><small>Près de 90 routes, chaque entrée validée par un schéma partagé</small></span></div>
+        <div class="block t-abstinence"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><span><b>PostgreSQL 16</b><small>Schéma et migrations Drizzle, révisions de synchro, cascades RGPD</small></span></div>
+        <div class="block t-monthly"><span class="bi"><svg class="i"><use href="assets/icons.svg#image"/></svg></span><span><b>Médias</b><small>Photos et pièces jointes chiffrées, sur disque ou S3</small></span></div>
+      </div>
+    </div>
+    <div class="tbl-wrap rv" style="margin-top:28px"><table>
+      <thead><tr><th>Situation</th><th>Objectifs, validations, séries</th><th>Feed, amis, messages</th><th>Synchronisation</th></tr></thead>
+      <tbody>
+        <tr><td><b>Compte + en ligne</b></td><td>✓</td><td>✓</td><td>Automatique : démarrage, retour au premier plan, chaque minute</td></tr>
+        <tr><td><b>Compte + hors ligne</b></td><td>✓ base locale</td><td>Masqués temporairement</td><td>File d’attente, envoyée au retour de la connexion</td></tr>
+        <tr><td><b>Sans compte</b></td><td>✓ base locale</td><td>Indisponibles</td><td>Tout est conservé si un compte est créé plus tard</td></tr>
+        <tr><td><b>Maintenance sociale</b></td><td>✓</td><td>Lecture seule</td><td>✓</td></tr>
+        <tr><td><b>Maintenance complète</b></td><td>✓ base locale</td><td>Masqués</td><td>Suspendue (503), sans casser la série</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section class="section" id="stack">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">La pile</span><h2 class="rv" style="--d:1">Des briques <span class="grad-text">éprouvées.</span></h2></div>
+    <div class="stack">
+      <article class="card tech tilt rv t-routine"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#layers"/></svg></span><div><span class="role">Interface</span><br><b>HTML · CSS · JS</b></div></div><p>Une seule interface sans framework, de tous les écrans aux animations : rapide, légère, identique partout.</p></article>
+      <article class="card tech tilt rv t-project" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#phone"/></svg></span><div><span class="role">Mobile</span><br><b>Expo SDK 51</b></div></div><p>Coque native React Native 0.74 + WebView qui embarque l’interface hors ligne. Builds et publication via EAS.</p></article>
+      <article class="card tech tilt rv t-measure" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#bolt"/></svg></span><div><span class="role">API</span><br><b>Fastify 4 + zod</b></div></div><p>TypeScript, Helmet, CORS, limitation de débit, multipart. Schémas partagés avec l’app dans <code>packages/shared</code>.</p></article>
+      <article class="card tech tilt rv t-abstinence"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><div><span class="role">Base</span><br><b>PostgreSQL 16</b></div></div><p>Drizzle pour le schéma et les migrations, postgres.js pour des requêtes paramétrées : aucune injection SQL possible.</p></article>
+      <article class="card tech tilt rv t-duel" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#key"/></svg></span><div><span class="role">Chiffrement</span><br><b>TweetNaCl</b></div></div><p>Implémentation auditée de NaCl : X25519, XSalsa20-Poly1305. PBKDF2-SHA-256 pour le coffre de clés.</p></article>
+      <article class="card tech tilt rv t-group" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#lock"/></svg></span><div><span class="role">Comptes</span><br><b>bcrypt + JWT</b></div></div><p>Mots de passe bcrypt 12 tours ; jeton d’accès 15 min et jeton de renouvellement 30 jours à usage unique.</p></article>
+      <article class="card tech tilt rv t-duration"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#box"/></svg></span><div><span class="role">Hébergement</span><br><b>Docker + Caddy</b></div></div><p>Un VPS Hostinger dans l’Union européenne, Docker Compose, HTTPS automatique, sauvegardes quotidiennes.</p></article>
+      <article class="card tech tilt rv t-month" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#archive"/></svg></span><div><span class="role">Données</span><br><b>JSZip</b></div></div><p>Export et import de ton compte en .zip, clés de conversation comprises, directement sur l’appareil.</p></article>
+      <article class="card tech tilt rv t-timed" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#test"/></svg></span><div><span class="role">Qualité</span><br><b>Vitest + TypeScript</b></div></div><p>Tests du protocole et du chiffrement, scénario de bout en bout d’une quarantaine de vérifications contre un serveur vierge.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="synchro">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Synchronisation</span><h2 class="rv" style="--d:1">La plus récente <span class="grad-text">gagne.</span></h2><p class="rv" style="--d:2">Une règle unique, partagée par le serveur et l’app (<code>resolveLww</code>), et des opérations qui peuvent être renvoyées sans danger.</p></div>
+    <div class="flow">
+      <article class="card tilt rv"><h3>Écrire tout de suite</h3><p>Chaque action est écrite immédiatement dans la base locale, puis ajoutée à une file d’attente. Les identifiants sont des UUID générés par l’appareil : un objectif créé hors ligne garde son identifiant.</p></article>
+      <article class="card tilt rv" style="--d:1"><h3>Envoyer par lots</h3><p><code>POST /v1/sync/push</code> par lots de 100. Chaque opération a sa transaction ; un <code>opId</code> déjà reçu n’est jamais appliqué deux fois.</p></article>
+      <article class="card tilt rv" style="--d:2"><h3>Recevoir le reste</h3><p><code>GET /v1/sync/pull?cursor=N</code> renvoie tout ce qui a changé depuis la révision N, par pages de 500. Le curseur n’avance qu’après application.</p></article>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="code rv left" aria-label="Exemple d’opération de synchronisation"><span class="c">// une opération de la file d’attente</span>
+{
+  <span class="p">"opId"</span>: <span class="s">"9b1c…e42f"</span>,
+  <span class="p">"entity"</span>: <span class="s">"checkin"</span>,
+  <span class="p">"action"</span>: <span class="s">"upsert"</span>,
+  <span class="p">"id"</span>: <span class="s">"3f0a…77d1"</span>,
+  <span class="p">"data"</span>: { <span class="p">"goalId"</span>: <span class="s">"…"</span>, <span class="p">"day"</span>: <span class="s">"2026-10-12"</span> },
+  <span class="p">"clientUpdatedAt"</span>: <span class="s">"2026-10-12T08:15:00.000Z"</span>
+}<span class="cursor"></span></div>
+      <div class="card rv right" style="display:flex;flex-direction:column;gap:12px">
+        <h3 style="font-size:19px">Conflits et refus</h3>
+        <ul class="prose" style="gap:8px"><li>Le serveur refuse une opération plus ancienne que sa version (<code>stale</code>).</li><li>L’app n’écrase pas une modification locale plus récente encore dans la file.</li><li>Une horloge d’appareil en avance est ramenée à « maintenant + 5 minutes ».</li><li>Autres refus : <code>forbidden</code>, <code>invalid</code>, <code>not_found</code> ; la version du serveur est alors récupérée.</li><li>La déconnexion est bloquée tant que des modifications attendent : rien ne se perd.</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="e2e">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Chiffrement de bout en bout</span><h2 class="rv" style="--d:1">Le serveur transporte, <span class="grad-text">sans pouvoir lire.</span></h2><p class="rv" style="--d:2">Messages privés et groupes sont chiffrés sur l’appareil avant l’envoi. Seuls les messages du compte PepsGoal Officiel circulent en clair.</p></div>
+    <div class="card rv" style="padding:32px 24px">
+      <div class="e2e rv">
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#key"/></svg></span><div><b>Connexion</b><p>L’appareil génère sa paire X25519 et publie sa clé publique.</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#lock"/></svg></span><div><b>Clé de paire</b><p>32 octets aléatoires, tirés par le premier qui écrit.</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#mail"/></svg></span><div><b>Enveloppes</b><p>La clé est chiffrée pour chaque appareil (<code>crypto_box</code>).</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#send"/></svg></span><div><b>Envoi</b><p>Texte scellé avec <code>crypto_secretbox</code> ; le serveur refuse tout message en clair.</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#phone"/></svg></span><div><b>Nouvel appareil</b><p>Les appareils qui détiennent la clé la lui transmettent.</p></div></div>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card rv left" style="display:flex;flex-direction:column;gap:12px">
+        <h3 style="font-size:19px">Ce que voit le serveur</h3>
+        <div class="field"><label for="plain">Ton message</label><input class="input" id="plain" type="text" value="Sortie vélo dimanche 9 h ?" maxlength="80"></div>
+        <div class="cipher" aria-live="polite"><b>{ v: 1, keyId, nonce, ct:</b> <span id="ct"></span> <b>}</b></div>
+        <p class="muted" style="font-size:13px">Illustration : un brouillage aléatoire calculé dans ton navigateur, pas le vrai chiffrement de l’app.</p>
+      </div>
+      <div class="card rv right" style="display:flex;flex-direction:column;gap:10px">
+        <h3 style="font-size:19px">Coffre, groupes et pièces jointes</h3>
+        <ul class="prose" style="gap:8px">
+          <li><b>Coffre de clés</b> : une copie de tes clés, chiffrée avec une clé dérivée de ton mot de passe (PBKDF2-SHA-256, 310 000 itérations). Un nouvel appareil retrouve tout l’historique.</li>
+          <li><b>Groupes</b> : une clé par groupe, en versions ; un membre qui part ne reçoit pas la suivante.</li>
+          <li><b>Photos et vocaux</b> : chiffrés avec une clé à usage unique qui voyage dans le message chiffré.</li>
+          <li><b>Code de sécurité</b> de 30 chiffres, calculé sur les clés publiques de tous les appareils.</li>
+          <li><b>Limites assumées</b> : les métadonnées (qui, quand, quelle taille) restent visibles par le serveur.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="securite">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Sécurité et vie privée</span><h2 class="rv" style="--d:1">Prudent <span class="grad-text">par défaut.</span></h2></div>
+    <div class="sec-list">
+      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#shield"/></svg><div><b>Validation stricte</b><p>Chaque entrée passe un schéma zod ; les données inconnues sont refusées.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#gauge"/></svg><div><b>Points plafonnés côté serveur</b><p>Un client modifié ne peut pas gonfler les classements.</p></div></div>
+      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#key"/></svg><div><b>Jetons à usage unique</b><p>Un jeton de renouvellement volé et réutilisé révoque toutes les sessions du compte.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#image"/></svg><div><b>Images vérifiées</b><p>8 Mo maximum, type contrôlé par la signature du fichier (JPEG, PNG, WebP), nom aléatoire.</p></div></div>
+      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#clock"/></svg><div><b>Limitation de débit</b><p>300 requêtes par minute, renforcée sur connexion, inscription, publication et signalements.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#trash"/></svg><div><b>Suppression en cascade</b><p>Supprimer son compte efface toutes ses données ; les sauvegardes suivent sous 14 jours.</p></div></div>
+      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#cookie"/></svg><div><b>Aucun traceur</b><p>Pas de publicité, pas de mesure d’audience. Polices et bibliothèques intégrées : aucun service tiers contacté.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#flag"/></svg><div><b>Modération outillée</b><p>Signalements, sanctions graduées, contestations, journal des décisions et alertes par e-mail.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="code">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Le code</span><h2 class="rv" style="--d:1">Un monorepo, <span class="grad-text">une source de vérité.</span></h2><p class="rv" style="--d:2">Les 14 types d’objectifs et leurs réglages sont définis une seule fois dans <code>packages/shared</code> et validés à l’identique par le serveur et l’app.</p></div>
+    <div class="grid g2">
+      <div class="card rv left"><div class="tree"><span class="d">pepsgoal-platform/</span>
+├── <span class="d">packages/shared/</span>  <span class="c">modèle, zod, synchro, séries, E2E</span>
+├── <span class="d">apps/server/</span>      <span class="c">API Fastify + PostgreSQL</span>
+├── <span class="d">apps/web-legacy/</span>  <span class="c">l’interface : tous les écrans</span>
+├── <span class="d">apps/web/</span>         <span class="c">cloud.js, polices, emojis, build</span>
+├── <span class="d">apps/app/</span>         <span class="c">coque iOS / Android (Expo)</span>
+├── <span class="d">deploy/</span>           <span class="c">Caddy, Docker, ce site</span>
+└── <span class="d">docs/</span>             <span class="c">architecture, API, E2E, stores</span></div></div>
+      <div class="card rv right"><div class="models">
+        <h4 style="margin-top:0">Personnel, synchronisé</h4><span>goals</span><span>checkins</span><span>goal_groups</span><span>users.settings</span>
+        <h4>Partagé</h4><span>goal_members</span><span>goals.buddy_id</span>
+        <h4>Social</h4><span>friendships</span><span>blocks</span><span>posts</span><span>post_likes</span><span>comments</span><span>stories</span><span>story_views</span><span>cheer_credits</span><span>notifications</span>
+        <h4>Messagerie</h4><span>messages</span><span>chat_groups</span><span>attachments</span><span>e2e_devices</span><span>e2e_envelopes</span><span>e2e_vaults</span>
+        <h4>Modération</h4><span>reports</span><span>appeals</span><span>mod_actions</span><span>maintenance</span><span>announcements</span>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="versions">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Versions</span><h2 class="rv" style="--d:1">Le journal <span class="grad-text">des nouveautés.</span></h2></div>
+    <div class="tl">
+      <div class="tl-i rv"><div class="card"><h3>1.2.0 <span class="chip" style="--c:var(--flame);--c-ink:var(--ink)">actuelle</span> <small class="muted" style="font-family:var(--font-body);font-size:13px">12 octobre 2026</small></h3><ul><li>Messagerie enrichie : photos, messages vocaux, objectifs partagés, groupes de discussion.</li><li>Clés de chiffrement synchronisées entre appareils (coffre).</li><li>Photos dans les publications, blocage entre utilisateurs, e-mails de modération, emojis Fluent.</li></ul></div></div>
+      <div class="tl-i rv"><div class="card"><h3>1.1.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">11 octobre 2026</small></h3><ul><li>Mode hors ligne automatique et surveillance du réseau.</li><li>Options d’accessibilité : contraste élevé, daltonisme, transparence, animations.</li><li>Messagerie chiffrée de bout en bout.</li></ul></div></div>
+      <div class="tl-i rv"><div class="card"><h3>1.0.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">10 octobre 2026</small></h3><ul><li>Serveur de synchronisation, comptes, fonctions sociales et modération.</li><li>Application web, iOS et Android à partir d’une même interface.</li></ul></div></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Démo « ce que voit le serveur » : remplace le texte par des octets aléatoires encodés en base64
+  (() => {
+    const input = document.getElementById('plain'), out = document.getElementById('ct');
+    const b64 = n => { const a = new Uint8Array(n); crypto.getRandomValues(a); return btoa(String.fromCharCode(...a)); };
+    const run = () => { out.textContent = `"${b64(new TextEncoder().encode(input.value).length + 16)}"`; };
+    input.addEventListener('input', run); run();
+  })();
+</script>
+</main>
+<footer class="site-f">
+  <div class="wrap">
+    <div class="foot glass">
+      <div>
+        <a class="logo" href="index.html"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></a>
+        <p>Fixe le cap. Garde la flamme. Une app gratuite, sans publicité, conçue à Angers.</p>
+      </div>
+      <div><h4>Découvrir</h4><ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="fonctionnalites.html">Fonctionnalités</a></li>
+        <li><a href="https://app.pepsgoal.fr">Ouvrir l’app</a></li>
+      </ul></div>
+      <div><h4>Coulisses</h4><ul>
+        <li><a href="design-system.html">Design system</a></li>
+        <li><a href="technique.html">Détails techniques</a></li>
+        <li><a href="mailto:quentin-corbet@outlook.fr">Contact</a></li>
+      </ul></div>
+      <div><h4>Légal</h4><ul>
+        <li><a href="informations-legales.html">Informations légales</a></li>
+        <li><a href="https://pepsgoal.fr/cgu">CGU</a></li>
+        <li><a href="https://pepsgoal.fr/mentions-legales">Mentions légales</a></li>
+        <li><a href="https://pepsgoal.fr/confidentialite">Confidentialité</a></li>
+      </ul></div>
+    </div>
+    <div class="foot-b"><span>© <span data-year>2026</span> PepsGoal · Quentin CORBET</span><span>Version 1.2.0 · aucun cookie, aucun traceur</span></div>
+  </div>
+</footer>
+<div id="live" class="sr" aria-live="polite"></div>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

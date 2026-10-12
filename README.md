@@ -92,3 +92,4 @@ node apps/server/test/e2e.mjs
 | [docs/E2E.md](docs/E2E.md) | Chiffrement de bout en bout des messages privés |
 | [docs/GUIDE-HOSTINGER.md](docs/GUIDE-HOSTINGER.md) · [docs/GUIDE-WEB-HOSTINGER.md](docs/GUIDE-WEB-HOSTINGER.md) · [docs/GUIDE-STORES.md](docs/GUIDE-STORES.md) | Guides pas à pas : serveur sur Hostinger, version web (VPS ou hébergement web), publication sur les stores |
 | [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) | Mise en production du serveur, sauvegardes |
+| [deploy/site-src/README.md](deploy/site-src/README.md) | Site vitrine pepsgoal.fr : pages, design system, construction |

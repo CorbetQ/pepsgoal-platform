@@ -9,7 +9,7 @@ api.pepsgoal.fr {
 	reverse_proxy server:8080
 }
 
-# Site public : accueil et pages légales (/cgu, /mentions-legales, /confidentialite)
+# Site vitrine (deploy/site, généré par deploy/site-src/build.mjs) et pages légales (/cgu, /mentions-legales, /confidentialite)
 pepsgoal.fr {
 	root * /srv/site
 	encode zstd gzip
@@ -27,6 +27,8 @@ pepsgoal.fr {
 		X-Content-Type-Options nosniff
 		Referrer-Policy strict-origin-when-cross-origin
 	}
+	@siteStatic path /fonts/* /emoji/*
+	header @siteStatic Cache-Control "public, max-age=31536000, immutable"
 }
 
 www.pepsgoal.fr {

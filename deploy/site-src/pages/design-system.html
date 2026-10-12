@@ -1,0 +1,387 @@
+<!--meta title="Design system · PepsGoal" description="Le design system PepsGoal : verre givré sur halos vifs. Couleurs, thèmes, typographie, espacement, rayons, mouvement, icônes et composants, avec leurs règles d’usage." nav="design-system"-->
+<style>
+  .ds{display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px;align-items:start}
+  .toc{position:sticky;top:100px;display:flex;flex-direction:column;gap:2px;padding:12px;max-height:calc(100vh - 120px);overflow:auto}
+  .toc a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;font-weight:700;font-size:14px;color:var(--ink-2);text-decoration:none;transition:background .2s,color .2s,transform .2s}
+  .toc a svg{width:17px;height:17px}
+  .toc a:hover{color:var(--ink);transform:translateX(3px)}
+  .toc a.on{background:var(--ink);color:var(--bg)}
+  @media (max-width:1000px){.ds{grid-template-columns:minmax(0,1fr)}.toc{position:sticky;top:86px;z-index:20;flex-direction:row;overflow-x:auto;max-height:none;border-radius:var(--r-pill);padding:6px;scrollbar-width:none}.toc::-webkit-scrollbar{display:none}.toc a{flex:none;padding:8px 12px;font-size:13px}.toc a svg{display:none}}
+  .dsec{padding:24px 0 72px;scroll-margin-top:100px}
+  .dsec>h2{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.035em;margin:8px 0 12px}
+  .dsec>p.intro{color:var(--ink-2);font-size:16.5px;max-width:68ch;margin-bottom:28px}
+  .sub{font-size:20px;font-weight:700;margin:36px 0 14px;display:flex;align-items:center;gap:10px}
+  .sub small{font-family:var(--font-body);font-size:13px;font-weight:700;color:var(--ink-3);letter-spacing:0}
+  .rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .rule{display:flex;gap:12px;padding:16px;border-radius:var(--r-md);background:var(--glass-card);border:1px solid var(--glass-edge)}
+  .rule svg{width:22px;height:22px;flex:none;color:var(--flame)}
+  .rule b{display:block;margin-bottom:2px}
+  .rule p{color:var(--ink-2);font-size:14.5px}
+  @media (max-width:700px){.rules{grid-template-columns:minmax(0,1fr)}}
+  .dodont{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .dd{padding:16px;border-radius:var(--r-md);border:2px solid var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
+  .dd.no{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 8%,transparent)}
+  .dd h4{font-family:var(--font-body);font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:8px;color:var(--ok)}
+  .dd.no h4{color:var(--danger)}
+  .dd h4 svg{width:16px;height:16px;stroke-width:3}
+  .dd p{font-weight:600}
+  .dd p+p{margin-top:6px}
+  @media (max-width:600px){.dodont{grid-template-columns:minmax(0,1fr)}}
+  .brand-sw{position:relative;height:180px;border-radius:var(--r-lg);background:var(--brand);background-size:200% 100%;animation:shimmer 8s ease-in-out infinite;display:flex;align-items:flex-end;justify-content:space-between;padding:20px;color:var(--on-accent);overflow:hidden}
+  @keyframes shimmer{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+  .brand-sw b{font-family:var(--font-display);font-size:24px}
+  .brand-sw .stops{display:flex;gap:8px}
+  .brand-sw .stops button{border:0;padding:6px 10px;border-radius:var(--r-pill);background:rgba(255,255,255,.35);color:var(--on-accent);font-weight:800;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+  .sw{display:flex;flex-direction:column;border-radius:var(--r-md);overflow:hidden;background:var(--glass-card);border:1px solid var(--glass-edge);text-align:left;padding:0;transition:transform .3s var(--ease-bounce),box-shadow .3s}
+  .sw:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+  .sw-c{display:grid;grid-template-columns:1fr 1fr;height:74px}
+  .sw-c span{display:flex;align-items:flex-end;padding:6px 8px;font-size:10.5px;font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .sw-b{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+  .sw-b b{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  .sw-b small{color:var(--ink-2);font-size:12.5px;line-height:1.4}
+  .sw.copied{outline:3px solid var(--ok)}
+  .chk{background-image:linear-gradient(45deg,#ccc 25%,transparent 25%,transparent 75%,#ccc 75%),linear-gradient(45deg,#ccc 25%,#fff 25%,#fff 75%,#ccc 75%);background-size:12px 12px;background-position:0 0,6px 6px}
+  .types-t td:first-child{white-space:nowrap}
+  .tdot{display:inline-flex;align-items:center;gap:8px}
+  .tdot i{width:22px;height:22px;border-radius:7px;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+  .tdot svg{width:20px;height:20px;color:var(--c-ink)}
+  /* aperçu des thèmes */
+  .tp-wrap{display:flex;flex-direction:column;gap:14px}
+  .tp-tabs{display:flex;flex-wrap:wrap;gap:6px;border-radius:var(--r-lg);align-self:flex-start}
+  .tp{position:relative;overflow:hidden;border-radius:var(--r-xl);padding:22px;background:var(--bg);color:var(--ink);border:1px solid var(--line);transition:background .4s,color .4s;isolation:isolate}
+  .tp .tp-blob{position:absolute;border-radius:50%;opacity:var(--blob-op);z-index:-1;filter:blur(2px)}
+  .tp .tp-b1{width:340px;height:340px;background:radial-gradient(closest-side,var(--blob-1),transparent);top:-140px;left:-100px}
+  .tp .tp-b2{width:300px;height:300px;background:radial-gradient(closest-side,var(--blob-2),transparent);top:40px;right:-120px}
+  .tp .tp-b3{width:300px;height:300px;background:radial-gradient(closest-side,var(--blob-3),transparent);bottom:-160px;left:30%}
+  .tp-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px}
+  @media (max-width:760px){.tp-grid{grid-template-columns:minmax(0,1fr)}}
+  .tp .glass{box-shadow:var(--shadow)}
+  .tp[data-t^="hc"] .glass,.tp[data-t^="hc"] .btn,.tp[data-t^="hc"] .item{border-width:2px}
+  .tp[data-t^="hc"] .glass,.tp[data-t^="opaque"] .glass{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .tp-note{font-size:14px;color:var(--ink-2)}
+  /*GEN:themecss*/
+  /* typographie */
+  .fam{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .fam .card{display:flex;flex-direction:column;gap:10px;overflow:hidden}
+  .fam .aa{font-size:110px;line-height:.9;letter-spacing:-.04em}
+  .fam .weights{display:flex;flex-wrap:wrap;gap:6px}
+  .fam .weights span{padding:4px 10px;border-radius:var(--r-pill);border:1px solid var(--line);font-size:13px}
+  @media (max-width:700px){.fam{grid-template-columns:minmax(0,1fr)}.fam .aa{font-size:80px}}
+  .scale{display:flex;flex-direction:column}
+  .scale-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+  .scale-row:last-child{border-bottom:0}
+  .scale-row .meta{display:flex;flex-direction:column;gap:2px}
+  .scale-row .meta b{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  .scale-row .meta small{font-size:12px;color:var(--ink-3);font-weight:700}
+  .scale-row .smp{min-width:0;overflow-wrap:anywhere}
+  @media (max-width:600px){.scale-row{grid-template-columns:minmax(0,1fr);gap:6px}}
+  /* espace, rayons, ombres */
+  .spaces{display:flex;flex-direction:column;gap:8px}
+  .space{display:grid;grid-template-columns:90px 50px minmax(0,1fr);gap:12px;align-items:center;font-size:13px;font-weight:700}
+  .space code{background:none;padding:0}
+  .space i{display:block;height:16px;border-radius:5px;background:var(--brand);width:0;transition:width 1s var(--ease-out)}
+  .rv.in .space i,:root:not(.js) .space i{width:calc(var(--v) * 4)}
+  .space small{grid-column:3;color:var(--ink-2);font-weight:600;margin-top:-4px}
+  .radii{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+  .rad{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-size:13px}
+  .rad i{width:96px;height:96px;background:color-mix(in srgb,var(--flame) 18%,var(--glass-strong));border:2px solid var(--flame);transition:border-radius .5s var(--ease-bounce)}
+  .rad:hover i{border-radius:50%!important}
+  .rad b{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  .rad small{color:var(--ink-2);font-size:12px;line-height:1.35}
+  .shadows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .shd{height:120px;border-radius:var(--r-lg);background:var(--glass-strong);display:grid;place-items:center;text-align:center;font-weight:800;font-size:13px;padding:10px}
+  .shd code{display:block;margin-top:4px;font-size:11px;font-weight:600;background:none}
+  @media (max-width:700px){.shadows{grid-template-columns:minmax(0,1fr)}}
+  /* mouvement */
+  .motion{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .mo{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+  .mo .stage{width:100%;height:120px;border-radius:var(--r-md);background:color-mix(in srgb,var(--ink) 5%,transparent);display:grid;place-items:center;position:relative;overflow:hidden}
+  .mo h4{font-family:var(--font-body);font-weight:800;font-size:15px}
+  .mo p{color:var(--ink-2);font-size:13.5px}
+  .mo code{font-size:12px}
+  .mini-sheet{width:70%;height:70px;border-radius:18px 18px 0 0;background:var(--glass-strong);border:1px solid var(--line);position:absolute;bottom:0;box-shadow:var(--shadow)}
+  .mini-sheet.go{animation:rise .28s var(--ease-bounce)}
+  @keyframes rise{from{transform:translateY(24px);opacity:0}}
+  .rec{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px}
+  .rec i{width:12px;height:12px;border-radius:50%;background:var(--pink);animation:pulse 1s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.25;transform:scale(.8)}}
+  @media (max-width:860px){.motion{grid-template-columns:minmax(0,1fr)}}
+  /* icônes */
+  .icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+  .ico{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px;border-radius:var(--r-md);border:1px solid var(--line);background:var(--glass-strong);font-size:11.5px;font-weight:700;color:var(--ink-2);transition:transform .25s var(--ease-bounce),color .2s}
+  .ico svg{width:26px;height:26px;color:var(--ink);transition:transform .35s var(--ease-bounce)}
+  .ico:hover{transform:translateY(-3px);color:var(--ink)}
+  .ico:hover svg{transform:scale(1.25) rotate(-8deg)}
+  .ico.copied{outline:3px solid var(--ok)}
+  .icon-sizes{display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap}
+  .icon-sizes div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink-3)}
+  /* composants */
+  .comps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .comp{display:flex;flex-direction:column;gap:0;overflow:hidden;padding:0}
+  .comp.wide{grid-column:1/-1}
+  .comp-v{padding:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;min-height:150px;background:radial-gradient(circle at 20% 0,color-mix(in srgb,var(--blob-1) 14%,transparent),transparent 60%),radial-gradient(circle at 100% 100%,color-mix(in srgb,var(--blob-3) 14%,transparent),transparent 60%)}
+  .comp-d{padding:16px 18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+  .comp-d h4{font-family:var(--font-display);font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .comp-d h4 code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:600;letter-spacing:0}
+  .comp-d p{color:var(--ink-2);font-size:14px}
+  @media (max-width:800px){.comps{grid-template-columns:minmax(0,1fr)}}
+  .logo-big{display:inline-flex;align-items:center;gap:12px;font-family:var(--font-display);font-weight:800;font-size:44px;letter-spacing:-.03em}
+  .logo-big svg{width:56px;height:56px}
+  .logo-big .grad{background:var(--brand-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .notif{display:flex;gap:12px;padding:12px;border-radius:var(--r-md);align-items:flex-start;background:color-mix(in srgb,var(--flame) 10%,transparent);max-width:380px;width:100%}
+  .notif .nic{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:color-mix(in srgb,var(--ink) 7%,transparent)}
+  .notif .nic svg{width:20px;height:20px}
+  .notif p{font-size:14px;font-weight:600}
+  .notif small{color:var(--ink-3);font-size:12px;font-weight:700}
+  .sheet-demo{width:100%;max-width:380px;padding:20px;border-radius:var(--r-xl);background:var(--glass-strong);border:1px solid var(--glass-edge);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+  .sheet-demo .h{display:flex;justify-content:space-between;align-items:center}
+  .sheet-demo h5{margin:0;font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:-.02em}
+  .ttile{position:relative;display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:var(--r-md);border:2px solid var(--line);background:var(--glass);cursor:pointer;width:170px;text-align:left;transition:border-color .2s,background .2s}
+  .ttile svg{width:22px;height:22px;color:var(--c-ink)}
+  .ttile b{font-weight:800}
+  .ttile small{font-size:12px;color:var(--ink-2);line-height:1.35}
+  .ttile[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 18%,var(--glass-strong))}
+  .live-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  .live-badge i{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 1.6s infinite}
+</style>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow rv">Design system</span>
+    <h1 data-split>Du verre givré <span class="grad-text">sur des halos vifs.</span></h1>
+    <p class="lead rv" style="--d:2">Des panneaux translucides, une typo display ronde et grasse, et une couleur par format d’objectif. Voici les fondations, les règles et les composants qui donnent son visage à PepsGoal, sur le web comme sur mobile.</p>
+    <div class="crumbs rv" style="--d:3"><a href="#couleurs">Couleurs</a><a href="#typo">Typographie</a><a href="#composants">Composants</a></div>
+  </div>
+</section>
+
+<div class="wrap ds">
+  <nav class="toc glass" aria-label="Sommaire du design system">
+    <a href="#principes"><svg class="i"><use href="assets/icons.svg#sparkle"/></svg>Principes</a>
+    <a href="#couleurs"><svg class="i"><use href="assets/icons.svg#palette"/></svg>Couleurs</a>
+    <a href="#formats"><svg class="i"><use href="assets/icons.svg#target"/></svg>Formats</a>
+    <a href="#themes"><svg class="i"><use href="assets/icons.svg#eye"/></svg>Thèmes</a>
+    <a href="#typo"><svg class="i"><use href="assets/icons.svg#type"/></svg>Typographie</a>
+    <a href="#espace"><svg class="i"><use href="assets/icons.svg#grid"/></svg>Espace et forme</a>
+    <a href="#mouvement"><svg class="i"><use href="assets/icons.svg#move"/></svg>Mouvement</a>
+    <a href="#icones"><svg class="i"><use href="assets/icons.svg#star"/></svg>Iconographie</a>
+    <a href="#composants"><svg class="i"><use href="assets/icons.svg#layers"/></svg>Composants</a>
+  </nav>
+
+  <div>
+    <!-- ============ principes ============ -->
+    <section class="dsec" id="principes">
+      <span class="eyebrow">01 · Principes</span>
+      <h2>Le ton et le contenu</h2>
+      <p class="intro">PepsGoal parle comme un ami qui t’encourage : direct, chaleureux, jamais moralisateur. Ces règles valent pour chaque libellé, chaque état vide et chaque notification.</p>
+      <div class="rules">
+        <div class="rule rv"><svg class="i"><use href="assets/icons.svg#comment"/></svg><div><b>Tutoiement partout</b><p>Phrases courtes et actives : « Valide une action avant minuit pour prolonger ta série de 27 jours. »</p></div></div>
+        <div class="rule rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#user"/></svg><div><b>L’utilisateur s’appelle « Toi »</b><p>Dans les listes, classements et commentaires ; jamais « Vous » ni son propre nom.</p></div></div>
+        <div class="rule rv"><svg class="i"><use href="assets/icons.svg#heart"/></svg><div><b>Encourager, jamais culpabiliser</b><p>Un état vide est un constat positif suivi d’une piste. Une rechute est nommée sobrement, sans reproche.</p></div></div>
+        <div class="rule rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#book"/></svg><div><b>Vocabulaire maison</b><p><i>flamme</i>, <i>série</i>, <i>gel</i>, <i>Encourager</i>, <i>Progrès</i>, <i>Paliers</i>, <i>Duel</i>.</p></div></div>
+        <div class="rule rv"><svg class="i"><use href="assets/icons.svg#type"/></svg><div><b>Casse et nombres</b><p>Majuscule en début de libellé seulement. Chiffres avec espace fine (1 284), unités courtes : « 8/12 livres », « encore 9 h ».</p></div></div>
+        <div class="rule rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#lock"/></svg><div><b>Confidentialité dite sobrement</b><p>« Message chiffré : sa clé n’est pas sur cet appareil. » Expliquer sans alarmer.</p></div></div>
+      </div>
+      <h3 class="sub">À faire, à éviter</h3>
+      <div class="dodont">
+        <div class="dd rv"><h4><svg class="i"><use href="assets/icons.svg#check"/></svg>À faire</h4><p>« Rien de prévu aujourd’hui — Profite de ta journée, ou ajoute une routine. »</p><p>« Encourager »</p></div>
+        <div class="dd no rv" style="--d:1"><h4><svg class="i"><use href="assets/icons.svg#x"/></svg>À éviter</h4><p>« Vous n’avez rien fait aujourd’hui. »</p><p>« J’aime », « Liker »</p></div>
+      </div>
+      <h3 class="sub">Emoji : du contenu, pas de la décoration</h3>
+      <p class="muted" style="max-width:68ch">Un emoji n’apparaît que comme icône d’objectif ou de groupe choisie par l’utilisateur, avatar, ou dans ce que les gens écrivent ; jamais en décoration d’interface ou de titre. À l’affichage, chaque emoji est remplacé par son image <b>Fluent</b> (Microsoft, licence MIT) pour un rendu identique sur iOS, Android et le web.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px" class="rv">
+        <span class="gi t-routine"><img src="emoji/1f3c3.webp" alt="Course"></span><span class="gi t-objective"><img src="emoji/1f4da.webp" alt="Livres"></span><span class="gi t-abstinence"><img src="emoji/1f6ad.webp" alt="Sans tabac"></span><span class="gi t-duration"><img src="emoji/1f9d8.webp" alt="Yoga"></span><span class="gi t-monthly"><img src="emoji/1f4a7.webp" alt="Eau"></span><span class="gi t-limit"><img src="emoji/1f4f5.webp" alt="Sans téléphone"></span><span class="gi t-project"><img src="emoji/1f4b0.webp" alt="Argent"></span><span class="gi t-measure"><img src="emoji/1f957.webp" alt="Salade"></span><span class="gi t-timed"><img src="emoji/1f6cc.webp" alt="Sommeil"></span>
+      </div>
+    </section>
+
+    <!-- ============ couleurs ============ -->
+    <section class="dsec" id="couleurs">
+      <span class="eyebrow">02 · Couleurs</span>
+      <h2>La couleur</h2>
+      <p class="intro">Un fond pâle (ou nuit) sous quatre halos flous, des surfaces de verre, une encre à trois niveaux et le dégradé de marque. Chaque nuance existe en clair et en sombre : clique sur une pastille pour copier son nom.</p>
+      <div class="brand-sw rv zoom"><div><span class="eyebrow" style="color:var(--on-accent)">Dégradé de marque</span><br><b>flame-2 → flame → pink</b></div><div class="stops"><button type="button" data-copy="#FFB000">#FFB000</button><button type="button" data-copy="#FF4A12">#FF4A12</button><button type="button" data-copy="#FF3D96">#FF3D96</button></div></div>
+      <p class="muted" style="margin-top:12px;font-size:14.5px">120° sur les boutons, 100° sur le logotype. Il porte le bouton principal, le FAB, mes bulles de message, les jalons et la flamme. <b>Une seule action en dégradé par écran.</b> L’utilisateur peut le remplacer par l’une des 12 couleurs d’accent : les composants lisent toujours ces trois variables, jamais des valeurs en dur.</p>
+      <h3 class="sub">Fond, encre et verre <small>clair · sombre</small></h3>
+      <div class="swatches"><!--GEN:base--></div>
+      <h3 class="sub">Halos et marque</h3>
+      <div class="swatches"><!--GEN:brand--></div>
+      <h3 class="sub">États</h3>
+      <div class="swatches"><!--GEN:state--></div>
+      <h3 class="sub">Contrastes vérifiés <small>texte sur bg</small></h3>
+      <div class="tbl-wrap rv"><table><thead><tr><th>Paire</th><th>Clair</th><th>Sombre</th><th>Usage</th></tr></thead><tbody><!--GEN:contrast--></tbody></table></div>
+      <p class="muted" style="margin-top:10px;font-size:13.5px">Paires connues sous 4,5:1, conservées telles que dans l’app : <code>ok</code> en clair ; elles sont réservées au texte gras de 19 px et plus, aux icônes et aux bordures, et toujours doublées d’un mot ou d’une icône.</p>
+    </section>
+
+    <!-- ============ formats ============ -->
+    <section class="dsec" id="formats">
+      <span class="eyebrow">03 · Formats d’objectif</span>
+      <h2>Une couleur par format</h2>
+      <p class="intro">Chaque type a un <b>aplat</b> <code>t-&lt;type&gt;</code> (bordure gauche de ligne, filet haut de carte, coche, barre, cellule de calendrier) et une <b>encre</b> <code>t-&lt;type&gt;-ink</code> (gros chiffre, puce, icône). Un composant typé reçoit la classe <code>t-routine</code>… qui définit <code>--c</code> et <code>--c-ink</code> ; il ne lit jamais <code>t-*</code> directement.</p>
+      <div class="tbl-wrap rv"><table class="types-t"><thead><tr><th>Format</th><th>Classe</th><th>Aplat</th><th>Encre clair · sombre</th><th>Aperçu</th></tr></thead><tbody><!--GEN:types--></tbody></table></div>
+    </section>
+
+    <!-- ============ thèmes ============ -->
+    <section class="dsec" id="themes">
+      <span class="eyebrow">04 · Thèmes</span>
+      <h2>Huit thèmes</h2>
+      <p class="intro"><b>Clair</b> et <b>Sombre</b> suivent le système par défaut, puis trois réglages d’accessibilité déclinés en clair et sombre : <b>Contraste élevé</b> (noir et blanc purs, ombres et halos éteints, bordures de 2px), <b>Daltonien</b> (palette Okabe-Ito, succès en bleu, alerte en vermillon) et <b>Opaque</b> (transparence désactivée). Essaie-les en direct.</p>
+      <div class="tp-wrap rv">
+        <div class="seg tp-tabs" data-press-group role="group" aria-label="Thème de l’aperçu">
+          <button type="button" aria-pressed="true" data-t="light">Clair</button><button type="button" aria-pressed="false" data-t="dark">Sombre</button><button type="button" aria-pressed="false" data-t="hc-light">Contraste · clair</button><button type="button" aria-pressed="false" data-t="hc-dark">Contraste · sombre</button><button type="button" aria-pressed="false" data-t="cvd-light">Daltonien · clair</button><button type="button" aria-pressed="false" data-t="cvd-dark">Daltonien · sombre</button><button type="button" aria-pressed="false" data-t="opaque-light">Opaque · clair</button><button type="button" aria-pressed="false" data-t="opaque-dark">Opaque · sombre</button>
+        </div>
+        <div class="tp" data-t="light" id="tp">
+          <i class="tp-blob tp-b1"></i><i class="tp-blob tp-b2"></i><i class="tp-blob tp-b3"></i>
+          <div class="tp-grid">
+            <div class="glass" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+              <ul class="items">
+                <li class="item t-routine"><span class="item-main"><span class="gi"><img src="emoji/1f3c3.webp" alt=""></span><span class="item-txt"><b>Courir 30 min</b><small><span class="chip t-routine">Routine</span><span>lun, mer, ven</span></small></span></span><button class="check on" data-demo aria-pressed="true" aria-label="Valider"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+                <li class="item t-objective"><span class="item-main"><span class="gi"><img src="emoji/1f4da.webp" alt=""></span><span class="item-txt"><b>Lire 12 livres</b><small><span class="chip t-objective">Objectif</span><span>8/12</span></small></span></span><button class="mini-btn">+ Progrès</button></li>
+                <li class="item t-deadline"><span class="item-main"><span class="gi"><img src="emoji/1f9fe.webp" alt=""></span><span class="item-txt"><b>Impôts</b><small><span class="chip t-deadline">Deadline</span><span class="countdown urgent">encore 9 h</span></small></span></span><button class="check" data-demo aria-pressed="false" aria-label="Valider"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+              </ul>
+            </div>
+            <div class="glass" style="padding:16px;display:flex;flex-direction:column;gap:12px">
+              <p class="eyebrow">Aperçu</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="btn btn-primary sm">Ajouter</span><span class="btn sm">Annuler</span><span class="btn btn-danger sm">Bloquer</span></div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip t-abstinence">Abstinence</span><span class="chip t-monthly">Mensuel</span><span class="chip t-duration">Durée</span><span class="chip t-duel">Duel</span><span class="chip t-group">Groupe</span></div>
+              <p style="font-weight:800;color:var(--ok);display:flex;gap:6px;align-items:center"><svg class="i"><use href="assets/icons.svg#check"/></svg>Enregistré</p>
+              <p style="font-weight:800;color:var(--danger);display:flex;gap:6px;align-items:center"><svg class="i"><use href="assets/icons.svg#x"/></svg>Limite dépassée</p>
+              <p class="tp-note" id="tp-note">Le thème par défaut : verre translucide sur halos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ typographie ============ -->
+    <section class="dsec" id="typo">
+      <span class="eyebrow">05 · Typographie</span>
+      <h2>Deux voix</h2>
+      <p class="intro"><b>Unbounded</b> pour tout ce qui se lit comme un chiffre ou un titre ; <b>Manrope</b> pour le reste. Les titres sont serrés (−0,01 à −0,04 em) et équilibrés ; tous les chiffres qui bougent sont tabulaires. La marque parle fort : libellés, boutons, puces et noms sont en 800.</p>
+      <div class="fam">
+        <div class="card tilt rv" data-tilt="4"><span class="eyebrow">display</span><span class="aa grad-text" style="font-family:var(--font-display);font-weight:800">Aa</span><b style="font-family:var(--font-display);font-size:22px">Unbounded</b><div class="weights" style="font-family:var(--font-display)"><span style="font-weight:500">500</span><span style="font-weight:700">700</span><span style="font-weight:800">800</span></div><p class="muted" style="font-size:14px">Logotype, salutation, compteurs, titres de carte, de page et de fenêtre.</p></div>
+        <div class="card tilt rv" data-tilt="4" style="--d:1"><span class="eyebrow">body</span><span class="aa" style="font-weight:800">Aa</span><b style="font-size:22px;font-weight:800">Manrope</b><div class="weights"><span style="font-weight:400">400</span><span style="font-weight:500">500</span><span style="font-weight:600">600</span><span style="font-weight:700">700</span><span style="font-weight:800">800</span></div><p class="muted" style="font-size:14px">Texte courant, libellés, boutons, méta. Licence SIL Open Font, polices intégrées.</p></div>
+      </div>
+      <h3 class="sub">Échelle display</h3>
+      <div class="card rv scale"><!--GEN:display--></div>
+      <h3 class="sub">Échelle texte</h3>
+      <div class="card rv scale"><!--GEN:text--></div>
+    </section>
+
+    <!-- ============ espace et forme ============ -->
+    <section class="dsec" id="espace">
+      <span class="eyebrow">06 · Espace, forme et profondeur</span>
+      <h2>Généreux et arrondi</h2>
+      <p class="intro">Des pas fins de 4 à 24 px, des rayons généreux et une seule ombre sous le verre, plus deux lueurs de marque.</p>
+      <h3 class="sub">Espacement</h3>
+      <div class="card rv"><div class="spaces"><!--GEN:space--></div></div>
+      <h3 class="sub">Rayons <small>survole pour arrondir</small></h3>
+      <div class="radii rv"><!--GEN:radius--></div>
+      <h3 class="sub">Profondeur</h3>
+      <div class="shadows rv">
+        <div class="shd" style="box-shadow:var(--shadow)"><div>shadow<code>sous le verre et les fenêtres</code></div></div>
+        <div class="shd" style="box-shadow:var(--shadow-primary)"><div>shadow-primary<code>0 8px 24px -10px flame</code></div></div>
+        <div class="shd" style="box-shadow:var(--shadow-fab)"><div>shadow-fab<code>0 12px 30px -8px flame</code></div></div>
+      </div>
+      <h3 class="sub">Mise en page</h3>
+      <div class="tbl-wrap rv"><table><thead><tr><th>Token</th><th>Valeur</th><th>Usage</th></tr></thead><tbody>
+        <tr><td><b>sidebar-w</b></td><td>248px</td><td>Largeur de la barre latérale desktop.</td></tr>
+        <tr><td><b>content-max</b></td><td>1180px</td><td>Largeur maximale de l’application (et de ce site).</td></tr>
+        <tr><td><b>sheet-w</b></td><td>580px</td><td>Largeur maximale d’une fenêtre modale.</td></tr>
+        <tr><td><b>bp-mobile</b></td><td>860px</td><td>En dessous : barre latérale masquée, barre d’onglets flottante et FAB.</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <!-- ============ mouvement ============ -->
+    <section class="dsec" id="mouvement">
+      <span class="eyebrow">07 · Mouvement</span>
+      <h2>Court, vivant, coupable</h2>
+      <p class="intro">Les interactions durent 150 ms. Les célébrations sont généreuses. Et tout mouvement se coupe avec <code>prefers-reduced-motion</code> ou le réglage « Animations désactivées ». Clique sur les démonstrations.</p>
+      <div class="motion">
+        <div class="card mo rv"><div class="stage"><span class="btn btn-primary">Survole-moi</span></div><h4>Survol et appui</h4><p>Translation de −1px sur les boutons, échelle .98 à l’appui.</p><code>150 ms · ease</code></div>
+        <div class="card mo rv" style="--d:1"><div class="stage t-routine"><button class="check" data-demo data-pts="10" aria-pressed="false" aria-label="Valider la démonstration"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></div><h4>Validation</h4><p>Échelle 1.06 au survol, gerbe d’étincelles et « +N » à la validation.</p><code>coche · étincelles</code></div>
+        <div class="card mo rv" style="--d:2"><div class="stage" id="sheet-stage"><span class="mini-sheet go"></span></div><h4>Fenêtres</h4><p>Elles montent de 24px avec un léger rebond.</p><button class="btn sm" type="button" id="replay">Rejouer</button></div>
+        <div class="card mo rv"><div class="stage"><svg class="fl flame-anim" style="width:70px;height:70px"><use href="#flame"/></svg></div><h4>Flamme du héros</h4><p>Elle oscille doucement autour de sa base.</p><code>2,4 s · ease-in-out · infini</code></div>
+        <div class="card mo rv" style="--d:1"><div class="stage"><span class="rec"><i></i>0:07 / 2:00</span></div><h4>Enregistrement vocal</h4><p>Le point d’enregistrement pulse chaque seconde.</p><code>1 s · infini</code></div>
+        <div class="card mo rv" style="--d:2"><div class="stage"><div class="bar" style="width:80%"><i style="--w:72%"></i></div></div><h4>Progrès</h4><p>Les barres et anneaux se remplissent à l’apparition (ajout de ce site).</p><code>1,4 s · ease-out</code></div>
+      </div>
+    </section>
+
+    <!-- ============ icônes ============ -->
+    <section class="dsec" id="icones">
+      <span class="eyebrow">08 · Iconographie</span>
+      <h2>Un trait, une flamme</h2>
+      <p class="intro">Jeu d’icônes maison au trait : grille 24px, trait 2px, bouts et jonctions arrondis, sans remplissage, en <code>currentColor</code>. La <b>flamme</b> est la seule icône pleine et dégradée : logo, série, encouragements, badges, classement. Elle n’est jamais recolorée à la main.</p>
+      <div class="card rv" style="margin-bottom:16px"><div class="icon-sizes">
+        <div><svg class="i" style="width:13px;height:13px"><use href="assets/icons.svg#target"/></svg>13 · puces</div>
+        <div><svg class="i" style="width:18px;height:18px"><use href="assets/icons.svg#target"/></svg>18 · boutons</div>
+        <div><svg class="i" style="width:22px;height:22px"><use href="assets/icons.svg#target"/></svg>22 · navigation</div>
+        <div><svg class="i" style="width:26px;height:26px"><use href="assets/icons.svg#target"/></svg>26 · tuiles</div>
+        <div><svg class="fl flame-anim" style="width:44px;height:44px"><use href="#flame"/></svg>flamme</div>
+      </div></div>
+      <div class="icons rv"><!--GEN:icons--></div>
+    </section>
+
+    <!-- ============ composants ============ -->
+    <section class="dsec" id="composants">
+      <span class="eyebrow">09 · Composants</span>
+      <h2>Les composants</h2>
+      <p class="intro">Du HTML et du CSS, sans framework : chaque composant lit les tokens et reçoit, pour les formats, une classe <code>t-&lt;type&gt;</code>. Ils sont tous <span class="live-badge"><i></i>vivants</span> ci-dessous.</p>
+      <div class="comps">
+        <article class="card comp rv"><div class="comp-v"><span class="logo-big"><svg class="fl flame-anim"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></span></div><div class="comp-d"><h4>Logo</h4><p>La flamme dégradée suivie de « Peps » en <code>ink</code> et « Goal » dans le dégradé. Toujours en texte vivant, jamais déformé.</p></div></article>
+        <article class="card comp rv" style="--d:1"><div class="comp-v"><span class="btn btn-primary"><svg class="i"><use href="assets/icons.svg#plus"/></svg>Ajouter</span><span class="btn">Annuler</span><span class="btn btn-ghost">Plus tard</span><span class="btn btn-danger"><svg class="i"><use href="assets/icons.svg#ban"/></svg>Bloquer</span></div><div class="comp-d"><h4>Button <code>btn · btn-primary · btn-ghost · btn-danger</code></h4><p>Pilule. Un seul <code>btn-primary</code> par écran ; <code>btn-danger</code> toujours derrière une confirmation.</p></div></article>
+        <article class="card comp rv"><div class="comp-v"><span class="icon-btn"><svg class="i"><use href="assets/icons.svg#bell"/></svg><span class="badge" style="position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--pink);color:var(--on-accent);font-size:11px;font-weight:800;display:grid;place-items:center;border:2px solid var(--bg)">3</span></span><span class="icon-btn"><svg class="i"><use href="assets/icons.svg#gear"/></svg></span><button class="fab" type="button" aria-label="Nouvel objectif"><svg class="i"><use href="assets/icons.svg#plus"/></svg></button></div><div class="comp-d"><h4>IconButton · Fab</h4><p>Bouton rond de 42px sur <code>glass-strong</code>, pastille <code>pink</code> pour les compteurs. Le FAB mobile porte le dégradé et la lueur <code>shadow-fab</code>.</p></div></article>
+        <article class="card comp rv" style="--d:1"><div class="comp-v"><span class="chip t-routine"><svg class="i"><use href="assets/icons.svg#repeat"/></svg>Routine</span><span class="chip t-objective"><svg class="i"><use href="assets/icons.svg#target"/></svg>Objectif</span><span class="chip t-deadline"><svg class="i"><use href="assets/icons.svg#cal"/></svg>Deadline</span><span class="chip t-abstinence"><svg class="i"><use href="assets/icons.svg#ban"/></svg>Abstinence</span><span class="chip t-measure"><svg class="i"><use href="assets/icons.svg#trend"/></svg>Mesure</span><span class="chip">+10 flammes</span></div><div class="comp-d"><h4>Chip <code>chip t-&lt;type&gt;</code></h4><p>Puce 12px/800 : fond <code>--c</code> à 22 %, texte <code>--c-ink</code>, icône 13px.</p></div></article>
+        <article class="card comp wide rv"><div class="comp-v"><ul class="items" style="width:100%;max-width:560px">
+          <li class="item t-routine"><span class="item-main"><span class="gi"><img src="emoji/1f3c3.webp" alt=""></span><span class="item-txt"><b>Courir 30 min</b><small><span class="chip t-routine"><svg class="i"><use href="assets/icons.svg#repeat"/></svg>Routine</span><span>lun, mer, ven</span></small></span></span><button class="check" data-demo data-pts="10" aria-pressed="false" aria-label="Valider : Courir 30 min"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+          <li class="item t-limit"><span class="item-main"><span class="gi"><img src="emoji/1f4f5.webp" alt=""></span><span class="item-txt"><b>Écrans : 2 h max</b><small><span class="chip t-limit"><svg class="i"><use href="assets/icons.svg#gauge"/></svg>Limite</span><span>1 h 20 aujourd’hui</span></small></span></span><button class="check" data-demo data-pts="8" aria-pressed="false" aria-label="Valider : Écrans"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+          <li class="item t-objective"><span class="item-main"><span class="gi"><img src="emoji/1f4da.webp" alt=""></span><span class="item-txt"><b>Lire 12 livres</b><small><span class="chip t-objective"><svg class="i"><use href="assets/icons.svg#target"/></svg>Objectif</span><span>8/12</span></small></span></span><button class="mini-btn">+ Progrès</button></li>
+        </ul></div><div class="comp-d"><h4>GoalItem · CheckButton <code>item t-&lt;type&gt; · check</code></h4><p>Ligne d’objectif sur <code>glass-strong</code>, bordure gauche de 5px en aplat. La coche de 50px se remplit à la validation et barre le nom ; les objectifs chiffrés ont un bouton « + Progrès ». Essaie de valider.</p></div></article>
+        <article class="card comp wide rv"><div class="comp-v" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;justify-content:stretch;align-items:stretch">
+          <div class="gcard t-objective tilt"><div class="gcard-h"><span class="gi"><img src="emoji/1f4da.webp" alt=""></span><b>Lire 12 livres</b></div><div class="big"><span>8/12</span><span>livres</span></div><div class="bar"><i style="--w:66%"></i></div><span class="chip t-objective" style="align-self:flex-start">Objectif</span></div>
+          <div class="gcard t-routine tilt"><div class="gcard-h"><span class="gi"><img src="emoji/1f3c3.webp" alt=""></span><b>Courir 30 min</b></div><div class="big"><span>3/3</span><span>cette semaine</span></div><div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div><span class="chip t-routine" style="align-self:flex-start">Routine</span></div>
+          <div class="gcard t-abstinence tilt"><div class="gcard-h"><span class="gi"><img src="emoji/1f6ad.webp" alt=""></span><b>Sans cigarette</b></div><div class="big"><span>41</span><span>jours</span></div><div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div><span class="chip t-abstinence" style="align-self:flex-start">Abstinence</span></div>
+        </div><div class="comp-d"><h4>GoalCard <code>gcard t-&lt;type&gt;</code></h4><p>Carte de la grille Objectifs (250px en auto-fill) : filet haut de 5px, gros chiffre <code>metric</code> en encre du type, barre ou points de progression.</p></div></article>
+        <article class="card comp wide rv"><div class="comp-v"><section class="hero-card glass" style="width:100%;max-width:640px"><div style="display:flex;flex-direction:column;gap:8px;min-width:0"><p class="eyebrow">Lundi 12 octobre</p><h2 class="hello">Salut Quentin</h2><p class="muted" style="font-size:14px">Valide une action avant minuit pour prolonger ta série de 27 jours.</p><div class="week"><div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>L</span></div><div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>M</span></div><div class="wd frozen"><svg class="i"><use href="assets/icons.svg#snow"/></svg><span>M</span></div><div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>J</span></div><div class="wd on today"><svg class="fl"><use href="#flame"/></svg><span>V</span></div><div class="wd off fut"><svg class="fl"><use href="#flame"/></svg><span>S</span></div><div class="wd off fut"><svg class="fl"><use href="#flame"/></svg><span>D</span></div></div></div><div class="hero-flame"><svg class="fl flame-anim"><use href="#flame"/></svg><div class="streak-num" data-count="27">27</div><div class="streak-lbl">jours de série</div></div></section></div><div class="comp-d"><h4>StreakHero</h4><p>Le haut de l’écran Aujourd’hui : salutation <code>hello</code>, semaine en flammes (gel en <code>t-goal-ink</code>), grande flamme animée et compteur <code>streak</code>.</p></div></article>
+        <article class="card comp rv"><div class="comp-v" style="gap:24px"><svg class="ring" viewBox="0 0 108 108" aria-hidden="true"><defs><linearGradient id="ringG2" x1="0" x2="1"><stop offset="0" style="stop-color:var(--flame-2)"/><stop offset=".5" style="stop-color:var(--flame)"/><stop offset="1" style="stop-color:var(--pink)"/></linearGradient></defs><circle class="trk" cx="54" cy="54" r="44" fill="none" stroke-width="12"/><path class="val" data-v=".75" d="M54 10 a44 44 0 1 1 0 88 a44 44 0 1 1 0 -88" fill="none" stroke="url(#ringG2)" stroke-width="12" stroke-linecap="round"/><text class="ring-txt" x="54" y="62" text-anchor="middle">3/4</text></svg><div style="display:flex;flex-direction:column;gap:10px;width:160px"><div class="bar"><i style="--w:80%"></i></div><div class="bar t-duration"><i style="--w:45%"></i></div><div class="bar t-deadline"><i style="--w:92%"></i></div></div></div><div class="comp-d"><h4>ProgressRing · ProgressBar</h4><p>Anneau de 108px pour la journée, barres de 10px en pilule : dégradé de marque par défaut, aplat du type sinon.</p></div></article>
+        <article class="card comp rv" style="--d:1"><div class="comp-v" style="flex-direction:column"><div class="seg" data-press-group role="group" aria-label="Visibilité"><button type="button" aria-pressed="false"><svg class="i"><use href="assets/icons.svg#lock"/></svg>Privé</button><button type="button" aria-pressed="true"><svg class="i"><use href="assets/icons.svg#users"/></svg>Amis</button><button type="button" aria-pressed="false"><svg class="i"><use href="assets/icons.svg#globe"/></svg>Public</button></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center" data-press-group><button type="button" class="fchip" aria-pressed="true">Tous</button><button type="button" class="fchip" aria-pressed="false">Routines</button><button type="button" class="fchip" aria-pressed="false">Objectifs</button></div><label style="display:flex;align-items:center;gap:10px;font-weight:700"><span class="switch"><input type="checkbox" checked><span></span></span>Rappel du soir</label></div><div class="comp-d"><h4>Segmented · FilterChip · Switch</h4><p>Choix exclusifs en pilule, filtres pressés en <code>ink</code> plein, interrupteur <code>flame</code> qui rebondit.</p></div></article>
+        <article class="card comp rv"><div class="comp-v" style="flex-direction:column;align-items:stretch"><div class="field"><label for="ds-name">Nom de l’objectif</label><input class="input" id="ds-name" type="text" placeholder="Lire 20 pages"></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="ttile t-routine" aria-pressed="true" data-press-one><svg class="i"><use href="assets/icons.svg#repeat"/></svg><b>Routine</b><small>Certains jours, ou X fois par semaine</small></button><button type="button" class="ttile t-limit" aria-pressed="false" data-press-one><svg class="i"><use href="assets/icons.svg#gauge"/></svg><b>Limite</b><small>Ne pas dépasser X</small></button></div></div><div class="comp-d"><h4>TextField · TypeTile</h4><p>Champ sur <code>glass-strong</code>, anneau <code>focus</code> à l’activation. Les tuiles de type prennent la couleur du format une fois choisies.</p></div></article>
+        <article class="card comp rv" style="--d:1"><div class="comp-v" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch"><div class="stat"><b data-count="142">142</b><span>validations</span></div><div class="stat"><b data-count="27">27</b><span>jours de série</span></div><div class="stat"><b data-count="9">9</b><span>gels</span></div><div class="bdg ok" style="grid-column:span 2"><svg class="fl"><use href="#flame"/></svg><b>Semaine en feu</b><small>7 jours de série</small></div><div class="bdg off"><svg class="fl"><use href="#flame"/></svg><b>Duelliste</b><small>Gagner un duel</small></div></div><div class="comp-d"><h4>StatTile · BadgeTile</h4><p>Chiffre <code>stat</code> en Unbounded tabulaire ; badges obtenus bordés de <code>flame</code>, les autres grisés.</p></div></article>
+        <article class="card comp rv"><div class="comp-v"><article class="post glass" style="width:100%;max-width:380px;box-shadow:none"><div class="who"><span class="av" style="--g:linear-gradient(135deg,#6FF7FF,#22D3FF 55%,#4D9BFF)">LM</span><span><b>Léo</b><small>il y a 2 h · Amis</small></span></div><span class="milestone"><svg class="fl"><use href="#flame"/></svg>30 jours de série</span><p>Un mois sans sauter une séance !</p><div><button class="cheer" data-demo aria-pressed="false"><svg class="fl"><use href="#flame"/></svg><span data-n>12</span> Encourager</button></div></article></div><div class="comp-d"><h4>Post · Avatar</h4><p>Publication du feed avec jalon en dégradé et bouton Encourager. Avatars en dégradé d’accent à 135°, ronds pour une personne, carrés pour un groupe.</p></div></article>
+        <article class="card comp rv" style="--d:1"><div class="comp-v"><div class="chat" style="width:100%;max-width:340px"><span class="chat-day">Aujourd’hui</span><div class="msg them">On se fait le défi 10 000 pas ?<small>09:12</small></div><div class="msg me">Je relève, prépare-toi !<small>09:13</small></div><p class="e2e-note"><svg class="i"><use href="assets/icons.svg#lock"/></svg>Chiffrée de bout en bout</p></div></div><div class="comp-d"><h4>ChatBubble</h4><p>Les miennes à droite dans le dégradé, celles des autres sur <code>ink</code> à 8 %. Rayon 18px, coin côté auteur à 5px.</p></div></article>
+        <article class="card comp rv"><div class="comp-v" style="flex-direction:column"><div class="notif"><span class="nic"><svg class="fl"><use href="#flame"/></svg></span><div><p><b>Inès</b> t’a encouragé pour « Courir 30 min ».</p><small>il y a 5 min</small></div></div><div class="empty"><svg class="i" style="width:32px;height:32px"><use href="assets/icons.svg#sun"/></svg><b>Rien de prévu aujourd’hui</b><span>Profite de ta journée, ou ajoute une routine.</span></div></div><div class="comp-d"><h4>Notification · EmptyState</h4><p>Non lue sur <code>flame</code> à 10 %. Un état vide est un constat positif suivi d’une piste.</p></div></article>
+        <article class="card comp rv" style="--d:1"><div class="comp-v"><div class="sheet-demo"><div class="h"><h5>Nouvel objectif</h5><span class="icon-btn" style="width:36px;height:36px"><svg class="i"><use href="assets/icons.svg#x"/></svg></span></div><p class="muted" style="font-size:14px">Choisis ce que tu veux suivre.</p><span class="btn btn-primary" style="align-self:flex-end">Créer</span></div></div><div class="comp-d"><h4>Sheet</h4><p>Fenêtre de 580px max, rayon <code>r-xl</code>, voile <code>scrim</code> flouté ; sur mobile, elle monte du bas.</p></div></article>
+        <article class="card comp wide rv"><div class="comp-v"><nav class="tabbar glass" style="width:100%;max-width:420px" aria-label="Exemple de barre d’onglets" data-press-group>
+          <button class="tab" type="button" aria-pressed="true"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Aujourd’hui</button><button class="tab" type="button" aria-pressed="false"><svg class="i"><use href="assets/icons.svg#target"/></svg>Objectifs</button><button class="tab" type="button" aria-pressed="false"><svg class="i"><use href="assets/icons.svg#feed"/></svg>Feed</button><button class="tab" type="button" aria-pressed="false"><svg class="i"><use href="assets/icons.svg#users"/></svg>Amis</button><button class="tab" type="button" aria-pressed="false"><svg class="i"><use href="assets/icons.svg#user"/></svg>Profil</button>
+        </nav></div><div class="comp-d"><h4>TabBar · SideNav</h4><p>Sous 860px, une barre d’onglets flottante en bas ; au-dessus, une barre latérale vitrée de 248px. L’onglet actif passe en <code>ink</code> plein.</p></div></article>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section class="section tight">
+  <div class="wrap">
+    <div class="cta glass ring-border rv zoom">
+      <svg class="fl flame-anim"><use href="#flame"/></svg>
+      <h2>Le voir en vrai.</h2>
+      <p>Tous ces composants vivent dans l’application, en clair, en sombre et dans les trois modes d’accessibilité.</p>
+      <div class="cta-acts"><a class="btn btn-primary lg" href="https://app.pepsgoal.fr" data-magnet><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir l’app<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a><a class="btn lg" href="technique.html">Détails techniques</a></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    // Sommaire : section visible surlignée
+    const links = [...document.querySelectorAll('.toc a')];
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(l => { const on = l.getAttribute('href') === `#${e.target.id}`; l.classList.toggle('on', on); if (on && getComputedStyle(l.parentElement).flexDirection === 'row') l.parentElement.scrollTo({ left:l.offsetLeft - 24, behavior:'smooth' }); }); }), { rootMargin:'-40% 0px -55% 0px' });
+    links.forEach(l => { const t = document.querySelector(l.getAttribute('href')); if (t) io.observe(t); });
+    // Aperçu des thèmes
+    const NOTES = { light:'Le thème par défaut : verre translucide sur halos.', dark:'Fond nuit, encres éclaircies pour garder le contraste.', 'hc-light':'Noir et blanc purs, bordures de 2px, sans ombre ni halo.', 'hc-dark':'Blanc sur noir, focus jaune vif.', 'cvd-light':'Palette Okabe-Ito : formats distinguables avec tous les daltonismes courants.', 'cvd-dark':'Okabe-Ito en sombre ; succès en bleu, alerte en vermillon.', 'opaque-light':'Surfaces pleines, sans flou ni halos.', 'opaque-dark':'Surfaces pleines en sombre.' };
+    const tp = document.getElementById('tp'), note = document.getElementById('tp-note');
+    document.querySelector('.tp-tabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; tp.dataset.t = b.dataset.t; note.textContent = NOTES[b.dataset.t]; });
+    // Fenêtre : rejouer l'animation
+    document.getElementById('replay').addEventListener('click', () => { const s = document.querySelector('.mini-sheet'); s.classList.remove('go'); void s.offsetWidth; s.classList.add('go'); });
+    // Tuiles de type : une seule choisie
+    document.addEventListener('click', e => { const t = e.target.closest('[data-press-one]'); if (!t) return; t.parentElement.querySelectorAll('[data-press-one]').forEach(x => x.setAttribute('aria-pressed', String(x === t))); });
+  })();
+</script>
