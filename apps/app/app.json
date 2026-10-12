@@ -20,7 +20,8 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "PepsGoal accède à tes photos pour ta photo de profil, tes publications et tes stories.",
-        "NSCameraUsageDescription": "PepsGoal utilise l'appareil photo pour ta photo de profil, tes publications et tes stories."
+        "NSCameraUsageDescription": "PepsGoal utilise l'appareil photo pour ta photo de profil, tes publications et tes stories.",
+        "NSMicrophoneUsageDescription": "PepsGoal utilise le micro uniquement pendant l'enregistrement d'un message vocal."
       }
     },
     "android": {
@@ -30,7 +31,10 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#07081A"
       },
-      "permissions": [],
+      "permissions": [
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS"
+      ],
       "softwareKeyboardLayoutMode": "resize"
     },
     "plugins": []

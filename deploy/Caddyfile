@@ -13,6 +13,13 @@ api.pepsgoal.fr {
 pepsgoal.fr {
 	root * /srv/site
 	encode zstd gzip
+	# Documents légaux : générés avec la version web (mêmes textes que dans l'application)
+	@legal path /cgu /mentions-legales /confidentialite
+	handle @legal {
+		root * /srv/app/legal
+		rewrite * {path}.html
+		file_server
+	}
 	try_files {path} {path}.html {path}/index.html
 	file_server
 	header {

@@ -49,7 +49,8 @@ synchroniser plusieurs appareils, à sauvegarder et à faire fonctionner les fon
 - **Personnel, synchronisé** : `goals` (14 types, réglages propres au type dans `data`), `checkins`, `goal_groups`, réglages du compte (`users.settings`).
   Chaque ligne porte `rev` (séquence `sync_rev_seq`) et `deleted_at` (suppression transmise aux autres appareils).
 - **Partagé** : `goal_members` (défis de groupe et duels), binôme de motivation (`goals.buddy_id`, validations `pending`).
-- **Social** : `friendships`, `blocks`, `posts`, `post_likes`, `cheer_credits` (gels de série), `comments`, `stories` (expirent après 24 h), `story_views`, `messages` (chiffrés de bout en bout, colonne `e2e` ; seul PepsGoal Officiel écrit en clair), `e2e_devices`, `e2e_pair_keys`, `e2e_envelopes` (voir E2E.md), `notifications`.
+- **Messagerie** : `messages` (privé : `recipient_id`, groupe : `group_id`, pièces jointes citées : `attachments`), `chat_groups`, `chat_group_members`, `attachments` (fichiers chiffrés, jamais servis publiquement).
+- **Social** : `friendships`, `blocks`, `posts` (photo : `photo_url`), `post_likes`, `cheer_credits` (gels de série), `comments`, `stories` (expirent après 24 h), `story_views`, `messages` (chiffrés de bout en bout, colonne `e2e` ; seul PepsGoal Officiel écrit en clair), `e2e_devices`, `e2e_pair_keys`, `e2e_envelopes` (voir E2E.md), `notifications`.
 - **Modération** : `reports`, `appeals`, `mod_actions` (journal), `maintenance`, `announcements` ; colonnes de sanction sur `users` (`warned_at`, `ban_until`, `ban_permanent`, `comments_restricted`).
 
 Les types d'objectifs et leurs réglages sont définis une seule fois dans `packages/shared/src/schemas.ts` (`GoalDataByType`)
@@ -81,6 +82,8 @@ Toute l'interface est celle du prototype, sans réécriture : `apps/web-legacy/p
 Fonctionnement de la couche connectée :
 - **Synchro** : l'état connu du serveur est mémorisé ; à chaque enregistrement, les différences (objectifs, validations, réglages) partent vers `/v1/sync/push`, puis `/v1/sync/pull` récupère les changements des autres appareils (le plus récent gagne).
 - **Social** : amis, feed, stories, notifications et conversations sont relus depuis le serveur (au démarrage, en changeant d'onglet, chaque minute ; la conversation ouverte toutes les 8 s).
+- **Messagerie** : texte, photos, messages vocaux et objectifs partagés, en privé ou en groupe, chiffrés de bout en bout (voir E2E.md).
+- **Modération par e-mail** : chaque signalement, publication à valider ou demande de débannissement déclenche aussi un e-mail à `MOD_EMAIL` (`apps/server/src/lib/mailer.ts`).
 - **Hors ligne** : l'interface continue de fonctionner ; la déconnexion et le changement de compte sont bloqués tant que le serveur n'a pas confirmé la synchronisation.
 - **Sans compte** : l'interface fonctionne comme le prototype, entièrement sur l'appareil ; créer un compte envoie ensuite toutes les données.
 

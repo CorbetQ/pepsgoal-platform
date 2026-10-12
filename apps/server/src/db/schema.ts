@@ -127,6 +127,8 @@ export const posts = pgTable('posts', {
   text: text('text').notNull(),
   visibility: text('visibility').notNull(),
   goalId: uuid('goal_id').references(() => goals.id, { onDelete: 'set null' }),
+  /** Photo jointe (image téléversée sur ce serveur, /media/…). */
+  photoUrl: text('photo_url'),
   kind: text('kind').notNull().default('manual'),
   status: text('status').notNull().default('visible'),
   commentsLocked: boolean('comments_locked').notNull().default(false),
@@ -173,10 +175,40 @@ export const storyViews = pgTable('story_views', {
   seenAt: ts('seen_at').notNull().defaultNow()
 }, t => ({ pk: primaryKey({ columns: [t.storyId, t.viewerId] }) }));
 
+/** Groupe de discussion : messages chiffrés de bout en bout avec une clé propre au groupe (docs/E2E.md). */
+export const chatGroups = pgTable('chat_groups', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  emoji: text('emoji').notNull().default('💬'),
+  ownerId: uuid('owner_id').references(() => users.id, { onDelete: 'set null' }),
+  /** Dernier départ d'un membre : les messages suivants doivent utiliser une nouvelle version de clé. */
+  membersChangedAt: ts('members_changed_at').notNull().defaultNow(),
+  createdAt: ts('created_at').notNull().defaultNow()
+});
+
+export const chatGroupMembers = pgTable('chat_group_members', {
+  groupId: uuid('group_id').notNull().references(() => chatGroups.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  joinedAt: ts('joined_at').notNull().defaultNow(),
+  lastReadAt: ts('last_read_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.groupId, t.userId] }), userIdx: index('chat_group_members_user_idx').on(t.userId) }));
+
+/** Pièce jointe d'un message (photo, message vocal) : fichier chiffré sur l'appareil, opaque pour le serveur. */
+export const attachments = pgTable('attachments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  ownerId: uuid('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  size: integer('size').notNull(),
+  createdAt: ts('created_at').notNull().defaultNow()
+});
+
 export const messages = pgTable('messages', {
   id: uuid('id').primaryKey().defaultRandom(),
   senderId: uuid('sender_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  recipientId: uuid('recipient_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  /** Message privé : destinataire. Message de groupe : null (voir group_id). */
+  recipientId: uuid('recipient_id').references(() => users.id, { onDelete: 'cascade' }),
+  groupId: uuid('group_id').references(() => chatGroups.id, { onDelete: 'cascade' }),
+  /** Pièces jointes chiffrées référencées par le message (le serveur ne sait que leur identifiant). */
+  attachments: uuid('attachments').array().notNull().default([]),
   /** Texte en clair : uniquement les messages du compte PepsGoal Officiel. */
   text: text('text'),
   /** Messages entre amis : chiffrés de bout en bout ({ v, keyId, nonce, ct }), illisibles par le serveur. */
@@ -186,7 +218,7 @@ export const messages = pgTable('messages', {
   auto: boolean('auto').notNull().default(false),
   createdAt: ts('created_at').notNull().defaultNow(),
   readAt: ts('read_at')
-}, t => ({ convIdx: index('messages_conv_idx').on(t.recipientId, t.senderId, t.createdAt) }));
+}, t => ({ convIdx: index('messages_conv_idx').on(t.recipientId, t.senderId, t.createdAt), groupIdx: index('messages_group_idx').on(t.groupId, t.createdAt) }));
 
 export const notifications = pgTable('notifications', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -258,14 +290,18 @@ export const e2eDevices = pgTable('e2e_devices', {
   lastSeenAt: ts('last_seen_at').notNull().defaultNow()
 }, t => ({ userIdx: index('e2e_devices_user_idx').on(t.userId) }));
 
-/** Version de clé d'une paire d'amis (user_a < user_b). La clé elle-même n'est jamais stockée en clair. */
+/**
+ * Version de clé d'une conversation : paire d'amis (user_a < user_b) ou groupe (group_id).
+ * La clé elle-même n'est jamais stockée en clair.
+ */
 export const e2ePairKeys = pgTable('e2e_pair_keys', {
   keyId: uuid('key_id').primaryKey(),
-  userA: uuid('user_a').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  userB: uuid('user_b').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userA: uuid('user_a').references(() => users.id, { onDelete: 'cascade' }),
+  userB: uuid('user_b').references(() => users.id, { onDelete: 'cascade' }),
+  groupId: uuid('group_id').references(() => chatGroups.id, { onDelete: 'cascade' }),
   createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
   createdAt: ts('created_at').notNull().defaultNow()
-}, t => ({ pairIdx: index('e2e_pair_keys_pair_idx').on(t.userA, t.userB, t.createdAt) }));
+}, t => ({ pairIdx: index('e2e_pair_keys_pair_idx').on(t.userA, t.userB, t.createdAt), groupIdx: index('e2e_pair_keys_group_idx').on(t.groupId, t.createdAt) }));
 
 /** Clé de paire chiffrée pour un appareil précis (crypto_box). */
 export const e2eEnvelopes = pgTable('e2e_envelopes', {

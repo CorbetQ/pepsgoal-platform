@@ -63,7 +63,11 @@ export default async function miscRoutes(app: FastifyInstance) {
     const [pending] = await sql`select 1 from appeals where user_id = ${u.id} and status = 'pending'`;
     if (pending) throw conflict('Une demande est déjà en cours d’examen.');
     await sql`insert into appeals (user_id, text) values (${u.id}, ${text})`;
-    await notifyAdmins(sql, `Nouvelle demande de débannissement de ${u.displayName}.`);
+    await notifyAdmins(sql, `Nouvelle demande de débannissement de ${u.displayName}.`, {
+      subject: `Demande de débannissement : ${u.displayName}`,
+      details: [['Compte', `${u.displayName} (@${u.username})`], ['Suspension', u.banPermanent ? 'définitive' : u.banUntil ? `jusqu’au ${new Date(u.banUntil).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })}` : '—']],
+      excerpt: text
+    });
     reply.status(201);
     return { ok: true };
   });

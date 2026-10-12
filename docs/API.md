@@ -38,16 +38,30 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | GET | `/friends` | Amis (avec leur série en cours, leurs jours validés et leurs flammes, pour le classement), demandes reçues et envoyées, `myStreak` |
 | POST | `/friends/requests` · `/friends/requests/:id/accept` · `/decline` | Demandes d'amis |
 | DELETE | `/friends/:userId` | Retirer un ami |
-| POST / DELETE | `/users/:id/block` | Bloquer / débloquer |
-| GET | `/feed?tab=friends\|public&before=` | Fil paginé (20) avec encouragements (et qui a encouragé), commentaires |
-| POST / DELETE | `/posts` · `/posts/:id` | Publier (`kind` : `manual` ou `milestone` pour les publications automatiques ; en attente si compte averti) / supprimer |
+| POST / DELETE | `/users/:id/block` | Bloquer (retire l'amitié) / débloquer. Le compte PepsGoal Officiel ne peut pas être bloqué |
+| GET | `/blocks` | Comptes que j'ai bloqués |
+| GET | `/feed?tab=friends\|public&before=` | Fil paginé (20) avec photo, encouragements (et qui a encouragé), commentaires ; contenus des comptes bloqués masqués |
+| POST / DELETE | `/posts` · `/posts/:id` | Publier : `text` et/ou `photoUrl` (image téléversée sur `/media`), `kind` : `manual` ou `milestone` ; en attente si compte averti / supprimer |
 | POST / DELETE | `/posts/:id/like` | Encourager (un gel de série tous les 10 encouragements reçus) |
 | POST | `/posts/:id/comments` · DELETE `/comments/:id` | Commenter / supprimer |
 | POST | `/posts/:id/report` | Signaler |
 | GET / POST | `/stories` | Stories des amis (24 h) / publier |
 | POST | `/stories/:id/view` · GET `/stories/:id/views` · DELETE `/stories/:id` | Vue, liste des vues, suppression |
 | GET | `/conversations` · `/conversations/:userId` | Conversations (PepsGoal Officiel épinglé) / messages |
-| POST | `/conversations/:userId` | Envoyer un message chiffré (amis uniquement) : `{ "e2e": { "v": 1, "keyId", "nonce", "ct" } }` ; tout message en clair est refusé (400) |
+| POST | `/conversations/:userId` | Envoyer un message chiffré (amis uniquement) : `{ "e2e": { "v": 1, "keyId", "nonce", "ct" }, "attachments": [id] }` ; tout message en clair est refusé |
+
+## Groupes de discussion et pièces jointes (chiffrés de bout en bout, voir E2E.md)
+
+| Méthode | Route | Rôle |
+| --- | --- | --- |
+| GET / POST | `/groups` | Mes groupes (membres, dernier message chiffré, non lus) / créer `{ name, emoji, members }` (amis uniquement, 31 membres max) |
+| PATCH / DELETE | `/groups/:id` | Renommer, changer l'émoji / supprimer le groupe (créateur) |
+| POST | `/groups/:id/members` | Ajouter des amis `{ userIds }` (créateur) |
+| DELETE | `/groups/:id/members/:userId` | Retirer un membre (créateur) ou quitter (soi-même) ; impose une nouvelle version de clé |
+| GET / POST | `/groups/:id/messages` | Messages (50 par page, `read` pour chacun) / envoyer `{ e2e, attachments }` ; 409 `key_rotation` si la clé date d'avant le départ d'un membre |
+| GET / POST | `/e2e/groups/:id` · `/e2e/groups/:id/keys` | Appareils des membres, versions de clé (`rotate` si une nouvelle est nécessaire) / dépôt d'enveloppes |
+| POST | `/attachments` | Pièce jointe chiffrée sur l'appareil (photo, message vocal), 6 Mo max → `{ id }` |
+| GET | `/attachments/:id` | Téléchargement réservé à l'expéditeur et aux participants de la conversation qui la cite |
 
 ## Chiffrement de bout en bout (voir E2E.md)
 | Méthode | Route | Rôle |
@@ -56,7 +70,7 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | DELETE | `/e2e/devices/:id` | Oublie un appareil et ses enveloppes (déconnexion) |
 | GET | `/e2e/peers/:userId?deviceId=` | Appareils des deux amis, versions de clé, enveloppe destinée à cet appareil, appareils sans enveloppe |
 | POST | `/e2e/peers/:userId/keys` | Crée une version de clé et/ou dépose des enveloppes `{ keyId, envelopes: [{ deviceId, senderDeviceId, nonce, box }] }` |
-| GET | `/e2e/pending?deviceId=` | Clés détenues par cet appareil qu'un autre appareil de la paire n'a pas encore (re-chiffrement automatique) |
+| GET | `/e2e/pending?deviceId=` | Clés détenues par cet appareil qu'un autre appareil de la paire ou d'un membre du groupe n'a pas encore (re-chiffrement automatique) |
 | GET | `/notifications` · POST `/notifications/read-all` | Notifications |
 | POST | `/notify` | Notification à un ami ou à un membre d'un objectif partagé (`to`, `text`, `type`, `goalId`) ; 60 par heure |
 | POST | `/appeals` | Demande de débannissement |

@@ -9,11 +9,13 @@
  *
  * Sorties :
  *   apps/web/dist/                         version web (https://app.pepsgoal.fr), polices en fichiers séparés
+ *   apps/web/dist/legal/                   CGU, mentions légales et confidentialité en pages autonomes (servies aussi sur https://pepsgoal.fr)
  *   apps/app/src/webapp.generated.ts       version mobile : un seul fichier HTML (polices intégrées), embarqué dans l'app
  *
  * Usage : node apps/web/build.mjs        (API : variable PEPSGOAL_API, https://api.pepsgoal.fr par défaut)
  */
 import { createRequire } from 'node:module';
+import vm from 'node:vm';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -89,6 +91,56 @@ writeFileSync(path.join(dist, 'manifest.webmanifest'), JSON.stringify({
   background_color: '#07081A', theme_color: '#07081A', icons: [{ src: '/icon-512.png', sizes: '1024x1024', type: 'image/png', purpose: 'any' }]
 }, null, 2));
 
+// ---------- documents légaux : mêmes textes que dans l'application (constante LEGAL de pepsgoal.html) ----------
+function legalDocs() {
+  const a = source.indexOf('const LEGAL_MAIL = '), b = source.indexOf('\n};\n', source.indexOf('const LEGAL = {', a));
+  if (a < 0 || b < 0) throw new Error('Textes légaux introuvables dans pepsgoal.html');
+  const ctx = { APP_VERSION: VERSION };
+  vm.runInNewContext(source.slice(a, b + 3) + '\nthis.LEGAL = LEGAL; this.LEGAL_UPDATED = LEGAL_UPDATED;', ctx);
+  return { docs: ctx.LEGAL, updated: ctx.LEGAL_UPDATED };
+}
+const LEGAL_PAGES = [['cgu', 'cgu'], ['mentions', 'mentions-legales'], ['privacy', 'confidentialite']];
+function legalPage(key, { docs, updated }) {
+  const d = docs[key];
+  const nav = LEGAL_PAGES.map(([k, slug]) => `<a href="/${slug}"${k === key ? ' aria-current="page"' : ''}>${docs[k].short}</a>`).join(' · ');
+  return `<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${d.title} · PepsGoal</title>
+<meta name="description" content="${d.title} de l’application PepsGoal.">
+<style>
+  :root{color-scheme:light dark;--bg:#F6F6FB;--ink:#14152E;--ink2:#4A4C6B;--line:#E2E3EE;--flame:#E8400C}
+  @media (prefers-color-scheme:dark){:root{--bg:#07081A;--ink:#F4F5FF;--ink2:#C9CCF2;--line:#24264A;--flame:#FF6A3D}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:32px 16px 64px}
+  main{max-width:760px;margin:0 auto}
+  header a{color:var(--flame);font-weight:800;text-decoration:none;font-size:20px}
+  h1{font-size:30px;line-height:1.2;margin:18px 0 4px}
+  h2{font-size:19px;margin:28px 0 6px}
+  p,li{color:var(--ink2)} b{color:var(--ink)}
+  a{color:var(--flame)}
+  nav{margin:12px 0 4px;font-size:14px}
+  .maj{font-size:14px;color:var(--ink2);border-bottom:1px solid var(--line);padding-bottom:16px}
+</style>
+</head>
+<body>
+<main>
+<header><a href="/">🔥 PepsGoal</a></header>
+<nav>${nav}</nav>
+<h1>${d.title}</h1>
+<p class="maj">Dernière mise à jour : ${updated}</p>
+${d.sections.map(([t, html]) => `<section><h2>${t}</h2>${html}</section>`).join('\n')}
+</main>
+</body>
+</html>
+`;
+}
+const legal = legalDocs();
+mkdirSync(path.join(dist, 'legal'), { recursive: true });
+for (const [key, slug] of LEGAL_PAGES) writeFileSync(path.join(dist, 'legal', `${slug}.html`), legalPage(key, legal));
+
 // ---------- version mobile : un seul fichier, polices intégrées ----------
 const embedded = page({ platform: 'app', fonts, fontUrl: f => `data:font/woff2;base64,${readFileSync(f.file).toString('base64')}` });
 writeFileSync(path.join(root, 'apps/app/src/webapp.generated.ts'),
@@ -98,5 +150,5 @@ writeFileSync(path.join(root, 'apps/app/src/webapp.generated.ts'),
 
 const kb = n => `${Math.round(n / 1024)} Ko`;
 console.log(`PepsGoal ${VERSION} (API ${API})`);
-console.log(`  web    : apps/web/dist/index.html (${kb(readFileSync(path.join(dist, 'index.html')).length)}) + ${fonts.length} polices`);
+console.log(`  web    : apps/web/dist/index.html (${kb(readFileSync(path.join(dist, 'index.html')).length)}) + ${fonts.length} polices + ${LEGAL_PAGES.length} pages légales`);
 console.log(`  mobile : apps/app/src/webapp.generated.ts (${kb(embedded.length)})`);

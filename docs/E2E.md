@@ -24,6 +24,19 @@ Primitives : [tweetnacl](https://github.com/dchest/tweetnacl-js), une implément
 
 Si aucune clé n'est encore arrivée sur un appareil, la conversation propose « Créer une nouvelle clé ». Une nouvelle version de clé est alors créée pour tous les appareils. Les anciens messages restent lisibles là où l'ancienne clé existe.
 
+## Groupes de discussion
+
+Chaque groupe a sa propre clé (versions successives), distribuée par le même mécanisme d'enveloppes que les paires d'amis, à tous les appareils de ses membres (`/v1/e2e/groups/:id`).
+- **Nouveau membre ou nouvel appareil** : un appareil qui détient la clé la lui transmet automatiquement (`/v1/e2e/pending`). Il peut donc lire l'historique chiffré avec la version en cours.
+- **Départ d'un membre** (retrait ou départ volontaire) : le serveur oublie ses enveloppes et refuse les messages chiffrés avec une clé antérieure (409 `key_rotation`). Le prochain message crée une nouvelle version, que l'ancien membre ne reçoit pas : il ne lit plus la suite.
+
+## Photos, messages vocaux et objectifs partagés
+
+Le contenu d'un message est un texte, ou un objet JSON chiffré comme un texte (`{ "pg": 1, "k": "photo" | "voice" | "goal", … }`).
+Une photo (redimensionnée, 1600 px) ou un message vocal (2 minutes au plus) est chiffré sur l'appareil avec une clé aléatoire à usage unique (`crypto_secretbox`), puis téléversé sur `/v1/attachments`.
+Cette clé voyage **dans le message chiffré** : le serveur stocke un fichier illisible et sait seulement quelle conversation le cite, ce qui lui permet de réserver le téléchargement à ses participants.
+Un objectif partagé est un simple résumé (titre, type, progression) dans le message chiffré.
+
 ## Vérifier qu'aucune clé n'a été substituée
 
 Chaque conversation affiche un **code de sécurité** de 30 chiffres. Il est calculé sur les clés publiques de tous les appareils des deux amis et doit être identique sur les deux téléphones.

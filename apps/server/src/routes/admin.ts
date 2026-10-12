@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { AnnouncementBody, AppealDecisionBody, BanBody, Id, MaintenanceBody, ReasonBody } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { revokeAllSessions } from '../lib/auth.js';
+import { removeUserFiles } from '../lib/files.js';
 import { badRequest, forbidden, notFound } from '../lib/errors.js';
 import { me, requireAdmin } from '../lib/guards.js';
 import { invalidateMaintenanceCache } from '../lib/maintenance.js';
@@ -109,6 +110,7 @@ export default async function adminRoutes(app: FastifyInstance) {
   app.delete('/v1/admin/users/:id', pre, async req => {
     const { id } = params(req.params); const u = await target(id);
     await revokeAllSessions(id);
+    await removeUserFiles(id);
     await sql`delete from users where id = ${id}`;
     await logMod(sql, me(req).id, 'Compte supprimé', null, u.display_name);
     return { ok: true };
@@ -125,7 +127,7 @@ export default async function adminRoutes(app: FastifyInstance) {
       where p.deleted_at is null and ${scope === 'pending' ? sql`p.status = 'pending'`
         : scope === 'reported' ? sql`exists (select 1 from reports r where r.post_id = p.id and r.closed_at is null)` : sql`true`}
       order by ${scope === 'reported' ? sql`report_count desc,` : sql``} p.created_at desc limit 100`;
-    return rows.map(p => ({ id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, visibility: p.visibility, status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), reportCount: p.report_count, reasons: p.reasons ?? [] }));
+    return rows.map(p => ({ id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: p.photo_url, visibility: p.visibility, status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), reportCount: p.report_count, reasons: p.reasons ?? [] }));
   });
 
   for (const action of ['approve', 'reject', 'delete', 'lock', 'unlock', 'dismiss'] as const) {

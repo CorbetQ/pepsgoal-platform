@@ -22,7 +22,7 @@
   const S = {
     acct: false, tokens: null, serverOk: navigator.onLine !== false, navOnline: navigator.onLine !== false, pulledOnce: false,
     syncing: null, lastSync: null, syncError: '', refreshing: null, failures: 0, pingTimer: null,
-    search: { q: null, list: [], busy: false }, viewed: new Set(), profileLoaded: new Map()
+    search: { q: null, list: [], busy: false }, viewed: new Set(), profileLoaded: new Map(), keyTried: new Set()
   };
   const ls = {
     get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
@@ -100,6 +100,15 @@
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new ApiError(res.status, data.error || 'error', data.message || 'Erreur inattendue, réessaie dans un instant.');
     return data;
+  }
+  // Fichier brut (pièce jointe chiffrée) : mêmes règles de session que api()
+  async function apiBytes(path, retry = true) {
+    let res;
+    try { res = await fetch(API + path, { headers: S.tokens?.accessToken ? { authorization: 'Bearer ' + S.tokens.accessToken } : {} }); }
+    catch (e) { serverDown(); throw new ApiError(0, 'offline', 'Connexion impossible au serveur PepsGoal.'); }
+    if (res.status === 401 && retry && S.tokens && (await refreshTokens())) return apiBytes(path, false);
+    if (!res.ok) throw new ApiError(res.status, 'error', 'Pièce jointe indisponible.');
+    return new Uint8Array(await res.arrayBuffer());
   }
   const fail = e => toast(e?.message || 'Action impossible pour le moment.', 'x');
   function sessionLost() {
@@ -377,9 +386,10 @@
     if (S.refreshing) return S.refreshing;
     S.refreshing = (async () => {
       try {
-        const [meR, fr, feedF, feedP, stories, notifs, convs] = await Promise.all([
+        const [meR, fr, feedF, feedP, stories, notifs, convs, groups, blocks] = await Promise.all([
           api('GET', '/v1/me'), api('GET', '/v1/friends'), api('GET', '/v1/feed?tab=friends'), api('GET', '/v1/feed?tab=public'),
-          api('GET', '/v1/stories'), api('GET', '/v1/notifications'), api('GET', '/v1/conversations')
+          api('GET', '/v1/stories'), api('GET', '/v1/notifications'), api('GET', '/v1/conversations'),
+          api('GET', '/v1/groups').catch(() => []), api('GET', '/v1/blocks').catch(() => [])
         ]);
         const mine = meId();
         // Moi
@@ -401,7 +411,7 @@
           posts.set(p.id, {
             id: p.id, userId: p.author.id, text: p.text, visibility: p.visibility === 'public' ? 'public' : 'friends', goalId: p.goalId && DB.goals.some(g => g.id === p.goalId) ? p.goalId : null,
             kind: p.kind || 'manual', at: msOf(p.createdAt), likes: (p.likers || []).map(l => l.id), comments: p.comments.map(c => ({ id: c.id, userId: c.author.id, text: c.text, at: msOf(c.createdAt) })),
-            ...(p.status === 'pending' ? { status: 'pending' } : {}), ...(p.commentsLocked ? { commentsLocked: true } : {})
+            ...(p.photoUrl ? { photo: p.photoUrl } : {}), ...(p.status === 'pending' ? { status: 'pending' } : {}), ...(p.commentsLocked ? { commentsLocked: true } : {})
           });
         }
         if (isAdmin(u)) for (const p of DB.posts) if (p._mod && !posts.has(p.id)) posts.set(p.id, p);
@@ -416,7 +426,7 @@
           try { const v = await api('GET', `/v1/stories/${s.id}/views`); v.forEach(x => upsertUser(x)); s.seenBy = v.map(x => x.id); } catch (e) { /* liste indisponible */ }
         }));
         // Notifications du serveur + rappels locaux
-        const VIEW = { like: 'feed', comment: 'feed', friend: 'friends', official: 'friends', mod: 'feed' };
+        const VIEW = { like: 'feed', comment: 'feed', friend: 'friends', official: 'friends', mod: 'feed', group: 'friends' };
         DB.notifs = DB.notifs.filter(n => !n._srv && n.userId === mine).concat(notifs.map(n => ({
           id: n.id, userId: mine, type: n.type, text: n.text, at: msOf(n.createdAt), read: n.read, _srv: true,
           ...(VIEW[n.type] ? { view: VIEW[n.type] } : {}), ...(n.data?.goalId ? { goalId: n.data.goalId } : {}), ...(n.data?.postId ? { postId: n.data.postId } : {})
@@ -426,6 +436,16 @@
           upsertUser(c.peer);
           if (c.unread > 0 || !DB.messages.some(m => m.from === c.peer.id || m.to === c.peer.id)) await loadConversation(c.peer.id, true);
         }
+        // Groupes de discussion : liste, puis messages des groupes non lus (ou jamais chargés)
+        DB.chats = groups.map(g => {
+          g.members.forEach(x => upsertUser(x));
+          return { id: g.id, name: g.name, emoji: g.emoji, owner: g.ownerId, members: g.members.map(x => x.id), at: msOf(g.createdAt) || Date.now() };
+        });
+        const live = new Set(DB.chats.map(g => g.id));
+        DB.messages = DB.messages.filter(m => !m.chat || live.has(m.chat));
+        for (const g of groups) if (g.unread > 0 || (g.last && !DB.messages.some(m => m.chat === g.id))) await loadGroup(g.id, true);
+        // Comptes que j'ai bloqués
+        DB.blocks = blocks.map(b => { upsertUser(b.user); return { by: mine, who: b.user.id, at: msOf(b.blockedAt) || Date.now() }; });
         if (isAdmin(u)) await refreshModeration();
         repairRefs(DB);
         rawSave();
@@ -447,6 +467,15 @@
       });
     }
   }
+  async function loadGroup(gid, quiet) {
+    const list = await api('GET', `/v1/groups/${gid}/messages`);
+    const mine = meId();
+    DB.messages = DB.messages.filter(m => m.chat !== gid);
+    for (const m of list) {
+      ensureUserStub(m.senderId);
+      DB.messages.push({ id: m.id, from: m.senderId, to: null, chat: gid, e2e: m.e2e, at: msOf(m.createdAt), readBy: m.mine || m.read || !quiet ? [mine] : [] });
+    }
+  }
   async function refreshModeration() {
     const [users, pending, reported, recent, apP, apD, log, maint, news] = await Promise.all([
       api('GET', '/v1/admin/users'), api('GET', '/v1/admin/posts?scope=pending'), api('GET', '/v1/admin/posts?scope=reported'), api('GET', '/v1/admin/posts?scope=recent'),
@@ -465,6 +494,7 @@
     for (const p of [...pending, ...reported, ...recent]) {
       upsertUser(p.author);
       const cur = byId.get(p.id) || { id: p.id, userId: p.author.id, text: p.text, visibility: p.visibility === 'public' ? 'public' : 'friends', goalId: null, kind: 'manual', at: msOf(p.createdAt), likes: [], comments: [], _mod: true };
+      if (p.photoUrl) cur.photo = p.photoUrl;
       if (p.status === 'pending') cur.status = 'pending'; else delete cur.status;
       if (p.commentsLocked) cur.commentsLocked = true; else delete cur.commentsLocked;
       if (!byId.has(p.id)) { DB.posts.push(cur); byId.set(p.id, cur); }
@@ -511,40 +541,45 @@
   function unwrapKey(env, senderPk, sk) {
     try { const k = nacl.box.open(b64d(env.box), b64d(env.nonce), b64d(senderPk), b64d(sk)); return k && k.length === 32 ? b64e(k) : null; } catch (e) { return null; }
   }
-  async function uploadEnvelopes(peerId, keyId, key, dev, targets) {
+  // Conversation : { peer } (paire d'amis) ou { group } (groupe de discussion)
+  const convBase = c => c.group ? `/v1/e2e/groups/${c.group}` : `/v1/e2e/peers/${c.peer}`;
+  async function uploadEnvelopes(conv, keyId, key, dev, targets) {
     if (!targets.length) return;
-    await api('POST', `/v1/e2e/peers/${peerId}/keys`, { keyId, envelopes: targets.map(d => Object.assign({ deviceId: d.id, senderDeviceId: dev.id }, wrapKey(key, d.publicKey, dev.sk))) });
+    await api('POST', `${convBase(conv)}/keys`, { keyId, envelopes: targets.map(d => Object.assign({ deviceId: d.id, senderDeviceId: dev.id }, wrapKey(key, d.publicKey, dev.sk))) });
   }
-  // Prépare une conversation : ouvre les enveloppes reçues, transmet les clés aux appareils qui ne les ont pas, crée la première clé
-  async function e2eOpen(peerId) {
+  // Prépare une conversation : ouvre les enveloppes reçues, transmet les clés aux appareils qui ne les ont pas,
+  // crée la première clé (ou une nouvelle version après le départ d'un membre d'un groupe)
+  async function e2eOpenConv(conv) {
     const dev = await e2eDevice();
-    let st = await api('GET', `/v1/e2e/peers/${peerId}?deviceId=${dev.id}`);
+    let st = await api('GET', `${convBase(conv)}?deviceId=${dev.id}`);
     const { k } = keyStore();
     for (const x of st.keys) if (x.envelope && !k.pairs[x.keyId]) { const key = unwrapKey(x.envelope, x.envelope.senderPublicKey, dev.sk); if (key) k.pairs[x.keyId] = key; }
-    if (!st.keys.length) {
+    if (conv.group ? st.rotate : !st.keys.length) {
       const keyId = uuid(), key = b64e(nacl.randomBytes(32));
-      await uploadEnvelopes(peerId, keyId, key, dev, st.devices);
+      await uploadEnvelopes(conv, keyId, key, dev, st.devices);
       k.pairs[keyId] = key;
-      st = await api('GET', `/v1/e2e/peers/${peerId}?deviceId=${dev.id}`);
+      st = await api('GET', `${convBase(conv)}?deviceId=${dev.id}`);
     }
     keySave(k);
     const byId = new Map(st.devices.map(d => [d.id, d]));
     let current = null;
     for (const x of st.keys) {
       const key = k.pairs[x.keyId]; if (!key) continue;
-      current = current || { keyId: x.keyId, key };
+      // Groupe : seule la version la plus récente sert à écrire
+      if (!current && (!conv.group || x === st.keys[0])) current = { keyId: x.keyId, key };
       const missing = x.missingDevices.map(id => byId.get(id)).filter(Boolean);
-      await uploadEnvelopes(peerId, x.keyId, key, dev, missing).catch(() => undefined);
+      await uploadEnvelopes(conv, x.keyId, key, dev, missing).catch(() => undefined);
     }
     return { current, waiting: !current && st.keys.length > 0 };
   }
+  const e2eOpen = peerId => e2eOpenConv({ peer: peerId });
   async function e2eShareMissing() {
     const { k } = keyStore(); if (!k.device) return;
     const pend = await api('GET', `/v1/e2e/pending?deviceId=${k.device.id}`);
     for (const p of pend) {
       const key = k.pairs[p.keyId] || unwrapKey(p.envelope, p.envelope.senderPublicKey, k.device.sk); if (!key) continue;
       k.pairs[p.keyId] = key;
-      await uploadEnvelopes(p.peerId, p.keyId, key, k.device, p.missingDevices).catch(() => undefined);
+      await uploadEnvelopes(p.groupId ? { group: p.groupId } : { peer: p.peerId }, p.keyId, key, k.device, p.missingDevices).catch(() => undefined);
     }
     keySave(k);
   }
@@ -558,6 +593,15 @@
     try { const out = nacl.secretbox.open(b64d(p.ct), b64d(p.nonce), b64d(key)); return out ? new TextDecoder().decode(out) : null; } catch (e) { return null; }
   }
   async function decryptAll() {
+    // Clé inconnue (nouvelle version après le départ d'un membre, nouvel appareil) : on va chercher son enveloppe, une fois par clé
+    const { k } = keyStore(), mine = meId(), convs = new Map();
+    for (const m of DB.messages) {
+      if (!m.e2e || k.pairs[m.e2e.keyId] || S.keyTried.has(m.e2e.keyId)) continue;
+      S.keyTried.add(m.e2e.keyId);
+      const conv = m.chat ? { group: m.chat } : { peer: m.from === mine ? m.to : m.from };
+      if (conv.group || conv.peer) convs.set(conv.group ? 'g' + conv.group : 'p' + conv.peer, conv);
+    }
+    for (const conv of convs.values()) await e2eOpenConv(conv).catch(() => undefined);
     for (const m of DB.messages) if (m.e2e && (!E2E.cache.has(m.id) || E2E.cache.get(m.id) == null)) E2E.cache.set(m.id, naclDecrypt(m));
   }
 
@@ -645,28 +689,69 @@
     // Messages : chiffrement du serveur à la place du chiffrement local du prototype
     O.e2eDecrypt = e2eDecrypt; e2eDecrypt = async function (m) { return S.acct ? naclDecrypt(m) : O.e2eDecrypt(m); };
     O.encryptLegacy = encryptLegacy; encryptLegacy = async function () { if (!S.acct) return O.encryptLegacy(); };
-    O.keyPrint = keyPrint;
-    keyPrint = async function (a, b) {
-      if (!S.acct) return O.keyPrint(a, b);
-      const peer = a === meId() ? b : a, st = await api('GET', `/v1/e2e/peers/${peer}?deviceId=${(await e2eDevice()).id}`);
+    O.keyPrintConv = keyPrintConv;
+    keyPrintConv = async function (cid) {
+      if (!S.acct) return O.keyPrintConv(cid);
+      const [a, b] = cid.split('|'), conv = a === 'grp' ? { group: b } : { peer: a === meId() ? b : a };
+      const st = await api('GET', `${convBase(conv)}?deviceId=${(await e2eDevice()).id}`);
       const pks = st.devices.map(d => d.publicKey).sort().join('|');
       const h = nacl.hash(new TextEncoder().encode(pks));
       return Array.from({ length: 6 }, (_, i) => String(((h[i * 3] << 16) | (h[i * 3 + 1] << 8) | h[i * 3 + 2]) % 100000).padStart(5, '0')).join(' ');
     };
-    O.sendMessage = sendMessage;
-    sendMessage = async function (to, text) {
-      if (!S.acct) return O.sendMessage(to, text);
+    // Envoi : pièce jointe chiffrée (clé aléatoire, transmise dans le message) puis message chiffré avec la clé de la conversation
+    O.deliverMessage = deliverMessage;
+    deliverMessage = async function (target, body, blob, retried) {
+      if (!S.acct) return O.deliverMessage(target, body, blob);
       try {
-        const conv = await e2eOpen(to);
-        if (!conv.current) { toast('La clé de cette conversation arrive dès que ton ami ouvre PepsGoal. Réessaie dans un instant.', 'lock'); return; }
+        const conv = await e2eOpenConv(target.chat ? { group: target.chat } : { peer: target.to });
+        if (!conv.current) { toast(target.chat ? 'La clé du groupe arrive dès qu’un membre ouvre PepsGoal. Réessaie dans un instant.' : 'La clé de cette conversation arrive dès que ton ami ouvre PepsGoal. Réessaie dans un instant.', 'lock'); return null; }
+        const attachments = [];
+        let local = null;
+        if (blob && !body.a?.id) {
+          const key = nacl.randomBytes(32), n = nacl.randomBytes(24);
+          const ct = nacl.secretbox(new Uint8Array(await blob.arrayBuffer()), n, key);
+          const fd = new FormData(); fd.append('file', new Blob([ct], { type: 'application/octet-stream' }), 'piece-jointe.bin');
+          const up = await api('POST', '/v1/attachments', fd);
+          body.a = Object.assign({}, body.a, { alg: 'nacl', id: up.id, k: b64e(key), n: b64e(n), mime: blob.type });
+          local = URL.createObjectURL(blob);
+        }
+        if (body?.a?.id) attachments.push(body.a.id);
+        const raw = typeof body === 'string' ? body : packMsg(body);
         const nonce = nacl.randomBytes(24);
-        const e2e = { v: 1, keyId: conv.current.keyId, nonce: b64e(nonce), ct: b64e(nacl.secretbox(new TextEncoder().encode(text), nonce, b64d(conv.current.key))) };
-        const r = await api('POST', `/v1/conversations/${to}`, { e2e });
-        E2E.cache.set(r.id, text);
-        DB.messages.push({ id: r.id, from: meId(), to, e2e, at: msOf(r.createdAt) || Date.now(), read: true });
-        rawSave(); updateChat(); updateBadges();
-      } catch (e) { fail(e); }
+        const e2e = { v: 1, keyId: conv.current.keyId, nonce: b64e(nonce), ct: b64e(nacl.secretbox(new TextEncoder().encode(raw), nonce, b64d(conv.current.key))) };
+        const r = await api('POST', target.chat ? `/v1/groups/${target.chat}/messages` : `/v1/conversations/${target.to}`, { e2e, attachments });
+        E2E.cache.set(r.id, raw); if (local) ATT.set(r.id, local);
+        const msg = { id: r.id, from: meId(), to: target.to || null, e2e, at: msOf(r.createdAt) || Date.now(), read: true };
+        if (target.chat) { msg.chat = target.chat; msg.readBy = [meId()]; }
+        DB.messages.push(msg);
+        rawSave(); updateChat(true); updateBadges();
+        return msg;
+      } catch (e) {
+        // Un membre vient de quitter le groupe : nouvelle version de clé, puis nouvel essai (la pièce jointe déjà envoyée est réutilisée)
+        if (e.code === 'key_rotation' && !retried) return deliverMessage(target, body, blob, true);
+        fail(e); return null;
+      }
     };
+    O.fetchAttachment = fetchAttachment;
+    fetchAttachment = async function (m, a) {
+      if (!S.acct || !a || a.alg !== 'nacl') return O.fetchAttachment(m, a);
+      const out = nacl.secretbox.open(await apiBytes(`/v1/attachments/${a.id}`), b64d(a.n), b64d(a.k));
+      return out ? new Blob([out], { type: a.mime || 'application/octet-stream' }) : null;
+    };
+    // Groupes et blocages : sur le serveur
+    const refreshNow = () => refreshSocial().then(() => { render(); if (UI.modal) renderModal(); });
+    const viaServer = (name, fn) => { O[name] = window[name]; return async (...a) => { if (!S.acct) return O[name](...a); try { return await fn(...a); } catch (e) { fail(e); throw e; } }; };
+    groupCreate = viaServer('groupCreate', async (name, emoji, members) => { const r = await api('POST', '/v1/groups', { name, emoji, members }); await refreshSocial(); return chatById(r.id) || { id: r.id }; });
+    groupUpdate = viaServer('groupUpdate', async (gid, patch) => { await api('PATCH', `/v1/groups/${gid}`, patch); const g = chatById(gid); if (g) Object.assign(g, patch); rawSave(); await refreshNow(); });
+    groupAddMembers = viaServer('groupAddMembers', async (gid, ids) => { await api('POST', `/v1/groups/${gid}/members`, { userIds: ids }); await refreshNow(); });
+    groupRemoveMember = viaServer('groupRemoveMember', async (gid, userId) => {
+      await api('DELETE', `/v1/groups/${gid}/members/${userId}`);
+      if (userId === meId()) { DB.chats = DB.chats.filter(c => c.id !== gid); DB.messages = DB.messages.filter(m => m.chat !== gid); rawSave(); }
+      await refreshNow();
+    });
+    groupDelete = viaServer('groupDelete', async gid => { await api('DELETE', `/v1/groups/${gid}`); DB.chats = DB.chats.filter(c => c.id !== gid); DB.messages = DB.messages.filter(m => m.chat !== gid); rawSave(); await refreshNow(); });
+    blockUser = viaServer('blockUser', async id => { await api('POST', `/v1/users/${id}/block`, {}); await O.blockUser(id); await refreshSocial(); });
+    unblockUser = viaServer('unblockUser', async id => { await api('DELETE', `/v1/users/${id}/block`); await O.unblockUser(id); await refreshSocial(); });
     O.renderStoryView = renderStoryView;
     renderStoryView = function () {
       O.renderStoryView();
@@ -908,16 +993,20 @@
       renderModal();
     });
     wrapF('post', async function (f) {
-      const fd = new FormData(f), text = (fd.get('text') || '').trim();
-      if (!text) { toast('Écris quelque chose avant de publier.', 'x'); return; }
+      const fd = new FormData(f), text = (fd.get('text') || '').trim(), photo = f.querySelector('#post-photo-in') ? UI.postPhoto : null;
+      if (!text && !photo) { toast('Écris quelque chose ou ajoute une photo avant de publier.', 'x'); return; }
       if (socialBlocked('de publier')) return;
-      const goal = f.dataset.goal || fd.get('goal') || null;
+      const goal = f.dataset.goal || fd.get('goal') || null, btn = f.querySelector('[type=submit]');
       try {
-        const r = await api('POST', '/v1/posts', { text, visibility: fd.get('vis') === 'public' ? 'public' : 'friends', goalId: goal && UUID_RE.test(goal) ? goal : null, kind: 'manual' });
+        if (btn) btn.disabled = true;
+        const photoUrl = photo ? (photo.startsWith('data:') ? await uploadDataUrl(photo) : photo) : null;
+        const r = await api('POST', '/v1/posts', { text, photoUrl, visibility: fd.get('vis') === 'public' ? 'public' : 'friends', goalId: goal && UUID_RE.test(goal) ? goal : null, kind: 'manual' });
+        UI.postPhoto = null;
         UI.modal = null; UI.view = 'feed'; UI.feedTab = fd.get('vis') === 'public' && UI.feedTab === 'public' ? 'public' : 'friends';
         render(); toast(r.status === 'pending' ? 'Envoyé à la modération : ta publication sera visible après validation.' : 'Publié.', 'feed');
         await refreshSocial();
       } catch (e) { fail(e); }
+      finally { if (btn) btn.disabled = false; }
     });
     wrapF('comment', async function (f) {
       const text = (new FormData(f).get('text') || '').trim(); if (!text) return;
@@ -939,6 +1028,10 @@
       try { await api('POST', '/v1/appeals', { text }); UI.modal = null; render(); toast('Demande envoyée à la modération.', 'send'); scheduleSocial(); } catch (e) { fail(e); }
     });
     wrapA('open-notifs', () => { A['open-notifs'](); void api('POST', '/v1/notifications/read-all', {}).catch(() => undefined); });
+    wrapA('open-group', id => {
+      A['open-group'](id);
+      void loadGroup(id, false).then(async () => { rawSave(); await e2eOpenConv({ group: id }).catch(() => undefined); await decryptAll(); updateChat(); updateBadges(); }).catch(() => undefined);
+    });
     wrapA('open-chat', id => {
       A['open-chat'](id);
       void loadConversation(id, false).then(async () => { rawSave(); await e2eOpen(id).catch(() => undefined); await decryptAll(); updateChat(); updateBadges(); }).catch(() => undefined);
@@ -1046,7 +1139,10 @@
     render();
     void ping().then(() => { if (S.acct) { void e2eDevice().then(() => e2eShareMissing()).catch(() => undefined); void syncNow().then(() => refreshSocial()); } });
     setInterval(() => { if (S.acct && NET.online) { void syncNow(); void refreshSocial(); void e2eShareMissing().catch(() => undefined); } }, 60000);
-    setInterval(() => { if (S.acct && NET.online && UI.modal?.type === 'chat') void loadConversation(UI.modal.with, false).then(async () => { await decryptAll(); updateChat(); }).catch(() => undefined); }, 8000);
+    setInterval(() => {
+      const m = UI.modal; if (!S.acct || !NET.online || m?.type !== 'chat') return;
+      void (m.group ? loadGroup(m.group, false) : loadConversation(m.with, false)).then(async () => { await decryptAll(); updateChat(); }).catch(() => undefined);
+    }, 8000);
   }
 
   window.PGCloud = { boot, syncNow, refreshSocial, state: S };

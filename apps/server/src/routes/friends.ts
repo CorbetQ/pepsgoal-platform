@@ -123,11 +123,21 @@ export default async function friendRoutes(app: FastifyInstance) {
     const { id } = params(req.params);
     const u = me(req);
     if (id === u.id) throw badRequest('Action impossible.');
+    const [x] = await sql<Row[]>`select role from users where id = ${id} and deleted_at is null`;
+    if (!x) throw notFound('Compte introuvable.');
+    if (x.role === 'official') throw badRequest('Le compte PepsGoal Officiel ne peut pas être bloqué.');
     await sql.begin(async tx => {
       await tx`insert into blocks (blocker_id, blocked_id) values (${u.id}, ${id}) on conflict do nothing`;
       await tx`delete from friendships where (requester_id = ${u.id} and addressee_id = ${id}) or (requester_id = ${id} and addressee_id = ${u.id})`;
     });
     return { ok: true };
+  });
+
+  /** Comptes que j'ai bloqués (Paramètres › Social et confidentialité). */
+  app.get('/v1/blocks', { preHandler: requireUser }, async req => {
+    const rows = await sql<Row[]>`select u.id, u.username, u.display_name, u.avatar, u.role, b.created_at as blocked_at
+      from blocks b join users u on u.id = b.blocked_id where b.blocker_id = ${me(req).id} and u.deleted_at is null order by b.created_at desc`;
+    return rows.map(r => ({ user: toPublicUser(r), blockedAt: iso(r.blocked_at) }));
   });
 
   app.delete('/v1/users/:id/block', { preHandler: requireUser }, async req => {

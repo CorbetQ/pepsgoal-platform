@@ -47,7 +47,8 @@ npm run build:ios
    - **URL de confidentialité** : `https://pepsgoal.fr/confidentialite`. **URL d'assistance** : `https://pepsgoal.fr`.
    - **Confidentialité de l'app** : données collectées, toutes liées à l'identité de l'utilisateur et aucune utilisée pour le suivi :
      - identifiants (nom d'utilisateur) ;
-     - contenu utilisateur (objectifs, publications, photos). Les messages privés, chiffrés de bout en bout et illisibles par l'éditeur, n'ont pas à être déclarés.
+     - contenu utilisateur (objectifs, publications, photos des publications). Les messages privés et de groupe (texte, photos, messages vocaux), chiffrés de bout en bout et illisibles par l'éditeur, n'ont pas à être déclarés.
+   - **Autorisations** : micro (messages vocaux), photos et appareil photo (profil, publications, stories). Les textes d'explication sont dans `apps/app/app.json`.
    - **Classification par âge** : réponds au questionnaire en signalant les contenus générés par les utilisateurs et la messagerie.
    - **Statut de commerçant (DSA, Union européenne)** : déclare-toi *non-commerçant* (particulier, app gratuite, aucune activité commerciale).
    - **Captures d'écran** : au minimum iPhone 6,9" (1320 × 2868) ; ajoute iPad si tu laisses la prise en charge des tablettes (`supportsTablet` dans app.json).

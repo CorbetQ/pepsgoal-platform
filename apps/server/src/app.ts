@@ -19,6 +19,8 @@ import messageRoutes from './routes/messages.js';
 import miscRoutes from './routes/account-misc.js';
 import adminRoutes from './routes/admin.js';
 import e2eRoutes from './routes/e2e.js';
+import groupRoutes from './routes/groups.js';
+import { ATT_SUBDIR } from './lib/files.js';
 
 export async function buildApp() {
   const app = Fastify({ logger: { level: env.NODE_ENV === 'production' ? 'info' : 'debug', redact: ['req.headers.authorization'] }, trustProxy: true });
@@ -30,7 +32,8 @@ export async function buildApp() {
   await app.register(multipart, { limits: { fileSize: 8 * 1024 * 1024, files: 1 } });
   const mediaDir = path.resolve(env.MEDIA_DIR);
   mkdirSync(mediaDir, { recursive: true });
-  await app.register(fastifyStatic, { root: mediaDir, prefix: '/media/', decorateReply: false, maxAge: '30d', immutable: true });
+  // Images publiques (photos de profil, publications, stories). Les pièces jointes chiffrées (att/) passent par /v1/attachments.
+  await app.register(fastifyStatic, { root: mediaDir, prefix: '/media/', decorateReply: false, maxAge: '30d', immutable: true, allowedPath: p => { try { return !decodeURIComponent(p).toLowerCase().split(/[\/]+/).includes(ATT_SUBDIR); } catch { return false; } } });
 
   app.setErrorHandler((err: FastifyError | Error, req, reply) => {
     if (err instanceof ZodError) {
@@ -44,7 +47,7 @@ export async function buildApp() {
     return reply.status(500).send({ error: 'server', message: 'Erreur interne, réessaie plus tard.' });
   });
 
-  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
+  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, groupRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
     await app.register(routes);
   }
   return app;

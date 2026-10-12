@@ -118,6 +118,22 @@ export default async function e2eRoutes(app: FastifyInstance) {
       where (k.user_a = ${u.id} or k.user_b = ${u.id})
       group by k.key_id, k.user_a, k.user_b, e.nonce, e.box, e.sender_public_key
       limit 50`;
-    return rows.map(r => ({ keyId: r.key_id, peerId: r.peer_id, envelope: { nonce: r.nonce, box: r.box, senderPublicKey: r.sender_public_key }, missingDevices: r.missing as { id: string; publicKey: string }[] }));
+    // Groupes : appareils des membres actuels qui n'ont pas encore la clé (nouveau membre, nouvel appareil)
+    const groups = await sql<Row[]>`
+      select k.key_id, k.group_id, e.nonce, e.box, e.sender_public_key,
+        array_agg(json_build_object('id', d.id, 'publicKey', d.public_key)) as missing
+      from e2e_pair_keys k
+      join chat_group_members me on me.group_id = k.group_id and me.user_id = ${u.id}
+      join e2e_envelopes e on e.key_id = k.key_id and e.device_id = ${deviceId}
+      join chat_group_members m on m.group_id = k.group_id
+      join e2e_devices d on d.user_id = m.user_id
+        and not exists (select 1 from e2e_envelopes x where x.key_id = k.key_id and x.device_id = d.id)
+      where k.group_id is not null
+      group by k.key_id, k.group_id, e.nonce, e.box, e.sender_public_key
+      limit 50`;
+    return [
+      ...rows.map(r => ({ keyId: r.key_id, peerId: r.peer_id, groupId: null, envelope: { nonce: r.nonce, box: r.box, senderPublicKey: r.sender_public_key }, missingDevices: r.missing as { id: string; publicKey: string }[] })),
+      ...groups.map(r => ({ keyId: r.key_id, peerId: null, groupId: r.group_id, envelope: { nonce: r.nonce, box: r.box, senderPublicKey: r.sender_public_key }, missingDevices: r.missing as { id: string; publicKey: string }[] }))
+    ];
   });
 }

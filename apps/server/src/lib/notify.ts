@@ -1,5 +1,6 @@
 import type postgres from 'postgres';
 import { sql as rootSql } from '../db/client.js';
+import { sendModMail, type ModMail } from './mailer.js';
 
 type Q = postgres.Sql | postgres.TransactionSql;
 type Json = postgres.JSONValue;
@@ -29,8 +30,10 @@ export async function modNotify(q: Q, userId: string, text: string): Promise<voi
   await officialMessage(q, userId, text, 'mod', true);
 }
 
-export async function notifyAdmins(q: Q, text: string): Promise<void> {
+/** Alerte la modération : notification dans l'app pour chaque admin et, si configuré, e-mail à MOD_EMAIL. */
+export async function notifyAdmins(q: Q, text: string, mail?: ModMail): Promise<void> {
   await q`insert into notifications (user_id, type, text) select id, 'mod', ${text} from users where role = 'admin' and deleted_at is null`;
+  sendModMail(mail ?? { subject: text });
 }
 
 export async function logMod(q: Q, adminId: string | null, action: string, targetUserId: string | null, detail = ''): Promise<void> {

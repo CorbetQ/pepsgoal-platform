@@ -6,6 +6,7 @@
  *   - bouton retour Android (ferme la fenêtre ouverte, revient à « Jour », sinon quitte) ;
  *   - liens externes et e-mails ouverts dans le navigateur / la messagerie du téléphone ;
  *   - fichiers exportés (.zip, .json) proposés via la feuille de partage ;
+ *   - micro pour les messages vocaux (demandé par le système à la première utilisation) ;
  *   - zones sûres (encoche, barre de navigation) et couleur de la barre d'état.
  */
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -28,7 +29,9 @@ const BG = '#07081A';
 
 // Bouton retour : exécuté dans la page, répond « handled » si l'interface a fermé ou changé quelque chose
 const BACK_JS = `(function(){var done=false;try{
-  if (typeof UI !== 'undefined') {
+  var pv = document.querySelector('.photo-view');
+  if (pv) { pv.click(); done = true; }
+  else if (typeof UI !== 'undefined') {
     if (UI.modal) { ACT.close(); done = true; }
     else if (UI.view && UI.view !== 'today' && DB && DB.session) { ACT.nav('today'); done = true; }
   }
@@ -84,6 +87,9 @@ export default function App() {
             allowFileAccess
             allowsBackForwardNavigationGestures={false}
             allowsInlineMediaPlayback
+            mediaPlaybackRequiresUserAction={false}
+            // Micro des messages vocaux : l'autorisation est demandée par le système (iOS, Android), pas une seconde fois par la page
+            mediaCapturePermissionGrantType="grant"
             bounces={false}
             overScrollMode="never"
             keyboardDisplayRequiresUserAction={false}

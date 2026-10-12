@@ -2,12 +2,15 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { CommentBody, Id, PostBody, ReportBody } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
-import { forbidden, notFound } from '../lib/errors.js';
+import { badRequest, forbidden, notFound } from '../lib/errors.js';
+import { env } from '../env.js';
 import { isBanned, me, requireSocial, requireUser, type AuthUser } from '../lib/guards.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
 import { notify, notifyAdmins } from '../lib/notify.js';
 
 const FREEZE_EVERY = 10;
+/** Comptes bloqués dans un sens ou dans l'autre : leurs commentaires et encouragements sont masqués. */
+const notBlocked = (meId: string, col: string) => sql`not exists (select 1 from blocks b where (b.blocker_id = ${meId} and b.blocked_id = ${sql(col)}) or (b.blocker_id = ${sql(col)} and b.blocked_id = ${meId}))`;
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
 
 /** Une publication est visible si elle n'est ni supprimée ni bloquée, et selon sa visibilité. */
@@ -53,14 +56,14 @@ export default async function feedRoutes(app: FastifyInstance) {
     const ids = posts.map(p => p.id);
     const comments = ids.length ? await sql<Row[]>`
       select c.*, a.username, a.display_name, a.avatar, a.role from comments c join users a on a.id = c.author_id
-      where c.post_id = any(${ids}) and c.deleted_at is null and a.deleted_at is null order by c.created_at` : [];
+      where c.post_id = any(${ids}) and c.deleted_at is null and a.deleted_at is null and ${notBlocked(u.id, 'c.author_id')} order by c.created_at` : [];
     // Qui a encouragé chaque publication (affiché sous la publication, comme dans l'application)
     const likers = ids.length ? await sql<Row[]>`
       select l.post_id, a.id, a.username, a.display_name, a.avatar, a.role from post_likes l join users a on a.id = l.user_id
-      where l.post_id = any(${ids}) and a.deleted_at is null order by l.created_at` : [];
+      where l.post_id = any(${ids}) and a.deleted_at is null and ${notBlocked(u.id, 'l.user_id')} order by l.created_at` : [];
     return {
       posts: posts.map(p => ({
-        id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, visibility: p.visibility, goalId: p.goal_id, kind: p.kind,
+        id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: p.photo_url, visibility: p.visibility, goalId: p.goal_id, kind: p.kind,
         status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), likeCount: p.like_count, liked: p.liked,
         likers: likers.filter(l => l.post_id === p.id).slice(0, 100).map(toPublicUser),
         comments: comments.filter(c => c.post_id === p.id).slice(-20).map(c => ({ id: c.id, author: toPublicUser({ ...c, id: c.author_id }), text: c.text, createdAt: iso(c.created_at) }))
@@ -76,10 +79,16 @@ export default async function feedRoutes(app: FastifyInstance) {
       const [g] = await sql`select 1 from goals where id = ${body.goalId} and owner_id = ${u.id} and deleted_at is null`;
       if (!g) body.goalId = null;
     }
+    // Seules les images téléversées sur ce serveur sont acceptées
+    if (body.photoUrl && !body.photoUrl.startsWith(`${env.PUBLIC_URL}/media/`)) throw badRequest('Photo invalide : téléverse-la d’abord.');
     // Compte sous avertissement : la publication attend la validation de la modération
     const status = u.warnedAt ? 'pending' : 'visible';
-    const [p] = await sql<Row[]>`insert into posts (author_id, text, visibility, goal_id, status, kind) values (${u.id}, ${body.text}, ${body.visibility}, ${body.goalId}, ${status}, ${body.kind}) returning id`;
-    if (status === 'pending') await notifyAdmins(sql, `Nouvelle publication de ${u.displayName} à valider.`);
+    const [p] = await sql<Row[]>`insert into posts (author_id, text, photo_url, visibility, goal_id, status, kind) values (${u.id}, ${body.text}, ${body.photoUrl}, ${body.visibility}, ${body.goalId}, ${status}, ${body.kind}) returning id`;
+    if (status === 'pending') await notifyAdmins(sql, `Nouvelle publication de ${u.displayName} à valider.`, {
+      subject: `Publication à valider : ${u.displayName}`,
+      details: [['Auteur', `${u.displayName} (@${u.username}), sous avertissement`], ['Visibilité', body.visibility === 'public' ? 'public' : 'amis'], ['Photo', body.photoUrl ? 'oui' : 'non']],
+      excerpt: body.text.slice(0, 500) || undefined
+    });
     reply.status(201);
     return { id: p!.id, status };
   });
@@ -143,9 +152,18 @@ export default async function feedRoutes(app: FastifyInstance) {
     const { id } = params(req.params);
     const { reason } = ReportBody.parse(req.body);
     const u = me(req);
-    await visiblePost(u, id);
+    const p = await visiblePost(u, id);
     const r = await sql`insert into reports (post_id, reporter_id, reason) values (${id}, ${u.id}, ${reason}) on conflict do nothing returning id`;
-    if (r.length) await notifyAdmins(sql, 'Une publication a été signalée.');
+    if (r.length) {
+      const [a] = await sql<Row[]>`select username, display_name from users where id = ${p.author_id}`;
+      const [n] = await sql<{ n: number }[]>`select count(*)::int as n from reports where post_id = ${id}`;
+      const REASONS: Record<string, string> = { spam: 'Spam', hate: 'Propos haineux', harass: 'Harcèlement', other: 'Autre' };
+      await notifyAdmins(sql, 'Une publication a été signalée.', {
+        subject: `Signalement (${REASONS[reason]}) : publication de ${a?.display_name ?? 'compte supprimé'}`,
+        details: [['Motif', REASONS[reason]!], ['Auteur', a ? `${a.display_name} (@${a.username})` : '—'], ['Signalé par', `${u.displayName} (@${u.username})`], ['Signalements sur cette publication', String(n?.n ?? 1)], ['Photo', p.photo_url ? 'oui' : 'non']],
+        excerpt: String(p.text || '').slice(0, 500) || undefined
+      });
+    }
     return { ok: true };
   });
 }

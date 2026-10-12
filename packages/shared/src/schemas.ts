@@ -120,12 +120,24 @@ export const PublicUser = z.object({ id: Id, username: z.string(), displayName: 
 export type PublicUser = z.infer<typeof PublicUser>;
 
 /* ---------- social ---------- */
-export const PostBody = z.object({ text: z.string().trim().min(1).max(500), visibility: z.enum(['friends', 'public']), goalId: Id.nullable().default(null), kind: z.enum(['manual', 'milestone']).default('manual') });
+/** Publication : texte (facultatif s'il y a une photo) et photo téléversée au préalable sur /v1/media. */
+export const PostBody = z.object({
+  text: z.string().trim().max(500).default(''),
+  visibility: z.enum(['friends', 'public']),
+  goalId: Id.nullable().default(null),
+  kind: z.enum(['manual', 'milestone']).default('manual'),
+  photoUrl: z.string().url().max(500).nullable().default(null)
+}).refine(p => p.text.length > 0 || p.photoUrl, { message: 'Écris un texte ou ajoute une photo.', path: ['text'] });
 /** Notification envoyée à un ami ou à un membre d'un objectif partagé (défi de groupe, duel, binôme). */
 export const NotifyBody = z.object({ to: Id, text: z.string().trim().min(1).max(300), type: z.enum(['badge', 'verify', 'friend', 'info']).default('info'), goalId: Id.nullable().default(null) });
 export const CommentBody = z.object({ text: z.string().trim().min(1).max(280) });
 /** Messages privés : uniquement chiffrés de bout en bout (voir e2e.ts). */
-export const MessageBody = z.object({ e2e: E2EPayload });
+/** Message chiffré ; `attachments` liste les pièces jointes chiffrées (photo, message vocal) qu'il référence. */
+export const MessageBody = z.object({ e2e: E2EPayload, attachments: z.array(Id).max(4).default([]) });
+/** Groupes de discussion */
+export const GroupCreateBody = z.object({ name: z.string().trim().min(1).max(40), emoji: z.string().trim().min(1).max(16).default('💬'), members: z.array(Id).min(1).max(30) });
+export const GroupPatchBody = z.object({ name: z.string().trim().min(1).max(40).optional(), emoji: z.string().trim().min(1).max(16).optional() });
+export const GroupMembersBody = z.object({ userIds: z.array(Id).min(1).max(30) });
 export const ReportBody = z.object({ reason: z.enum(['spam', 'hate', 'harass', 'other']) });
 export const StoryBody = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('photo'), mediaUrl: z.string().url().max(500), text: z.string().max(140).default('') }),

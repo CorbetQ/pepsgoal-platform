@@ -87,9 +87,31 @@ Ensuite, connecte-toi dans l'app avec `admin` et le mot de passe de `ADMIN_BOOTS
 
 ## 6. Pages légales
 
-Dépose les pages dans `deploy/site/` : `cgu.html`, `mentions-legales.html` et `confidentialite.html`. Elles seront servies sur `https://pepsgoal.fr/cgu`, etc.
-Les stores exigent ces adresses, et l'app les ouvre depuis Profil.
+Rien à faire à la main : `deploy/web-build.sh` (lancé par `update.sh --web`) génère les CGU, les mentions légales et la charte de confidentialité à partir des textes de l'application.
+Elles sont servies sur `https://pepsgoal.fr/cgu`, `https://pepsgoal.fr/mentions-legales` et `https://pepsgoal.fr/confidentialite` : ce sont les adresses à donner aux stores.
+Pour les modifier : constante `LEGAL` de `apps/web-legacy/pepsgoal.html`, puis `update.sh --web`.
 Hébergeur à indiquer dans les mentions légales (déjà fait dans l'app web) : **Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre** (www.hostinger.fr). Vérifie ces coordonnées et ajoute le numéro de téléphone figurant sur ta facture Hostinger : la loi (LCEN) demande le téléphone de l'hébergeur.
+
+## 6 bis. E-mails de modération
+
+À chaque signalement, publication à valider (compte sous avertissement) ou demande de débannissement, le serveur envoie un e-mail à `MOD_EMAIL` (par défaut quentin-corbet@outlook.fr). Il lui faut une boîte d'envoi, par exemple `noreply@pepsgoal.fr` :
+
+1. hPanel › **Emails** : crée la boîte `noreply@pepsgoal.fr`. Le VPS n'inclut pas d'e-mails : il faut une offre **Hostinger Email** (ou les boîtes gratuites d'un hébergement web Hostinger). Si les serveurs de noms de pepsgoal.fr sont ceux de Hostinger, les enregistrements DNS (MX, SPF, DKIM) sont ajoutés automatiquement.
+2. Dans `deploy/.env` sur le VPS, renseigne :
+   ```
+   MOD_EMAIL=quentin-corbet@outlook.fr
+   SMTP_HOST=smtp.hostinger.com
+   SMTP_PORT=465
+   SMTP_USER=noreply@pepsgoal.fr
+   SMTP_PASS=le-mot-de-passe-de-la-boite
+   MAIL_FROM=PepsGoal <noreply@pepsgoal.fr>
+   ```
+3. Applique : `cd /opt/pepsgoal/deploy && docker compose up -d`.
+4. Teste : signale une publication depuis un compte de test. En cas de souci, `docker compose logs server | grep mail` affiche l'erreur (mot de passe, port bloqué…).
+5. Dans Outlook, ajoute `noreply@pepsgoal.fr` aux expéditeurs approuvés pour que les alertes n'arrivent pas dans les courriers indésirables.
+
+Au plus 30 e-mails par heure (`MAIL_MAX_PER_HOUR`) ; au-delà, les alertes restent visibles dans l'onglet Modération. Sans `SMTP_HOST`, aucun e-mail n'est envoyé.
+Autre fournisseur SMTP (Brevo, OVH…) : remplace les valeurs SMTP et mets à jour la section « Destinataires et services tiers » de la charte de confidentialité.
 
 ## 7. Sauvegardes
 

@@ -15,7 +15,7 @@ export default async function messageRoutes(app: FastifyInstance) {
     const rows = await sql<Row[]>`
       with conv as (
         select case when sender_id = ${u.id} then recipient_id else sender_id end as peer, max(created_at) as last_at
-        from messages where sender_id = ${u.id} or recipient_id = ${u.id} group by 1
+        from messages where group_id is null and (sender_id = ${u.id} or recipient_id = ${u.id}) group by 1
       )
       select c.peer, c.last_at, x.username, x.display_name, x.avatar, x.role,
         (select json_build_object('text', m.text, 'e2e', m.e2e) from messages m where (m.sender_id = c.peer and m.recipient_id = ${u.id}) or (m.sender_id = ${u.id} and m.recipient_id = c.peer) order by m.created_at desc limit 1) as last,
@@ -30,17 +30,17 @@ export default async function messageRoutes(app: FastifyInstance) {
     const { before } = z.object({ before: z.string().datetime().optional() }).parse(req.query);
     const u = me(req);
     const rows = await sql<Row[]>`
-      select id, sender_id, text, e2e, official, tag, created_at, read_at from messages
+      select id, sender_id, text, e2e, attachments, official, tag, created_at, read_at from messages
       where ((sender_id = ${u.id} and recipient_id = ${id}) or (sender_id = ${id} and recipient_id = ${u.id}))
         and created_at < ${before ?? new Date(Date.now() + 60_000).toISOString()}
       order by created_at desc limit 50`;
     await sql`update messages set read_at = now() where sender_id = ${id} and recipient_id = ${u.id} and read_at is null`;
-    return rows.reverse().map(m => ({ id: m.id, mine: m.sender_id === u.id, text: m.text, e2e: m.e2e, official: m.official, tag: m.tag, createdAt: iso(m.created_at), read: !!m.read_at }));
+    return rows.reverse().map(m => ({ id: m.id, mine: m.sender_id === u.id, text: m.text, e2e: m.e2e, attachments: m.attachments, official: m.official, tag: m.tag, createdAt: iso(m.created_at), read: !!m.read_at }));
   });
 
   app.post('/v1/conversations/:id', { preHandler: requireSocial, config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req, reply) => {
     const { id } = params(req.params);
-    const { e2e } = MessageBody.parse(req.body);
+    const { e2e, attachments } = MessageBody.parse(req.body);
     const u = me(req);
     const [peer] = await sql<Row[]>`select role from users where id = ${id} and deleted_at is null`;
     if (!peer || peer.role === 'official') throw forbidden('Ce compte ne reçoit pas de messages.');
@@ -49,7 +49,11 @@ export default async function messageRoutes(app: FastifyInstance) {
     const [a, b] = u.id < id ? [u.id, id] : [id, u.id];
     const [k] = await sql<Row[]>`select 1 from e2e_pair_keys where key_id = ${e2e.keyId} and user_a = ${a} and user_b = ${b}`;
     if (!k) throw forbidden('Clé de chiffrement inconnue pour cette conversation.');
-    const [m] = await sql<Row[]>`insert into messages (sender_id, recipient_id, e2e) values (${u.id}, ${id}, ${sql.json(e2e)}) returning id, created_at`;
+    if (attachments.length) {
+      const [r] = await sql<{ n: number }[]>`select count(*)::int as n from attachments where id = any(${attachments}) and owner_id = ${u.id}`;
+      if ((r?.n ?? 0) !== new Set(attachments).size) throw forbidden('Pièce jointe inconnue.');
+    }
+    const [m] = await sql<Row[]>`insert into messages (sender_id, recipient_id, e2e, attachments) values (${u.id}, ${id}, ${sql.json(e2e)}, ${attachments}) returning id, created_at`;
     reply.status(201);
     return { id: m!.id, createdAt: iso(m!.created_at) };
   });

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { DisplayName } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { revokeAllSessions, verifyPassword } from '../lib/auth.js';
+import { removeUserFiles } from '../lib/files.js';
 import { notify } from '../lib/notify.js';
 import { conflict, forbidden, unauthorized } from '../lib/errors.js';
 import { isBanned, me, requireUser } from '../lib/guards.js';
@@ -65,6 +66,7 @@ export default async function meRoutes(app: FastifyInstance) {
     const [row] = await sql<Row[]>`select password_hash from users where id = ${u.id}`;
     if (!(await verifyPassword(password, row?.password_hash))) throw unauthorized('Mot de passe incorrect.');
     await revokeAllSessions(u.id);
+    await removeUserFiles(u.id);
     await sql`delete from users where id = ${u.id}`;
     return { ok: true };
   });
