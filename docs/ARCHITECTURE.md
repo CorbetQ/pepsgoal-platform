@@ -50,7 +50,7 @@ synchroniser plusieurs appareils, à sauvegarder et à faire fonctionner les fon
   Chaque ligne porte `rev` (séquence `sync_rev_seq`) et `deleted_at` (suppression transmise aux autres appareils).
 - **Partagé** : `goal_members` (défis de groupe et duels), binôme de motivation (`goals.buddy_id`, validations `pending`).
 - **Messagerie** : `messages` (privé : `recipient_id`, groupe : `group_id`, pièces jointes citées : `attachments`), `chat_groups`, `chat_group_members`, `attachments` (fichiers chiffrés, jamais servis publiquement).
-- **Social** : `friendships`, `blocks`, `posts` (photo : `photo_url`), `post_likes`, `cheer_credits` (gels de série), `comments`, `stories` (expirent après 24 h), `story_views`, `messages` (chiffrés de bout en bout, colonne `e2e` ; seul PepsGoal Officiel écrit en clair), `e2e_devices`, `e2e_pair_keys`, `e2e_envelopes` (voir E2E.md), `notifications`.
+- **Social** : `friendships`, `blocks`, `posts` (photo : `photo_url`), `post_likes`, `cheer_credits` (gels de série), `comments`, `stories` (expirent après 24 h), `story_views`, `messages` (chiffrés de bout en bout, colonne `e2e` ; seul PepsGoal Officiel écrit en clair), `e2e_devices`, `e2e_pair_keys`, `e2e_envelopes`, `e2e_vaults`, `e2e_vault_keys` (voir E2E.md), `notifications`.
 - **Modération** : `reports`, `appeals`, `mod_actions` (journal), `maintenance`, `announcements` ; colonnes de sanction sur `users` (`warned_at`, `ban_until`, `ban_permanent`, `comments_restricted`).
 
 Les types d'objectifs et leurs réglages sont définis une seule fois dans `packages/shared/src/schemas.ts` (`GoalDataByType`)
@@ -76,7 +76,8 @@ Toute l'interface est celle du prototype, sans réécriture : `apps/web-legacy/p
 | --- | --- | --- |
 | Interface | `apps/web-legacy/pepsgoal.html` | Tous les écrans. Seuls quelques points d'accroche y ont été ajoutés (démarrage, identifiants UUID), inactifs sans serveur. |
 | Couche connectée | `apps/web/src/cloud.js` | Chargée avant l'interface ; remplace certaines fonctions (enregistrement, validations, actions sociales et de modération) par des appels à l'API. Ne fait rien si aucune API n'est configurée. |
-| Construction | `apps/web/build.mjs` | Assemble interface + couche connectée + tweetnacl + JSZip + polices locales (Unbounded, Manrope). Produit `apps/web/dist/` (web) et `apps/app/src/webapp.generated.ts` (mobile, un seul fichier). |
+| Emojis | `apps/web/emoji/` | Emojis Fluent de Microsoft (licence MIT) en WebP 96 px, générés par `apps/web/scripts/fluent-emoji.mjs` ; chaque emoji affiché par l'interface est remplacé par son image, les champs de saisie gardent ceux du système. |
+| Construction | `apps/web/build.mjs` | Assemble interface + couche connectée + tweetnacl + JSZip + polices locales (Unbounded, Manrope) + emojis Fluent. Produit `apps/web/dist/` (web) et `apps/app/src/webapp.generated.ts` (mobile, un seul fichier). |
 | App mobile | `apps/app/App.tsx` | WebView plein écran, bouton retour Android, liens externes, partage des fichiers exportés, zones sûres. |
 
 Fonctionnement de la couche connectée :

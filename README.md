@@ -63,7 +63,7 @@ L'interface se modifie dans `apps/web-legacy/pepsgoal.html` ; relance `npm run b
 
 Au premier démarrage, le serveur crée le compte **PepsGoal Officiel** et le compte **admin**. En développement, le mot de passe admin est `password` (un avertissement s'affiche) ; en production, `ADMIN_BOOTSTRAP_PASSWORD` est obligatoire.
 
-Version 1.1.0 : messagerie chiffrée de bout en bout, mode hors ligne automatique, options d'accessibilité. Aucune donnée de démonstration côté serveur ; chaque installation démarre vide.
+Version 1.2.0 : messagerie chiffrée de bout en bout (photos, messages vocaux, objectifs, groupes) avec clés synchronisées entre appareils, photos dans les publications, blocage, e-mails de modération, emojis Fluent. Version 1.1.0 : mode hors ligne automatique, options d'accessibilité. Aucune donnée de démonstration côté serveur ; chaque installation démarre vide.
 
 ## Vérifications
 

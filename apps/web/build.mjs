@@ -5,7 +5,8 @@
  *   - en-tête HTML complet (encodage, écran mobile, icônes, manifeste) ;
  *   - configuration (adresse de l'API) et couche connectée (src/cloud.js) ;
  *   - bibliothèques intégrées : tweetnacl (chiffrement des messages) et JSZip (export .zip), sans CDN ;
- *   - polices Unbounded et Manrope servies localement (fonctionnent hors ligne).
+ *   - polices Unbounded et Manrope servies localement (fonctionnent hors ligne) ;
+ *   - emojis Fluent de Microsoft (apps/web/emoji, générés par scripts/fluent-emoji.mjs), chargés à la demande.
  *
  * Sorties :
  *   apps/web/dist/                         version web (https://app.pepsgoal.fr), polices en fichiers séparés
@@ -16,7 +17,7 @@
  */
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -30,6 +31,11 @@ const source = readFileSync(path.join(root, 'apps/web-legacy/pepsgoal.html'), 'u
 const cloud = readFileSync(path.join(here, 'src/cloud.js'), 'utf8');
 const nacl = readFileSync(require.resolve('tweetnacl/nacl-fast.min.js'), 'utf8');
 const jszip = readFileSync(require.resolve('jszip/dist/jszip.min.js'), 'utf8');
+// Emojis Fluent : liste des emojis disponibles (codes), les images restent des fichiers séparés
+const EMOJI_DIR = path.join(here, 'emoji');
+const emojiKeys = existsSync(path.join(EMOJI_DIR, 'index.json')) ? JSON.parse(readFileSync(path.join(EMOJI_DIR, 'index.json'), 'utf8')) : [];
+// Application mobile : les images sont chargées depuis la version web (mises en cache par l'appareil)
+const EMOJI_WEB = process.env.PEPSGOAL_APP_URL ? `${process.env.PEPSGOAL_APP_URL.replace(/\/$/, '')}/emoji/` : 'https://app.pepsgoal.fr/emoji/';
 
 // Polices (Fontsource) : mêmes graisses que celles demandées à Google Fonts par l'application
 const FONTS = [['unbounded', 'Unbounded', [500, 700, 800]], ['manrope', 'Manrope', [400, 500, 600, 700, 800]]];
@@ -56,7 +62,8 @@ function page({ platform, fonts, fontUrl }) {
   const main = body.indexOf('<script>\n"use strict";');
   if (main < 0) throw new Error('Script principal introuvable dans pepsgoal.html');
   const config = { api: API, platform, version: VERSION };
-  const inject = `<script>window.PEPSGOAL_CONFIG=${JSON.stringify(config)};</script>\n<script>${nacl}</script>\n<script>${jszip}</script>\n<script>${cloud}</script>\n`;
+  if (emojiKeys.length) config.emoji = { base: platform === 'web' ? '/emoji/' : EMOJI_WEB };
+  const inject = `<script>window.PEPSGOAL_CONFIG=${JSON.stringify(config)};window.PEPSGOAL_EMOJI=${JSON.stringify(emojiKeys)};</script>\n<script>${nacl}</script>\n<script>${jszip}</script>\n<script>${cloud}</script>\n`;
   body = body.slice(0, main) + inject + body.slice(main);
   const head = `<!doctype html>
 <html lang="fr">
@@ -84,6 +91,7 @@ mkdirSync(path.join(dist, 'fonts'), { recursive: true });
 for (const f of fonts) copyFileSync(f.file, path.join(dist, 'fonts', f.name));
 writeFileSync(path.join(dist, 'index.html'), page({ platform: 'web', fonts, fontUrl: f => `/fonts/${f.name}` }));
 copyFileSync(path.join(here, 'public/.htaccess'), path.join(dist, '.htaccess'));
+if (emojiKeys.length) cpSync(EMOJI_DIR, path.join(dist, 'emoji'), { recursive: true, filter: f => !f.endsWith('index.json') });
 copyFileSync(path.join(root, 'apps/app/assets/icon.png'), path.join(dist, 'icon-512.png'));
 copyFileSync(path.join(root, 'apps/app/assets/favicon.png'), path.join(dist, 'favicon.png'));
 writeFileSync(path.join(dist, 'manifest.webmanifest'), JSON.stringify({
@@ -150,5 +158,5 @@ writeFileSync(path.join(root, 'apps/app/src/webapp.generated.ts'),
 
 const kb = n => `${Math.round(n / 1024)} Ko`;
 console.log(`PepsGoal ${VERSION} (API ${API})`);
-console.log(`  web    : apps/web/dist/index.html (${kb(readFileSync(path.join(dist, 'index.html')).length)}) + ${fonts.length} polices + ${LEGAL_PAGES.length} pages légales`);
+console.log(`  web    : apps/web/dist/index.html (${kb(readFileSync(path.join(dist, 'index.html')).length)}) + ${fonts.length} polices + ${LEGAL_PAGES.length} pages légales + ${emojiKeys.length} emojis Fluent`);
 console.log(`  mobile : apps/app/src/webapp.generated.ts (${kb(embedded.length)})`);

@@ -2,7 +2,7 @@
 
 Objectif : `https://app.pepsgoal.fr` affiche l'application. C'est exactement l'interface de l'artefact PepsGoal, branchée sur le serveur ; les apps iPhone et Android embarquent la même.
 
-La version web n'est qu'un ensemble de fichiers statiques : un `index.html` (toute l'application), un dossier `fonts/`, deux icônes, un manifeste et un `.htaccess`.
+La version web n'est qu'un ensemble de fichiers statiques : un `index.html` (toute l'application), un dossier `fonts/`, un dossier `emoji/` (emojis Fluent), un dossier `legal/`, deux icônes, un manifeste et un `.htaccess`.
 Elle peut donc être hébergée **sur le VPS** (à côté de l'API) **ou sur l'hébergement web mutualisé** Hostinger.
 Dans les deux cas, elle parle à l'API `https://api.pepsgoal.fr`, qui reste sur le VPS (voir GUIDE-HOSTINGER.md).
 
@@ -114,7 +114,7 @@ Sans `--web`, seule l'API est mise à jour.
    ```
    La dernière ligne affiche l'adresse de l'API utilisée (`https://api.pepsgoal.fr` par défaut).
 3. Ouvre `apps/web/dist`. Tu dois y voir :
-   - `index.html`, `manifest.webmanifest`, `favicon.png`, `icon-512.png` et le dossier `fonts` ;
+   - `index.html`, `manifest.webmanifest`, `favicon.png`, `icon-512.png` et les dossiers `fonts`, `emoji` et `legal` ;
    - `.htaccess` (fichier caché : dans l'Explorateur, menu **Affichage › Afficher › Éléments masqués**).
 4. **Sélectionne tout le contenu** de `dist`, pas le dossier lui-même. Fais un clic droit › **Compresser dans un fichier ZIP** et nomme le fichier `pepsgoal-web.zip`.
 

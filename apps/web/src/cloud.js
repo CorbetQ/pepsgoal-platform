@@ -396,6 +396,8 @@
         const u = upsertUser(meR, { bio: meR.bio || '', freezes: meR.freezes || 0, createdAt: msOf(meR.createdAt) || Date.now() });
         u.ban = banOf(meR.moderation); u.warned = meR.moderation?.warned ? { at: Date.now(), reason: '', by: null } : null; u.noComments = !!meR.moderation?.commentsRestricted;
         u._welcomeBonus = !!meR.welcomeBonus; u.tutoBonus = !!meR.welcomeBonus || u.tutoBonus;
+        // Jauge du prochain gel : encouragements reçus comptés par le serveur
+        if (typeof meR.cheersReceived === 'number') u.cheersIn = Array.from({ length: meR.cheersReceived }, (_, i) => 'srv:' + i);
         const ap = meR.moderation?.lastAppeal;
         DB.appeals = (DB.appeals || []).filter(a => a.userId !== mine);
         if (ap) DB.appeals.push({ id: 'appeal-' + mine, userId: mine, text: '', at: msOf(ap.createdAt), status: ap.status, answer: ap.answer || '' });
@@ -524,7 +526,66 @@
   const b64e = u8 => { let s = ''; u8.forEach(c => { s += String.fromCharCode(c); }); return btoa(s); };
   const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
   const keyStore = () => { const all = ls.get(DEV_KEY) || {}; const k = all[meId()] || { device: null, pairs: {} }; return { all, k }; };
-  function keySave(k) { const all = ls.get(DEV_KEY) || {}; all[meId()] = k; ls.set(DEV_KEY, all); }
+  function keySaveRaw(k) { const all = ls.get(DEV_KEY) || {}; all[meId()] = k; ls.set(DEV_KEY, all); }
+  // Toute nouvelle clé de conversation part aussi dans le coffre du compte (copie chiffrée sur le serveur)
+  function keySave(k) { keySaveRaw(k); scheduleVaultPush(); }
+
+  /* ---- Coffre de clés : copie des clés sur le serveur, chiffrée avec une clé dérivée du mot de passe ---- */
+  const VAULT_ITER = 310000, VAULT_CHECK = 'pepsgoal-vault-v1';
+  async function deriveVault(password, saltB64, iterations) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+    return new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: b64d(saltB64), iterations }, base, 256));
+  }
+  const seal = (u8, key) => { const n = nacl.randomBytes(24); return { nonce: b64e(n), box: b64e(nacl.secretbox(u8, n, key)) }; };
+  function checkOf(key) { const n = nacl.randomBytes(24), box = nacl.secretbox(new TextEncoder().encode(VAULT_CHECK), n, key), out = new Uint8Array(24 + box.length); out.set(n); out.set(box, 24); return b64e(out); }
+  function checkOk(key, check) {
+    try { const b = b64d(check), out = nacl.secretbox.open(b.slice(24), b.slice(0, 24), key); return !!out && new TextDecoder().decode(out) === VAULT_CHECK; } catch (e) { return false; }
+  }
+  const vaultEntries = (k, key, onlyNew) => Object.entries(k.pairs).filter(([id]) => UUID_RE.test(id) && (!onlyNew || !k.vaulted?.[id])).map(([keyId, v]) => Object.assign({ keyId }, seal(b64d(v), key)));
+  function vaultImport(k, key, list) {
+    let n = 0; k.vaulted = k.vaulted || {};
+    for (const x of list) {
+      if (k.pairs[x.keyId]) { k.vaulted[x.keyId] = 1; continue; }
+      try { const out = nacl.secretbox.open(b64d(x.box), b64d(x.nonce), key); if (out && out.length === 32) { k.pairs[x.keyId] = b64e(out); k.vaulted[x.keyId] = 1; n++; } } catch (e) { /* entrée illisible */ }
+    }
+    return n;
+  }
+  async function vaultCreate(k, password) {
+    const salt = b64e(nacl.randomBytes(16)), key = await deriveVault(password, salt, VAULT_ITER), keys = vaultEntries(k, key, false);
+    await api('PUT', '/v1/e2e/vault', { salt, iterations: VAULT_ITER, check: checkOf(key), keys });
+    k.vault = b64e(key); k.vaulted = Object.fromEntries(keys.map(x => [x.keyId, 1]));
+    keySaveRaw(k);
+  }
+  // Connexion (mot de passe disponible) : ouvre le coffre et récupère toutes les clés, ou le crée
+  async function vaultUnlock(password) {
+    const r = await api('GET', '/v1/e2e/vault'), { k } = keyStore();
+    if (r.vault) {
+      const key = await deriveVault(password, r.vault.salt, r.vault.iterations);
+      if (checkOk(key, r.vault.check)) { k.vault = b64e(key); vaultImport(k, key, r.keys); keySaveRaw(k); await vaultPush(); return; }
+    }
+    // Aucun coffre, ou coffre d'un ancien mot de passe : nouveau coffre avec les clés présentes sur cet appareil
+    await vaultCreate(k, password);
+  }
+  // Clés créées ou reçues ailleurs depuis (autre appareil, nouvelle version d'une clé de groupe)
+  async function vaultPull() {
+    const { k } = keyStore(); if (!k.vault) return 0;
+    const r = await api('GET', '/v1/e2e/vault'), key = b64d(k.vault);
+    if (!r.vault || !checkOk(key, r.vault.check)) { delete k.vault; delete k.vaulted; keySaveRaw(k); return 0; }
+    const n = vaultImport(k, key, r.keys); keySaveRaw(k); return n;
+  }
+  let vaultTimer = null;
+  function scheduleVaultPush() { clearTimeout(vaultTimer); vaultTimer = setTimeout(() => void vaultPush().catch(() => undefined), 800); }
+  async function vaultPush() {
+    const { k } = keyStore(); if (!S.acct || !k.vault) return;
+    const keys = vaultEntries(k, b64d(k.vault), true); if (!keys.length) return;
+    for (let i = 0; i < keys.length; i += 500) await api('POST', '/v1/e2e/vault/keys', { keys: keys.slice(i, i + 500) });
+    const { k: k2 } = keyStore(); k2.vaulted = k2.vaulted || {}; keys.forEach(x => { k2.vaulted[x.keyId] = 1; }); keySaveRaw(k2);
+  }
+  // Nouveau mot de passe : toutes les clés (celles de l'appareil et celles du coffre) sont rechiffrées
+  async function vaultRekey(password) {
+    try { await vaultPull(); } catch (e) { /* coffre ancien illisible : on repart des clés de l'appareil */ }
+    const { k } = keyStore(); await vaultCreate(k, password);
+  }
   async function e2eDevice() {
     const { k } = keyStore();
     if (k.device) return k.device;
@@ -584,9 +645,10 @@
     keySave(k);
   }
   async function e2eForget(notifyServer) {
-    const { all, k } = keyStore();
+    // Compte lu tout de suite : après l'appel au serveur, la session a déjà été fermée
+    const uid = meId(), { k } = keyStore();
+    const all = ls.get(DEV_KEY) || {}; delete all[uid]; ls.set(DEV_KEY, all);
     if (k.device && notifyServer) await api('DELETE', `/v1/e2e/devices/${k.device.id}`).catch(() => undefined);
-    delete all[meId()]; ls.set(DEV_KEY, all);
   }
   function naclDecrypt(m) {
     const p = m.e2e, key = keyStore().k.pairs[p.keyId]; if (!key) return null;
@@ -601,6 +663,7 @@
       const conv = m.chat ? { group: m.chat } : { peer: m.from === mine ? m.to : m.from };
       if (conv.group || conv.peer) convs.set(conv.group ? 'g' + conv.group : 'p' + conv.peer, conv);
     }
+    if (convs.size) await vaultPull().catch(() => 0);
     for (const conv of convs.values()) await e2eOpenConv(conv).catch(() => undefined);
     for (const m of DB.messages) if (m.e2e && (!E2E.cache.has(m.id) || E2E.cache.get(m.id) == null)) E2E.cache.set(m.id, naclDecrypt(m));
   }
@@ -788,7 +851,29 @@
           </div>
           <p class="form-err" id="pw-err" role="alert" hidden></p>
           <div class="sheet-f"><button class="btn btn-primary" type="submit">${icon('lock')}Changer le mot de passe</button></div>
-        </form></section>`;
+        </form></section>${vaultCard()}`;
+    };
+    // Coffre de clés : activé à la connexion ; une session ouverte avant la 1.2.0 l'active ici avec son mot de passe
+    const vaultCard = () => {
+      const { k } = keyStore(), on = !!k.vault, n = Object.keys(k.pairs || {}).length;
+      return `<section class="glass card"><div class="card-h"><h2>Clés de chiffrement</h2><span class="chip ${on ? 't-goal' : 'st-warn'}">${icon(on ? 'check' : 'lock')}${on ? 'Synchronisées' : 'Sur cet appareil'}</span></div>
+        <p class="muted small" style="margin-bottom:10px">${on
+          ? `${pl(n, 'clé de conversation', 'clés de conversation')}. Une copie chiffrée avec ton mot de passe est gardée sur le serveur : tes autres appareils retrouvent tes conversations dès la connexion. Ni l’éditeur ni l’hébergeur ne peuvent l’ouvrir.`
+          : 'Active la synchronisation : une copie de tes clés, chiffrée avec ton mot de passe, sera gardée sur le serveur pour que tes autres appareils retrouvent tes conversations.'}</p>
+        ${on ? '' : `<form class="gform" data-form="vault-unlock"><div class="field"><label for="vault-pw">Mot de passe</label><input type="password" id="vault-pw" name="password" autocomplete="current-password"></div>
+          <p class="form-err" id="vault-err" role="alert" hidden></p><div class="sheet-f"><button class="btn btn-primary" type="submit">${icon('lock')}Synchroniser mes clés</button></div></form>`}
+      </section>`;
+    };
+    FORMS['vault-unlock'] = async function (f) {
+      const pw = String(new FormData(f).get('password') || ''), err = f.querySelector('#vault-err'), failF = m => { err.textContent = m; err.hidden = false; };
+      if (!pw) return failF('Indique ton mot de passe.');
+      try {
+        // Vérification du mot de passe auprès du serveur avant d'ouvrir (ou de créer) le coffre
+        const r = await api('POST', '/v1/auth/login', { username: me().username, password: pw }), old = S.tokens?.refreshToken;
+        if (old) void api('POST', '/v1/auth/logout', { refreshToken: old }).catch(() => undefined);
+        S.tokens = { accessToken: r.accessToken, refreshToken: r.refreshToken }; ls.set(TOK_KEY, S.tokens);
+        await vaultUnlock(pw); await decryptAll(); render(); toast('Clés de chiffrement synchronisées.', 'lock');
+      } catch (e) { failF(e.status === 401 ? 'Mot de passe incorrect.' : e.message); }
     };
     O.syncCard = syncCard;
     syncCard = function (u) {
@@ -864,7 +949,7 @@
       const d = Object.fromEntries(new FormData(f)), un = (d.username || '').trim().toLowerCase();
       if (!un || !d.password) { UI.authError = "Indique ton nom d'utilisateur et ton mot de passe."; return render(); }
       if (!NET.online) { UI.authError = 'Hors ligne : la connexion à un compte nécessite internet. Tu peux continuer sans compte en attendant.'; return render(); }
-      try { await connect(await api('POST', '/v1/auth/login', { username: un, password: d.password })); }
+      try { await connect(await api('POST', '/v1/auth/login', { username: un, password: d.password }), false, d.password); }
       catch (e) { UI.authError = e.message; render(); }
     };
     FORMS.signup = async function (f) {
@@ -873,7 +958,7 @@
       if (!/^[a-z0-9._]{3,20}$/.test(un)) { UI.authError = "Le nom d'utilisateur doit faire 3 à 20 caractères : lettres, chiffres, point ou tiret bas."; return render(); }
       if ((d.password || '').length < 8) { UI.authError = 'Le mot de passe doit contenir au moins 8 caractères.'; return render(); }
       if (!NET.online) { UI.authError = 'Hors ligne : la création d’un compte nécessite internet.'; return render(); }
-      try { await connect(await api('POST', '/v1/auth/register', { username: un, displayName: name, password: d.password, acceptTerms: true }), true); }
+      try { await connect(await api('POST', '/v1/auth/register', { username: un, displayName: name, password: d.password, acceptTerms: true }), true, d.password); }
       catch (e) { UI.authError = e.message; render(); }
     };
     FORMS['guest-upgrade'] = async function (f) {
@@ -899,19 +984,20 @@
       const local = migrate(load() || emptyDB()); local.users = local.users.filter(x => x.id !== gid); local.goals = local.goals.filter(g => g.userId !== gid); local.checkins = local.checkins.filter(c => c.userId !== gid); local.session = null;
       try { localStorage.setItem(KEY, JSON.stringify(local)); } catch (e) { /* ignoré */ }
       save(); render(); toast('Compte créé : toutes tes données sont conservées et sauvegardées.', 'check');
-      afterConnect();
+      afterConnect(pw);
     };
-    async function connect(payload, created) {
+    async function connect(payload, created, password) {
       const cached = ls.get(ACCT_KEY);
       const db = cached && cached.session === payload.user.id ? cached : newAccountDB(payload.user);
       enterAccount(payload, db);
       UI.authError = ''; UI.view = 'today'; UI.modal = null; UI.renderedView = null;
       render();
       if (created) toast('Bienvenue sur PepsGoal !', 'flame');
-      afterConnect();
+      afterConnect(password);
     }
-    function afterConnect() {
-      void e2eDevice().then(() => e2eShareMissing()).catch(() => undefined);
+    function afterConnect(password) {
+      void (password ? vaultUnlock(password).catch(e => console.warn('PepsGoal : coffre de clés indisponible', e)) : Promise.resolve())
+        .then(() => e2eDevice()).then(() => e2eShareMissing()).then(() => decryptAll()).then(() => { updateChat(); softRender(); }).catch(() => undefined);
       void syncNow().then(() => {
         const u = me(); if (!u) return;
         if (!u.tutorialDone && !UI.modal) { UI.modal = { type: 'tuto', step: 0 }; renderModal(); }
@@ -942,7 +1028,11 @@
       if (next.length < 8) return failF('Le nouveau mot de passe doit contenir au moins 8 caractères.');
       if (next === cur) return failF('Choisis un mot de passe différent de l’actuel.');
       if (next !== next2) return failF('Les deux nouveaux mots de passe ne correspondent pas.');
-      try { const r = await api('POST', '/v1/auth/password', { current: cur, next }); S.tokens = { accessToken: r.accessToken, refreshToken: r.refreshToken }; ls.set(TOK_KEY, S.tokens); f.reset(); toast('Mot de passe modifié. Tes autres appareils devront se reconnecter.', 'lock'); }
+      try {
+        const r = await api('POST', '/v1/auth/password', { current: cur, next }); S.tokens = { accessToken: r.accessToken, refreshToken: r.refreshToken }; ls.set(TOK_KEY, S.tokens); f.reset();
+        await vaultRekey(next).catch(e => console.warn('PepsGoal : coffre de clés non rechiffré', e));
+        toast('Mot de passe modifié. Tes autres appareils devront se reconnecter.', 'lock');
+      }
       catch (e) { failF(e.message); }
     });
     wrapF('profile', async function (f) {

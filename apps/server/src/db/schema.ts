@@ -303,6 +303,26 @@ export const e2ePairKeys = pgTable('e2e_pair_keys', {
   createdAt: ts('created_at').notNull().defaultNow()
 }, t => ({ pairIdx: index('e2e_pair_keys_pair_idx').on(t.userA, t.userB, t.createdAt), groupIdx: index('e2e_pair_keys_group_idx').on(t.groupId, t.createdAt) }));
 
+/**
+ * Coffre de clés d'un compte : copie de ses clés de conversation, chiffrées sur l'appareil avec une clé dérivée
+ * du mot de passe (PBKDF2, sel ci-dessous). Le serveur ne peut pas les ouvrir ; un nouvel appareil les récupère à la connexion.
+ */
+export const e2eVaults = pgTable('e2e_vaults', {
+  userId: uuid('user_id').primaryKey().references(() => users.id, { onDelete: 'cascade' }),
+  salt: text('salt').notNull(),
+  iterations: integer('iterations').notNull(),
+  /** Valeur témoin chiffrée : vérifie que la clé dérivée est la bonne. */
+  check: text('check').notNull(),
+  updatedAt: ts('updated_at').notNull().defaultNow()
+});
+export const e2eVaultKeys = pgTable('e2e_vault_keys', {
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  keyId: uuid('key_id').notNull(),
+  nonce: text('nonce').notNull(),
+  box: text('box').notNull(),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.userId, t.keyId] }) }));
+
 /** Clé de paire chiffrée pour un appareil précis (crypto_box). */
 export const e2eEnvelopes = pgTable('e2e_envelopes', {
   keyId: uuid('key_id').notNull().references(() => e2ePairKeys.keyId, { onDelete: 'cascade' }),

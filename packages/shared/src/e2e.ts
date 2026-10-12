@@ -31,6 +31,14 @@ export const E2EEnvelope = z.object({ deviceId: z.string().uuid(), senderDeviceI
 export type E2EEnvelope = z.infer<typeof E2EEnvelope>;
 export const E2EKeyUpload = z.object({ keyId: z.string().uuid(), envelopes: z.array(E2EEnvelope).min(1).max(40) });
 export const E2EDeviceBody = z.object({ publicKey: b64field(44) });
+/** Coffre de clés (copie chiffrée avec une clé dérivée du mot de passe) */
+export const E2EVaultKey = z.object({ keyId: z.string().uuid(), nonce: b64field(44), box: b64field(100) });
+export const E2EVaultBody = z.object({
+  salt: b64field(44), iterations: z.number().int().min(100_000).max(5_000_000), check: b64field(120),
+  /** Remplacement complet (changement de mot de passe) : toutes les clés, rechiffrées. */
+  keys: z.array(E2EVaultKey).max(2000).optional()
+});
+export const E2EVaultKeysBody = z.object({ keys: z.array(E2EVaultKey).min(1).max(500) });
 
 /** Longueur maximale du texte d'un message (en caractères). */
 export const MESSAGE_MAX = 500;

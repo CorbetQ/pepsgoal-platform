@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { E2EDeviceBody, E2EKeyUpload, Id } from '@pepsgoal/shared';
+import { E2EDeviceBody, E2EKeyUpload, E2EVaultBody, E2EVaultKeysBody, Id } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { badRequest, forbidden, notFound } from '../lib/errors.js';
 import { areFriends, isBlocked, me, requireUser } from '../lib/guards.js';
@@ -33,6 +33,43 @@ export default async function e2eRoutes(app: FastifyInstance) {
       select id from e2e_devices where user_id = ${u.id} order by last_seen_at desc limit ${MAX_DEVICES})`;
     reply.status(201);
     return { deviceId: d!.id };
+  });
+
+  /**
+   * Coffre de clés : copie des clés de conversation du compte, chiffrées sur l'appareil avec une clé dérivée du mot de passe.
+   * Le serveur ne stocke ni cette clé ni le moyen de la recalculer (le sel seul ne suffit pas).
+   */
+  app.get('/v1/e2e/vault', { preHandler: requireUser }, async req => {
+    const u = me(req);
+    const [v] = await sql<Row[]>`select salt, iterations, "check", updated_at from e2e_vaults where user_id = ${u.id}`;
+    if (!v) return { vault: null, keys: [] };
+    const keys = await sql<Row[]>`select key_id, nonce, box from e2e_vault_keys where user_id = ${u.id} order by created_at`;
+    return { vault: { salt: v.salt, iterations: v.iterations, check: v.check, updatedAt: iso(v.updated_at) }, keys: keys.map(k => ({ keyId: k.key_id, nonce: k.nonce, box: k.box })) };
+  });
+
+  /** Création du coffre, ou remplacement complet après un changement de mot de passe (toutes les clés rechiffrées). */
+  app.put('/v1/e2e/vault', { preHandler: requireUser, config: { rateLimit: { max: 10, timeWindow: '1 hour' } } }, async req => {
+    const b = E2EVaultBody.parse(req.body);
+    const u = me(req);
+    await sql.begin(async tx => {
+      await tx`insert into e2e_vaults (user_id, salt, iterations, "check") values (${u.id}, ${b.salt}, ${b.iterations}, ${b.check})
+        on conflict (user_id) do update set salt = excluded.salt, iterations = excluded.iterations, "check" = excluded."check", updated_at = now()`;
+      if (b.keys) {
+        await tx`delete from e2e_vault_keys where user_id = ${u.id}`;
+        for (const k of b.keys) await tx`insert into e2e_vault_keys (user_id, key_id, nonce, box) values (${u.id}, ${k.keyId}, ${k.nonce}, ${k.box}) on conflict do nothing`;
+      }
+    });
+    return { ok: true };
+  });
+
+  /** Ajout de clés au coffre (nouvelle conversation, nouvelle version de clé de groupe). */
+  app.post('/v1/e2e/vault/keys', { preHandler: requireUser, config: { rateLimit: { max: 120, timeWindow: '1 minute' } } }, async req => {
+    const { keys } = E2EVaultKeysBody.parse(req.body);
+    const u = me(req);
+    const [v] = await sql`select 1 from e2e_vaults where user_id = ${u.id}`;
+    if (!v) throw notFound('Coffre de clés absent.');
+    for (const k of keys) await sql`insert into e2e_vault_keys (user_id, key_id, nonce, box) values (${u.id}, ${k.keyId}, ${k.nonce}, ${k.box}) on conflict do nothing`;
+    return { ok: true, count: keys.length };
   });
 
   /** Déconnexion : l'appareil oublie sa clé, le serveur oublie l'appareil et ses enveloppes. */

@@ -580,6 +580,8 @@ textarea:focus,input:focus,select:focus{outline:none;border-color:var(--focus);b
 .field-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 fieldset{border:0;padding:0;margin:0;min-width:0}
 legend{padding:0}
+/* Emojis Fluent : à la taille du texte qui les entoure */
+.emj{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;margin:0 .02em;object-fit:contain;user-select:all}
 /* Photos des publications et visionneuse */
 .post-photo{display:block;width:100%;padding:0;border:0;background:color-mix(in srgb,var(--ink) 6%,transparent);border-radius:var(--r-md);overflow:hidden;cursor:zoom-in}
 .post-photo img{display:block;width:100%;max-height:520px;object-fit:cover}
@@ -599,10 +601,28 @@ legend{padding:0}
 .msg-cap{display:block;padding:6px 8px 0}
 .att-wait{display:grid;place-items:center;width:100%;height:100%;min-height:120px;opacity:.6}
 .att-wait.sm{min-height:0;font-size:12.5px}
-.msg-voice{display:flex;align-items:center;gap:8px}
-.msg.k-voice{max-width:min(86%,330px)}
-.msg-voice audio{height:36px;width:min(210px,52vw);min-width:0;flex:1}
-.msg-voice .vd{font-size:12px;font-weight:700;opacity:.85;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* Lecteur des messages vocaux */
+.vplay{display:flex;align-items:center;gap:10px;min-width:0}
+.vp-btn{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:0;padding:0;cursor:pointer;color:var(--on-accent);background:linear-gradient(135deg,var(--flame-2),var(--flame) 55%,var(--pink));box-shadow:0 6px 16px -8px var(--flame)}
+.msg.me .vp-btn{background:rgba(255,255,255,.92);color:var(--flame);box-shadow:none}
+.vp-btn svg{width:18px;height:18px;stroke-width:2.6}
+.vp-btn[data-state="false"] svg,.vp-btn:not([data-state]) svg{margin-left:2px}
+.vp-btn:disabled{opacity:.6;cursor:default}
+.vp-btn:focus-visible,.vp-wave:focus-visible,.vp-rate:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.vp-spin{width:16px;height:16px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:vpSpin .8s linear infinite}
+@keyframes vpSpin{to{transform:rotate(360deg)}}
+.vp-wave{position:relative;flex:1;min-width:0;height:32px;cursor:pointer;touch-action:none;border-radius:6px}
+.vp-bars{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;gap:2px}
+.vp-bars i{flex:1;min-width:2px;max-width:4px;height:calc(var(--h) * 10% + 10%);border-radius:3px;background:currentColor;opacity:.32}
+.vp-bars.on{clip-path:inset(0 calc(100% - var(--p) * 100%) 0 0);transition:clip-path .12s linear}
+.vp-bars.on i{opacity:1}
+.msg.them .vp-bars.on i{background:var(--flame)}
+.vp-side{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.vp-time{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;opacity:.9}
+.vp-rate{font:inherit;font-size:11px;font-weight:800;line-height:1;padding:3px 7px;border-radius:999px;border:0;cursor:pointer;color:inherit;background:color-mix(in srgb,currentColor 16%,transparent)}
+:root[data-a11y-motion="off"] .vp-bars.on,:root[data-a11y-motion="off"] .vp-spin{transition:none;animation:none}
+@media (prefers-reduced-motion: reduce){.vp-bars.on{transition:none}.vp-spin{animation:none}}
+.msg.k-voice{width:min(82%,320px);padding:8px 10px 6px}
 .msg-voice svg{width:18px;height:18px;flex:none}
 .msg-goal{width:100%;text-align:left;color:var(--ink)}
 .msg-goal>span:last-child{flex:1;min-width:0;text-align:left}
@@ -635,8 +655,6 @@ legend{padding:0}
 .a11y-btn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--glass-strong)}
 .a11y-btn svg{width:18px;height:18px}
 .a11y-btn .nb{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--flame);color:var(--on-accent);font-size:11px;font-weight:800;display:inline-grid;place-items:center}
-.auth-a11y h2{display:inline-flex;align-items:center;gap:8px}
-.auth-a11y h2 svg{width:20px;height:20px}
 /* Champs date et heure : icône du calendrier lisible sur fond sombre */
 input[type=date],input[type=time],input[type=datetime-local]{min-width:0;color-scheme:light dark}
 :root[data-theme="dark"] input[type=date],:root[data-theme="dark"] input[type=time],:root[data-theme="dark"] input[type=datetime-local]{color-scheme:dark}
@@ -862,6 +880,54 @@ input[type=date],input[type=time],input[type=datetime-local]{min-width:0;color-s
 /* ================= utilitaires ================= */
 const DAY = 864e5;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ================= emojis Fluent (Microsoft) à la place des emojis du système ================= */
+// Version publiée uniquement (liste et dossier fournis par apps/web/build.mjs). Chaque emoji affiché devient une image
+// servie par PepsGoal ; les champs de saisie gardent les emojis du système. Sans image (hors ligne), l'emoji d'origine revient.
+const EMOJI = (() => {
+  const cfg = window.PEPSGOAL_CONFIG?.emoji, list = window.PEPSGOAL_EMOJI;
+  if (!cfg?.base || !Array.isArray(list) || !window.Intl?.Segmenter) return null;
+  return { base:cfg.base, keys:new Set(list), seg:new Intl.Segmenter('fr', { granularity:'grapheme' }) };
+})();
+const EMOJI_RE = /\p{Extended_Pictographic}|\p{Regional_Indicator}|[#*0-9]\uFE0F?\u20E3/u;
+const EMOJI_SKIP = 'textarea,script,style,option,select,title,svg,[data-noemoji],.emj';
+const emojiKey = g => [...g].map(c => c.codePointAt(0).toString(16)).filter(c => c !== 'fe0f').join('-');
+function emojify(root){
+  if (!EMOJI || !root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => EMOJI_RE.test(n.data) && !n.parentElement?.closest(EMOJI_SKIP) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
+  const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const n of nodes) {
+    const frag = document.createDocumentFragment(); let buf = '', changed = false;
+    for (const { segment:g } of EMOJI.seg.segment(n.data)) {
+      // ©, ®, ™ et autres symboles typographiques restent du texte, sauf demande explicite d'emoji (FE0F)
+      let key = EMOJI_RE.test(g) && !(g.codePointAt(0) < 0x2190 && !g.includes('\uFE0F') && !g.includes('\u20E3')) ? emojiKey(g) : null;
+      // Teintes de peau : l'emoji par défaut
+      if (key && !EMOJI.keys.has(key)) { const base = key.replace(/-1f3f[b-f]/g, ''); key = EMOJI.keys.has(base) ? base : null; }
+      if (!key) { buf += g; continue; }
+      if (buf) { frag.append(buf); buf = ''; }
+      const img = document.createElement('img');
+      img.className = 'emj'; img.alt = g; img.draggable = false; img.decoding = 'async';
+      img.onerror = () => img.replaceWith(g);
+      img.src = `${EMOJI.base}${key}.webp`;
+      frag.append(img); changed = true;
+    }
+    if (!changed) continue;
+    if (buf) frag.append(buf);
+    n.replaceWith(frag);
+  }
+}
+if (EMOJI) {
+  const pending = new Set();
+  const flush = () => { const roots = [...pending]; pending.clear(); roots.forEach(r => { if (r.isConnected) emojify(r); }); };
+  new MutationObserver(list => {
+    if (!pending.size) queueMicrotask(flush);
+    for (const m of list) {
+      if (m.type === 'characterData') { if (m.target.parentElement) pending.add(m.target.parentElement); continue; }
+      m.addedNodes.forEach(n => { if (n.nodeType === 1) pending.add(n); else if (n.nodeType === 3 && n.parentElement) pending.add(n.parentElement); });
+    }
+  }).observe(document.documentElement, { childList:true, subtree:true, characterData:true });
+  document.addEventListener('DOMContentLoaded', () => emojify(document.body));
+}
 // Version publiée (serveur PepsGoal) : identifiants au format UUID attendu par le serveur
 const uid = () => window.PEPSGOAL_CONFIG?.api && window.crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const pad = n => String(n).padStart(2, '0');
@@ -1030,7 +1096,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -2376,11 +2442,6 @@ function viewAuth(){
       <p class="auth-legal"><button class="linkbtn" data-act="open-legal" data-id="cgu">CGU</button> · <button class="linkbtn" data-act="open-legal" data-id="mentions">Mentions légales</button> · <button class="linkbtn" data-act="open-legal" data-id="privacy">Confidentialité</button> · <button class="linkbtn" data-act="open-a11y">Accessibilité</button></p>
       <p class="auth-legal" style="text-align:center">Mode démonstration : profils et données d’exemple, rien n’est enregistré. · PepsGoal ${APP_VERSION}</p>
     </section>
-    <section class="auth-a11y glass card" aria-labelledby="auth-a11y-h">
-      <div class="card-h"><h2 id="auth-a11y-h">${icon('eye')}Accessibilité</h2></div>
-      <p class="muted small" style="margin-bottom:6px">Adapte l’affichage avant même de te connecter. Ces réglages restent sur cet appareil, pour tous les comptes.</p>
-      <div class="settings">${a11yRows()}</div>
-    </section>
     </div>
   </div>`;
 }
@@ -2619,7 +2680,7 @@ function renderModal(){
   const f = modalRoot.querySelector('[autofocus]') || modalRoot.querySelector('.sheet');
   if (f) { f.setAttribute('tabindex', f.getAttribute('tabindex') || '-1'); f.focus({ preventScroll:true }); }
 }
-function mA11y(){ return `${sheetHead('Accessibilité')}<div class="settings">${a11yRows()}</div>`; }
+function mA11y(){ return `${sheetHead('Accessibilité')}<div class="settings">${a11yRows()}</div><p class="muted small" style="margin-top:10px">Ces réglages s’appliquent à cet appareil, pour tous les comptes, dès l’écran de connexion.</p>`; }
 const sheetHead = t => `<div class="sheet-h"><h2 id="m-title">${t}</h2><button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>`;
 
 function typeTile(k, checked, disabled, wide){
@@ -3776,6 +3837,63 @@ function openPhotoViewer(src, alt){
   document.body.append(el); el.querySelector('button').focus();
 }
 
+/* ---- messages vocaux : lecteur intégré ---- */
+const WAVE_BARS = 32;
+// Forme d'onde : calculée à l'enregistrement (envoyée chiffrée avec le message), sinon dérivée de l'identifiant
+function waveOf(m, b){
+  const w = Array.isArray(b.a?.wave) && b.a.wave.length ? b.a.wave : null;
+  if (w) return Array.from({ length:WAVE_BARS }, (_, i) => Math.max(1, Math.min(9, Number(w[Math.floor(i * w.length / WAVE_BARS)]) || 1)));
+  let h = 0; for (const c of m.id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return Array.from({ length:WAVE_BARS }, (_, i) => { h = (h * 1103515245 + 12345) >>> 0; return 2 + (h >>> 16) % 7 - (i < 3 || i > WAVE_BARS - 4 ? 1 : 0); });
+}
+function voicePlayer(m, b){
+  const src = attSrc(m, b), bars = waveOf(m, b).map(v => `<i style="--h:${v}"></i>`).join(''), dur = b.a?.dur || 0;
+  const rate = UI.voiceRate || 1;
+  return `<span class="vplay ${src ? '' : 'wait'}" data-mid="${m.id}" style="--p:0">
+    <button type="button" class="vp-btn" data-act="voice-toggle" data-id="${m.id}" aria-label="Écouter le message vocal (${fmtDur(dur)})" ${src ? '' : 'disabled'}>${src ? icon('play') : '<span class="vp-spin" aria-hidden="true"></span>'}</button>
+    <span class="vp-wave" data-act="voice-seek" data-id="${m.id}" role="slider" aria-label="Position dans le message vocal" aria-valuemin="0" aria-valuemax="${Math.round(dur)}" aria-valuenow="0" tabindex="${src ? 0 : -1}"><span class="vp-bars">${bars}</span><span class="vp-bars on" aria-hidden="true">${bars}</span></span>
+    <span class="vp-side"><span class="vp-time">${fmtDur(dur)}</span><button type="button" class="vp-rate" data-act="voice-rate" aria-label="Vitesse de lecture">${rate === 1 ? '1' : String(rate).replace('.', ',')}×</button></span>
+    ${src ? `<audio preload="metadata" src="${esc(src)}" hidden></audio>` : ''}
+  </span>`;
+}
+const vpOf = el => el?.closest?.('.vplay');
+function vpSync(a){
+  const vp = vpOf(a); if (!vp) return;
+  const d = isFinite(a.duration) && a.duration > 0 ? a.duration : 0, t = a.currentTime || 0;
+  vp.style.setProperty('--p', d ? Math.min(1, t / d) : 0);
+  const time = vp.querySelector('.vp-time'), total = Number(vp.closest('.msg') && vp.querySelector('.vp-wave')?.getAttribute('aria-valuemax')) || d;
+  if (time) time.textContent = fmtDur(!a.paused || t > 0 ? t : total);
+  vp.querySelector('.vp-wave')?.setAttribute('aria-valuenow', Math.round(t));
+  const btn = vp.querySelector('.vp-btn');
+  if (btn && !btn.disabled) { const playing = !a.paused && !a.ended; if (btn.dataset.state !== String(playing)) { btn.dataset.state = String(playing); btn.innerHTML = icon(playing ? 'pause' : 'play'); btn.setAttribute('aria-label', playing ? 'Mettre en pause' : 'Écouter le message vocal'); } vp.classList.toggle('playing', playing); }
+}
+['timeupdate', 'play', 'pause', 'loadedmetadata'].forEach(ev => document.addEventListener(ev, e => { if (e.target.tagName === 'AUDIO') vpSync(e.target); }, true));
+document.addEventListener('ended', e => { if (e.target.tagName !== 'AUDIO') return; e.target.currentTime = 0; vpSync(e.target); }, true);
+function vpSeek(vp, ratio){
+  const a = vp?.querySelector('audio'); if (!a || !isFinite(a.duration) || !a.duration) return;
+  a.currentTime = Math.max(0, Math.min(1, ratio)) * a.duration; vpSync(a);
+}
+document.addEventListener('pointerdown', e => {
+  const wave = e.target.closest?.('.vp-wave'); if (!wave) return;
+  const r = wave.getBoundingClientRect(); vpSeek(vpOf(wave), (e.clientX - r.left) / r.width);
+});
+document.addEventListener('keydown', e => {
+  const wave = e.target.closest?.('.vp-wave'); if (!wave || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  const a = vpOf(wave)?.querySelector('audio'); if (!a?.duration) return;
+  e.preventDefault(); a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime + (e.key === 'ArrowRight' ? 5 : -5))); vpSync(a);
+});
+// Forme d'onde réelle d'un enregistrement (32 niveaux de 1 à 9)
+async function waveform(blob){
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await ctx.decodeAudioData(await blob.arrayBuffer()); ctx.close?.();
+    const data = buf.getChannelData(0), step = Math.max(1, Math.floor(data.length / WAVE_BARS)), peaks = [];
+    for (let i = 0; i < WAVE_BARS; i++) { let mx = 0; for (let j = i * step; j < Math.min(data.length, (i + 1) * step); j += 16) mx = Math.max(mx, Math.abs(data[j])); peaks.push(mx); }
+    const top = Math.max(...peaks) || 1;
+    return peaks.map(v => Math.max(1, Math.round(v / top * 9)));
+  } catch(e){ return null; }
+}
+
 /* ---- affichage d'une conversation ---- */
 function msgInner(m){
   if (m.e2e && !E2E.cache.has(m.id)) return '🔒 …';
@@ -3785,10 +3903,7 @@ function msgInner(m){
     const src = attSrc(m, b), ratio = b.a?.w && b.a?.h ? `${b.a.w}/${b.a.h}` : '4/3';
     return `<button class="msg-photo" data-act="view-photo" data-id="${m.id}" aria-label="Agrandir la photo" style="aspect-ratio:${ratio}">${src ? `<img src="${esc(src)}" alt="Photo envoyée">` : `<span class="att-wait">${icon('image')}</span>`}</button>${b.t ? `<span class="msg-cap">${esc(b.t)}</span>` : ''}`;
   }
-  if (b.k === 'voice') {
-    const src = attSrc(m, b);
-    return `<span class="msg-voice">${icon('mic')}${src ? `<audio controls preload="metadata" src="${esc(src)}" aria-label="Message vocal de ${fmtDur(b.a?.dur)}"></audio>` : `<span class="att-wait sm">Chargement…</span>`}<span class="vd">${fmtDur(b.a?.dur)}</span></span>`;
-  }
+  if (b.k === 'voice') return voicePlayer(m, b);
   if (b.k === 'goal') {
     const g = b.g || {}, type = TYPES[g.type] ? g.type : 'routine';
     return `<button class="attach msg-goal t-${type}" data-act="open-shared-goal" data-id="${m.id}"><span class="gi" aria-hidden="true">${esc(g.icon || '🎯')}</span><span><b>${esc(g.title || 'Objectif')}</b><small>${TYPES[type].label}${g.v ? ` · ${esc(g.v)} ${esc(g.l || '')}` : ''}</small></span></button>${b.t ? `<span class="msg-cap">${esc(b.t)}</span>` : ''}`;
@@ -3966,7 +4081,7 @@ function stopRec(cancel){
     if (cancel) return;
     if (secs < 1) { toast('Message vocal trop court.', 'mic'); return; }
     const blob = new Blob(r.chunks, { type:(r.mr.mimeType || 'audio/webm').split(';')[0] });
-    void sendRich({ k:'voice', a:{ dur:Math.round(secs * 10) / 10 } }, blob);
+    void waveform(blob).then(wave => sendRich({ k:'voice', a:Object.assign({ dur:Math.round(secs * 10) / 10 }, wave ? { wave } : {}) }, blob));
   };
   try { r.mr.stop(); } catch(e){ r.stream.getTracks().forEach(t => t.stop()); }
   refreshChatExtra();
@@ -4108,6 +4223,16 @@ Object.assign(ACT, {
   },
   'chat-voice': () => { if (chatTarget()) void startRec(); },
   'rec-send': () => stopRec(false),
+  'voice-toggle': id => {
+    const a = document.querySelector(`.vplay[data-mid="${id}"] audio`); if (!a) return;
+    if (a.paused) { document.querySelectorAll('.vplay audio').forEach(x => { if (x !== a) x.pause(); }); a.playbackRate = UI.voiceRate || 1; void a.play().catch(() => toast('Lecture impossible sur cet appareil.', 'x')); }
+    else a.pause();
+  },
+  'voice-rate': () => {
+    UI.voiceRate = { 1:1.5, 1.5:2, 2:1 }[UI.voiceRate || 1];
+    document.querySelectorAll('.vplay').forEach(vp => { const a = vp.querySelector('audio'); if (a) a.playbackRate = UI.voiceRate; const r = vp.querySelector('.vp-rate'); if (r) r.textContent = `${UI.voiceRate === 1 ? '1' : String(UI.voiceRate).replace('.', ',')}×`; });
+  },
+  'voice-seek': () => {},
   'rec-cancel': () => stopRec(true),
   'view-photo': id => openPhotoViewer(ATT.get(id), 'Photo envoyée'),
   'view-post-photo': id => { const p = DB.posts.find(x => x.id === id); if (p?.photo) openPhotoViewer(p.photo, 'Photo de la publication'); },
@@ -5102,16 +5227,16 @@ const LEGAL = {
     ['Éditeur', `<p>L’application PepsGoal (version ${APP_VERSION}) est éditée par Quentin CORBET, particulier agissant à titre non professionnel, domicilié à Angers (Maine-et-Loire, France).</p><ul><li>Immatriculation : sans objet (éditeur particulier, aucune activité commerciale)</li><li>Numéro de TVA intracommunautaire : sans objet</li><li>Adresse électronique : ${LEGAL_MAIL}</li><li>Directeur de la publication : Quentin CORBET</li></ul>`],
     ['Hébergement', `<p>Le site pepsgoal.fr, l’application web app.pepsgoal.fr et le serveur de PepsGoal (api.pepsgoal.fr : comptes, synchronisation, fonctions sociales, photos) sont hébergés sur un serveur privé virtuel loué auprès de Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre (www.hostinger.fr).</p><p>En mode sans compte, les données ne sont pas envoyées à ce serveur : elles restent sur l’appareil de l’utilisateur.</p>`],
     ['Propriété intellectuelle', `<p>Le nom PepsGoal, le logo, l’interface, les textes, illustrations et le code de l’application sont protégés par le droit de la propriété intellectuelle. Toute reproduction ou réutilisation sans autorisation de l’éditeur est interdite.</p><p>Les contenus publiés par les utilisateurs restent la propriété de leurs auteurs.</p>`],
-    ['Crédits', `<ul><li>Polices de caractères : Unbounded et Manrope, sous licence SIL Open Font License, intégrées à l’application.</li><li>Archives .zip : bibliothèque JSZip (licence MIT). Chiffrement des messages : bibliothèque TweetNaCl (domaine public).</li><li>Les émojis sont affichés par le système de ton appareil.</li></ul>`],
+    ['Crédits', `<ul><li>Polices de caractères : Unbounded et Manrope, sous licence SIL Open Font License, intégrées à l’application.</li><li>Archives .zip : bibliothèque JSZip (licence MIT). Chiffrement des messages : bibliothèque TweetNaCl (domaine public).</li><li>Emojis : Fluent Emoji de Microsoft (licence MIT), servis par PepsGoal.</li></ul>`],
     ['Signaler un contenu illicite', `<p>Tu peux signaler une publication avec le bouton « Signaler » présent sur chaque publication, ou écrire à ${LEGAL_MAIL} en précisant le contenu concerné, sa date et la raison du signalement. Chaque signalement est transmis immédiatement à la modération, y compris par e-mail, et traité dans les meilleurs délais.</p>`],
     ['Contact', `<p>Pour toute question sur l’application : ${LEGAL_MAIL}.</p>`]
   ]},
   privacy:{ title:'Charte de confidentialité', short:'Confidentialité', sections:[
     ['En résumé', `<ul><li><b>Avec un compte</b>, tes données sont enregistrées sur le serveur de PepsGoal (hébergé par Hostinger) pour être sauvegardées, synchronisées entre tes appareils et partagées avec les personnes que tu choisis.</li><li><b>Sans compte</b>, rien n’est envoyé au serveur : tout reste sur ton appareil.</li><li>Tes messages privés et groupes de discussion, y compris les photos et messages vocaux qui y sont échangés, sont chiffrés de bout en bout : seuls les participants peuvent les lire, pas même l’éditeur.</li><li>Aucune publicité, aucun cookie de suivi, aucune revente de données.</li><li>Tu peux exporter ou supprimer tes données à tout moment depuis les Paramètres.</li></ul>`],
     ['Responsable du traitement', `<p>Le responsable du traitement est Quentin CORBET, particulier domicilié à Angers (France), éditeur de PepsGoal. Contact pour toute question relative à tes données : ${LEGAL_MAIL}. Aucun délégué à la protection des données n’a été désigné, cette désignation n’étant pas obligatoire.</p>`],
-    ['Données traitées', `<ul><li><b>Compte :</b> nom affiché, nom d’utilisateur, bio, icône ou photo de profil, mot de passe (enregistré uniquement sous forme d’empreinte bcrypt, jamais en clair), date d’inscription. Aucune adresse e-mail ni numéro de téléphone n’est demandé.</li><li><b>Progression :</b> objectifs, validations, mesures, séries, flammes, gels, badges, groupes d’objectifs, réglages (thème, couleur, rappels, visibilité).</li><li><b>Fonctions sociales :</b> amis, comptes bloqués, publications et leurs photos, commentaires, encouragements, stories, défis partagés, binômes, notifications.</li><li><b>Messagerie :</b> messages privés et de groupe, photos, messages vocaux et objectifs partagés, tous chiffrés de bout en bout ; le serveur ne conserve que leur version chiffrée, ainsi que l’expéditeur, les destinataires, la date et la taille. Clés publiques de chiffrement de tes appareils.</li><li><b>Modération :</b> signalements, avertissements, suspensions, contestations et journal des décisions.</li><li><b>Données techniques :</b> adresse IP et requêtes reçues par le serveur (journaux de sécurité), identifiants de session.</li></ul><p>PepsGoal ne collecte pas ta localisation, tes contacts ni de données publicitaires. Le micro n’est utilisé que pendant l’enregistrement d’un message vocal, et l’appareil photo ou la galerie uniquement quand tu choisis une photo.</p>`],
+    ['Données traitées', `<ul><li><b>Compte :</b> nom affiché, nom d’utilisateur, bio, icône ou photo de profil, mot de passe (enregistré uniquement sous forme d’empreinte bcrypt, jamais en clair), date d’inscription. Aucune adresse e-mail ni numéro de téléphone n’est demandé.</li><li><b>Progression :</b> objectifs, validations, mesures, séries, flammes, gels, badges, groupes d’objectifs, réglages (thème, couleur, rappels, visibilité).</li><li><b>Fonctions sociales :</b> amis, comptes bloqués, publications et leurs photos, commentaires, encouragements, stories, défis partagés, binômes, notifications.</li><li><b>Messagerie :</b> messages privés et de groupe, photos, messages vocaux et objectifs partagés, tous chiffrés de bout en bout ; le serveur ne conserve que leur version chiffrée, ainsi que l’expéditeur, les destinataires, la date et la taille. Clés publiques de chiffrement de tes appareils, et copie chiffrée de tes clés de conversation (illisible sans ton mot de passe).</li><li><b>Modération :</b> signalements, avertissements, suspensions, contestations et journal des décisions.</li><li><b>Données techniques :</b> adresse IP et requêtes reçues par le serveur (journaux de sécurité), identifiants de session.</li></ul><p>PepsGoal ne collecte pas ta localisation, tes contacts ni de données publicitaires. Le micro n’est utilisé que pendant l’enregistrement d’un message vocal, et l’appareil photo ou la galerie uniquement quand tu choisis une photo.</p>`],
     ['Pourquoi et sur quelle base', `<ul><li>Faire fonctionner ton compte, sauvegarder et synchroniser tes objectifs : exécution des CGU.</li><li>Afficher tes contenus et acheminer tes messages aux personnes que tu as choisies : exécution des CGU.</li><li>Assurer la sécurité du service, prévenir les abus et modérer l’espace social : intérêt légitime.</li><li>Afficher des notifications sur ton appareil : ton consentement, que tu peux retirer à tout moment dans les réglages de ton appareil ou de ton navigateur.</li></ul>`],
-    ['Où sont tes données', `<p><b>Avec un compte :</b> sur le serveur de PepsGoal, un serveur privé virtuel loué auprès de Hostinger dans un centre de données situé dans l’Union européenne, accessible uniquement par l’éditeur. Les échanges avec le serveur sont chiffrés (HTTPS). Une copie de tes données est aussi conservée sur tes appareils pour le fonctionnement hors connexion.</p><p><b>Sans compte :</b> uniquement dans le stockage de ton appareil (application mobile ou navigateur).</p><p>Les clés de chiffrement de tes conversations ne quittent jamais tes appareils en clair : elles passent d’un appareil à l’autre sous forme chiffrée, illisible pour le serveur.</p>`],
+    ['Où sont tes données', `<p><b>Avec un compte :</b> sur le serveur de PepsGoal, un serveur privé virtuel loué auprès de Hostinger dans un centre de données situé dans l’Union européenne, accessible uniquement par l’éditeur. Les échanges avec le serveur sont chiffrés (HTTPS). Une copie de tes données est aussi conservée sur tes appareils pour le fonctionnement hors connexion.</p><p><b>Sans compte :</b> uniquement dans le stockage de ton appareil (application mobile ou navigateur).</p><p>Les clés de chiffrement de tes conversations ne quittent jamais tes appareils en clair. Pour que tes autres appareils retrouvent tes conversations, une copie de ces clés est gardée sur le serveur, chiffrée sur ton appareil avec une clé dérivée de ton mot de passe : le serveur ne peut pas l’ouvrir. Si tu oublies ton mot de passe, cette copie ne peut pas être récupérée.</p>`],
     ['Qui peut voir quoi', `<ul><li><b>Privé :</b> toi seul.</li><li><b>Amis :</b> tes amis acceptés.</li><li><b>Public :</b> toute personne disposant d’un compte PepsGoal.</li><li><b>Stories :</b> tes amis uniquement, pendant 24 heures.</li><li><b>Messages privés et groupes :</b> les participants de la conversation uniquement. Le contenu (texte, photos, messages vocaux) est chiffré de bout en bout : ni l’éditeur, ni l’hébergeur, ni la modération ne peuvent le lire. Seuls les messages du compte PepsGoal Officiel sont en clair.</li><li><b>Comptes bloqués :</b> ne voient plus tes contenus et ne peuvent plus t’écrire.</li><li><b>Modération :</b> l’équipe de modération peut consulter les contenus publiés et signalés afin de faire respecter les CGU.</li></ul>`],
     ['Notifications de modération par e-mail', `<p>Lorsqu’une publication est signalée, qu’une publication attend une validation ou qu’une contestation est envoyée, le serveur prévient l’éditeur par e-mail (envoyé depuis la messagerie de Hostinger vers l’adresse ${LEGAL_MAIL}, hébergée par Microsoft). Cet e-mail contient le type d’événement, les noms d’utilisateur concernés, le motif et un extrait du contenu concerné. Il ne contient jamais de message privé.</p>`],
     ['Durées de conservation', `<ul><li>Compte, progression et contenus : jusqu’à la suppression de ton compte. La suppression efface immédiatement tes données du serveur ; elles disparaissent des sauvegardes au plus tard 14 jours après.</li><li>Stories : 24 heures.</li><li>Notifications : les 150 plus récentes.</li><li>Journaux techniques du serveur : rotation automatique, au plus 30 jours.</li><li>Données de modération : le temps nécessaire au traitement et au suivi des décisions, et au plus jusqu’à la suppression du compte concerné.</li><li>Mode sans compte : jusqu’à ce que tu effaces les données de l’application ou du navigateur.</li></ul>`],

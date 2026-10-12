@@ -28,6 +28,9 @@ Options -Indexes
   <FilesMatch "\.woff2$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
+  <FilesMatch "\.webp$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
   <FilesMatch "\.png$">
     Header set Cache-Control "public, max-age=86400"
   </FilesMatch>

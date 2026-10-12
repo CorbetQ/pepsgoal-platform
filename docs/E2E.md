@@ -24,6 +24,22 @@ Primitives : [tweetnacl](https://github.com/dchest/tweetnacl-js), une implément
 
 Si aucune clé n'est encore arrivée sur un appareil, la conversation propose « Créer une nouvelle clé ». Une nouvelle version de clé est alors créée pour tous les appareils. Les anciens messages restent lisibles là où l'ancienne clé existe.
 
+## Coffre de clés (synchronisation entre appareils)
+
+Depuis la 1.2.0, chaque compte a un **coffre** sur le serveur : une copie de toutes ses clés de conversation, pour qu'un nouvel appareil (ou une reconnexion) retrouve tout l'historique immédiatement, même si aucun autre appareil n'est allumé.
+
+| Élément | Détail |
+| --- | --- |
+| Clé du coffre | 32 octets dérivés du mot de passe sur l'appareil : PBKDF2-SHA-256, 310 000 itérations, sel aléatoire stocké avec le coffre |
+| Contenu | chaque clé de conversation est chiffrée séparément (`crypto_secretbox`) avec la clé du coffre (`e2e_vault_keys`) |
+| Contrôle | une valeur témoin chiffrée (`e2e_vaults.check`) vérifie que la clé dérivée est la bonne |
+| Routes | `GET /v1/e2e/vault`, `PUT /v1/e2e/vault` (création ou remplacement complet), `POST /v1/e2e/vault/keys` (ajouts) |
+
+Déroulé : à la connexion (le mot de passe est alors connu de l'appareil), l'app dérive la clé du coffre, récupère et ouvre toutes les clés, puis y dépose les siennes. Toute nouvelle clé (conversation, nouvelle version d'un groupe) y est ajoutée aussitôt. À la déconnexion, les clés quittent l'appareil, le coffre reste.
+Changement de mot de passe : toutes les clés sont rechiffrées avec un nouveau sel. Une session ouverte avant la 1.2.0 active le coffre depuis Paramètres › Compte › Clés de chiffrement.
+
+Limites : le serveur reçoit le mot de passe lors de la connexion (protégé par HTTPS, vérifié par bcrypt, jamais stocké) ; un serveur compromis **au moment d'une connexion** pourrait donc en dériver la clé du coffre. Un mot de passe oublié rend le coffre illisible : les conversations restent lisibles sur les appareils encore connectés.
+
 ## Groupes de discussion
 
 Chaque groupe a sa propre clé (versions successives), distribuée par le même mécanisme d'enveloppes que les paires d'amis, à tous les appareils de ses membres (`/v1/e2e/groups/:id`).

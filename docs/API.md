@@ -17,7 +17,7 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | POST | `/auth/refresh` | Nouveau jeton d'accès (le jeton de renouvellement est remplacé) |
 | POST | `/auth/logout` | Révoque le jeton de renouvellement |
 | POST | `/auth/password` | Changement de mot de passe (révoque les autres sessions) |
-| GET / PATCH | `/me` | Profil, état de modération, bonus de bienvenue ; modification du nom, de la bio, de l'avatar |
+| GET / PATCH | `/me` | Profil, état de modération, bonus de bienvenue, encouragements reçus comptés pour les gels (`cheersReceived`) ; modification du nom, de la bio, de l'avatar |
 | DELETE | `/me` | Suppression définitive du compte (mot de passe requis) |
 | POST | `/me/freezes/use` | Utilise `count` gels de série (409 s'il n'y en a pas assez) |
 | POST | `/me/welcome-bonus` | +5 gels de série à la fin du tutoriel (une seule fois par compte) |
@@ -70,6 +70,8 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | DELETE | `/e2e/devices/:id` | Oublie un appareil et ses enveloppes (déconnexion) |
 | GET | `/e2e/peers/:userId?deviceId=` | Appareils des deux amis, versions de clé, enveloppe destinée à cet appareil, appareils sans enveloppe |
 | POST | `/e2e/peers/:userId/keys` | Crée une version de clé et/ou dépose des enveloppes `{ keyId, envelopes: [{ deviceId, senderDeviceId, nonce, box }] }` |
+| GET / PUT | `/e2e/vault` | Coffre de clés du compte (sel, itérations, témoin, clés chiffrées) / création ou remplacement complet (changement de mot de passe) |
+| POST | `/e2e/vault/keys` | Ajout de clés chiffrées au coffre |
 | GET | `/e2e/pending?deviceId=` | Clés détenues par cet appareil qu'un autre appareil de la paire ou d'un membre du groupe n'a pas encore (re-chiffrement automatique) |
 | GET | `/notifications` · POST `/notifications/read-all` | Notifications |
 | POST | `/notify` | Notification à un ami ou à un membre d'un objectif partagé (`to`, `text`, `type`, `goalId`) ; 60 par heure |

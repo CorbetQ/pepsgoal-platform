@@ -1,7 +1,7 @@
 {
   "name": "pepsgoal-platform",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "PepsGoal : serveur de synchronisation, fonctions sociales, modération et application iOS / Android / web.",
   "workspaces": [
     "packages/*",

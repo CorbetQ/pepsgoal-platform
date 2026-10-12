@@ -23,8 +23,11 @@ export default async function meRoutes(app: FastifyInstance) {
   app.get('/v1/me', { preHandler: requireUser }, async req => {
     const [u] = await sql<Row[]>`select * from users where id = ${me(req).id}`;
     const [appeal] = await sql<Row[]>`select status, answer, created_at from appeals where user_id = ${u!.id} order by created_at desc limit 1`;
+    // Encouragements reçus qui comptent pour les gels (un par personne et par publication) : jauge « prochain gel »
+    const [cheers] = await sql<{ n: number }[]>`select count(*)::int as n from cheer_credits where author_id = ${u!.id}`;
     return {
       ...toPublicUser(u!), bio: u!.bio, settings: u!.settings, freezes: u!.freezes, welcomeBonus: !!u!.welcome_bonus_at, createdAt: iso(u!.created_at),
+      cheersReceived: cheers?.n ?? 0,
       moderation: {
         banned: isBanned({ banUntil: u!.ban_until, banPermanent: u!.ban_permanent }), banUntil: iso(u!.ban_until), banPermanent: u!.ban_permanent, banReason: u!.ban_reason,
         warned: !!u!.warned_at, commentsRestricted: u!.comments_restricted,

@@ -1,6 +1,6 @@
 {
   "name": "@pepsgoal/app",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "main": "index.js",
   "description": "Application mobile PepsGoal (iOS et Android) : l'interface PepsGoal embarquée, fonctionne hors ligne et se synchronise avec le serveur.",
