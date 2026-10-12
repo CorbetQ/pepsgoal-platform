@@ -24,8 +24,17 @@
   /* ---------- menu mobile ---------- */
   const drawer = document.querySelector('.drawer');
   if (drawer) {
-    const open = on => { drawer.classList.toggle('open', on); drawer.setAttribute('aria-hidden', String(!on)); document.body.style.overflow = on ? 'hidden' : ''; if (on) drawer.querySelector('a,button')?.focus(); };
-    document.querySelectorAll('[data-menu]').forEach(b => b.addEventListener('click', () => open(true)));
+    // Menu fermé : inerte, donc hors de la navigation au clavier ; à la fermeture, le focus revient au bouton du menu
+    let opener = null;
+    drawer.inert = true;
+    const open = on => {
+      drawer.classList.toggle('open', on); drawer.setAttribute('aria-hidden', String(!on)); drawer.inert = !on;
+      document.body.style.overflow = on ? 'hidden' : '';
+      if (on) drawer.querySelector('a,button')?.focus(); else opener?.focus();
+    };
+    document.querySelectorAll('[data-menu]').forEach(b => b.addEventListener('click', () => { opener = b; open(true); }));
+    // Revenu à une largeur de bureau, le menu se referme seul
+    matchMedia('(min-width: 1061px)').addEventListener('change', e => { if (e.matches && drawer.classList.contains('open')) open(false); });
     drawer.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => open(false)));
     drawer.addEventListener('click', e => { if (e.target === drawer) open(false); });
     addEventListener('keydown', e => { if (e.key === 'Escape' && drawer.classList.contains('open')) open(false); });
@@ -184,6 +193,20 @@
     const live = document.getElementById('live');
     if (live) live.textContent = `Copié : ${b.dataset.copy}`;
     b.classList.add('copied'); setTimeout(() => b.classList.remove('copied'), 1200);
+  });
+
+  /* ---------- sommaire des documents légaux : section visible surlignée ---------- */
+  document.querySelectorAll('.doc-toc').forEach(toc => {
+    const links = [...toc.querySelectorAll('a')];
+    const spy = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(l => {
+        const on = l.getAttribute('href') === `#${e.target.id}`;
+        l.classList.toggle('on', on);
+        if (on && getComputedStyle(toc).flexDirection === 'row') toc.scrollTo({ left:l.offsetLeft - 24, behavior:'smooth' });
+      });
+    }), { rootMargin:'-40% 0px -55% 0px' });
+    links.forEach(l => { const t = document.querySelector(l.getAttribute('href')); if (t) spy.observe(t); });
   });
 
   /* ---------- année du pied de page ---------- */

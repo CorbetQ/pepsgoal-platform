@@ -42,7 +42,7 @@
     <button class="icon-btn menu-btn" type="button" data-menu aria-label="Ouvrir le menu"><svg class="i"><use href="assets/icons.svg#menu"/></svg></button>
   </div>
 </header>
-<div class="drawer" aria-hidden="true">
+<div class="drawer" aria-hidden="true" inert>
   <div class="drawer-in" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="drawer-top"><span class="logo"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></span><button class="icon-btn" type="button" data-close aria-label="Fermer le menu"><svg class="i"><use href="assets/icons.svg#x"/></svg></button></div>
     <nav aria-label="Navigation mobile">
@@ -318,26 +318,34 @@
 <footer class="site-f">
   <div class="wrap">
     <div class="foot glass">
-      <div>
+      <div class="foot-brand">
         <a class="logo" href="index.html"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></a>
         <p>Fixe le cap. Garde la flamme. Une app gratuite, sans publicité, conçue à Angers.</p>
+        <a class="btn btn-primary sm" href="https://app.pepsgoal.fr"><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir l’app</a>
       </div>
       <div><h4>Découvrir</h4><ul>
         <li><a href="index.html">Accueil</a></li>
         <li><a href="fonctionnalites.html">Fonctionnalités</a></li>
-        <li><a href="https://app.pepsgoal.fr">Ouvrir l’app</a></li>
-      </ul></div>
-      <div><h4>Coulisses</h4><ul>
         <li><a href="design-system.html">Design system</a></li>
         <li><a href="technique.html">Détails techniques</a></li>
-        <li><a href="mailto:quentin-corbet@outlook.fr">Contact</a></li>
       </ul></div>
       <div><h4>Légal</h4><ul>
         <li><a href="informations-legales.html">Informations légales</a></li>
-        <li><a href="https://pepsgoal.fr/cgu">CGU</a></li>
-        <li><a href="https://pepsgoal.fr/mentions-legales">Mentions légales</a></li>
-        <li><a href="https://pepsgoal.fr/confidentialite">Confidentialité</a></li>
+        <li><a href="mentions-legales.html">Mentions légales</a></li>
+        <li><a href="cgu.html">Conditions d’utilisation</a></li>
+        <li><a href="confidentialite.html">Confidentialité</a></li>
       </ul></div>
+      <div><h4>Contact</h4><ul>
+        <li><a class="foot-mail" href="mailto:quentin-corbet@outlook.fr"><svg class="i"><use href="assets/icons.svg#mail"/></svg>quentin-corbet@outlook.fr</a></li>
+        <li><a href="informations-legales.html#signaler"><svg class="i"><use href="assets/icons.svg#flag"/></svg>Signaler un contenu</a></li>
+      </ul></div>
+    </div>
+    <div class="foot-legal glass">
+      <dl>
+        <div><dt>Éditeur</dt><dd>Quentin CORBET, particulier, Angers (Maine-et-Loire, France). Directeur de la publication : Quentin CORBET.</dd></div>
+        <div><dt>Hébergeur</dt><dd>Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre · <a href="https://www.hostinger.fr" rel="noopener">www.hostinger.fr</a></dd></div>
+        <div><dt>Contact</dt><dd><a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a></dd></div>
+      </dl>
     </div>
     <div class="foot-b"><span>© <span data-year>2026</span> PepsGoal · Quentin CORBET</span><span>Version 1.2.0 · aucun cookie, aucun traceur</span></div>
   </div>

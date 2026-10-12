@@ -9,17 +9,10 @@ api.pepsgoal.fr {
 	reverse_proxy server:8080
 }
 
-# Site vitrine (deploy/site, généré par deploy/site-src/build.mjs) et pages légales (/cgu, /mentions-legales, /confidentialite)
+# Site vitrine (deploy/site, généré par deploy/site-src/build.mjs), pages légales comprises (/cgu, /mentions-legales, /confidentialite)
 pepsgoal.fr {
 	root * /srv/site
 	encode zstd gzip
-	# Documents légaux : générés avec la version web (mêmes textes que dans l'application)
-	@legal path /cgu /mentions-legales /confidentialite
-	handle @legal {
-		root * /srv/app/legal
-		rewrite * {path}.html
-		file_server
-	}
 	try_files {path} {path}.html {path}/index.html
 	file_server
 	header {
@@ -29,6 +22,10 @@ pepsgoal.fr {
 	}
 	@siteStatic path /fonts/* /emoji/*
 	header @siteStatic Cache-Control "public, max-age=31536000, immutable"
+	handle_errors {
+		rewrite * /404.html
+		file_server
+	}
 }
 
 www.pepsgoal.fr {
