@@ -8,7 +8,7 @@ Il reprend le design system PepsGoal (verre givré sur halos vifs) avec plus de 
 | `pages/*.html` | Contenu de chaque page ; la première ligne `<!--meta title="…" description="…" nav="…"-->` donne le titre, la description et l'onglet actif |
 | `partials/head.html`, `partials/foot.html` | En-tête (navigation, thème, menu mobile, bouton « Ouvrir l'app ») et pied de page communs |
 | `tokens.json` | Copie des tokens du design system PepsGoal ; `ds-gen.mjs` en tire les nuanciers, contrastes, échelles typographiques, rayons et les huit thèmes de la page Design system |
-| `build.mjs` | Assemble les pages dans `deploy/site/` ; génère aussi `cgu.html`, `mentions-legales.html` et `confidentialite.html` à partir des textes légaux de l'application (`apps/web-legacy/pepsgoal.html`) |
+| `build.mjs` | Assemble les pages dans `deploy/site/` et applique la typographie française (espaces insécables, apostrophes) au texte affiché ; génère aussi `cgu.html`, `mentions-legales.html` et `confidentialite.html` à partir des textes légaux de l'application (`apps/web-legacy/pepsgoal.html`) |
 | `hostinger/.htaccess` | Réglages pour un hébergement mutualisé (LiteSpeed / Apache) : HTTPS, adresses courtes, page 404, cache, en-têtes de sécurité |
 | `zip-hostinger.sh` | Construit le site et l'emballe avec le `.htaccess` dans un zip à extraire dans `public_html` |
 | `deploy/site/assets/` | `site.css` (tokens et composants), `site.js` (comportements), `icons.svg` (icônes de l'app) |

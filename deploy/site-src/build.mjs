@@ -42,6 +42,36 @@ function legalSource(key) {
   </article>
 </div>`;
 }
+// Typographie française sur le texte affiché (hors code, styles et scripts) : espaces insécables devant : ; ! ?
+// et dans les guillemets, entre un nombre et son unité, séparateur des milliers, apostrophe typographique
+const NBSP = ' ', NNBSP = ' ';
+const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
+const UNITS = 'h|min|s|ms|jours?|heures|minutes|ans|Mo|Ko|km|px|octets|itérations|livres|requêtes|routes|chiffres|flammes|validations|amis|membres|commentaires|séances|cafés|pages|pas|%';
+function frTypo(text) {
+  return text
+    .replace(/(\p{L})'(\p{L})/gu, '$1’$2')
+    .replace(/« /g, `«${NBSP}`).replace(/ »/g, `${NBSP}»`)
+    .replace(/(\S|^) ([!?;])(?=\s|$)/g, `$1${NNBSP}$2`)
+    .replace(/(\S|^) :(?=\s|$)/g, `$1${NBSP}:`)
+    .replace(/(\d) (?=\d{3}(?!\d))/g, `$1${NNBSP}`)
+    .replace(new RegExp(`(\\d) (${UNITS})(?![\\p{L}\\d])`, 'gu'), `$1${NBSP}$2`);
+}
+function typography(html) {
+  const stack = [];
+  return html.replace(/<!--[\s\S]*?-->|<\/?([a-zA-Z][\w-]*)[^>]*>|[^<]+/g, (tok, tag) => {
+    if (tok.startsWith('<!--')) return tok;
+    if (tag) {
+      const name = tag.toLowerCase();
+      if (tok.startsWith('</')) { const i = stack.lastIndexOf(stack.findLast(e => e.name === name)); if (i >= 0) stack.length = i; return tok; }
+      if (VOID.has(name) || tok.endsWith('/>')) return tok;
+      const parentSkip = stack.length ? stack[stack.length - 1].skip : false;
+      const skip = parentSkip || ['script', 'style', 'code', 'pre', 'textarea'].includes(name) || /\bclass="[^"]*\b(code|tree|cipher-band|safety)\b/.test(tok);
+      stack.push({ name, skip });
+      return tok;
+    }
+    return stack.length && stack[stack.length - 1].skip ? tok : frTypo(tok);
+  });
+}
 const attr = (meta, k) => (meta.match(new RegExp(`${k}="([^"]*)"`)) || [])[1] || '';
 
 const sources = [
@@ -80,7 +110,8 @@ ${src.slice(src.indexOf('\n') + 1).trim()}
 ${foot}</body>
 </html>
 `;
+  const page = typography(html);
   // La page 404 peut s'afficher à n'importe quelle adresse : ses liens partent de la racine du site
-  writeFileSync(path.join(out, file), file === '404.html' ? html.replace(/(href|src)="(?!https?:|mailto:|#|\/)/g, '$1="/') : html);
+  writeFileSync(path.join(out, file), file === '404.html' ? page.replace(/(href|src)="(?!https?:|mailto:|#|\/)/g, '$1="/') : page);
   console.log(`${file} (${(html.length / 1024).toFixed(1)} Ko)`);
 }

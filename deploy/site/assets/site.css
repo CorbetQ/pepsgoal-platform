@@ -92,7 +92,7 @@
 /* ============ base ============ */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:96px;-webkit-text-size-adjust:100%}
-body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .4s ease,color .4s ease}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip;transition:background-color .4s ease,color .4s ease}
 h1,h2,h3,h4{margin:0;font-family:var(--font-display);letter-spacing:-.02em;line-height:1.1;text-wrap:balance}
 p{margin:0}
 ul,ol{margin:0;padding:0;list-style:none}
@@ -132,7 +132,8 @@ body.has-pointer .glow{opacity:1}
 .progress{position:fixed;left:0;top:0;height:3px;width:100%;z-index:60;transform-origin:0 50%;transform:scaleX(var(--p,0));background:var(--brand)}
 
 /* ============ en-tête ============ */
-.site-h{position:sticky;top:calc(12px + env(safe-area-inset-top,0px));z-index:50;margin:12px auto 0;width:min(1180px,calc(100% - 32px));min-height:64px;display:flex;align-items:center;gap:12px;padding:10px 10px 10px 18px;border-radius:22px;transition:box-shadow .3s ease,background-color .3s ease}
+/* En-tête fixe : toujours à la même place, quel que soit le défilement ; main réserve sa hauteur */
+.site-h{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:0;right:0;z-index:50;margin:0 auto;width:min(1180px,calc(100% - 32px));min-height:64px;display:flex;align-items:center;gap:12px;padding:10px 10px 10px 18px;border-radius:22px;transition:box-shadow .3s ease,background-color .3s ease}
 .site-h.scrolled{background:var(--glass-strong);box-shadow:0 18px 40px -18px rgba(13,14,43,.45)}
 .site-h .logo{min-width:0}
 .site-h .logo>span{white-space:nowrap}
@@ -168,6 +169,7 @@ body.has-pointer .glow{opacity:1}
   .h-acts .btn-app{width:42px;padding:0}
 }
 @media (max-width:360px){
+  body main{padding-top:calc(70px + env(safe-area-inset-top,0px))}
   .site-h{width:calc(100% - 24px);padding:8px 8px 8px 12px;gap:6px;min-height:58px}
   .site-h .logo{font-size:16px;gap:6px}
   .site-h .logo svg{width:22px;height:22px}
@@ -205,7 +207,7 @@ body.has-pointer .glow{opacity:1}
 .btn:hover .arrow{transform:translateX(3px)}
 
 /* ============ mise en page ============ */
-main{position:relative;z-index:1}
+main{position:relative;z-index:1;padding-top:calc(76px + env(safe-area-inset-top,0px))}
 .wrap{width:min(1180px,calc(100% - 32px));margin:0 auto}
 .section{padding:96px 0;position:relative}
 .section.tight{padding:56px 0}
@@ -477,3 +479,5 @@ td b{color:var(--ink)}
 .nf:hover .fl{filter:none}
 .nf h1{font-size:clamp(44px,9vw,110px);font-weight:800;letter-spacing:-.05em;line-height:.9}
 .nf p{color:var(--ink-2);max-width:46ch}
+/* petits écrans : les apparitions latérales deviennent verticales, pour ne jamais déborder */
+@media (max-width:700px){ .js .rv.left:not(.in),.js .rv.right:not(.in){transform:translateY(28px)} }

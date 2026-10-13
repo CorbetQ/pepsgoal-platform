@@ -127,7 +127,7 @@
   .lvl-track{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:var(--r-md);background:color-mix(in srgb,var(--ink) 5%,transparent)}
   .lvl-track .row{display:flex;justify-content:space-between;font-size:13px;font-weight:800}
   .lvl-track .row span:last-child{color:var(--ink-3);font-variant-numeric:tabular-nums}
-  .avs{display:flex;align-items:center}
+  .avs{display:flex;flex-wrap:wrap;align-items:center;row-gap:10px}
   .avs .av{--s:50px;margin-left:-8px;font-size:16px;box-shadow:0 0 0 3px var(--bg),inset 0 0 0 2px rgba(255,255,255,.45);transition:transform .3s var(--ease-bounce)}
   .avs .av:first-child{margin-left:0}
   .avs .av:hover{transform:translateY(-6px)}
@@ -164,7 +164,7 @@
     <div class="hh-txt">
       <span class="eyebrow rv">Suivi d’objectifs · web, iOS et Android</span>
       <h1 data-split>Fixe le cap. <span class="grad-text">Garde la flamme.</span></h1>
-      <p class="lead rv" style="--d:2">Routines, objectifs chiffrés, deadlines, abstinences : valide chaque jour, entretiens ta série et avance avec tes amis.</p>
+      <p class="lead rv" style="--d:2">Routines, objectifs chiffrés, deadlines, abstinences : valide chaque jour, entretiens ta série et avance avec tes amis.</p>
       <div class="hh-acts rv" style="--d:3">
         <a class="btn btn-primary lg" href="https://app.pepsgoal.fr" data-magnet><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir l’app<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a>
         <a class="btn lg" href="fonctionnalites.html">Fonctionnalités</a>
@@ -199,12 +199,12 @@
           <div class="hero-flame"><svg class="fl flame-anim"><use href="#flame"/></svg><div class="streak-num" data-streak>27</div><div class="streak-lbl">jours</div></div>
         </section>
         <ul class="items">
-          <li class="item t-routine"><span class="item-main"><span class="gi"><img src="emoji/1f3c3.webp" alt=""></span><span class="item-txt"><b>Courir 30 min</b><small><span class="chip t-routine"><svg class="i"><use href="assets/icons.svg#repeat"/></svg>Routine</span><span>lun, mer, ven</span></small></span></span><button class="check" data-demo data-pts="10" aria-pressed="false" aria-label="Valider : Courir 30 min"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
-          <li class="item t-abstinence done"><span class="item-main"><span class="gi"><img src="emoji/1f6ad.webp" alt=""></span><span class="item-txt"><b>Sans cigarette</b><small><span class="chip t-abstinence"><svg class="i"><use href="assets/icons.svg#ban"/></svg>Abstinence</span><span>41 jours</span></small></span></span><button class="check on" data-demo data-pts="8" aria-pressed="true" aria-label="Valider : Sans cigarette"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
-          <li class="item t-objective"><span class="item-main"><span class="gi"><img src="emoji/1f4da.webp" alt=""></span><span class="item-txt"><b>Lire 20 pages</b><small><span class="chip t-objective"><svg class="i"><use href="assets/icons.svg#target"/></svg>Objectif</span><span>8/12 livres</span></small></span></span><button class="check" data-demo data-pts="15" aria-pressed="false" aria-label="Valider : Lire 20 pages"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
-          <li class="item t-deadline"><span class="item-main"><span class="gi"><img src="emoji/1f9fe.webp" alt=""></span><span class="item-txt"><b>Déclaration d’impôts</b><small><span class="chip t-deadline"><svg class="i"><use href="assets/icons.svg#cal"/></svg>Deadline</span><span class="countdown urgent">encore 9 h</span></small></span></span><button class="check" data-demo data-pts="40" aria-pressed="false" aria-label="Valider : Déclaration d’impôts"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+          <li class="item t-routine"><span class="item-main"><span class="gi"><img src="emoji/1f3c3.webp" alt=""></span><span class="item-txt"><b>Courir 30 min</b><small><span class="chip t-routine"><svg class="i"><use href="assets/icons.svg#repeat"/></svg>Routine</span><span>lun, mer, ven</span></small></span></span><button class="check" data-demo data-pts="10" aria-pressed="false" aria-label="Valider : Courir 30 min"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+          <li class="item t-abstinence done"><span class="item-main"><span class="gi"><img src="emoji/1f6ad.webp" alt=""></span><span class="item-txt"><b>Sans cigarette</b><small><span class="chip t-abstinence"><svg class="i"><use href="assets/icons.svg#ban"/></svg>Abstinence</span><span>41 jours</span></small></span></span><button class="check on" data-demo data-pts="8" aria-pressed="true" aria-label="Valider : Sans cigarette"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+          <li class="item t-objective"><span class="item-main"><span class="gi"><img src="emoji/1f4da.webp" alt=""></span><span class="item-txt"><b>Lire 20 pages</b><small><span class="chip t-objective"><svg class="i"><use href="assets/icons.svg#target"/></svg>Objectif</span><span>8/12 livres</span></small></span></span><button class="check" data-demo data-pts="15" aria-pressed="false" aria-label="Valider : Lire 20 pages"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+          <li class="item t-deadline"><span class="item-main"><span class="gi"><img src="emoji/1f9fe.webp" alt=""></span><span class="item-txt"><b>Déclaration d’impôts</b><small><span class="chip t-deadline"><svg class="i"><use href="assets/icons.svg#cal"/></svg>Deadline</span><span class="countdown urgent">encore 9 h</span></small></span></span><button class="check" data-demo data-pts="40" aria-pressed="false" aria-label="Valider : Déclaration d’impôts"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
         </ul>
-        <div class="perfect" aria-live="polite"><div><svg class="fl flame-anim"><use href="#flame"/></svg><h3 class="grad-text">Journée parfaite !</h3><p class="muted">Tout est validé. La flamme te remercie.</p></div></div>
+        <div class="perfect" aria-live="polite"><div><svg class="fl flame-anim"><use href="#flame"/></svg><h3 class="grad-text">Journée parfaite !</h3><p class="muted">Tout est validé. La flamme te remercie.</p></div></div>
       </div>
       <span class="hint glass" aria-hidden="true"><svg class="i"><use href="assets/icons.svg#check"/></svg>Touche un rond pour valider</span>
     </div>
@@ -247,8 +247,8 @@
           <div><svg class="fl" style="--k:5"><use href="#flame"/></svg>D</div>
           <div><svg class="fl" style="--k:6"><use href="#flame"/></svg>L</div>
         </div>
-        <p>Un jour manqué ? Un gel protège ta série automatiquement. Chaque validation rapporte des flammes, d’Étincelle à Supernova.</p>
-        <div class="lvl-track"><div class="row"><span>Brasier</span><span>1 196 / 1 500</span></div><div class="bar"><i style="--w:80%"></i></div></div>
+        <p>Un jour manqué ? Un gel protège ta série automatiquement. Chaque validation rapporte des flammes, d’Étincelle à Supernova.</p>
+        <div class="lvl-track"><div class="row"><span>Brasier</span><span>1 196 / 1 500</span></div><div class="bar"><i style="--w:80%"></i></div></div>
         <a class="more" href="fonctionnalites.html#motivation">Flammes, gels et badges<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       </article>
 
@@ -341,12 +341,13 @@
       </ul></div>
       <div><h4>Contact</h4><ul>
         <li><a class="foot-mail" href="mailto:quentin-corbet@outlook.fr"><svg class="i"><use href="assets/icons.svg#mail"/></svg>quentin-corbet@outlook.fr</a></li>
+        <li><a href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener"><svg class="i"><use href="assets/icons.svg#github"/></svg>Code source sur GitHub</a></li>
         <li><a href="informations-legales.html#signaler"><svg class="i"><use href="assets/icons.svg#flag"/></svg>Signaler un contenu</a></li>
       </ul></div>
     </div>
     <div class="foot-legal glass">
       <dl>
-        <div><dt>Éditeur</dt><dd>Quentin CORBET, particulier, Angers (Maine-et-Loire, France). Directeur de la publication : Quentin CORBET.</dd></div>
+        <div><dt>Éditeur</dt><dd>Quentin CORBET, particulier, Angers (Maine-et-Loire, France). Directeur de la publication : Quentin CORBET.</dd></div>
         <div><dt>Hébergeur</dt><dd>Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre · <a href="https://www.hostinger.fr" rel="noopener">www.hostinger.fr</a></dd></div>
         <div><dt>Contact</dt><dd><a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a></dd></div>
       </dl>
