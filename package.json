@@ -2,6 +2,7 @@
   "name": "pepsgoal-platform",
   "private": true,
   "version": "1.2.0",
+  "license": "MIT",
   "description": "PepsGoal : serveur de synchronisation, fonctions sociales, modération et application iOS / Android / web.",
   "workspaces": [
     "packages/*",
