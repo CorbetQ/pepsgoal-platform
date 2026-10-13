@@ -41,8 +41,9 @@ AddDefaultCharset utf-8
   <FilesMatch "\.html$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
+  # Feuille de style, script et icônes : adresses versionnées (?v=…) par le build, donc cache long sans risque
   <FilesMatch "\.(css|js|svg)$">
-    Header set Cache-Control "public, max-age=86400"
+    Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
   <FilesMatch "\.(woff2|webp)$">
     Header set Cache-Control "public, max-age=31536000, immutable"

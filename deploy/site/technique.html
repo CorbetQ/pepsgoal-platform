@@ -14,7 +14,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/unbounded-latin-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/manrope-latin-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=55cd64d4a0">
 <script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('pepsgoal.site.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
 </head>
 <body>
@@ -37,22 +37,22 @@
     <a href="informations-legales.html" data-nav="informations-legales">Légal</a>
   </nav>
   <div class="h-acts">
-    <button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="Changer de thème"><svg class="i moon"><use href="assets/icons.svg#moon"/></svg><svg class="i sun"><use href="assets/icons.svg#sun"/></svg></button>
-    <a class="btn btn-primary sm btn-app" href="https://app.pepsgoal.fr"><svg class="i"><use href="assets/icons.svg#bolt"/></svg><span>Ouvrir l’app</span></a>
-    <button class="icon-btn menu-btn" type="button" data-menu aria-label="Ouvrir le menu"><svg class="i"><use href="assets/icons.svg#menu"/></svg></button>
+    <button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="Changer de thème"><svg class="i moon"><use href="assets/icons.svg?v=4e110e8821#moon"/></svg><svg class="i sun"><use href="assets/icons.svg?v=4e110e8821#sun"/></svg></button>
+    <a class="btn btn-primary sm btn-app" href="https://app.pepsgoal.fr"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#bolt"/></svg><span>Ouvrir l’app</span></a>
+    <button class="icon-btn menu-btn" type="button" data-menu aria-label="Ouvrir le menu"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#menu"/></svg></button>
   </div>
 </header>
 <div class="drawer" aria-hidden="true" inert>
   <div class="drawer-in" role="dialog" aria-modal="true" aria-label="Menu">
-    <div class="drawer-top"><span class="logo"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></span><button class="icon-btn" type="button" data-close aria-label="Fermer le menu"><svg class="i"><use href="assets/icons.svg#x"/></svg></button></div>
+    <div class="drawer-top"><span class="logo"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></span><button class="icon-btn" type="button" data-close aria-label="Fermer le menu"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#x"/></svg></button></div>
     <nav aria-label="Navigation mobile">
-      <a href="index.html" data-nav="index"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Accueil</a>
-      <a href="fonctionnalites.html" data-nav="fonctionnalites"><svg class="i"><use href="assets/icons.svg#sparkle"/></svg>Fonctionnalités</a>
-      <a href="design-system.html" data-nav="design-system"><svg class="i"><use href="assets/icons.svg#palette"/></svg>Design system</a>
-      <a href="technique.html" data-nav="technique" aria-current="page"><svg class="i"><use href="assets/icons.svg#code"/></svg>Technique</a>
-      <a href="informations-legales.html" data-nav="informations-legales"><svg class="i"><use href="assets/icons.svg#scale"/></svg>Informations légales</a>
+      <a href="index.html" data-nav="index"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#sun"/></svg>Accueil</a>
+      <a href="fonctionnalites.html" data-nav="fonctionnalites"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#sparkle"/></svg>Fonctionnalités</a>
+      <a href="design-system.html" data-nav="design-system"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#palette"/></svg>Design system</a>
+      <a href="technique.html" data-nav="technique" aria-current="page"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#code"/></svg>Technique</a>
+      <a href="informations-legales.html" data-nav="informations-legales"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#scale"/></svg>Informations légales</a>
     </nav>
-    <a class="btn btn-primary block lg" href="https://app.pepsgoal.fr" style="width:100%"><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir l’app</a>
+    <a class="btn btn-primary block lg" href="https://app.pepsgoal.fr" style="width:100%"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#bolt"/></svg>Ouvrir l’app</a>
   </div>
 </div>
 
@@ -174,22 +174,22 @@
     <div class="sec-h"><span class="eyebrow rv">Architecture</span><h2 class="rv" style="--d:1">L’écran n’attend <span class="grad-text">jamais le réseau.</span></h2><p class="rv" style="--d:2">L’interface écrit dans la base locale de l’appareil, puis une couche connectée envoie les différences au serveur et récupère celles des autres appareils.</p></div>
     <div class="arch rv zoom">
       <div class="node glass">
-        <h3><svg class="i"><use href="assets/icons.svg#phone"/></svg>Appareil</h3>
-        <div class="block t-routine"><span class="bi"><svg class="i"><use href="assets/icons.svg#layers"/></svg></span><span><b>Interface PepsGoal</b><small>HTML, CSS et JavaScript sans framework, identique sur web, iOS et Android</small></span></div>
-        <div class="block t-objective"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><span><b>Données locales</b><small>Stockage de la page, copie complète pour le mode hors ligne</small></span></div>
-        <div class="block t-project"><span class="bi"><svg class="i"><use href="assets/icons.svg#cloud"/></svg></span><span><b>Couche connectée · cloud.js</b><small>Comptes, synchro, social, messages chiffrés, modération</small></span></div>
-        <div class="block t-limit"><span class="bi"><svg class="i"><use href="assets/icons.svg#heartbeat"/></svg></span><span><b>Surveillance réseau</b><small>navigator.onLine + /v1/status : 5 s, 10 s, 20 s, 40 s puis chaque minute</small></span></div>
+        <h3><svg class="i"><use href="assets/icons.svg?v=4e110e8821#phone"/></svg>Appareil</h3>
+        <div class="block t-routine"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#layers"/></svg></span><span><b>Interface PepsGoal</b><small>HTML, CSS et JavaScript sans framework, identique sur web, iOS et Android</small></span></div>
+        <div class="block t-objective"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#db"/></svg></span><span><b>Données locales</b><small>Stockage de la page, copie complète pour le mode hors ligne</small></span></div>
+        <div class="block t-project"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#cloud"/></svg></span><span><b>Couche connectée · cloud.js</b><small>Comptes, synchro, social, messages chiffrés, modération</small></span></div>
+        <div class="block t-limit"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#heartbeat"/></svg></span><span><b>Surveillance réseau</b><small>navigator.onLine + /v1/status : 5 s, 10 s, 20 s, 40 s puis chaque minute</small></span></div>
       </div>
       <div class="wire" aria-hidden="true">
         <div class="lane"><span>push · HTTPS + JWT</span><i></i><i></i></div>
         <div class="lane back"><span>pull · curseur</span><i></i><i></i></div>
       </div>
       <div class="node glass">
-        <h3><svg class="i"><use href="assets/icons.svg#server"/></svg>Serveur</h3>
-        <div class="block t-duration"><span class="bi"><svg class="i"><use href="assets/icons.svg#shield"/></svg></span><span><b>Caddy</b><small>HTTPS automatique (Let’s Encrypt), compression, en-têtes de sécurité</small></span></div>
-        <div class="block t-measure"><span class="bi"><svg class="i"><use href="assets/icons.svg#bolt"/></svg></span><span><b>API Fastify 4 + zod</b><small>Près de 90 routes, chaque entrée validée par un schéma partagé</small></span></div>
-        <div class="block t-abstinence"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><span><b>PostgreSQL 16</b><small>Schéma et migrations Drizzle, révisions de synchro, cascades RGPD</small></span></div>
-        <div class="block t-monthly"><span class="bi"><svg class="i"><use href="assets/icons.svg#image"/></svg></span><span><b>Médias</b><small>Photos et pièces jointes chiffrées, sur disque ou S3</small></span></div>
+        <h3><svg class="i"><use href="assets/icons.svg?v=4e110e8821#server"/></svg>Serveur</h3>
+        <div class="block t-duration"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#shield"/></svg></span><span><b>Caddy</b><small>HTTPS automatique (Let’s Encrypt), compression, en-têtes de sécurité</small></span></div>
+        <div class="block t-measure"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#bolt"/></svg></span><span><b>API Fastify 4 + zod</b><small>Près de 90 routes, chaque entrée validée par un schéma partagé</small></span></div>
+        <div class="block t-abstinence"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#db"/></svg></span><span><b>PostgreSQL 16</b><small>Schéma et migrations Drizzle, révisions de synchro, cascades RGPD</small></span></div>
+        <div class="block t-monthly"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#image"/></svg></span><span><b>Médias</b><small>Photos et pièces jointes chiffrées, sur disque ou S3</small></span></div>
       </div>
     </div>
     <div class="tbl-wrap rv" style="margin-top:28px"><table>
@@ -209,15 +209,15 @@
   <div class="wrap">
     <div class="sec-h"><span class="eyebrow rv">La pile</span><h2 class="rv" style="--d:1">Des briques <span class="grad-text">éprouvées.</span></h2></div>
     <div class="stack">
-      <article class="card tech tilt rv t-routine"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#layers"/></svg></span><div><span class="role">Interface</span><br><b>HTML · CSS · JS</b></div></div><p>Une seule interface sans framework, de tous les écrans aux animations : rapide, légère, identique partout.</p></article>
-      <article class="card tech tilt rv t-project" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#phone"/></svg></span><div><span class="role">Mobile</span><br><b>Expo SDK 51</b></div></div><p>Coque native React Native 0.74 + WebView qui embarque l’interface hors ligne. Builds et publication via EAS.</p></article>
-      <article class="card tech tilt rv t-measure" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#bolt"/></svg></span><div><span class="role">API</span><br><b>Fastify 4 + zod</b></div></div><p>TypeScript, Helmet, CORS, limitation de débit, multipart. Schémas partagés avec l’app dans <code>packages/shared</code>.</p></article>
-      <article class="card tech tilt rv t-abstinence"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><div><span class="role">Base</span><br><b>PostgreSQL 16</b></div></div><p>Drizzle pour le schéma et les migrations, postgres.js pour des requêtes paramétrées : aucune injection SQL possible.</p></article>
-      <article class="card tech tilt rv t-duel" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#key"/></svg></span><div><span class="role">Chiffrement</span><br><b>TweetNaCl</b></div></div><p>Implémentation auditée de NaCl : X25519, XSalsa20-Poly1305. PBKDF2-SHA-256 pour le coffre de clés.</p></article>
-      <article class="card tech tilt rv t-group" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#lock"/></svg></span><div><span class="role">Comptes</span><br><b>bcrypt + JWT</b></div></div><p>Mots de passe hachés avec bcrypt (12 tours) ; jeton d’accès 15 min et jeton de renouvellement 30 jours à usage unique.</p></article>
-      <article class="card tech tilt rv t-duration"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#box"/></svg></span><div><span class="role">Hébergement</span><br><b>Docker + Caddy</b></div></div><p>Un VPS Hostinger dans l’Union européenne, Docker Compose, HTTPS automatique, sauvegardes quotidiennes.</p></article>
-      <article class="card tech tilt rv t-month" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#archive"/></svg></span><div><span class="role">Données</span><br><b>JSZip</b></div></div><p>Export et import de ton compte en .zip, clés de conversation comprises, directement sur l’appareil.</p></article>
-      <article class="card tech tilt rv t-timed" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#test"/></svg></span><div><span class="role">Qualité</span><br><b>Vitest + TypeScript</b></div></div><p>Tests du protocole et du chiffrement, scénario de bout en bout d’une quarantaine de vérifications contre un serveur vierge.</p></article>
+      <article class="card tech tilt rv t-routine"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#layers"/></svg></span><div><span class="role">Interface</span><br><b>HTML · CSS · JS</b></div></div><p>Une seule interface sans framework, de tous les écrans aux animations : rapide, légère, identique partout.</p></article>
+      <article class="card tech tilt rv t-project" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#phone"/></svg></span><div><span class="role">Mobile</span><br><b>Expo SDK 51</b></div></div><p>Coque native React Native 0.74 + WebView qui embarque l’interface hors ligne. Builds et publication via EAS.</p></article>
+      <article class="card tech tilt rv t-measure" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#bolt"/></svg></span><div><span class="role">API</span><br><b>Fastify 4 + zod</b></div></div><p>TypeScript, Helmet, CORS, limitation de débit, multipart. Schémas partagés avec l’app dans <code>packages/shared</code>.</p></article>
+      <article class="card tech tilt rv t-abstinence"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#db"/></svg></span><div><span class="role">Base</span><br><b>PostgreSQL 16</b></div></div><p>Drizzle pour le schéma et les migrations, postgres.js pour des requêtes paramétrées : aucune injection SQL possible.</p></article>
+      <article class="card tech tilt rv t-duel" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#key"/></svg></span><div><span class="role">Chiffrement</span><br><b>TweetNaCl</b></div></div><p>Implémentation auditée de NaCl : X25519, XSalsa20-Poly1305. PBKDF2-SHA-256 pour le coffre de clés.</p></article>
+      <article class="card tech tilt rv t-group" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#lock"/></svg></span><div><span class="role">Comptes</span><br><b>bcrypt + JWT</b></div></div><p>Mots de passe hachés avec bcrypt (12 tours) ; jeton d’accès 15 min et jeton de renouvellement 30 jours à usage unique.</p></article>
+      <article class="card tech tilt rv t-duration"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#box"/></svg></span><div><span class="role">Hébergement</span><br><b>Docker + Caddy</b></div></div><p>Un VPS Hostinger dans l’Union européenne, Docker Compose, HTTPS automatique, sauvegardes quotidiennes.</p></article>
+      <article class="card tech tilt rv t-month" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#archive"/></svg></span><div><span class="role">Données</span><br><b>JSZip</b></div></div><p>Export et import de ton compte en .zip, clés de conversation comprises, directement sur l’appareil.</p></article>
+      <article class="card tech tilt rv t-timed" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#test"/></svg></span><div><span class="role">Qualité</span><br><b>Vitest + TypeScript</b></div></div><p>Tests du protocole et du chiffrement, scénario de bout en bout d’une quarantaine de vérifications contre un serveur vierge.</p></article>
     </div>
   </div>
 </section>
@@ -253,11 +253,11 @@
     <div class="sec-h"><span class="eyebrow rv">Chiffrement de bout en bout</span><h2 class="rv" style="--d:1">Le serveur transporte, <span class="grad-text">sans pouvoir lire.</span></h2><p class="rv" style="--d:2">Les messages privés et les groupes sont chiffrés sur l’appareil avant l’envoi. Seuls les messages du compte PepsGoal Officiel circulent en clair.</p></div>
     <div class="card rv" style="padding:32px 24px">
       <div class="e2e rv">
-        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#key"/></svg></span><div><b>Connexion</b><p>L’appareil génère sa paire X25519 et publie sa clé publique.</p></div></div>
-        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#lock"/></svg></span><div><b>Clé de paire</b><p>32 octets aléatoires, tirés par le premier qui écrit.</p></div></div>
-        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#mail"/></svg></span><div><b>Enveloppes</b><p>La clé est chiffrée pour chaque appareil (<code>crypto_box</code>).</p></div></div>
-        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#send"/></svg></span><div><b>Envoi</b><p>Texte scellé avec <code>crypto_secretbox</code> ; le serveur refuse tout message en clair.</p></div></div>
-        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg#phone"/></svg></span><div><b>Nouvel appareil</b><p>Les appareils qui détiennent la clé la lui transmettent.</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#key"/></svg></span><div><b>Connexion</b><p>L’appareil génère sa paire X25519 et publie sa clé publique.</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#lock"/></svg></span><div><b>Clé de paire</b><p>32 octets aléatoires, tirés par le premier qui écrit.</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#mail"/></svg></span><div><b>Enveloppes</b><p>La clé est chiffrée pour chaque appareil (<code>crypto_box</code>).</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#send"/></svg></span><div><b>Envoi</b><p>Texte scellé avec <code>crypto_secretbox</code> ; le serveur refuse tout message en clair.</p></div></div>
+        <div class="e2e-step"><span class="dot"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#phone"/></svg></span><div><b>Nouvel appareil</b><p>Les appareils qui détiennent la clé la lui transmettent.</p></div></div>
       </div>
     </div>
     <div class="grid g2" style="margin-top:18px">
@@ -285,14 +285,14 @@
   <div class="wrap">
     <div class="sec-h"><span class="eyebrow rv">Sécurité et vie privée</span><h2 class="rv" style="--d:1">Prudent <span class="grad-text">par défaut.</span></h2></div>
     <div class="sec-list">
-      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#shield"/></svg><div><b>Validation stricte</b><p>Chaque entrée est vérifiée par un schéma zod ; les données inconnues sont refusées.</p></div></div>
-      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#gauge"/></svg><div><b>Points plafonnés côté serveur</b><p>Un client modifié ne peut pas gonfler les classements.</p></div></div>
-      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#key"/></svg><div><b>Jetons à usage unique</b><p>Un jeton de renouvellement volé et réutilisé révoque toutes les sessions du compte.</p></div></div>
-      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#image"/></svg><div><b>Images vérifiées</b><p>8 Mo maximum, type contrôlé par la signature du fichier (JPEG, PNG, WebP), nom aléatoire.</p></div></div>
-      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#clock"/></svg><div><b>Limitation de débit</b><p>300 requêtes par minute, avec des limites plus strictes pour la connexion, l’inscription, la publication et les signalements.</p></div></div>
-      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#trash"/></svg><div><b>Suppression en cascade</b><p>Supprimer son compte efface toutes ses données ; elles disparaissent des sauvegardes sous 14 jours.</p></div></div>
-      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#cookie"/></svg><div><b>Aucun traceur</b><p>Pas de publicité, pas de mesure d’audience. Polices et bibliothèques intégrées : aucun service tiers contacté.</p></div></div>
-      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#flag"/></svg><div><b>Modération outillée</b><p>Signalements, sanctions graduées, contestations, journal des décisions et alertes par e-mail.</p></div></div>
+      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#shield"/></svg><div><b>Validation stricte</b><p>Chaque entrée est vérifiée par un schéma zod ; les données inconnues sont refusées.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#gauge"/></svg><div><b>Points plafonnés côté serveur</b><p>Un client modifié ne peut pas gonfler les classements.</p></div></div>
+      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#key"/></svg><div><b>Jetons à usage unique</b><p>Un jeton de renouvellement volé et réutilisé révoque toutes les sessions du compte.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#image"/></svg><div><b>Images vérifiées</b><p>8 Mo maximum, type contrôlé par la signature du fichier (JPEG, PNG, WebP), nom aléatoire.</p></div></div>
+      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#clock"/></svg><div><b>Limitation de débit</b><p>300 requêtes par minute, avec des limites plus strictes pour la connexion, l’inscription, la publication et les signalements.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#trash"/></svg><div><b>Suppression en cascade</b><p>Supprimer son compte efface toutes ses données ; elles disparaissent des sauvegardes sous 14 jours.</p></div></div>
+      <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#cookie"/></svg><div><b>Aucun traceur</b><p>Pas de publicité, pas de mesure d’audience. Polices et bibliothèques intégrées : aucun service tiers contacté.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#flag"/></svg><div><b>Modération outillée</b><p>Signalements, sanctions graduées, contestations, journal des décisions et alertes par e-mail.</p></div></div>
     </div>
   </div>
 </section>
@@ -325,27 +325,27 @@
     <div class="sec-h"><span class="eyebrow rv">Code source</span><h2 class="rv" style="--d:1">Tout est <span class="grad-text">sur GitHub.</span></h2><p class="rv" style="--d:2">Le serveur, l’interface, l’application mobile, ce site et la documentation sont réunis dans un seul dépôt public, sous licence MIT. Tu peux le parcourir, suivre son évolution et signaler un problème.</p></div>
     <div class="repo glass ring-border rv zoom">
       <div class="repo-main">
-        <div class="repo-h"><span class="repo-ic"><svg class="i"><use href="assets/icons.svg#github"/></svg></span><div><span class="repo-owner">CorbetQ /</span><b>pepsgoal-platform</b></div><span class="chip" style="--c:var(--ok);--c-ink:var(--ok)">Public</span></div>
+        <div class="repo-h"><span class="repo-ic"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#github"/></svg></span><div><span class="repo-owner">CorbetQ /</span><b>pepsgoal-platform</b></div><span class="chip" style="--c:var(--ok);--c-ink:var(--ok)">Public</span></div>
         <p class="muted">Code source de PepsGoal : API Fastify et PostgreSQL, interface web, iOS et Android, synchronisation hors ligne et chiffrement de bout en bout.</p>
         <div class="repo-meta">
           <span><i class="lang"></i>TypeScript</span>
-          <span><svg class="i"><use href="assets/icons.svg#branch"/></svg>main</span>
-          <span><svg class="i"><use href="assets/icons.svg#scale"/></svg>Licence MIT</span>
-          <span><svg class="i"><use href="assets/icons.svg#flag"/></svg>Version 1.2.0</span>
+          <span><svg class="i"><use href="assets/icons.svg?v=4e110e8821#branch"/></svg>main</span>
+          <span><svg class="i"><use href="assets/icons.svg?v=4e110e8821#scale"/></svg>Licence MIT</span>
+          <span><svg class="i"><use href="assets/icons.svg?v=4e110e8821#flag"/></svg>Version 1.2.0</span>
         </div>
         <div class="repo-acts">
-          <a class="btn btn-primary" href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener"><svg class="i"><use href="assets/icons.svg#github"/></svg>Voir le dépôt<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a>
-          <a class="btn" href="https://github.com/CorbetQ/pepsgoal-platform/issues" rel="noopener"><svg class="i"><use href="assets/icons.svg#comment"/></svg>Signaler un problème</a>
+          <a class="btn btn-primary" href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#github"/></svg>Voir le dépôt<svg class="i arrow"><use href="assets/icons.svg?v=4e110e8821#arrow"/></svg></a>
+          <a class="btn" href="https://github.com/CorbetQ/pepsgoal-platform/issues" rel="noopener"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#comment"/></svg>Signaler un problème</a>
         </div>
       </div>
       <div class="repo-side">
         <label class="repo-lbl" for="clone">Cloner le dépôt</label>
-        <div class="clone"><input id="clone" class="input" type="text" readonly value="git clone https://github.com/CorbetQ/pepsgoal-platform.git"><button class="icon-btn" type="button" data-copy="git clone https://github.com/CorbetQ/pepsgoal-platform.git" aria-label="Copier la commande"><svg class="i"><use href="assets/icons.svg#copy"/></svg></button></div>
+        <div class="clone"><input id="clone" class="input" type="text" readonly value="git clone https://github.com/CorbetQ/pepsgoal-platform.git"><button class="icon-btn" type="button" data-copy="git clone https://github.com/CorbetQ/pepsgoal-platform.git" aria-label="Copier la commande"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#copy"/></svg></button></div>
         <ul class="repo-docs">
-          <li><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/docs/ARCHITECTURE.md" rel="noopener"><svg class="i"><use href="assets/icons.svg#doc"/></svg>Architecture</a></li>
-          <li><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/docs/SYNC.md" rel="noopener"><svg class="i"><use href="assets/icons.svg#sync"/></svg>Synchronisation</a></li>
-          <li><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/docs/E2E.md" rel="noopener"><svg class="i"><use href="assets/icons.svg#key"/></svg>Chiffrement de bout en bout</a></li>
-          <li><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/docs/API.md" rel="noopener"><svg class="i"><use href="assets/icons.svg#code"/></svg>Routes de l’API</a></li>
+          <li><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/docs/ARCHITECTURE.md" rel="noopener"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#doc"/></svg>Architecture</a></li>
+          <li><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/docs/SYNC.md" rel="noopener"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#sync"/></svg>Synchronisation</a></li>
+          <li><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/docs/E2E.md" rel="noopener"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#key"/></svg>Chiffrement de bout en bout</a></li>
+          <li><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/docs/API.md" rel="noopener"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#code"/></svg>Routes de l’API</a></li>
         </ul>
         <p class="repo-note">Publié sous <a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/LICENSE" rel="noopener">licence MIT</a> : libre d’utilisation, de modification et de redistribution, en conservant la mention de copyright. Le nom PepsGoal et le logo restent réservés.</p>
       </div>
@@ -380,7 +380,7 @@
       <div class="foot-brand">
         <a class="logo" href="index.html"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></a>
         <p>Fixe le cap. Garde la flamme. Une app gratuite, sans publicité, conçue à Angers.</p>
-        <a class="btn btn-primary sm" href="https://app.pepsgoal.fr"><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir l’app</a>
+        <a class="btn btn-primary sm" href="https://app.pepsgoal.fr"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#bolt"/></svg>Ouvrir l’app</a>
       </div>
       <div><h4>Découvrir</h4><ul>
         <li><a href="index.html">Accueil</a></li>
@@ -395,9 +395,9 @@
         <li><a href="confidentialite.html">Confidentialité</a></li>
       </ul></div>
       <div><h4>Contact</h4><ul>
-        <li><a class="foot-mail" href="mailto:quentin-corbet@outlook.fr"><svg class="i"><use href="assets/icons.svg#mail"/></svg>quentin-corbet@outlook.fr</a></li>
-        <li><a href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener"><svg class="i"><use href="assets/icons.svg#github"/></svg>Code source sur GitHub</a></li>
-        <li><a href="informations-legales.html#signaler"><svg class="i"><use href="assets/icons.svg#flag"/></svg>Signaler un contenu</a></li>
+        <li><a class="foot-mail" href="mailto:quentin-corbet@outlook.fr"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#mail"/></svg>quentin-corbet@outlook.fr</a></li>
+        <li><a href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#github"/></svg>Code source sur GitHub</a></li>
+        <li><a href="informations-legales.html#signaler"><svg class="i"><use href="assets/icons.svg?v=4e110e8821#flag"/></svg>Signaler un contenu</a></li>
       </ul></div>
     </div>
     <div class="foot-legal glass">
@@ -411,6 +411,6 @@
   </div>
 </footer>
 <div id="live" class="sr" aria-live="polite"></div>
-<script src="assets/site.js" defer></script>
+<script src="assets/site.js?v=cb66053a4a" defer></script>
 </body>
 </html>

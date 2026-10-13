@@ -481,3 +481,5 @@ td b{color:var(--ink)}
 .nf p{color:var(--ink-2);max-width:46ch}
 /* petits écrans : les apparitions latérales deviennent verticales, pour ne jamais déborder */
 @media (max-width:700px){ .js .rv.left:not(.in),.js .rv.right:not(.in){transform:translateY(28px)} }
+/* bande fondue au-dessus de l'en-tête fixe : le contenu ne dépasse plus dans l'espace entre le haut de l'écran et l'en-tête */
+body::after{content:"";position:fixed;left:0;right:0;top:0;height:calc(40px + env(safe-area-inset-top,0px));background:linear-gradient(var(--bg) 45%,transparent);z-index:45;pointer-events:none}

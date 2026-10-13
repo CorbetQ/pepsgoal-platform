@@ -2,6 +2,7 @@
 // puis est écrite dans deploy/site/, servi tel quel par Caddy. Usage : node deploy/site-src/build.mjs
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import vm from 'node:vm';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dsBlocks } from './ds-gen.mjs';
@@ -72,6 +73,11 @@ function typography(html) {
     return stack.length && stack[stack.length - 1].skip ? tok : frTypo(tok);
   });
 }
+// Empreinte de chaque fichier commun, ajoutée à son adresse (?v=…) : une mise à jour du site force le navigateur
+// à recharger la feuille de style, le script et les icônes au lieu de garder une ancienne version en cache
+const VERSIONED = ['site.css', 'site.js', 'icons.svg'];
+const version = Object.fromEntries(VERSIONED.map(f => [f, createHash('sha256').update(readFileSync(path.join(out, 'assets', f))).digest('hex').slice(0, 10)]));
+const withVersions = html => html.replace(/assets\/(site\.css|site\.js|icons\.svg)(?=["#])/g, (m, f) => `assets/${f}?v=${version[f]}`);
 const attr = (meta, k) => (meta.match(new RegExp(`${k}="([^"]*)"`)) || [])[1] || '';
 
 const sources = [
@@ -110,7 +116,7 @@ ${src.slice(src.indexOf('\n') + 1).trim()}
 ${foot}</body>
 </html>
 `;
-  const page = typography(html);
+  const page = withVersions(typography(html));
   // La page 404 peut s'afficher à n'importe quelle adresse : ses liens partent de la racine du site
   writeFileSync(path.join(out, file), file === '404.html' ? page.replace(/(href|src)="(?!https?:|mailto:|#|\/)/g, '$1="/') : page);
   console.log(`${file} (${(html.length / 1024).toFixed(1)} Ko)`);
