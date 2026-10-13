@@ -38,7 +38,7 @@
   </nav>
   <div class="h-acts">
     <button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="Changer de thème"><svg class="i moon"><use href="assets/icons.svg#moon"/></svg><svg class="i sun"><use href="assets/icons.svg#sun"/></svg></button>
-    <a class="btn btn-primary sm btn-app" href="https://app.pepsgoal.fr" data-magnet><svg class="i"><use href="assets/icons.svg#bolt"/></svg><span>Ouvrir l’app</span></a>
+    <a class="btn btn-primary sm btn-app" href="https://app.pepsgoal.fr"><svg class="i"><use href="assets/icons.svg#bolt"/></svg><span>Ouvrir l’app</span></a>
     <button class="icon-btn menu-btn" type="button" data-menu aria-label="Ouvrir le menu"><svg class="i"><use href="assets/icons.svg#menu"/></svg></button>
   </div>
 </header>
@@ -58,129 +58,145 @@
 
 <main id="main">
 <style>
-  .home-hero{padding:72px 0 40px}
-  .home-hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:48px;align-items:center}
-  .hh-txt{display:flex;flex-direction:column;gap:22px;align-items:flex-start}
-  .hh-txt h1{font-size:clamp(44px,7.4vw,96px);font-weight:800;letter-spacing:-.05em;line-height:.94}
-  .hh-txt h1 .grad-text{animation:shimmer 6s ease-in-out infinite}
+  /* Accueil : un héros typographique autour d'une démo vivante, puis trois raisons et un appel final */
+  .home-hero{position:relative;padding:56px 0 24px;overflow:hidden}
+  .home-hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
+  /* le compteur de série géant, en filigrane derrière le titre */
+  .ghost{position:absolute;left:-2%;top:50%;transform:translateY(-58%);font-family:var(--font-display);font-weight:800;font-size:clamp(220px,34vw,460px);line-height:.8;letter-spacing:-.08em;color:transparent;-webkit-text-stroke:2px color-mix(in srgb,var(--flame) 22%,transparent);pointer-events:none;user-select:none;z-index:0;font-variant-numeric:tabular-nums}
+  .hh-txt{position:relative;z-index:1;display:flex;flex-direction:column;gap:24px;align-items:flex-start}
+  .hh-txt h1{font-size:clamp(46px,7.6vw,104px);font-weight:800;letter-spacing:-.055em;line-height:.92}
+  .hh-txt h1 .grad-text{animation:shimmer 6s ease-in-out infinite;padding-right:.04em}
   @keyframes shimmer{0%,100%{background-position:0 0}50%{background-position:100% 0}}
-  .hh-txt .lead{font-size:clamp(17px,2vw,20px);color:var(--ink-2);max-width:46ch}
+  .hh-txt .lead{font-size:clamp(17px,1.9vw,20px);color:var(--ink-2);max-width:42ch}
   .hh-acts{display:flex;flex-wrap:wrap;gap:12px}
-  .hh-meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;font-weight:700;color:var(--ink-2)}
-  .hh-meta span{display:inline-flex;align-items:center;gap:6px}
-  .hh-meta svg{width:16px;height:16px;color:var(--ok)}
-  .stage{position:relative;padding:18px 0}
-  .device{position:relative;z-index:1;display:flex;flex-direction:column;gap:14px;padding:16px;border-radius:34px}
-  .device .hero-card{padding:20px}
-  .device .hello{font-size:24px}
-  .device .hero-flame .fl{width:72px;height:72px}
-  .device .streak-num{font-size:38px}
+  .hh-meta{display:flex;flex-wrap:wrap;gap:8px}
+  .hh-meta span{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r-pill);background:var(--glass-strong);border:1px solid var(--line);font-size:13px;font-weight:800;color:var(--ink-2)}
+  .hh-meta svg{width:15px;height:15px;color:var(--ok);stroke-width:2.6}
+
+  .stage{position:relative;z-index:1;padding:28px 0}
+  .aura{position:absolute;inset:8% 4%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--flame) 45%,transparent),color-mix(in srgb,var(--pink) 18%,transparent) 55%,transparent);filter:blur(30px);animation:breathe 5s ease-in-out infinite}
+  @keyframes breathe{50%{transform:scale(1.08);opacity:.8}}
+  .orbit{position:absolute;left:50%;top:50%;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--ink) 16%,transparent);pointer-events:none;animation:orbit 40s linear infinite}
+  .orbit.o1{width:118%;aspect-ratio:1;margin:-59% 0 0 -59%}
+  .orbit.o2{width:92%;aspect-ratio:1;margin:-46% 0 0 -46%;animation-duration:28s;animation-direction:reverse}
+  .orbit i{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 16px var(--c)}
+  @keyframes orbit{to{transform:rotate(360deg)}}
+  .device{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:34px;max-width:480px;margin-inline:auto}
+  .device .hero-card{padding:18px}
+  .device .hello{font-size:22px}
+  .device .hero-flame{min-width:96px}
+  .device .hero-flame .fl{width:68px;height:68px}
+  .device .streak-num{font-size:36px}
   .device .week{grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
   .device-h{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 0}
-  .device-h b{font-family:var(--font-display);font-size:17px}
-  .floaty{position:absolute;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--r-pill);font-weight:800;font-size:13.5px;white-space:nowrap;animation:float 6s ease-in-out infinite}
-  .floaty svg{width:18px;height:18px}
-  .f1{top:-6px;right:-12px;animation-delay:-1s}
-  .f2{bottom:-18px;left:4%;animation-delay:-3s}
-  .f3{top:-8px;left:8%;animation-delay:-4.5s}
-  .f2 svg{color:var(--t-goal-ink)} .f3 svg{color:var(--ok)}
-  @keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(1.5deg)}}
+  .device-h b{font-family:var(--font-display);font-size:16px}
+  .hint{position:absolute;z-index:2;right:-6px;bottom:6px;display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--r-pill);font-weight:800;font-size:13px;white-space:nowrap;animation:float 5s ease-in-out infinite}
+  .hint svg{width:16px;height:16px}
+  @keyframes float{50%{transform:translateY(-10px)}}
   .perfect{position:absolute;inset:0;z-index:3;display:grid;place-items:center;border-radius:34px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .4s}
   .perfect.show{opacity:1}
   .perfect div{text-align:center;transform:scale(.8);transition:transform .5s var(--ease-bounce)}
   .perfect.show div{transform:none}
   .perfect h3{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-.04em}
   .perfect .fl{width:90px;height:90px;margin:0 auto 8px}
-  @media (max-width:900px){.home-hero .wrap{grid-template-columns:minmax(0,1fr)}.f1{right:0}}
-  @media (max-width:520px){.f3{display:none}}
-  .stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
-  .stats .stat{text-align:center;padding:20px 10px;background:var(--glass-card);border-color:var(--glass-edge)}
-  .stats .stat b{font-size:clamp(28px,3.4vw,40px)}
-  @media (max-width:900px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
-  @media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  .steps{counter-reset:s}
-  .step{display:flex;flex-direction:column;gap:12px;overflow:hidden}
-  .step .num{font-family:var(--font-display);font-weight:800;font-size:72px;line-height:.8;letter-spacing:-.06em;background:var(--brand-text);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.9}
-  .step h3{font-size:22px}
-  .step p{color:var(--ink-2)}
-  .bento{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px}
-  .bento .card{display:flex;flex-direction:column;gap:14px;overflow:hidden}
-  .bento h3{font-size:21px}
-  .bento p{color:var(--ink-2)}
-  .bx-a{grid-column:span 3}.bx-b{grid-column:span 3}.bx-c{grid-column:span 2}.bx-d{grid-column:span 2}.bx-e{grid-column:span 2}
-  @media (max-width:900px){.bento{grid-template-columns:minmax(0,1fr)}.bento>*{grid-column:auto!important}}
-  .ic-badge{display:grid;place-items:center;width:48px;height:48px;border-radius:var(--r-icon);background:color-mix(in srgb,var(--c,var(--flame)) 22%,transparent);color:var(--c-ink,var(--ink))}
-  .ic-badge svg{width:24px;height:24px}
-  .gel-row{display:flex;align-items:center;gap:14px}
-  .gel-ico{position:relative;display:grid;place-items:center;width:64px;height:64px;border-radius:20px;background:color-mix(in srgb,var(--t-goal) 22%,transparent);color:var(--t-goal-ink)}
-  .gel-ico svg{width:34px;height:34px;animation:spin 14s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .net{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r-md);border:1px dashed var(--ink-3);font-size:13.5px;font-weight:700;color:var(--ink-2)}
-  .net svg{width:18px;height:18px}
-  .recaps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .recaps span{display:flex;flex-direction:column;padding:12px;border-radius:var(--r-md);color:#10102A;font-weight:700;font-size:12px}
-  .recaps b{font-family:var(--font-display);font-size:15px}
-  .levels{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding-top:30px}
-  .levels::before{content:"";position:absolute;left:5%;right:5%;top:12px;height:6px;border-radius:6px;background:color-mix(in srgb,var(--ink) 10%,transparent)}
-  .levels::after{content:"";position:absolute;left:5%;top:12px;height:6px;border-radius:6px;background:var(--brand);width:0;transition:width 2.2s var(--ease-out)}
-  .levels.in::after,:root:not(.js) .levels::after{width:90%}
-  .lvl{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
-  .lvl::before{content:"";position:absolute;top:-24px;width:18px;height:18px;border-radius:50%;background:var(--bg);border:4px solid var(--flame);z-index:1}
-  .lvl .fl{width:calc(28px + var(--k) * 8px);height:calc(28px + var(--k) * 8px);transition:transform .3s var(--ease-bounce)}
-  .lvl:hover .fl{transform:scale(1.2) rotate(-6deg)}
-  .lvl b{font-family:var(--font-display);font-size:15px}
-  .lvl small{font-weight:700;color:var(--ink-3);font-size:12.5px;font-variant-numeric:tabular-nums}
-  @media (max-width:700px){.levels{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:40px}.levels::before,.levels::after{display:none}}
-  .teaser{display:flex;flex-direction:column;gap:14px;text-decoration:none;color:inherit;min-height:260px;overflow:hidden}
-  .teaser h3{font-size:26px}
-  .teaser p{color:var(--ink-2);max-width:44ch}
-  .teaser .go{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:800}
-  .teaser .go svg{width:18px;height:18px;transition:transform .2s}
-  .teaser:hover .go svg{transform:translateX(5px)}
-  .sw-row{display:flex;gap:8px;flex-wrap:wrap}
-  .sw-row i{width:34px;height:34px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.45);transition:transform .3s var(--ease-bounce)}
-  .teaser:hover .sw-row i{transform:translateY(-6px)}
-  .teaser:hover .sw-row i:nth-child(2n){transform:translateY(-10px)}
-  .code-mini{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.7;padding:14px;border-radius:var(--r-md);background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink-2);overflow:hidden;white-space:pre}
-  .code-mini .k{color:var(--t-proj-ink);font-weight:700}.code-mini .s{color:var(--t-routine-ink)}.code-mini .c{color:var(--ink-3)}
+  @media (max-width:920px){.home-hero .wrap{grid-template-columns:minmax(0,1fr);gap:24px}.ghost{display:none}.hint{right:4px}}
+  @media (max-width:520px){.orbit{display:none}.device{padding:10px;border-radius:28px}}
+
+  /* trois raisons */
+  .why{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:auto auto;gap:18px}
+  .why .card{display:flex;flex-direction:column;gap:14px;overflow:hidden;padding:28px}
+  .why h3{font-size:clamp(22px,2.6vw,30px);font-weight:800;letter-spacing:-.035em;line-height:1.05}
+  .why p{color:var(--ink-2)}
+  .why .more{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:800;text-decoration:none;color:var(--ink)}
+  .why .more svg{width:18px;height:18px;transition:transform .2s}
+  .why .more:hover svg{transform:translateX(4px)}
+  .w-streak{grid-row:span 2;justify-content:space-between}
+  .w-streak .more{margin-top:0}
+  .tag{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:var(--r-pill);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:color-mix(in srgb,var(--c) 20%,transparent);color:var(--c-ink)}
+  .tag svg{width:14px;height:14px}
+  .big-streak{display:flex;align-items:flex-end;gap:14px;margin:6px 0}
+  .big-streak b{font-family:var(--font-display);font-weight:800;font-size:clamp(84px,11vw,140px);line-height:.8;letter-spacing:-.06em;font-variant-numeric:tabular-nums;background:var(--brand-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .big-streak span{font-weight:800;color:var(--ink-2);padding-bottom:10px;line-height:1.2}
+  .lightup{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+  .lightup div{display:grid;justify-items:center;gap:4px;padding:10px 0;border-radius:var(--r-md);background:var(--glass-strong);border:1px solid var(--line);font-size:11px;font-weight:800;color:var(--ink-3)}
+  .lightup svg{width:30px;height:30px}
+  .lightup .fl{filter:grayscale(1) opacity(.25);transform:scale(.8);transition:filter .5s ease,transform .5s var(--ease-bounce);transition-delay:calc(var(--k) * 140ms + 300ms)}
+  .in .lightup .fl,:root:not(.js) .lightup .fl{filter:none;transform:none}
+  .lightup .gel{color:var(--t-goal-ink);stroke-width:2.4}
+  .lightup .gel-d{border-color:color-mix(in srgb,var(--t-goal) 60%,transparent);background:color-mix(in srgb,var(--t-goal) 12%,var(--glass-strong))}
+  .lvl-track{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:var(--r-md);background:color-mix(in srgb,var(--ink) 5%,transparent)}
+  .lvl-track .row{display:flex;justify-content:space-between;font-size:13px;font-weight:800}
+  .lvl-track .row span:last-child{color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .avs{display:flex;align-items:center}
+  .avs .av{--s:50px;margin-left:-8px;font-size:16px;box-shadow:0 0 0 3px var(--bg),inset 0 0 0 2px rgba(255,255,255,.45);transition:transform .3s var(--ease-bounce)}
+  .avs .av:first-child{margin-left:0}
+  .avs .av:hover{transform:translateY(-6px)}
+  .avs .cheer{margin-left:14px}
+  .vs-mini{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-md);background:color-mix(in srgb,var(--c) 12%,transparent);font-weight:800;font-size:13px}
+  .vs-mini b{font-family:var(--font-display);font-size:24px;font-variant-numeric:tabular-nums;color:var(--c-ink)}
+  .vs-mini .r{text-align:right}
+  .vs-mini em{font-style:normal;font-family:var(--font-display);color:var(--ink-3)}
+  .cipher-band{position:relative;overflow:hidden;border-radius:var(--r-md);background:#0B0C22;color:#C6FF5C;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;padding:12px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+  .cipher-band span{display:inline-block;white-space:nowrap;animation:marquee 26s linear infinite}
+  .pills{display:flex;flex-wrap:wrap;gap:8px}
+  .pills span{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r-pill);border:1px solid var(--line);font-size:13px;font-weight:800;color:var(--ink-2)}
+  .pills svg{width:15px;height:15px}
+  @media (max-width:860px){.why{grid-template-columns:minmax(0,1fr)}.w-streak{grid-row:auto}.why .card{padding:22px}}
+
+  /* appel final */
+  .final{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:32px;align-items:center;padding:clamp(28px,5vw,56px);border-radius:36px}
+  .final h2{font-size:clamp(34px,5vw,62px);font-weight:800;letter-spacing:-.045em;line-height:.95}
+  .final p{color:var(--ink-2);margin:16px 0 22px;max-width:44ch;font-size:17px}
+  .explore{position:relative;display:flex;flex-direction:column;gap:10px}
+  .explore a{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--r-md);background:var(--glass-strong);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .25s var(--ease-out),border-color .25s}
+  .explore a:hover{transform:translateX(6px);border-color:var(--c)}
+  .explore .ei{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:var(--r-icon);background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c-ink)}
+  .explore .ei svg{width:21px;height:21px}
+  .explore b{display:block;font-weight:800}
+  .explore small{color:var(--ink-2);font-size:13px}
+  .explore .go{margin-left:auto;width:18px;height:18px;color:var(--ink-3)}
+  @media (max-width:860px){.final{grid-template-columns:minmax(0,1fr)}}
 </style>
 
 <section class="home-hero">
   <div class="wrap">
+    <span class="ghost" aria-hidden="true" data-count="27">27</span>
     <div class="hh-txt">
       <span class="eyebrow rv">Suivi d’objectifs · web, iOS et Android</span>
       <h1 data-split>Fixe le cap. <span class="grad-text">Garde la flamme.</span></h1>
-      <p class="lead rv" style="--d:2">Planifie tes objectifs, tes routines et tes abstinences, valide chaque jour et avance avec tes amis. Ta série grandit, ta flamme aussi.</p>
+      <p class="lead rv" style="--d:2">Routines, objectifs chiffrés, deadlines, abstinences : valide chaque jour, entretiens ta série et avance avec tes amis.</p>
       <div class="hh-acts rv" style="--d:3">
         <a class="btn btn-primary lg" href="https://app.pepsgoal.fr" data-magnet><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir l’app<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a>
-        <a class="btn lg" href="fonctionnalites.html">Voir les fonctionnalités</a>
+        <a class="btn lg" href="fonctionnalites.html">Fonctionnalités</a>
       </div>
       <div class="hh-meta rv" style="--d:4">
         <span><svg class="i"><use href="assets/icons.svg#check"/></svg>Gratuit</span>
-        <span><svg class="i"><use href="assets/icons.svg#check"/></svg>Sans publicité ni traceur</span>
-        <span><svg class="i"><use href="assets/icons.svg#check"/></svg>Fonctionne hors ligne</span>
+        <span><svg class="i"><use href="assets/icons.svg#check"/></svg>Sans pub ni traceur</span>
+        <span><svg class="i"><use href="assets/icons.svg#check"/></svg>Hors ligne</span>
       </div>
     </div>
 
     <div class="stage rv zoom" style="--d:2">
-      <div class="device glass ring-border tilt" data-tilt="5" id="demo">
-        <div class="device-h"><b>Aujourd’hui</b><span class="chip" style="--c:var(--flame);--c-ink:var(--ink)"><span data-done>1</span>/4 validés</span></div>
+      <span class="aura" aria-hidden="true"></span>
+      <span class="orbit o1" aria-hidden="true"><i class="t-routine" style="top:6%;left:20%"></i><i class="t-objective" style="bottom:14%;right:4%"></i><i class="t-abstinence" style="bottom:2%;left:36%"></i></span>
+      <span class="orbit o2" aria-hidden="true"><i class="t-deadline" style="top:-1%;right:40%"></i><i class="t-monthly" style="bottom:20%;left:-1%"></i></span>
+      <div class="device glass ring-border" id="demo">
+        <div class="device-h"><b>Aujourd’hui</b><span class="chip" style="--c:var(--flame);--c-ink:var(--ink)"><span><span data-done>1</span>/4 validés</span></span></div>
         <section class="hero-card glass" style="box-shadow:none">
           <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
             <p class="eyebrow">Lundi 12 octobre</p>
-            <h2 class="hello">Salut Camille <img src="emoji/1f44b.webp" alt="" width="26" height="26" style="display:inline;vertical-align:-3px"></h2>
-            <p class="muted" style="font-size:14px">Valide une action avant minuit pour prolonger ta série.</p>
+            <h2 class="hello">Salut Camille <img src="emoji/1f44b.webp" alt="" width="24" height="24" style="display:inline;vertical-align:-3px"></h2>
             <div class="week" aria-label="Cette semaine">
-              <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>L</span></div>
               <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>M</span></div>
-              <div class="wd frozen"><svg class="i"><use href="assets/icons.svg#snow"/></svg><span>M</span></div>
-              <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>J</span></div>
+              <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>M</span></div>
+              <div class="wd frozen"><svg class="i"><use href="assets/icons.svg#snow"/></svg><span>J</span></div>
               <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>V</span></div>
               <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>S</span></div>
-              <div class="wd on today" data-today><svg class="fl"><use href="#flame"/></svg><span>D</span></div>
+              <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>D</span></div>
+              <div class="wd on today" data-today><svg class="fl"><use href="#flame"/></svg><span>L</span></div>
             </div>
           </div>
-          <div class="hero-flame"><svg class="fl flame-anim"><use href="#flame"/></svg><div class="streak-num" data-streak>27</div><div class="streak-lbl">jours de série</div></div>
+          <div class="hero-flame"><svg class="fl flame-anim"><use href="#flame"/></svg><div class="streak-num" data-streak>27</div><div class="streak-lbl">jours</div></div>
         </section>
         <ul class="items">
           <li class="item t-routine"><span class="item-main"><span class="gi"><img src="emoji/1f3c3.webp" alt=""></span><span class="item-txt"><b>Courir 30 min</b><small><span class="chip t-routine"><svg class="i"><use href="assets/icons.svg#repeat"/></svg>Routine</span><span>lun, mer, ven</span></small></span></span><button class="check" data-demo data-pts="10" aria-pressed="false" aria-label="Valider : Courir 30 min"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
@@ -190,9 +206,7 @@
         </ul>
         <div class="perfect" aria-live="polite"><div><svg class="fl flame-anim"><use href="#flame"/></svg><h3 class="grad-text">Journée parfaite !</h3><p class="muted">Tout est validé. La flamme te remercie.</p></div></div>
       </div>
-      <span class="floaty glass f1"><svg class="fl"><use href="#flame"/></svg>+10 flammes</span>
-      <span class="floaty glass f2"><svg class="i"><use href="assets/icons.svg#snow"/></svg>Gel ×5 · série protégée</span>
-      <span class="floaty glass f3"><svg class="i"><use href="assets/icons.svg#lock"/></svg>Chiffrée de bout en bout</span>
+      <span class="hint glass" aria-hidden="true"><svg class="i"><use href="assets/icons.svg#check"/></svg>Touche un rond pour valider</span>
     </div>
   </div>
 </section>
@@ -206,8 +220,6 @@
     <span class="tpill t-monthly"><svg class="i"><use href="assets/icons.svg#month"/></svg>Mensuel</span>
     <span class="tpill t-limit"><svg class="i"><use href="assets/icons.svg#gauge"/></svg>Limite</span>
     <span class="tpill t-duration"><svg class="i"><use href="assets/icons.svg#timer"/></svg>Durée</span>
-  </div></div>
-  <div class="marquee rev" style="margin-top:12px"><div class="marquee-track" data-dup>
     <span class="tpill t-measure"><svg class="i"><use href="assets/icons.svg#trend"/></svg>Mesure</span>
     <span class="tpill t-timed"><svg class="i"><use href="assets/icons.svg#clock"/></svg>Horaire</span>
     <span class="tpill t-project"><svg class="i"><use href="assets/icons.svg#list"/></svg>Projet</span>
@@ -218,62 +230,48 @@
   </div></div>
 </section>
 
-<section class="section tight">
-  <div class="wrap">
-    <div class="stats">
-      <div class="stat rv" style="--d:0"><b data-count="14">14</b><span>formats d’objectifs</span></div>
-      <div class="stat rv" style="--d:1"><b data-count="6">6</b><span>niveaux de flamme</span></div>
-      <div class="stat rv" style="--d:2"><b data-count="11">11</b><span>badges à débloquer</span></div>
-      <div class="stat rv" style="--d:3"><b data-count="12">12</b><span>couleurs d’accent</span></div>
-      <div class="stat rv" style="--d:4"><b data-count="8">8</b><span>thèmes, dont accessibilité</span></div>
-      <div class="stat rv" style="--d:5"><b>0</b><span>publicité, cookie ou traceur</span></div>
-    </div>
-  </div>
-</section>
-
 <section class="section">
   <div class="wrap">
-    <div class="sec-h"><span class="eyebrow rv">Comment ça marche</span><h2 class="rv" style="--d:1">Trois gestes, <span class="grad-text">chaque jour.</span></h2></div>
-    <div class="grid g3 steps">
-      <article class="card step tilt rv" style="--d:0"><span class="num">01</span><h3>Choisis ton cap</h3><p>Une routine trois fois par semaine, 12 livres dans l’année, une deadline, une habitude à arrêter : quatorze formats couvrent ce que tu veux suivre. Tout se crée depuis le bouton « + ».</p></article>
-      <article class="card step tilt rv" style="--d:1"><span class="num">02</span><h3>Valide, gagne des flammes</h3><p>Touche le rond pour valider. Chaque validation rapporte des flammes et allume la flamme du jour. Les jours d’affilée forment ta série.</p></article>
-      <article class="card step tilt rv" style="--d:2"><span class="num">03</span><h3>Avance avec tes amis</h3><p>Publie tes victoires, encourage les autres, lance un duel ou un défi de groupe. Pas envie de social ? Un interrupteur suffit à le couper.</p></article>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
-    <div class="sec-h"><span class="eyebrow rv">Ce qui fait la différence</span><h2 class="rv" style="--d:1">Motivant, <span class="grad-text">jamais culpabilisant.</span></h2><p class="rv" style="--d:2">Un jour manqué n’efface pas tes efforts : les gels protègent ta série, les récaps célèbrent le chemin parcouru.</p></div>
-    <div class="bento">
-      <article class="card bx-a tilt rv" style="--d:0" data-tilt="4">
-        <div class="gel-row"><span class="gel-ico"><svg class="i"><use href="assets/icons.svg#snow"/></svg></span><div><h3>Les gels de série</h3><p>Un jour sans validation ? Un gel protège ta série automatiquement. Tu en gagnes un chaque fois que tes publications reçoivent 10 encouragements, et 5 t’attendent à l’inscription.</p></div></div>
-        <div class="week" style="grid-template-columns:repeat(7,minmax(0,1fr))">
-          <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>L</span></div><div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>M</span></div><div class="wd frozen"><svg class="i"><use href="assets/icons.svg#snow"/></svg><span>M</span></div><div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>J</span></div><div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>V</span></div><div class="wd on today"><svg class="fl"><use href="#flame"/></svg><span>S</span></div><div class="wd off fut"><svg class="fl"><use href="#flame"/></svg><span>D</span></div>
+    <div class="sec-h"><span class="eyebrow rv">Pourquoi PepsGoal</span><h2 class="rv" style="--d:1">Motivant, <span class="grad-text">jamais culpabilisant.</span></h2></div>
+    <div class="why">
+      <article class="card w-streak t-month rv">
+        <span class="tag" style="--c:var(--flame);--c-ink:var(--ink)"><svg class="fl"><use href="#flame"/></svg>Séries et gels</span>
+        <h3>Une validation par jour suffit à garder ta flamme allumée.</h3>
+        <div class="big-streak"><b data-count="27">27</b><span>jours<br>de série</span></div>
+        <div class="lightup" aria-label="Une semaine de série, avec un jour protégé par un gel">
+          <div><svg class="fl" style="--k:0"><use href="#flame"/></svg>M</div>
+          <div><svg class="fl" style="--k:1"><use href="#flame"/></svg>M</div>
+          <div class="gel-d"><svg class="i gel"><use href="assets/icons.svg#snow"/></svg>J</div>
+          <div><svg class="fl" style="--k:3"><use href="#flame"/></svg>V</div>
+          <div><svg class="fl" style="--k:4"><use href="#flame"/></svg>S</div>
+          <div><svg class="fl" style="--k:5"><use href="#flame"/></svg>D</div>
+          <div><svg class="fl" style="--k:6"><use href="#flame"/></svg>L</div>
         </div>
+        <p>Un jour manqué ? Un gel protège ta série automatiquement. Chaque validation rapporte des flammes, d’Étincelle à Supernova.</p>
+        <div class="lvl-track"><div class="row"><span>Brasier</span><span>1 196 / 1 500</span></div><div class="bar"><i style="--w:80%"></i></div></div>
+        <a class="more" href="fonctionnalites.html#motivation">Flammes, gels et badges<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       </article>
-      <article class="card bx-b tilt rv" style="--d:1" data-tilt="4">
-        <div class="post glass" style="padding:16px;box-shadow:none">
-          <div class="who"><span class="av" style="--g:linear-gradient(135deg,#6FF7FF,#22D3FF 55%,#4D9BFF)">LM</span><span><b>Léo</b><small>il y a 2 h · Amis</small></span></div>
-          <span class="milestone"><svg class="fl"><use href="#flame"/></svg>30 jours de série</span>
-          <p>Un mois sans sauter une séance. Merci pour les encouragements !</p>
-          <div><button class="cheer" data-demo aria-pressed="false"><svg class="fl"><use href="#flame"/></svg><span data-n>12</span> Encourager</button></div>
+
+      <article class="card t-duel rv" style="--d:1">
+        <span class="tag t-group"><svg class="i"><use href="assets/icons.svg#users"/></svg>Ensemble</span>
+        <h3>Encourage, défie, avance à plusieurs.</h3>
+        <div class="avs">
+          <span class="av" style="--g:linear-gradient(135deg,#6FF7FF,#22D3FF 55%,#4D9BFF)">LM</span>
+          <span class="av" style="--g:linear-gradient(135deg,#F4FF5C,#B6FF2E 55%,#3DFF8A)"><img src="emoji/1f9d8.webp" alt=""></span>
+          <span class="av" style="--g:linear-gradient(135deg,#DCCBFF,#A98BFF 55%,#FF7AD9)">SB</span>
+          <span class="av">Toi</span>
+          <button class="cheer" data-demo aria-pressed="false"><svg class="fl"><use href="#flame"/></svg><span data-n>12</span> Encourager</button>
         </div>
-        <h3>Un feed bienveillant</h3><p>Publie tes paliers pour tes amis ou pour tout le monde, avec photos et stories de 24 h. On encourage avec une flamme.</p>
+        <div class="vs-mini"><span>Toi<br><b data-count="142">142</b></span><em>VS</em><span class="r">Léo<br><b data-count="128">128</b></span></div>
+        <a class="more" href="fonctionnalites.html#social">Feed, stories, duels<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       </article>
-      <article class="card bx-c tilt rv" style="--d:0" data-tilt="6">
-        <span class="ic-badge t-project"><svg class="i"><use href="assets/icons.svg#lock"/></svg></span>
-        <h3>Messagerie chiffrée</h3><p>Texte, photos, messages vocaux et objectifs partagés, à deux ou en groupe. Chiffrés sur ton appareil : personne d’autre ne peut les lire.</p>
-      </article>
-      <article class="card bx-d tilt rv" style="--d:1" data-tilt="6">
-        <span class="ic-badge t-duration"><svg class="i"><use href="assets/icons.svg#cloudoff"/></svg></span>
-        <h3>Hors ligne d’abord</h3><p>Tes objectifs s’enregistrent sur l’appareil et se synchronisent au retour du réseau. Sans compte, tout reste chez toi.</p>
-        <div class="net"><svg class="i"><use href="assets/icons.svg#sync"/></svg>3 modifications en attente d’envoi</div>
-      </article>
-      <article class="card bx-e tilt rv" style="--d:2" data-tilt="6">
-        <span class="ic-badge t-month"><svg class="i"><use href="assets/icons.svg#star"/></svg></span>
-        <h3>Récaps</h3><p>Chaque semaine, chaque mois et chaque année, un récap plein écran de ce que tu as accompli.</p>
-        <div class="recaps"><span style="background:linear-gradient(135deg,#FFB000,#FF4A12 60%,#FF3D96)"><b>Semaine</b>23 validations</span><span style="background:linear-gradient(135deg,#6FF7FF,#22D3FF 55%,#4D9BFF)"><b>Mois</b>94 %</span><span style="background:linear-gradient(135deg,#DCCBFF,#A98BFF 55%,#FF7AD9)"><b>Année</b>312 j</span></div>
+
+      <article class="card t-project rv" style="--d:2">
+        <span class="tag"><svg class="i"><use href="assets/icons.svg#lock"/></svg>Privé par défaut</span>
+        <h3>Tes messages ne regardent que toi.</h3>
+        <div class="cipher-band" aria-hidden="true"><span>ct: "bDfbES/CJSSbPeUDG9i6/+ujmIASejQ3ritCm9iigeZmNif48mE5j2PkbQ==" · nonce: "q3Yb0d…" · keyId: 7 · ct: "u1W9zKcQ8f/Lr2mPx+0aVt3nHsE4yJb6dGqO1c=" · ct: "bDfbES/CJSSbPeUDG9i6/+ujmIASejQ3ritCm9iigeZmNif48mE5j2PkbQ==" · nonce: "q3Yb0d…" · keyId: 7 · ct: "u1W9zKcQ8f/Lr2mPx+0aVt3nHsE4yJb6dGqO1c=" · </span></div>
+        <div class="pills"><span><svg class="i"><use href="assets/icons.svg#key"/></svg>Chiffré de bout en bout</span><span><svg class="i"><use href="assets/icons.svg#cloudoff"/></svg>Hors ligne</span><span><svg class="i"><use href="assets/icons.svg#phone"/></svg>Sans compte possible</span></div>
+        <a class="more" href="technique.html#e2e">Comment ça marche<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       </article>
     </div>
   </div>
@@ -281,67 +279,31 @@
 
 <section class="section">
   <div class="wrap">
-    <div class="sec-h center"><span class="eyebrow rv">Progression</span><h2 class="rv" style="--d:1">De l’étincelle <span class="grad-text">à la supernova.</span></h2><p class="rv" style="--d:2">Chaque validation rapporte des flammes : de 8 pour une journée d’abstinence à 40 pour une deadline bouclée à temps. Elles te font monter de niveau.</p></div>
-    <div class="card rv" style="padding:28px 24px 30px">
-      <div class="levels rv">
-        <div class="lvl" style="--k:0"><svg class="fl"><use href="#flame"/></svg><b>Étincelle</b><small>0</small></div>
-        <div class="lvl" style="--k:1"><svg class="fl"><use href="#flame"/></svg><b>Braise</b><small>100</small></div>
-        <div class="lvl" style="--k:2"><svg class="fl"><use href="#flame"/></svg><b>Flamme</b><small>300</small></div>
-        <div class="lvl" style="--k:3"><svg class="fl"><use href="#flame"/></svg><b>Brasier</b><small>700</small></div>
-        <div class="lvl" style="--k:4"><svg class="fl"><use href="#flame"/></svg><b>Incendie</b><small>1 500</small></div>
-        <div class="lvl" style="--k:5"><svg class="fl flame-anim"><use href="#flame"/></svg><b>Supernova</b><small>3 000</small></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
-    <div class="sec-h"><span class="eyebrow rv">Les coulisses</span><h2 class="rv" style="--d:1">Conçu avec soin, <span class="grad-text">de bout en bout.</span></h2></div>
-    <div class="grid g2">
-      <a class="card teaser tilt rv" href="design-system.html" data-tilt="5">
-        <span class="ic-badge"><svg class="i"><use href="assets/icons.svg#palette"/></svg></span>
-        <h3>Le design system</h3>
-        <p>Verre givré sur halos vifs, typo Unbounded et Manrope, une couleur par format d’objectif, huit thèmes dont trois réglages d’accessibilité.</p>
-        <div class="sw-row" aria-hidden="true"><i style="background:var(--flame-2)"></i><i style="background:var(--flame)"></i><i style="background:var(--pink)"></i><i style="background:var(--t-goal)"></i><i style="background:var(--t-routine)"></i><i style="background:var(--t-abst)"></i><i style="background:var(--t-month)"></i><i style="background:var(--t-dur)"></i></div>
-        <span class="go">Explorer le design system<svg class="i"><use href="assets/icons.svg#arrow"/></svg></span>
-      </a>
-      <a class="card teaser tilt rv" href="technique.html" style="--d:1" data-tilt="5">
-        <span class="ic-badge t-project"><svg class="i"><use href="assets/icons.svg#code"/></svg></span>
-        <h3>Les détails techniques</h3>
-        <p>Hors ligne d’abord, synchronisation sans conflit, chiffrement de bout en bout avec NaCl, API Fastify et PostgreSQL, une seule interface pour le web, iOS et Android.</p>
-        <div class="code-mini" aria-hidden="true"><span class="c">// la modification la plus récente gagne</span>
-<span class="k">POST</span> /v1/sync/push  <span class="s">{ opId, entity, action }</span>
-<span class="k">GET</span>  /v1/sync/pull?cursor=<span class="s">1284</span></div>
-        <span class="go">Voir l’architecture<svg class="i"><use href="assets/icons.svg#arrow"/></svg></span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
-    <div class="cta glass ring-border rv zoom">
-      <svg class="fl flame-anim"><use href="#flame"/></svg>
-      <h2>Ta flamme t’attend.</h2>
-      <p>Ouvre PepsGoal dans ton navigateur, avec ou sans compte. Les applications iOS et Android arrivent bientôt sur l’App Store et Google Play.</p>
-      <div class="cta-acts">
+    <div class="final glass ring-border rv zoom">
+      <div style="position:relative">
+        <h2>Ta flamme <span class="grad-text">t’attend.</span></h2>
+        <p>Ouvre PepsGoal dans ton navigateur, avec ou sans compte. Les applications iOS et Android arrivent bientôt sur l’App Store et Google Play.</p>
         <a class="btn btn-primary lg" href="https://app.pepsgoal.fr" data-magnet><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir app.pepsgoal.fr<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a>
-        <a class="btn lg" href="fonctionnalites.html">Tout découvrir</a>
       </div>
+      <nav class="explore" aria-label="Explorer le site">
+        <a href="fonctionnalites.html" class="t-routine"><span class="ei"><svg class="i"><use href="assets/icons.svg#sparkle"/></svg></span><span><b>Fonctionnalités</b><small>14 formats, social, messagerie</small></span><svg class="i go"><use href="assets/icons.svg#arrow"/></svg></a>
+        <a href="design-system.html" class="t-abstinence"><span class="ei"><svg class="i"><use href="assets/icons.svg#palette"/></svg></span><span><b>Design system</b><small>Couleurs, thèmes, composants</small></span><svg class="i go"><use href="assets/icons.svg#arrow"/></svg></a>
+        <a href="technique.html" class="t-project"><span class="ei"><svg class="i"><use href="assets/icons.svg#code"/></svg></span><span><b>Technique</b><small>Hors ligne, synchro, chiffrement</small></span><svg class="i go"><use href="assets/icons.svg#arrow"/></svg></a>
+      </nav>
     </div>
   </div>
 </section>
 
 <script>
-  // Bandeaux défilants : contenu doublé pour une boucle sans couture
+  // Bandeau défilant : contenu doublé pour une boucle sans couture
   document.querySelectorAll('[data-dup]').forEach(t => { t.innerHTML += t.innerHTML.replace(/<span class="tpill/g, '<span aria-hidden="true" class="tpill'); });
-  // Démo : chaque validation met à jour le compteur ; tout valider allume la journée et la série
+  // Démo : chaque validation met à jour le compteur ; tout valider affiche « Journée parfaite »
   (() => {
     const demo = document.getElementById('demo'); if (!demo) return;
-    const done = demo.querySelector('[data-done]'), streak = demo.querySelector('[data-streak]'), today = demo.querySelector('[data-today]'), perfect = demo.querySelector('.perfect');
+    const done = demo.querySelector('[data-done]'), streak = demo.querySelector('[data-streak]'), today = demo.querySelector('[data-today]'), perfect = demo.querySelector('.perfect'), hint = document.querySelector('.hint');
     let lit = demo.querySelectorAll('.check.on').length > 0, timer;
     document.addEventListener('pg:check', () => {
+      hint?.remove();
       const n = demo.querySelectorAll('.check.on').length, all = demo.querySelectorAll('.check').length;
       done.textContent = n;
       const on = n > 0;

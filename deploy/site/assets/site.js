@@ -40,16 +40,15 @@
     addEventListener('keydown', e => { if (e.key === 'Escape' && drawer.classList.contains('open')) open(false); });
   }
 
-  /* ---------- en-tête masqué en descendant, barre de lecture ---------- */
+  /* ---------- en-tête toujours visible (état « défilé » avec hystérésis), barre de lecture ---------- */
   const header = document.querySelector('.site-h'), bar = document.querySelector('.progress');
-  let lastY = scrollY, ticking = false;
+  let ticking = false, scrolled = false;
   const onScroll = () => {
     const y = scrollY, h = document.documentElement.scrollHeight - innerHeight;
-    if (bar) bar.style.setProperty('--p', h > 0 ? (y / h).toFixed(4) : 0);
-    if (header) header.classList.toggle('hide', y > 240 && y > lastY + 4 && !document.activeElement?.closest('.site-h'));
-    if (y < lastY - 4 || y < 240) header?.classList.remove('hide');
-    lastY = y; ticking = false;
-    parallax();
+    if (bar) bar.style.setProperty('--p', h > 0 ? Math.min(1, y / h).toFixed(4) : 0);
+    // seuils distincts à l'aller et au retour : pas de bascule répétée autour d'une même position
+    if (header && (scrolled ? y < 8 : y > 24)) { scrolled = !scrolled; header.classList.toggle('scrolled', scrolled); }
+    ticking = false;
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive:true });
 
@@ -57,7 +56,6 @@
   const blobs = [...document.querySelectorAll('.blob')];
   const drift = [[.9, 1.3, 40], [1.2, .8, 55], [.7, 1.1, 48], [1.5, 1.2, 30]];
   let t0 = performance.now(), px = 0, py = 0;
-  function parallax(){}
   if (blobs.length && !reduced()) {
     const frame = now => {
       const t = (now - t0) / 1000, s = scrollY;
