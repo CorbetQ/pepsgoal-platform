@@ -16,7 +16,7 @@
   .fact small{color:var(--ink-2);font-size:13px}
   @media (max-width:900px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media (max-width:480px){.facts{grid-template-columns:minmax(0,1fr)}}
-  .docs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .docs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
   .doc{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit}
   .doc h3{font-size:18px}
   .doc p{color:var(--ink-2);font-size:14px}
@@ -38,7 +38,7 @@
     <span class="eyebrow rv">Informations légales</span>
     <h1 data-split>Clair, <span class="grad-text">sans petites lignes.</span></h1>
     <p class="lead rv" style="--d:2">Qui édite PepsGoal, où vivent tes données, ce que nous ne faisons pas avec, et comment exercer tes droits. Les documents complets sont les mêmes que dans l’application.</p>
-    <span class="updated rv" style="--d:3"><svg class="i"><use href="assets/icons.svg#cal"/></svg>Mis à jour le 13 octobre 2026 · PepsGoal 1.2.0</span>
+    <span class="updated rv" style="--d:3"><svg class="i"><use href="assets/icons.svg#cal"/></svg>Mis à jour le 14 octobre 2026 · PepsGoal {{VERSION}}</span>
   </div>
 </section>
 
@@ -62,13 +62,14 @@
         <a class="card doc tilt rv" href="cgu.html"><span class="chip t-project" style="align-self:flex-start">11 articles</span><h3>Conditions générales d’utilisation</h3><p>Accès, compte, règles de conduite, modération, tes contenus, santé et responsabilité.</p><span class="go">Lire les CGU<svg class="i"><use href="assets/icons.svg#arrow"/></svg></span></a>
         <a class="card doc tilt rv" href="mentions-legales.html" style="--d:1"><span class="chip t-routine" style="align-self:flex-start">Obligatoire</span><h3>Mentions légales</h3><p>Éditeur, hébergeur, propriété intellectuelle, crédits et signalement de contenu illicite.</p><span class="go">Lire les mentions<svg class="i"><use href="assets/icons.svg#arrow"/></svg></span></a>
         <a class="card doc tilt rv" href="confidentialite.html" style="--d:2"><span class="chip t-abstinence" style="align-self:flex-start">RGPD</span><h3>Charte de confidentialité</h3><p>Données traitées, bases légales, durées de conservation, destinataires, sécurité.</p><span class="go">Lire la charte<svg class="i"><use href="assets/icons.svg#arrow"/></svg></span></a>
+        <a class="card doc tilt rv" href="licence.html" style="--d:3"><span class="chip t-objective" style="align-self:flex-start">Logiciel libre</span><h3>Licence MIT</h3><p>Ce que tu peux faire du code de PepsGoal, texte officiel de la licence, composants tiers et contributions.</p><span class="go">Lire la licence<svg class="i"><use href="assets/icons.svg#arrow"/></svg></span></a>
       </div>
     </section>
 
     <section class="lg-sec" id="editeur">
       <h2><span class="ico t-routine"><svg class="i"><use href="assets/icons.svg#user"/></svg></span>Éditeur</h2>
       <div class="card prose rv">
-        <p>L’application PepsGoal (version 1.2.0) et le site pepsgoal.fr sont édités par <b>Quentin CORBET</b>, particulier agissant à titre non professionnel, domicilié à Angers (Maine-et-Loire, France).</p>
+        <p>L’application PepsGoal (version {{VERSION}}) et le site pepsgoal.fr sont édités par <b>Quentin CORBET</b>, particulier agissant à titre non professionnel, domicilié à Angers (Maine-et-Loire, France).</p>
         <ul><li>Immatriculation : sans objet (éditeur particulier, aucune activité commerciale)</li><li>Numéro de TVA intracommunautaire : sans objet</li><li>Adresse électronique : <a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a></li><li>Directeur de la publication : Quentin CORBET</li></ul>
       </div>
     </section>
@@ -76,7 +77,7 @@
     <section class="lg-sec" id="hebergement">
       <h2><span class="ico t-duration"><svg class="i"><use href="assets/icons.svg#server"/></svg></span>Hébergement</h2>
       <div class="card prose rv">
-        <p>Le site pepsgoal.fr, l’application web app.pepsgoal.fr et le serveur de PepsGoal (api.pepsgoal.fr : comptes, synchronisation, fonctions sociales, photos) sont hébergés par <b>Hostinger International Ltd</b>, 61 Lordou Vironos Street, 6023 Larnaca, Chypre (<a href="https://www.hostinger.fr">www.hostinger.fr</a>).</p>
+        <p>Le site pepsgoal.fr (aussi accessible à l’adresse site.pepsgoal.fr), l’application web app.pepsgoal.fr et le serveur de PepsGoal (api.pepsgoal.fr : comptes, synchronisation, fonctions sociales, photos) sont hébergés par <b>Hostinger International Ltd</b>, 61 Lordou Vironos Street, 6023 Larnaca, Chypre (<a href="https://www.hostinger.fr">www.hostinger.fr</a>).</p>
         <p>En mode sans compte, les données ne sont pas envoyées à ce serveur : elles restent sur l’appareil de l’utilisateur.</p>
       </div>
     </section>
@@ -118,8 +119,8 @@
     <section class="lg-sec" id="pi">
       <h2><span class="ico t-project"><svg class="i"><use href="assets/icons.svg#star"/></svg></span>Propriété intellectuelle</h2>
       <div class="card prose rv">
-        <p>Le code source de l’application et de ce site est publié sous <b>licence MIT</b> sur <a href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener">GitHub</a> : tu peux l’utiliser, le modifier et le redistribuer librement, à condition de conserver la mention de copyright et le texte de la licence.</p>
-        <p>Le nom PepsGoal et le logo ne sont pas couverts par cette licence : ils ne peuvent pas être utilisés pour désigner ou promouvoir un autre service sans l’autorisation de l’éditeur.</p>
+        <p>PepsGoal est un logiciel libre : le code source de l’application et de ce site est publié sous <b>licence MIT</b> sur <a href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener">GitHub</a> : tu peux l’utiliser, le modifier et le redistribuer librement, à condition de conserver la mention de copyright et le texte de la licence.</p>
+        <p>Le nom PepsGoal et le logo ne sont pas couverts par cette licence : ils ne peuvent pas être utilisés pour désigner ou promouvoir un autre service sans l’autorisation de l’éditeur. Détails dans la <a href="licence.html">licence MIT</a>.</p>
         <p>Les contenus publiés par les utilisateurs restent la propriété de leurs auteurs.</p>
       </div>
     </section>

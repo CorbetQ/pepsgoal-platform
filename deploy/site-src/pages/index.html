@@ -1,4 +1,4 @@
-<!--meta title="PepsGoal · Fixe le cap. Garde la flamme." description="PepsGoal : fixe tes objectifs, valide chaque jour et garde ta flamme allumée. 14 formats d’objectifs, séries, gels, amis et messagerie chiffrée. Gratuit, sans publicité, hors ligne." nav="index"-->
+<!--meta title="PepsGoal · Fixe le cap. Garde la flamme." description="PepsGoal : fixe tes objectifs, valide chaque jour et garde ta flamme allumée. 14 formats d’objectifs, séries, gels, amis, sondages et messagerie chiffrée. Gratuit, sans publicité, hors ligne." nav="index"-->
 <style>
   /* Accueil : un héros typographique autour d'une démo vivante, puis trois raisons et un appel final */
   .home-hero{position:relative;padding:56px 0 24px;overflow:hidden}
@@ -74,10 +74,6 @@
   .avs .av:first-child{margin-left:0}
   .avs .av:hover{transform:translateY(-6px)}
   .avs .cheer{margin-left:14px}
-  .vs-mini{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-md);background:color-mix(in srgb,var(--c) 12%,transparent);font-weight:800;font-size:13px}
-  .vs-mini b{font-family:var(--font-display);font-size:24px;font-variant-numeric:tabular-nums;color:var(--c-ink)}
-  .vs-mini .r{text-align:right}
-  .vs-mini em{font-style:normal;font-family:var(--font-display);color:var(--ink-3)}
   .cipher-band{position:relative;overflow:hidden;border-radius:var(--r-md);background:#0B0C22;color:#C6FF5C;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;padding:12px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
   .cipher-band span{display:inline-block;white-space:nowrap;animation:marquee 26s linear infinite}
   .pills{display:flex;flex-wrap:wrap;gap:8px}
@@ -104,6 +100,7 @@
   <div class="wrap">
     <span class="ghost" aria-hidden="true" data-count="27">27</span>
     <div class="hh-txt">
+      <a class="new-pill rv" href="fonctionnalites.html#nouveautes"><b>Nouveau</b>Version {{VERSION}} : sondages et sélecteur d’emojis<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       <span class="eyebrow rv">Suivi d’objectifs · web, iOS et Android</span>
       <h1 data-split>Fixe le cap. <span class="grad-text">Garde la flamme.</span></h1>
       <p class="lead rv" style="--d:2">Routines, objectifs chiffrés, deadlines, abstinences : valide chaque jour, entretiens ta série et avance avec tes amis.</p>
@@ -196,7 +193,7 @@
 
       <article class="card t-duel rv" style="--d:1">
         <span class="tag t-group"><svg class="i"><use href="assets/icons.svg#users"/></svg>Ensemble</span>
-        <h3>Encourage, défie, avance à plusieurs.</h3>
+        <h3>Encourage, sonde, défie : avance à plusieurs.</h3>
         <div class="avs">
           <span class="av" style="--g:linear-gradient(135deg,#6FF7FF,#22D3FF 55%,#4D9BFF)">LM</span>
           <span class="av" style="--g:linear-gradient(135deg,#F4FF5C,#B6FF2E 55%,#3DFF8A)"><img src="emoji/1f9d8.webp" alt=""></span>
@@ -204,8 +201,8 @@
           <span class="av">Toi</span>
           <button class="cheer" data-demo aria-pressed="false"><svg class="fl"><use href="#flame"/></svg><span data-n>12</span> Encourager</button>
         </div>
-        <div class="vs-mini"><span>Toi<br><b data-count="142">142</b></span><em>VS</em><span class="r">Léo<br><b data-count="128">128</b></span></div>
-        <a class="more" href="fonctionnalites.html#social">Feed, stories, duels<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
+        <div class="poll" data-poll="single" data-voters="11"><p class="poll-q"><svg class="i"><use href="assets/icons.svg#poll"/></svg>On court samedi ou dimanche ?</p><button type="button" class="poll-opt" data-n="5" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Samedi matin</span><span class="po-n">0 %</span></button><button type="button" class="poll-opt" data-n="4" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Dimanche matin</span><span class="po-n">0 %</span></button><button type="button" class="poll-opt" data-n="2" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Les deux !</span><span class="po-n">0 %</span></button><p class="poll-meta">11 votants · une réponse · vote pour voir les résultats</p></div>
+        <a class="more" href="fonctionnalites.html#social">Feed, sondages, duels<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       </article>
 
       <article class="card t-project rv" style="--d:2">

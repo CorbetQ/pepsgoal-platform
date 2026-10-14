@@ -211,3 +211,51 @@
   document.querySelectorAll('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
   onScroll();
 })();
+
+/* ---------- démonstrations 1.3.0 : sondages et sélecteur d'emojis ---------- */
+(() => {
+  // Sondage : voter révèle les résultats ; un second clic retire le vote
+  document.querySelectorAll('[data-poll]').forEach(poll => {
+    const opts = [...poll.querySelectorAll('.poll-opt')], meta = poll.querySelector('.poll-meta'), multi = poll.dataset.poll === 'multi';
+    const base = opts.map(o => parseInt(o.dataset.n, 10) || 0), voters = parseInt(poll.dataset.voters, 10) || 0;
+    const render = () => {
+      const mine = opts.map(o => o.classList.contains('on')), voted = mine.some(Boolean);
+      const counts = base.map((n, i) => n + (mine[i] ? 1 : 0)), total = voters + (voted ? 1 : 0), top = Math.max(...counts);
+      poll.classList.toggle('res', voted);
+      opts.forEach((o, i) => {
+        const pct = total ? Math.round(counts[i] / total * 100) : 0;
+        o.style.setProperty('--pct', voted ? `${pct}%` : '0%');
+        o.classList.toggle('lead', voted && counts[i] === top);
+        o.querySelector('.po-n').textContent = `${pct} %`;
+        o.setAttribute('aria-pressed', String(mine[i]));
+      });
+      if (meta) meta.textContent = `${total} votant${total > 1 ? 's' : ''} · ${multi ? 'plusieurs réponses' : 'une réponse'} · ${voted ? 'merci pour ton vote' : 'vote pour voir les résultats'}`;
+    };
+    poll.addEventListener('click', e => {
+      const o = e.target.closest('.poll-opt'); if (!o) return;
+      const on = !o.classList.contains('on');
+      if (!multi) opts.forEach(x => x.classList.remove('on'));
+      o.classList.toggle('on', on);
+      if (on) { const r = o.getBoundingClientRect(); window.pgSparks?.(r.right - 24, r.top + r.height / 2, null, 10); }
+      render();
+    });
+    render();
+  });
+  // Sélecteur d'emojis : onglets de catégories (flèches gauche/droite au clavier) et choix d'un emoji
+  document.querySelectorAll('[data-ep]').forEach(ep => {
+    const tabs = [...ep.querySelectorAll('.ep-cat')], target = document.querySelector(ep.dataset.target || '[data-ep-target]');
+    const select = t => {
+      tabs.forEach(x => { const on = x === t; x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1; document.getElementById(x.getAttribute('aria-controls')).hidden = !on; });
+    };
+    ep.addEventListener('click', e => {
+      const t = e.target.closest('.ep-cat'); if (t) { select(t); return; }
+      const b = e.target.closest('.ep-e'); if (!b) return;
+      ep.querySelectorAll('.ep-e').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      if (target) target.innerHTML = b.innerHTML;
+    });
+    ep.addEventListener('keydown', e => {
+      const i = tabs.indexOf(document.activeElement); if (i < 0 || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+      const t = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; select(t); t.focus(); e.preventDefault();
+    });
+  });
+})();

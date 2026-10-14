@@ -107,7 +107,7 @@
     <span class="eyebrow rv">Détails techniques</span>
     <h1 data-split>Hors ligne d’abord, <span class="grad-text">chiffré de bout en bout.</span></h1>
     <p class="lead rv" style="--d:2">Une seule interface pour le web, iOS et Android, qui lit et écrit toujours sur l’appareil. Un serveur qui synchronise, sauvegarde et fait vivre le social, sans jamais pouvoir lire tes messages.</p>
-    <div class="crumbs rv" style="--d:3"><a href="#architecture">Architecture</a><a href="#synchro">Synchronisation</a><a href="#e2e">Chiffrement</a><a href="#securite">Sécurité</a><a href="#source">Code source</a></div>
+    <div class="crumbs rv" style="--d:3"><a href="#architecture">Architecture</a><a href="#synchro">Synchronisation</a><a href="#e2e">Chiffrement</a><a href="#securite">Sécurité</a><a href="#source">Code source</a><a href="#versions">Nouveautés {{VERSION}}</a></div>
   </div>
 </section>
 
@@ -152,7 +152,7 @@
     <div class="sec-h"><span class="eyebrow rv">La pile</span><h2 class="rv" style="--d:1">Des briques <span class="grad-text">éprouvées.</span></h2></div>
     <div class="stack">
       <article class="card tech tilt rv t-routine"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#layers"/></svg></span><div><span class="role">Interface</span><br><b>HTML · CSS · JS</b></div></div><p>Une seule interface sans framework, de tous les écrans aux animations : rapide, légère, identique partout.</p></article>
-      <article class="card tech tilt rv t-project" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#phone"/></svg></span><div><span class="role">Mobile</span><br><b>Expo SDK 51</b></div></div><p>Coque native React Native 0.74 + WebView qui embarque l’interface hors ligne. Builds et publication via EAS.</p></article>
+      <article class="card tech tilt rv t-project" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#phone"/></svg></span><div><span class="role">Mobile</span><br><b>Expo SDK 51</b></div></div><p>Coque native React Native 0.74 + WebView qui embarque l’interface hors ligne ; les anciens écrans React Native sont archivés depuis la 1.3.0. Builds et publication via EAS.</p></article>
       <article class="card tech tilt rv t-measure" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#bolt"/></svg></span><div><span class="role">API</span><br><b>Fastify 4 + zod</b></div></div><p>TypeScript, Helmet, CORS, limitation de débit, multipart. Schémas partagés avec l’app dans <code>packages/shared</code>.</p></article>
       <article class="card tech tilt rv t-abstinence"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><div><span class="role">Base</span><br><b>PostgreSQL 16</b></div></div><p>Drizzle pour le schéma et les migrations, postgres.js pour des requêtes paramétrées : aucune injection SQL possible.</p></article>
       <article class="card tech tilt rv t-duel" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#key"/></svg></span><div><span class="role">Chiffrement</span><br><b>TweetNaCl</b></div></div><p>Implémentation auditée de NaCl : X25519, XSalsa20-Poly1305. PBKDF2-SHA-256 pour le coffre de clés.</p></article>
@@ -212,7 +212,9 @@
       <div class="card rv right" style="display:flex;flex-direction:column;gap:10px">
         <h3 style="font-size:19px">Coffre, groupes et pièces jointes</h3>
         <ul class="prose" style="gap:8px">
-          <li><b>Coffre de clés</b> : une copie de tes clés, chiffrée avec une clé dérivée de ton mot de passe (PBKDF2-SHA-256, 310 000 itérations). Un nouvel appareil retrouve tout l’historique.</li>
+          <li><b>Coffre de clés v2</b> : une copie de tes clés, chiffrée avec une clé aléatoire de 32 octets, elle-même protégée par une clé dérivée de ton mot de passe (PBKDF2-SHA-256, 310 000 itérations). Un nouvel appareil retrouve tout l’historique ; changer de mot de passe ne rechiffre que la clé du coffre.</li>
+          <li><b>Appareils</b> : jusqu’à 25 par compte, retirés après 90 jours d’inactivité ; un appareil oublié par le serveur est réenregistré automatiquement.</li>
+          <li><b>Sondages chiffrés</b> : la question, les choix et chaque vote voyagent comme des messages chiffrés ; le serveur ne voit rien.</li>
           <li><b>Groupes</b> : une clé par groupe, en versions ; un membre qui part ne reçoit pas la suivante.</li>
           <li><b>Photos et messages vocaux</b> : chiffrés avec une clé à usage unique qui voyage dans le message chiffré.</li>
           <li><b>Code de sécurité</b> de 30 chiffres, calculé sur les clés publiques de tous les appareils.</li>
@@ -250,12 +252,13 @@
 ├── <span class="d">apps/web/</span>         <span class="c">cloud.js, polices, emojis, build</span>
 ├── <span class="d">apps/app/</span>         <span class="c">coque iOS / Android (Expo)</span>
 ├── <span class="d">deploy/</span>           <span class="c">Caddy, Docker, ce site</span>
-└── <span class="d">docs/</span>             <span class="c">architecture, API, E2E, stores</span></div></div>
+├── <span class="d">docs/</span>             <span class="c">architecture, API, E2E, stores</span>
+└── <span class="d">archive/</span>          <span class="c">anciens écrans React Native</span></div></div>
       <div class="card rv right"><div class="models">
         <h4 style="margin-top:0">Personnel, synchronisé</h4><span>goals</span><span>checkins</span><span>goal_groups</span><span>users.settings</span>
         <h4>Partagé</h4><span>goal_members</span><span>goals.buddy_id</span>
-        <h4>Social</h4><span>friendships</span><span>blocks</span><span>posts</span><span>post_likes</span><span>comments</span><span>stories</span><span>story_views</span><span>cheer_credits</span><span>notifications</span>
-        <h4>Messagerie</h4><span>messages</span><span>chat_groups</span><span>attachments</span><span>e2e_devices</span><span>e2e_envelopes</span><span>e2e_vaults</span>
+        <h4>Social</h4><span>friendships</span><span>blocks</span><span>posts</span><span>poll_votes</span><span>post_likes</span><span>comments</span><span>stories</span><span>story_views</span><span>cheer_credits</span><span>notifications</span>
+        <h4>Messagerie</h4><span>messages</span><span>chat_groups</span><span>attachments</span><span>e2e_devices</span><span>e2e_envelopes</span><span>e2e_vaults</span><span>e2e_vault_keys</span>
         <h4>Modération</h4><span>reports</span><span>appeals</span><span>mod_actions</span><span>maintenance</span><span>announcements</span>
       </div></div>
     </div>
@@ -273,7 +276,7 @@
           <span><i class="lang"></i>TypeScript</span>
           <span><svg class="i"><use href="assets/icons.svg#branch"/></svg>main</span>
           <span><svg class="i"><use href="assets/icons.svg#scale"/></svg>Licence MIT</span>
-          <span><svg class="i"><use href="assets/icons.svg#flag"/></svg>Version 1.2.0</span>
+          <span><svg class="i"><use href="assets/icons.svg#flag"/></svg>Version {{VERSION}}</span>
         </div>
         <div class="repo-acts">
           <a class="btn btn-primary" href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener"><svg class="i"><use href="assets/icons.svg#github"/></svg>Voir le dépôt<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a>
@@ -299,7 +302,8 @@
   <div class="wrap">
     <div class="sec-h"><span class="eyebrow rv">Versions</span><h2 class="rv" style="--d:1">Le journal <span class="grad-text">des nouveautés.</span></h2></div>
     <div class="tl">
-      <div class="tl-i rv"><div class="card"><h3>1.2.0 <span class="chip" style="--c:var(--flame);--c-ink:var(--ink)">actuelle</span> <small class="muted" style="font-family:var(--font-body);font-size:13px">12 octobre 2026</small></h3><ul><li>Messagerie enrichie : photos, messages vocaux, objectifs partagés, groupes de discussion.</li><li>Clés de chiffrement synchronisées entre appareils (coffre).</li><li>Photos dans les publications, blocage entre utilisateurs, e-mails de modération, emojis Fluent.</li></ul></div></div>
+      <div class="tl-i rv"><div class="card"><h3>1.3.0 <span class="chip" style="--c:var(--flame);--c-ink:var(--ink)">actuelle</span> <small class="muted" style="font-family:var(--font-body);font-size:13px">14 octobre 2026</small></h3><ul><li>Sondages dans le feed (résultats après le vote, durée, réponses multiples) et dans la messagerie, chiffrés de bout en bout.</li><li>Sélecteur d’emojis par catégorie : 12 catégories, plus de 700 emojis Fluent.</li><li>Coffre de clés v2, bandeau de déverrouillage, réenregistrement automatique des appareils, récupération des clés manquantes.</li><li>Conversations mises à jour message par message, liens d’aide vers le site et GitHub, licence MIT.</li><li>Retrait des anciens écrans React Native, conservés dans <code>archive/</code>.</li></ul></div></div>
+      <div class="tl-i rv"><div class="card"><h3>1.2.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">12 octobre 2026</small></h3><ul><li>Messagerie enrichie : photos, messages vocaux, objectifs partagés, groupes de discussion.</li><li>Clés de chiffrement synchronisées entre appareils (coffre).</li><li>Photos dans les publications, blocage entre utilisateurs, e-mails de modération, emojis Fluent.</li></ul></div></div>
       <div class="tl-i rv"><div class="card"><h3>1.1.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">11 octobre 2026</small></h3><ul><li>Mode hors ligne automatique et surveillance du réseau.</li><li>Options d’accessibilité : contraste élevé, daltonisme, transparence, animations.</li><li>Messagerie chiffrée de bout en bout.</li></ul></div></div>
       <div class="tl-i rv"><div class="card"><h3>1.0.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">10 octobre 2026</small></h3><ul><li>Serveur de synchronisation, comptes, fonctions sociales et modération.</li><li>Application web, iOS et Android à partir d’une même interface.</li></ul></div></div>
     </div>

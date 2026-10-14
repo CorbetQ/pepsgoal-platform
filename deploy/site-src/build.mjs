@@ -6,24 +6,35 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dsBlocks } from './ds-gen.mjs';
+import { buildIcons } from './icons.mjs';
+import { emojiPicker } from './emoji-gen.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const out = path.join(here, '..', 'site');
 const head = readFileSync(path.join(here, 'partials', 'head.html'), 'utf8');
 const foot = readFileSync(path.join(here, 'partials', 'foot.html'), 'utf8');
-// Blocs générés depuis les tokens du design system (page design-system.html)
-const gen = dsBlocks(path.join(here, 'tokens.json'), path.join(out, 'assets', 'icons.svg'));
-const fill = src => src.replace(/<!--GEN:(\w+)-->|\/\*GEN:(\w+)\*\//g, (m, a, b) => { const k = a || b; if (!(k in gen)) throw new Error(`Bloc inconnu : ${k}`); return gen[k]; });
+const appPath = path.join(here, '..', '..', 'apps', 'web-legacy', 'pepsgoal.html');
+const app = readFileSync(appPath, 'utf8');
+// Icônes : celles de l'application, plus celles propres au site
+const icons = buildIcons(app, path.join(here, 'icons-extra.svg'), path.join(out, 'assets', 'icons.svg'));
+// Blocs générés : tokens du design system (page design-system.html), échantillon du sélecteur d'emojis
+const gen = {
+  ...dsBlocks(path.join(here, 'tokens.json'), icons.app),
+  ...emojiPicker(app, path.join(here, '..', '..', 'apps', 'web', 'emoji'), path.join(out, 'emoji'))
+};
+// Numéro de version de l'application ({{VERSION}} dans les pages)
+const APP_VERSION = (app.match(/const APP_VERSION = '([^']+)'/) || [])[1];
+if (!APP_VERSION) throw new Error('APP_VERSION introuvable dans pepsgoal.html');
+const fill = src => src.replace(/\{\{VERSION\}\}/g, APP_VERSION).replace(/<!--GEN:(\w+)-->|\/\*GEN:(\w+)\*\//g, (m, a, b) => { const k = a || b; if (!(k in gen)) throw new Error(`Bloc inconnu : ${k}`); return gen[k]; });
 // Documents légaux : mêmes textes que dans l'application (constante LEGAL de apps/web-legacy/pepsgoal.html)
-const app = readFileSync(path.join(here, '..', '..', 'apps', 'web-legacy', 'pepsgoal.html'), 'utf8');
 const LEGAL = (() => {
   const a = app.indexOf('const LEGAL_MAIL = '), b = app.indexOf('\n};\n', app.indexOf('const LEGAL = {', a));
   if (a < 0 || b < 0) throw new Error('Textes légaux introuvables dans pepsgoal.html');
-  const ctx = { APP_VERSION: (app.match(/const APP_VERSION = '([^']+)'/) || [])[1] };
+  const ctx = { APP_VERSION };
   vm.runInNewContext(app.slice(a, b + 3) + '\nthis.LEGAL = LEGAL; this.LEGAL_UPDATED = LEGAL_UPDATED;', ctx);
   return { docs: ctx.LEGAL, updated: ctx.LEGAL_UPDATED };
 })();
-const LEGAL_PAGES = [['cgu', 'cgu', 'Conditions d’utilisation'], ['mentions', 'mentions-legales', 'Mentions légales'], ['privacy', 'confidentialite', 'Confidentialité']];
+const LEGAL_PAGES = [['cgu', 'cgu', 'Conditions d’utilisation'], ['mentions', 'mentions-legales', 'Mentions légales'], ['privacy', 'confidentialite', 'Confidentialité'], ['license', 'licence', 'Licence MIT']];
 function legalSource(key) {
   const d = LEGAL.docs[key], strip = h => h.replace(/<[^>]+>/g, '');
   const tabs = LEGAL_PAGES.map(([k, slug, label]) => `<a href="${slug}.html"${k === key ? ' class="on" aria-current="page"' : ''}>${label}</a>`).join('');
@@ -88,7 +99,7 @@ for (const [file, src] of sources) {
   const meta = (src.match(/^<!--meta (.*?)-->\n/) || [])[1];
   if (!meta) throw new Error(`${file} : ligne <!--meta …--> manquante`);
   const title = attr(meta, 'title'), description = attr(meta, 'description'), nav = attr(meta, 'nav');
-  const header = head.replace(new RegExp(`data-nav="${nav}"`, 'g'), `data-nav="${nav}" aria-current="page"`);
+  const header = fill(head).replace(new RegExp(`data-nav="${nav}"`, 'g'), `data-nav="${nav}" aria-current="page"`);
   const html = `<!doctype html>
 <html lang="fr">
 <head>
@@ -113,7 +124,7 @@ ${header}
 <main id="main">
 ${src.slice(src.indexOf('\n') + 1).trim()}
 </main>
-${foot}</body>
+${fill(foot)}</body>
 </html>
 `;
   const page = withVersions(typography(html));

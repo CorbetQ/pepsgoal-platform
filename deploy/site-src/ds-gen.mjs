@@ -6,7 +6,7 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 // `code` du Markdown des tokens → <code>
 const md = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
 
-export function dsBlocks(tokensPath, iconsPath) {
+export function dsBlocks(tokensPath, appIcons) {
   const T = JSON.parse(readFileSync(tokensPath, 'utf8'));
   const themes = T.color.themes.map(t => t.id);
   const color = Object.fromEntries(T.color.tokens.map(t => [t.name, t]));
@@ -38,8 +38,8 @@ export function dsBlocks(tokensPath, iconsPath) {
   const space = T.spacing.tokens.map(t => `<div class="space"><code>${t.name}</code><b>${t.value}</b><i style="--v:${t.value}"></i><small>${md(t.usage)}</small></div>`).join('');
   const radius = T.radius.tokens.map(t => `<div class="rad"><i style="border-radius:${t.name === 'r-pill' ? '48px' : t.value}"></i><b>${t.name} · ${t.value}</b><small>${md(firstSentence(t.usage))}</small></div>`).join('');
 
-  const SITE_ONLY = new Set(['arrow', 'menu', 'moon2', 'code', 'server', 'db', 'phone', 'key', 'mail', 'download', 'copy', 'sparkle', 'layers', 'wifioff', 'sync', 'scale', 'type', 'grid', 'move', 'accessibility', 'external', 'test', 'cookie', 'doc', 'heartbeat', 'box', 'github', 'branch']);
-  const icons = [...readFileSync(iconsPath, 'utf8').matchAll(/<symbol id="([^"]+)"/g)].map(m => m[1]).filter(n => !SITE_ONLY.has(n))
+  // Les icônes de l'application (pas celles propres au site)
+  const icons = appIcons
     .map(n => `<button type="button" class="ico" data-copy="${n}" aria-label="Copier le nom ${n}"><svg class="i"><use href="assets/icons.svg#${n}"/></svg>${n}</button>`).join('');
 
   return {

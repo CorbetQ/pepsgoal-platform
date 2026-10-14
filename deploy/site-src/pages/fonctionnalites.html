@@ -80,20 +80,62 @@
   .timer-big{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px;border-radius:var(--r-md);background:color-mix(in srgb,var(--c) 14%,transparent)}
   .timer-big b{font-family:var(--font-display);font-size:44px;font-variant-numeric:tabular-nums;color:var(--c-ink);line-height:1}
   .timer-big .bar{width:100%}
+  .news{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px}
+  .news .card{display:flex;flex-direction:column;gap:14px;overflow:hidden}
+  .news h3{font-size:clamp(20px,2.4vw,26px);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .news-main,.news-ep{grid-column:span 3}
+  .news-s{grid-column:span 2}
+  .news-s h3{font-size:19px}
+  .news-post{padding:14px;box-shadow:none;border-radius:var(--r-md)}
+  .ic-b{display:grid;place-items:center;width:46px;height:46px;border-radius:var(--r-icon);background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c-ink)}
+  .ic-b svg{width:23px;height:23px}
+  .tag{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:var(--r-pill);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:color-mix(in srgb,var(--c) 20%,transparent);color:var(--c-ink)}
+  .tag svg{width:14px;height:14px}
+  .ep-preview .gi img{width:28px;height:28px;transition:transform .35s var(--ease-bounce)}
+  .ep-preview:hover{transform:none}
+  @media (max-width:900px){.news{grid-template-columns:minmax(0,1fr)}.news>*{grid-column:auto!important}}
 </style>
 
 <section class="page-hero">
   <div class="wrap">
     <span class="eyebrow rv">Fonctionnalités</span>
     <h1 data-split>Tout ce qu’il faut pour <span class="grad-text">tenir le cap.</span></h1>
-    <p class="lead rv" style="--d:2">Quatorze formats d’objectifs, une flamme qui récompense la régularité, des amis pour se motiver et une messagerie chiffrée. Le tout utilisable hors ligne, avec ou sans compte.</p>
-    <div class="crumbs rv" style="--d:3"><a href="https://app.pepsgoal.fr">Essayer maintenant</a><a href="#formats">Les formats</a><a href="#faq">Questions fréquentes</a></div>
+    <p class="lead rv" style="--d:2">Quatorze formats d’objectifs, une flamme qui récompense la régularité, des amis pour se motiver, des sondages et une messagerie chiffrée. Le tout utilisable hors ligne, avec ou sans compte.</p>
+    <div class="crumbs rv" style="--d:3"><a href="https://app.pepsgoal.fr">Essayer maintenant</a><a href="#nouveautes">Nouveautés {{VERSION}}</a><a href="#formats">Les formats</a><a href="#faq">Questions fréquentes</a></div>
   </div>
 </section>
 
 <nav class="subnav glass" aria-label="Sections de la page">
-  <a href="#formats">Formats</a><a href="#motivation">Motivation</a><a href="#social">Social</a><a href="#messagerie">Messagerie</a><a href="#perso">Personnalisation</a><a href="#a11y">Accessibilité</a><a href="#donnees">Données</a><a href="#faq">FAQ</a>
+  <a href="#nouveautes">Nouveautés</a><a href="#formats">Formats</a><a href="#motivation">Motivation</a><a href="#social">Social</a><a href="#messagerie">Messagerie</a><a href="#perso">Personnalisation</a><a href="#a11y">Accessibilité</a><a href="#donnees">Données</a><a href="#faq">FAQ</a>
 </nav>
+
+<section class="section" id="nouveautes">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Nouveau · version {{VERSION}}</span><h2 class="rv" style="--d:1">Sonder tes amis, <span class="grad-text">choisir le bon emoji.</span></h2><p class="rv" style="--d:2">La mise à jour 1.3.0 ajoute les sondages, dans le feed comme dans la messagerie, et un nouveau sélecteur d’emojis. La messagerie chiffrée devient aussi plus fiable d’un appareil à l’autre.</p></div>
+    <div class="news">
+      <article class="card news-main tilt rv" data-tilt="3">
+        <span class="tag t-group"><svg class="i"><use href="assets/icons.svg#poll"/></svg>Sondages</span>
+        <h3>Pose la question, le groupe tranche.</h3>
+        <p class="muted">Dans le feed, la question est le texte de ta publication : 2 à 6 choix, une ou plusieurs réponses, pendant 1 jour, 3 jours ou 1 semaine. Les résultats s’affichent après ton vote. Dans la messagerie, le sondage et les votes sont chiffrés de bout en bout.</p>
+        <article class="post glass news-post">
+          <div class="who"><span class="av" style="--g:linear-gradient(135deg,#F4FF5C,#B6FF2E 55%,#3DFF8A)"><img src="emoji/1f9d8.webp" alt=""></span><span><b>Inès</b><small>il y a 12 min · Amis</small></span></div>
+          <div class="poll" data-poll="multi" data-voters="19"><p class="poll-q"><svg class="i"><use href="assets/icons.svg#poll"/></svg>Quel défi pour novembre ?</p><button type="button" class="poll-opt" data-n="6" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>30 jours sans sucre</span><span class="po-n">0 %</span></button><button type="button" class="poll-opt" data-n="9" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>10 000 pas par jour</span><span class="po-n">0 %</span></button><button type="button" class="poll-opt" data-n="4" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Lire 4 livres</span><span class="po-n">0 %</span></button><p class="poll-meta">19 votants · plusieurs réponses · vote pour voir les résultats</p></div>
+        </article>
+        <p class="muted" style="font-size:13px">Essaie : plusieurs réponses sont possibles dans ce sondage.</p>
+      </article>
+      <article class="card news-ep tilt rv" style="--d:1" data-tilt="3">
+        <span class="tag t-monthly"><svg class="i"><use href="assets/icons.svg#star"/></svg>Sélecteur d’emojis</span>
+        <h3><!--GEN:emojitotal--> emojis, rangés en <!--GEN:emojicats--> catégories.</h3>
+        <p class="muted">Pour l’icône d’un objectif, ton avatar, un groupe, un message ou une publication. Tous en version Fluent, identiques sur iOS, Android et le web.</p>
+        <div class="ep-preview item t-routine"><span class="item-main"><span class="gi" data-ep-target><img src="emoji/1f3c3.webp" alt=""></span><span class="item-txt"><b>Mon nouvel objectif</b><small>Choisis son emoji ci-dessous</small></span></span></div>
+        <!--GEN:emojipicker-->
+      </article>
+      <article class="card news-s tilt rv t-project"><span class="ic-b"><svg class="i"><use href="assets/icons.svg#key"/></svg></span><h3>Messagerie plus fiable</h3><p class="muted">Coffre de clés repensé : changer de mot de passe ne rechiffre plus tout. Un bandeau te propose de déverrouiller tes conversations sur un nouvel appareil, et les clés manquantes sont récupérées automatiquement.</p></article>
+      <article class="card news-s tilt rv t-duration" style="--d:1"><span class="ic-b"><svg class="i"><use href="assets/icons.svg#comment"/></svg></span><h3>Conversations fluides</h3><p class="muted">Les conversations se mettent à jour message par message : plus de saut d’affichage pendant les actualisations.</p></article>
+      <article class="card news-s tilt rv t-objective" style="--d:2"><span class="ic-b"><svg class="i"><use href="assets/icons.svg#github"/></svg></span><h3>Logiciel libre</h3><p class="muted">PepsGoal passe sous licence MIT. L’aide de l’app renvoie vers ce site, le code source et le signalement de problèmes.</p></article>
+    </div>
+  </div>
+</section>
 
 <section class="section" id="formats">
   <div class="wrap">
@@ -180,6 +222,7 @@
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Encourager</b> plutôt que « liker », et commenter.</span></li>
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Amis, classement</b> de la semaine et profils avec statistiques et badges.</span></li>
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Défis de groupe, duels et binômes</b> de motivation.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Sondages</b> dans le feed : 2 à 6 choix, une ou plusieurs réponses, résultats après ton vote.</span></li>
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Signaler et bloquer</b> : une modération active, des sanctions graduées et un droit de contestation.</span></li>
         </ul>
         <div class="vis-row rv" style="--d:4"><span class="vis"><svg class="i"><use href="assets/icons.svg#lock"/></svg>Privé</span><span class="vis"><svg class="i"><use href="assets/icons.svg#users"/></svg>Amis</span><span class="vis"><svg class="i"><use href="assets/icons.svg#globe"/></svg>Public</span></div>
@@ -217,7 +260,8 @@
         <ul class="ticks rv" style="--d:3">
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Texte, photos, messages vocaux</b> (jusqu’à 2 minutes) et <b>objectifs partagés</b>.</span></li>
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Groupes de discussion</b> avec leur emoji ; un membre qui part ne lit plus la suite.</span></li>
-          <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Clés synchronisées</b> entre tes appareils, dans un coffre que seul ton mot de passe ouvre.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Sondages chiffrés</b> : la question, les choix et les votes restent illisibles pour le serveur.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Clés synchronisées</b> entre tes appareils, dans un coffre que seul ton mot de passe ouvre ; changer de mot de passe ne coupe pas tes autres appareils.</span></li>
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Code de sécurité</b> de 30 chiffres à comparer pour vérifier qu’aucune clé n’a été substituée.</span></li>
         </ul>
         <a class="btn rv" href="technique.html#e2e" style="--d:4;align-self:flex-start">Comment fonctionne le chiffrement<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a>
@@ -229,6 +273,7 @@
           <div class="msg them"><span style="display:block;font-size:11.5px;font-weight:800;color:var(--ink-3)">Léo</span>Sortie dimanche 9 h ?<small>18:02</small></div>
           <div class="msg me">Carrément, je compte pour le défi !<small>18:04</small></div>
           <div class="msg me voice"><button class="play" aria-label="Lire le message vocal"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><span class="wave" aria-hidden="true"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><i style="--k:4"></i><i style="--k:5"></i><i style="--k:6"></i><i style="--k:7"></i><i style="--k:8"></i><i style="--k:9"></i><i style="--k:10"></i><i style="--k:11"></i><i style="--k:12"></i><i style="--k:13"></i></span><span style="font-size:12px;font-weight:800">0:14</span></div>
+          <div class="msg me k-poll"><div class="poll" data-poll="single" data-voters="3"><p class="poll-q"><svg class="i"><use href="assets/icons.svg#poll"/></svg>Quel parcours dimanche ?</p><button type="button" class="poll-opt" data-n="2" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Bords de Loire</span><span class="po-n">0 %</span></button><button type="button" class="poll-opt" data-n="1" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Lac de Maine</span><span class="po-n">0 %</span></button><p class="poll-meta">3 votants · une réponse · vote pour voir les résultats</p></div><small>18:06</small></div>
           <div class="msg them typing" aria-label="Inès écrit"><i></i><i></i><i></i></div>
         </div>
         <p class="e2e-note" style="margin-top:12px"><svg class="i"><use href="assets/icons.svg#lock"/></svg>Chiffrée de bout en bout</p>
@@ -256,7 +301,7 @@
           <span class="av" style="--g:linear-gradient(135deg,#A8FFE4,#2EF2B0 55%,#22D3FF)"><svg class="i" style="width:56%;height:56%;stroke:#10102A;stroke-width:2.2"><use href="assets/icons.svg#mountain"/></svg></span>
           <span class="av" style="--g:linear-gradient(135deg,#FFE45C,#FFB000 55%,#FF7A3D)"><img src="emoji/1f3b8.webp" alt=""></span>
         </div>
-        <p class="muted">Initiales, emoji, pictogramme ou photo. Thème clair, sombre ou celui du système. Groupes d’objectifs avec leur icône pour ranger ta liste.</p>
+        <p class="muted">Initiales, emoji (parmi plus de 700, rangés par catégorie), pictogramme ou photo. Thème clair, sombre ou celui du système. Groupes d’objectifs avec leur icône pour ranger ta liste.</p>
         <div class="seg" data-press-group role="group" aria-label="Thème"><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Clair</button><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg#moon"/></svg>Sombre</button><button aria-pressed="true" type="button"><svg class="i"><use href="assets/icons.svg#phone"/></svg>Système</button></div>
       </div>
     </div>
@@ -306,6 +351,7 @@
       <details class="rv"><summary>Sur quels appareils ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Dans n’importe quel navigateur récent, sur <a href="https://app.pepsgoal.fr">app.pepsgoal.fr</a>. Les applications iOS et Android, qui embarquent la même interface et fonctionnent hors ligne, arrivent bientôt sur les stores.</p></details>
       <details class="rv"><summary>Que se passe-t-il si je rate un jour ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Si tu as un gel, il protège ta série automatiquement. Sinon, la série repart de zéro, mais tes flammes, ton niveau et tes badges restent acquis.</p></details>
       <details class="rv"><summary>Qui peut lire mes messages ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Seuls les participants à la conversation. Le contenu est chiffré sur ton appareil avant l’envoi ; le serveur ne stocke qu’une version illisible.</p></details>
+      <details class="rv"><summary>Puis-je réutiliser le code de PepsGoal ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Oui. PepsGoal est un logiciel libre sous <a href="licence.html">licence MIT</a> : tu peux l’utiliser, le modifier et le redistribuer en conservant la mention de copyright. Le nom PepsGoal et son logo ne sont pas concédés par la licence. Le code est sur <a href="https://github.com/CorbetQ/pepsgoal-platform">GitHub</a>.</p></details>
       <details class="rv"><summary>À partir de quel âge ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Dès 15 ans, ou avant avec l’accord d’un parent ou d’un tuteur légal.</p></details>
     </div>
   </div>
