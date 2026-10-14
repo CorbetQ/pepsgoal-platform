@@ -1,6 +1,7 @@
 {
   "name": "@pepsgoal/web",
-  "version": "1.2.0",
+  "version": "1.3.0",
+  "license": "MIT",
   "private": true,
   "description": "Version publiée de PepsGoal (web et application mobile) : l'interface d'origine reliée au serveur.",
   "type": "module",

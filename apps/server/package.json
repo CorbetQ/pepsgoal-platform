@@ -1,6 +1,7 @@
 {
   "name": "@pepsgoal/server",
-  "version": "1.2.0",
+  "version": "1.3.0",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "description": "API PepsGoal : comptes, synchronisation hors ligne, fonctions sociales et modération.",

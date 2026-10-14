@@ -10,11 +10,11 @@ api.pepsgoal.fr {
 }
 
 # Site public : accueil et pages légales (/cgu, /mentions-legales, /confidentialite)
-pepsgoal.fr {
+pepsgoal.fr, site.pepsgoal.fr {
 	root * /srv/site
 	encode zstd gzip
 	# Documents légaux : générés avec la version web (mêmes textes que dans l'application)
-	@legal path /cgu /mentions-legales /confidentialite
+	@legal path /cgu /mentions-legales /confidentialite /licence
 	handle @legal {
 		root * /srv/app/legal
 		rewrite * {path}.html

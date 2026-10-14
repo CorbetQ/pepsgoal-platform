@@ -104,10 +104,11 @@ function legalDocs() {
   const a = source.indexOf('const LEGAL_MAIL = '), b = source.indexOf('\n};\n', source.indexOf('const LEGAL = {', a));
   if (a < 0 || b < 0) throw new Error('Textes légaux introuvables dans pepsgoal.html');
   const ctx = { APP_VERSION: VERSION };
+  // LINKS (liens du projet) est défini juste avant LEGAL dans pepsgoal.html
   vm.runInNewContext(source.slice(a, b + 3) + '\nthis.LEGAL = LEGAL; this.LEGAL_UPDATED = LEGAL_UPDATED;', ctx);
   return { docs: ctx.LEGAL, updated: ctx.LEGAL_UPDATED };
 }
-const LEGAL_PAGES = [['cgu', 'cgu'], ['mentions', 'mentions-legales'], ['privacy', 'confidentialite']];
+const LEGAL_PAGES = [['cgu', 'cgu'], ['mentions', 'mentions-legales'], ['privacy', 'confidentialite'], ['license', 'licence']];
 function legalPage(key, { docs, updated }) {
   const d = docs[key];
   const nav = LEGAL_PAGES.map(([k, slug]) => `<a href="/${slug}"${k === key ? ' aria-current="page"' : ''}>${docs[k].short}</a>`).join(' · ');

@@ -92,6 +92,11 @@ Elles sont servies sur `https://pepsgoal.fr/cgu`, `https://pepsgoal.fr/mentions-
 Pour les modifier : constante `LEGAL` de `apps/web-legacy/pepsgoal.html`, puis `update.sh --web`.
 Hébergeur à indiquer dans les mentions légales (déjà fait dans l'app web) : **Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre** (www.hostinger.fr). Vérifie ces coordonnées et ajoute le numéro de téléphone figurant sur ta facture Hostinger : la loi (LCEN) demande le téléphone de l'hébergeur.
 
+## 6 ter. Sous-domaine site.pepsgoal.fr
+
+L'aide de l'application renvoie vers `https://site.pepsgoal.fr`, qui affiche le même site que `https://pepsgoal.fr`.
+Dans hPanel › Domaines › pepsgoal.fr › DNS, ajoute un enregistrement **A** : nom `site`, valeur = IP du VPS. Caddy obtient le certificat HTTPS tout seul (quelques minutes après la propagation du DNS).
+
 ## 6 bis. E-mails de modération
 
 À chaque signalement, publication à valider (compte sous avertissement) ou demande de débannissement, le serveur envoie un e-mail à `MOD_EMAIL` (par défaut quentin-corbet@outlook.fr). Il lui faut une boîte d'envoi, par exemple `noreply@pepsgoal.fr` :

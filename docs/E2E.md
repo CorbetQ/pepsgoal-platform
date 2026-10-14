@@ -30,13 +30,20 @@ Depuis la 1.2.0, chaque compte a un **coffre** sur le serveur : une copie de tou
 
 | Élément | Détail |
 | --- | --- |
-| Clé du coffre | 32 octets dérivés du mot de passe sur l'appareil : PBKDF2-SHA-256, 310 000 itérations, sel aléatoire stocké avec le coffre |
+| Clé du coffre | 32 octets aléatoires (1.3.0), chiffrés avec une clé dérivée du mot de passe sur l'appareil (PBKDF2-SHA-256, 310 000 itérations, sel aléatoire) : `e2e_vaults.wrapped_key`. Coffres créés en 1.2.0 : la clé dérivée sert directement de clé du coffre |
 | Contenu | chaque clé de conversation est chiffrée séparément (`crypto_secretbox`) avec la clé du coffre (`e2e_vault_keys`) |
-| Contrôle | une valeur témoin chiffrée (`e2e_vaults.check`) vérifie que la clé dérivée est la bonne |
+| Contrôle | deux témoins chiffrés : `check` (clé dérivée du mot de passe) et `kcv` (clé du coffre, vérifiée par les appareils déjà déverrouillés) |
 | Routes | `GET /v1/e2e/vault`, `PUT /v1/e2e/vault` (création ou remplacement complet), `POST /v1/e2e/vault/keys` (ajouts) |
 
 Déroulé : à la connexion (le mot de passe est alors connu de l'appareil), l'app dérive la clé du coffre, récupère et ouvre toutes les clés, puis y dépose les siennes. Toute nouvelle clé (conversation, nouvelle version d'un groupe) y est ajoutée aussitôt. À la déconnexion, les clés quittent l'appareil, le coffre reste.
-Changement de mot de passe : toutes les clés sont rechiffrées avec un nouveau sel. Une session ouverte avant la 1.2.0 active le coffre depuis Paramètres › Compte › Clés de chiffrement.
+Changement de mot de passe : seule la clé du coffre est rechiffrée (`mode: rewrap`) ; les appareils déjà déverrouillés le restent. Deux appareils qui créent le coffre en même temps ne s'écrasent plus (`mode: create`, 409 pour le second, qui ouvre alors le coffre existant).
+Si cet appareil n'a pas encore ouvert le coffre (session ouverte avant la 1.2.0, coffre d'un ancien mot de passe…), un bandeau dans la messagerie demande le mot de passe une seule fois.
+
+## Appareils et clés manquantes
+
+- Un appareil que le serveur ne connaît plus (erreur `unknown_device`) est réenregistré automatiquement, puis l'opération est relancée.
+- Le serveur garde jusqu'à 25 appareils par compte et retire ceux inactifs depuis 90 jours.
+- Pour écrire, si aucune version de clé de la conversation n'est disponible sur cet appareil (aucun appareil de l'ami n'a encore transmis la clé), une nouvelle version est créée pour tous les appareils : la conversation reste utilisable immédiatement ; les anciens messages se déchiffrent dès que la clé arrive (coffre ou ami).
 
 Limites : le serveur reçoit le mot de passe lors de la connexion (protégé par HTTPS, vérifié par bcrypt, jamais stocké) ; un serveur compromis **au moment d'une connexion** pourrait donc en dériver la clé du coffre. Un mot de passe oublié rend le coffre illisible : les conversations restent lisibles sur les appareils encore connectés.
 
@@ -52,6 +59,10 @@ Le contenu d'un message est un texte, ou un objet JSON chiffré comme un texte (
 Une photo (redimensionnée, 1600 px) ou un message vocal (2 minutes au plus) est chiffré sur l'appareil avec une clé aléatoire à usage unique (`crypto_secretbox`), puis téléversé sur `/v1/attachments`.
 Cette clé voyage **dans le message chiffré** : le serveur stocke un fichier illisible et sait seulement quelle conversation le cite, ce qui lui permet de réserver le téléchargement à ses participants.
 Un objectif partagé est un simple résumé (titre, type, progression) dans le message chiffré.
+
+## Sondages dans la messagerie
+
+Un sondage est un message chiffré (`{ "k": "poll", "q", "o": [{ "id", "t" }], "multi" }`). Chaque vote est un message chiffré de la même conversation (`{ "k": "vote", "p": id du sondage, "o": [choix] }`), invisible dans le fil ; le dernier vote de chaque participant compte. Le serveur ne voit ni la question, ni les choix, ni les votes.
 
 ## Vérifier qu'aucune clé n'a été substituée
 

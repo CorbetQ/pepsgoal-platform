@@ -34,10 +34,18 @@ export const E2EDeviceBody = z.object({ publicKey: b64field(44) });
 /** Coffre de clés (copie chiffrée avec une clé dérivée du mot de passe) */
 export const E2EVaultKey = z.object({ keyId: z.string().uuid(), nonce: b64field(44), box: b64field(100) });
 export const E2EVaultBody = z.object({
+  /**
+   * create : nouveau coffre (409 s'il existe déjà) ; reset : coffre remplacé (clés perdues) ;
+   * rewrap : nouveau mot de passe, la clé du coffre est seulement rechiffrée ; absent : format 1.2.0.
+   */
+  mode: z.enum(['create', 'reset', 'rewrap']).optional(),
   salt: b64field(44), iterations: z.number().int().min(100_000).max(5_000_000), check: b64field(120),
-  /** Remplacement complet (changement de mot de passe) : toutes les clés, rechiffrées. */
+  /** Clé du coffre chiffrée avec la clé dérivée du mot de passe (nonce + boîte). */
+  wrappedKey: b64field(140).optional(),
+  /** Témoin chiffré avec la clé du coffre. */
+  kcv: b64field(120).optional(),
   keys: z.array(E2EVaultKey).max(2000).optional()
-});
+}).refine(b => !b.mode || (b.wrappedKey && b.kcv), { message: 'Clé du coffre manquante.' });
 export const E2EVaultKeysBody = z.object({ keys: z.array(E2EVaultKey).min(1).max(500) });
 
 /** Longueur maximale du texte d'un message (en caractères). */

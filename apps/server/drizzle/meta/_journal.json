@@ -36,6 +36,13 @@
       "when": 1791818182237,
       "tag": "0004_key_vault",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791995737498,
+      "tag": "0005_polls_vault_v2",
+      "breakpoints": true
     }
   ]
 }

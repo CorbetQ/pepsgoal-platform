@@ -36,6 +36,6 @@ Mode sans compte : aucune donnée ne quitte l'appareil.
 
 ## Avant chaque version
 
-1. Incrémenter `version` dans `app.json` (actuellement 1.2.0) (le numéro de build est géré automatiquement par EAS).
+1. Incrémenter `version` dans `app.json` (actuellement 1.3.0) (le numéro de build est géré automatiquement par EAS).
 2. Si l'API change de façon incompatible, augmenter `MIN_APP_VERSION` côté serveur pour inviter à mettre à jour.
 3. Tester hors ligne : mode avion, valider des objectifs, réactiver le réseau, vérifier la synchronisation.

@@ -40,8 +40,9 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | DELETE | `/friends/:userId` | Retirer un ami |
 | POST / DELETE | `/users/:id/block` | Bloquer (retire l'amitié) / débloquer. Le compte PepsGoal Officiel ne peut pas être bloqué |
 | GET | `/blocks` | Comptes que j'ai bloqués |
-| GET | `/feed?tab=friends\|public&before=` | Fil paginé (20) avec photo, encouragements (et qui a encouragé), commentaires ; contenus des comptes bloqués masqués |
-| POST / DELETE | `/posts` · `/posts/:id` | Publier : `text` et/ou `photoUrl` (image téléversée sur `/media`), `kind` : `manual` ou `milestone` ; en attente si compte averti / supprimer |
+| GET | `/feed?tab=friends\|public&before=` | Fil paginé (20) avec photo, sondage (voix par option, votants, mes choix), encouragements (et qui a encouragé), commentaires ; contenus des comptes bloqués masqués |
+| POST / DELETE | `/posts` · `/posts/:id` | Publier : `text` et/ou `photoUrl` (image téléversée sur `/media`), `poll` facultatif `{ options: [2 à 6], multi, hours }` (la question est `text`), `kind` : `manual` ou `milestone` ; en attente si compte averti / supprimer |
+| POST | `/posts/:id/vote` | Vote à un sondage `{ optionIds }` (remplace mes choix ; liste vide = retirer mon vote) ; refusé une fois le sondage terminé |
 | POST / DELETE | `/posts/:id/like` | Encourager (un gel de série tous les 10 encouragements reçus) |
 | POST | `/posts/:id/comments` · DELETE `/comments/:id` | Commenter / supprimer |
 | POST | `/posts/:id/report` | Signaler |
@@ -70,7 +71,7 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | DELETE | `/e2e/devices/:id` | Oublie un appareil et ses enveloppes (déconnexion) |
 | GET | `/e2e/peers/:userId?deviceId=` | Appareils des deux amis, versions de clé, enveloppe destinée à cet appareil, appareils sans enveloppe |
 | POST | `/e2e/peers/:userId/keys` | Crée une version de clé et/ou dépose des enveloppes `{ keyId, envelopes: [{ deviceId, senderDeviceId, nonce, box }] }` |
-| GET / PUT | `/e2e/vault` | Coffre de clés du compte (sel, itérations, témoin, clés chiffrées) / création ou remplacement complet (changement de mot de passe) |
+| GET / PUT | `/e2e/vault` | Coffre de clés du compte (sel, itérations, témoins, clé du coffre chiffrée, clés) / `mode` : `create` (409 `vault_exists` s'il existe), `rewrap` (nouveau mot de passe), `reset` |
 | POST | `/e2e/vault/keys` | Ajout de clés chiffrées au coffre |
 | GET | `/e2e/pending?deviceId=` | Clés détenues par cet appareil qu'un autre appareil de la paire ou d'un membre du groupe n'a pas encore (re-chiffrement automatique) |
 | GET | `/notifications` · POST `/notifications/read-all` | Notifications |
@@ -93,3 +94,5 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | GET | `/admin/official` | Compte PepsGoal Officiel (expéditeur des annonces) |
 | DELETE | `/admin/announcements/:id` | Retirer une annonce du message de bienvenue des nouveaux comptes |
 | GET | `/admin/modlog` | Journal de modération |
+
+Erreur `unknown_device` (404) sur les routes `/v1/e2e/*` : l'appareil de chiffrement n'est plus connu du serveur (retiré après 90 jours d'inactivité ou au-delà de 25 appareils). L'application en enregistre un nouveau et réessaie.

@@ -6,8 +6,8 @@ RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Documents légaux : /cgu, /mentions-legales, /confidentialite
-RewriteRule ^(cgu|mentions-legales|confidentialite)/?$ legal/$1.html [L]
+# Documents légaux : /cgu, /mentions-legales, /confidentialite, /licence
+RewriteRule ^(cgu|mentions-legales|confidentialite|licence)/?$ legal/$1.html [L]
 
 # Application d'une seule page : toute adresse inconnue renvoie index.html
 RewriteCond %{REQUEST_FILENAME} !-f

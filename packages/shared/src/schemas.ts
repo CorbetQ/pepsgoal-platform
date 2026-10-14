@@ -126,8 +126,17 @@ export const PostBody = z.object({
   visibility: z.enum(['friends', 'public']),
   goalId: Id.nullable().default(null),
   kind: z.enum(['manual', 'milestone']).default('manual'),
-  photoUrl: z.string().url().max(500).nullable().default(null)
-}).refine(p => p.text.length > 0 || p.photoUrl, { message: 'Écris un texte ou ajoute une photo.', path: ['text'] });
+  photoUrl: z.string().url().max(500).nullable().default(null),
+  /** Sondage : la question est le texte de la publication. */
+  poll: z.object({
+    options: z.array(z.string().trim().min(1).max(80)).min(2).max(6),
+    multi: z.boolean().default(false),
+    hours: z.number().int().min(1).max(24 * 14).default(24)
+  }).nullable().default(null)
+}).refine(p => p.text.length > 0 || p.photoUrl, { message: 'Écris un texte ou ajoute une photo.', path: ['text'] })
+  .refine(p => !p.poll || p.text.length > 0, { message: 'Écris la question du sondage.', path: ['text'] });
+/** Vote à un sondage : toutes les options choisies (liste vide = retirer son vote). */
+export const PollVoteBody = z.object({ optionIds: z.array(z.string().regex(/^o[0-5]$/)).max(6) });
 /** Notification envoyée à un ami ou à un membre d'un objectif partagé (défi de groupe, duel, binôme). */
 export const NotifyBody = z.object({ to: Id, text: z.string().trim().min(1).max(300), type: z.enum(['badge', 'verify', 'friend', 'info']).default('info'), goalId: Id.nullable().default(null) });
 export const CommentBody = z.object({ text: z.string().trim().min(1).max(280) });

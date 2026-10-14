@@ -22,7 +22,7 @@
   const S = {
     acct: false, tokens: null, serverOk: navigator.onLine !== false, navOnline: navigator.onLine !== false, pulledOnce: false,
     syncing: null, lastSync: null, syncError: '', refreshing: null, failures: 0, pingTimer: null,
-    search: { q: null, list: [], busy: false }, viewed: new Set(), profileLoaded: new Map(), keyTried: new Set()
+    search: { q: null, list: [], busy: false }, viewed: new Set(), profileLoaded: new Map(), keyTried: new Map(), chatTick: 0
   };
   const ls = {
     get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
@@ -413,7 +413,8 @@
           posts.set(p.id, {
             id: p.id, userId: p.author.id, text: p.text, visibility: p.visibility === 'public' ? 'public' : 'friends', goalId: p.goalId && DB.goals.some(g => g.id === p.goalId) ? p.goalId : null,
             kind: p.kind || 'manual', at: msOf(p.createdAt), likes: (p.likers || []).map(l => l.id), comments: p.comments.map(c => ({ id: c.id, userId: c.author.id, text: c.text, at: msOf(c.createdAt) })),
-            ...(p.photoUrl ? { photo: p.photoUrl } : {}), ...(p.status === 'pending' ? { status: 'pending' } : {}), ...(p.commentsLocked ? { commentsLocked: true } : {})
+            ...(p.photoUrl ? { photo: p.photoUrl } : {}), ...(p.poll ? { poll: pollFromServer(p.poll) } : {}),
+            ...(p.status === 'pending' ? { status: 'pending' } : {}), ...(p.commentsLocked ? { commentsLocked: true } : {})
           });
         }
         if (isAdmin(u)) for (const p of DB.posts) if (p._mod && !posts.has(p.id)) posts.set(p.id, p);
@@ -469,6 +470,9 @@
       });
     }
   }
+  // Sondage du serveur : nombres de voix par option (la liste des votants n'est pas transmise)
+  const pollFromServer = x => ({ multi: !!x.multi, endsAt: Date.parse(x.endsAt) || Date.now(), voters: x.voters || 0,
+    options: x.options.map(o => ({ id: o.id, t: o.text, n: o.votes || 0, mine: (x.mine || []).includes(o.id) })) });
   async function loadGroup(gid, quiet) {
     const list = await api('GET', `/v1/groups/${gid}/messages`);
     const mine = meId();
@@ -497,6 +501,7 @@
       upsertUser(p.author);
       const cur = byId.get(p.id) || { id: p.id, userId: p.author.id, text: p.text, visibility: p.visibility === 'public' ? 'public' : 'friends', goalId: null, kind: 'manual', at: msOf(p.createdAt), likes: [], comments: [], _mod: true };
       if (p.photoUrl) cur.photo = p.photoUrl;
+      if (p.poll && !cur.poll) cur.poll = pollFromServer({ ...p.poll, voters: 0, mine: [], options: p.poll.options.map(o => ({ ...o, votes: 0 })) });
       if (p.status === 'pending') cur.status = 'pending'; else delete cur.status;
       if (p.commentsLocked) cur.commentsLocked = true; else delete cur.commentsLocked;
       if (!byId.has(p.id)) { DB.posts.push(cur); byId.set(p.id, cur); }
@@ -530,17 +535,23 @@
   // Toute nouvelle clé de conversation part aussi dans le coffre du compte (copie chiffrée sur le serveur)
   function keySave(k) { keySaveRaw(k); scheduleVaultPush(); }
 
-  /* ---- Coffre de clés : copie des clés sur le serveur, chiffrée avec une clé dérivée du mot de passe ---- */
+  /* ---- Coffre de clés : copie des clés de conversation sur le serveur, illisible sans le mot de passe ----
+   * Clé du coffre : 32 octets aléatoires (1.3.0), chiffrés avec une clé dérivée du mot de passe (PBKDF2).
+   * Changer de mot de passe ne fait que rechiffrer cette clé : les appareils déjà déverrouillés le restent.
+   * Coffres créés en 1.2.0 : la clé dérivée du mot de passe sert directement de clé du coffre. */
   const VAULT_ITER = 310000, VAULT_CHECK = 'pepsgoal-vault-v1';
   async function deriveVault(password, saltB64, iterations) {
     const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
     return new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: b64d(saltB64), iterations }, base, 256));
   }
   const seal = (u8, key) => { const n = nacl.randomBytes(24); return { nonce: b64e(n), box: b64e(nacl.secretbox(u8, n, key)) }; };
-  function checkOf(key) { const n = nacl.randomBytes(24), box = nacl.secretbox(new TextEncoder().encode(VAULT_CHECK), n, key), out = new Uint8Array(24 + box.length); out.set(n); out.set(box, 24); return b64e(out); }
-  function checkOk(key, check) {
-    try { const b = b64d(check), out = nacl.secretbox.open(b.slice(24), b.slice(0, 24), key); return !!out && new TextDecoder().decode(out) === VAULT_CHECK; } catch (e) { return false; }
-  }
+  // nonce + boîte dans une seule valeur base64
+  function pack(u8, key) { const n = nacl.randomBytes(24), box = nacl.secretbox(u8, n, key), out = new Uint8Array(24 + box.length); out.set(n); out.set(box, 24); return b64e(out); }
+  function unpack(v, key) { try { const b = b64d(v); return nacl.secretbox.open(b.slice(24), b.slice(0, 24), key); } catch (e) { return null; } }
+  const checkOf = key => pack(new TextEncoder().encode(VAULT_CHECK), key);
+  const checkOk = (key, check) => { const out = check && unpack(check, key); return !!out && new TextDecoder().decode(out) === VAULT_CHECK; };
+  // La clé gardée par l'appareil est-elle toujours celle du coffre ? (coffre 1.2.0 : témoin = check)
+  const kcvOk = (vk, v) => checkOk(vk, v.kcv || (v.wrappedKey ? null : v.check));
   const vaultEntries = (k, key, onlyNew) => Object.entries(k.pairs).filter(([id]) => UUID_RE.test(id) && (!onlyNew || !k.vaulted?.[id])).map(([keyId, v]) => Object.assign({ keyId }, seal(b64d(v), key)));
   function vaultImport(k, key, list) {
     let n = 0; k.vaulted = k.vaulted || {};
@@ -550,28 +561,43 @@
     }
     return n;
   }
-  async function vaultCreate(k, password) {
-    const salt = b64e(nacl.randomBytes(16)), key = await deriveVault(password, salt, VAULT_ITER), keys = vaultEntries(k, key, false);
-    await api('PUT', '/v1/e2e/vault', { salt, iterations: VAULT_ITER, check: checkOf(key), keys });
-    k.vault = b64e(key); k.vaulted = Object.fromEntries(keys.map(x => [x.keyId, 1]));
-    keySaveRaw(k);
+  // Ouvre le coffre avec le mot de passe : sa clé, ou null si le mot de passe ne correspond pas au coffre
+  async function openVault(v, password) {
+    const derived = await deriveVault(password, v.salt, v.iterations);
+    if (!checkOk(derived, v.check)) return null;
+    if (!v.wrappedKey) return derived;
+    const vk = unpack(v.wrappedKey, derived);
+    return vk && vk.length === 32 ? vk : null;
   }
-  // Connexion (mot de passe disponible) : ouvre le coffre et récupère toutes les clés, ou le crée
+  async function vaultCreate(password, reset) {
+    const { k } = keyStore(), vk = nacl.randomBytes(32), salt = b64e(nacl.randomBytes(16)), derived = await deriveVault(password, salt, VAULT_ITER);
+    const keys = vaultEntries(k, vk, false);
+    try { await api('PUT', '/v1/e2e/vault', { mode: reset ? 'reset' : 'create', salt, iterations: VAULT_ITER, check: checkOf(derived), wrappedKey: pack(vk, derived), kcv: checkOf(vk), keys }); }
+    catch (e) { if (e.status === 409 && !reset) return false; throw e; }
+    const { k: k2 } = keyStore(); k2.vault = b64e(vk); k2.vaulted = Object.fromEntries(keys.map(x => [x.keyId, 1])); keySaveRaw(k2);
+    S.vaultIssue = null;
+    return true;
+  }
+  // Connexion (mot de passe connu) : ouvre le coffre et récupère toutes les clés, ou le crée. Résultat : 'opened' | 'created' | 'locked'
   async function vaultUnlock(password) {
-    const r = await api('GET', '/v1/e2e/vault'), { k } = keyStore();
-    if (r.vault) {
-      const key = await deriveVault(password, r.vault.salt, r.vault.iterations);
-      if (checkOk(key, r.vault.check)) { k.vault = b64e(key); vaultImport(k, key, r.keys); keySaveRaw(k); await vaultPush(); return; }
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const r = await api('GET', '/v1/e2e/vault');
+      if (!r.vault) { if (await vaultCreate(password)) return 'created'; continue; }   // créé au même moment par un autre appareil : on l'ouvre
+      const vk = await openVault(r.vault, password);
+      if (!vk) { S.vaultIssue = 'password'; return 'locked'; }
+      const { k } = keyStore(); k.vault = b64e(vk); vaultImport(k, vk, r.keys); keySaveRaw(k);
+      S.vaultIssue = null;
+      await vaultPush();
+      return 'opened';
     }
-    // Aucun coffre, ou coffre d'un ancien mot de passe : nouveau coffre avec les clés présentes sur cet appareil
-    await vaultCreate(k, password);
+    return 'locked';
   }
   // Clés créées ou reçues ailleurs depuis (autre appareil, nouvelle version d'une clé de groupe)
   async function vaultPull() {
     const { k } = keyStore(); if (!k.vault) return 0;
-    const r = await api('GET', '/v1/e2e/vault'), key = b64d(k.vault);
-    if (!r.vault || !checkOk(key, r.vault.check)) { delete k.vault; delete k.vaulted; keySaveRaw(k); return 0; }
-    const n = vaultImport(k, key, r.keys); keySaveRaw(k); return n;
+    const r = await api('GET', '/v1/e2e/vault'), vk = b64d(k.vault);
+    if (!r.vault || !kcvOk(vk, r.vault)) { delete k.vault; delete k.vaulted; keySaveRaw(k); return 0; }
+    const n = vaultImport(k, vk, r.keys); keySaveRaw(k); return n;
   }
   let vaultTimer = null;
   function scheduleVaultPush() { clearTimeout(vaultTimer); vaultTimer = setTimeout(() => void vaultPush().catch(() => undefined), 800); }
@@ -581,19 +607,30 @@
     for (let i = 0; i < keys.length; i += 500) await api('POST', '/v1/e2e/vault/keys', { keys: keys.slice(i, i + 500) });
     const { k: k2 } = keyStore(); k2.vaulted = k2.vaulted || {}; keys.forEach(x => { k2.vaulted[x.keyId] = 1; }); keySaveRaw(k2);
   }
-  // Nouveau mot de passe : toutes les clés (celles de l'appareil et celles du coffre) sont rechiffrées
-  async function vaultRekey(password) {
-    try { await vaultPull(); } catch (e) { /* coffre ancien illisible : on repart des clés de l'appareil */ }
-    const { k } = keyStore(); await vaultCreate(k, password);
-  }
-  async function e2eDevice() {
+  // Nouveau mot de passe : seule la clé du coffre est rechiffrée (les clés de conversation ne bougent pas)
+  async function vaultRewrap(oldPassword, newPassword) {
+    if (!keyStore().k.vault && oldPassword) await vaultUnlock(oldPassword).catch(() => undefined);
     const { k } = keyStore();
-    if (k.device) return k.device;
+    if (!k.vault) { await vaultUnlock(newPassword).catch(() => undefined); return; }
+    const vk = b64d(k.vault), salt = b64e(nacl.randomBytes(16)), derived = await deriveVault(newPassword, salt, VAULT_ITER);
+    await api('PUT', '/v1/e2e/vault', { mode: 'rewrap', salt, iterations: VAULT_ITER, check: checkOf(derived), wrappedKey: pack(vk, derived), kcv: checkOf(vk) });
+  }
+
+  /* ---- Appareil de chiffrement : enregistré à la connexion ; si le serveur ne le connaît plus, un nouveau est créé ---- */
+  async function e2eDevice(force) {
+    const { k } = keyStore();
+    if (k.device && !force) return k.device;
     const kp = nacl.box.keyPair();
     const r = await api('POST', '/v1/e2e/devices', { publicKey: b64e(kp.publicKey) });
-    k.device = { id: r.deviceId, pk: b64e(kp.publicKey), sk: b64e(kp.secretKey) };
-    keySave(k);
-    return k.device;
+    const { k: k2 } = keyStore();
+    k2.device = { id: r.deviceId, pk: b64e(kp.publicKey), sk: b64e(kp.secretKey) };
+    keySave(k2);
+    return k2.device;
+  }
+  // Exécute fn(appareil) ; appareil inconnu du serveur (retiré, données effacées…) : nouvel appareil, puis nouvel essai
+  async function withDevice(fn) {
+    try { return await fn(await e2eDevice()); }
+    catch (e) { if (e?.code !== 'unknown_device') throw e; return fn(await e2eDevice(true)); }
   }
   function wrapKey(key, recipientPk, senderSk) {
     const nonce = nacl.randomBytes(24);
@@ -608,14 +645,18 @@
     if (!targets.length) return;
     await api('POST', `${convBase(conv)}/keys`, { keyId, envelopes: targets.map(d => Object.assign({ deviceId: d.id, senderDeviceId: dev.id }, wrapKey(key, d.publicKey, dev.sk))) });
   }
-  // Prépare une conversation : ouvre les enveloppes reçues, transmet les clés aux appareils qui ne les ont pas,
-  // crée la première clé (ou une nouvelle version après le départ d'un membre d'un groupe)
-  async function e2eOpenConv(conv) {
-    const dev = await e2eDevice();
+  /**
+   * Prépare une conversation : ouvre les enveloppes reçues, transmet les clés aux appareils qui ne les ont pas,
+   * crée la première clé (ou une nouvelle version après le départ d'un membre d'un groupe).
+   * forWriting : si aucune clé existante n'est disponible sur cet appareil, une nouvelle version est créée pour pouvoir écrire tout de suite.
+   */
+  function e2eOpenConv(conv, forWriting) { return withDevice(dev => openConv(conv, dev, forWriting)); }
+  async function openConv(conv, dev, forWriting) {
     let st = await api('GET', `${convBase(conv)}?deviceId=${dev.id}`);
     const { k } = keyStore();
     for (const x of st.keys) if (x.envelope && !k.pairs[x.keyId]) { const key = unwrapKey(x.envelope, x.envelope.senderPublicKey, dev.sk); if (key) k.pairs[x.keyId] = key; }
-    if (conv.group ? st.rotate : !st.keys.length) {
+    const usable = conv.group ? !!(st.keys[0] && k.pairs[st.keys[0].keyId]) : st.keys.some(x => k.pairs[x.keyId]);
+    if ((conv.group ? st.rotate : !st.keys.length) || (forWriting && !usable)) {
       const keyId = uuid(), key = b64e(nacl.randomBytes(32));
       await uploadEnvelopes(conv, keyId, key, dev, st.devices);
       k.pairs[keyId] = key;
@@ -634,15 +675,18 @@
     return { current, waiting: !current && st.keys.length > 0 };
   }
   const e2eOpen = peerId => e2eOpenConv({ peer: peerId });
-  async function e2eShareMissing() {
-    const { k } = keyStore(); if (!k.device) return;
-    const pend = await api('GET', `/v1/e2e/pending?deviceId=${k.device.id}`);
-    for (const p of pend) {
-      const key = k.pairs[p.keyId] || unwrapKey(p.envelope, p.envelope.senderPublicKey, k.device.sk); if (!key) continue;
-      k.pairs[p.keyId] = key;
-      await uploadEnvelopes(p.groupId ? { group: p.groupId } : { peer: p.peerId }, p.keyId, key, k.device, p.missingDevices).catch(() => undefined);
-    }
-    keySave(k);
+  // Re-chiffre pour les appareils (les miens et ceux de mes amis) les clés qu'ils n'ont pas encore
+  function e2eShareMissing() {
+    if (!keyStore().k.device) return Promise.resolve();
+    return withDevice(async dev => {
+      const pend = await api('GET', `/v1/e2e/pending?deviceId=${dev.id}`), { k } = keyStore();
+      for (const p of pend) {
+        const key = k.pairs[p.keyId] || unwrapKey(p.envelope, p.envelope.senderPublicKey, dev.sk); if (!key) continue;
+        k.pairs[p.keyId] = key;
+        await uploadEnvelopes(p.groupId ? { group: p.groupId } : { peer: p.peerId }, p.keyId, key, dev, p.missingDevices).catch(() => undefined);
+      }
+      keySave(k);
+    });
   }
   async function e2eForget(notifyServer) {
     // Compte lu tout de suite : après l'appel au serveur, la session a déjà été fermée
@@ -658,8 +702,9 @@
     // Clé inconnue (nouvelle version après le départ d'un membre, nouvel appareil) : on va chercher son enveloppe, une fois par clé
     const { k } = keyStore(), mine = meId(), convs = new Map();
     for (const m of DB.messages) {
-      if (!m.e2e || k.pairs[m.e2e.keyId] || S.keyTried.has(m.e2e.keyId)) continue;
-      S.keyTried.add(m.e2e.keyId);
+      // Clé absente : nouvel essai au plus toutes les 20 secondes (elle peut arriver d'un autre appareil entre-temps)
+      if (!m.e2e || k.pairs[m.e2e.keyId] || Date.now() - (S.keyTried.get(m.e2e.keyId) || 0) < 20000) continue;
+      S.keyTried.set(m.e2e.keyId, Date.now());
       const conv = m.chat ? { group: m.chat } : { peer: m.from === mine ? m.to : m.from };
       if (conv.group || conv.peer) convs.set(conv.group ? 'g' + conv.group : 'p' + conv.peer, conv);
     }
@@ -756,7 +801,7 @@
     keyPrintConv = async function (cid) {
       if (!S.acct) return O.keyPrintConv(cid);
       const [a, b] = cid.split('|'), conv = a === 'grp' ? { group: b } : { peer: a === meId() ? b : a };
-      const st = await api('GET', `${convBase(conv)}?deviceId=${(await e2eDevice()).id}`);
+      const st = await withDevice(dev => api('GET', `${convBase(conv)}?deviceId=${dev.id}`));
       const pks = st.devices.map(d => d.publicKey).sort().join('|');
       const h = nacl.hash(new TextEncoder().encode(pks));
       return Array.from({ length: 6 }, (_, i) => String(((h[i * 3] << 16) | (h[i * 3 + 1] << 8) | h[i * 3 + 2]) % 100000).padStart(5, '0')).join(' ');
@@ -766,7 +811,7 @@
     deliverMessage = async function (target, body, blob, retried) {
       if (!S.acct) return O.deliverMessage(target, body, blob);
       try {
-        const conv = await e2eOpenConv(target.chat ? { group: target.chat } : { peer: target.to });
+        const conv = await e2eOpenConv(target.chat ? { group: target.chat } : { peer: target.to }, true);
         if (!conv.current) { toast(target.chat ? 'La clé du groupe arrive dès qu’un membre ouvre PepsGoal. Réessaie dans un instant.' : 'La clé de cette conversation arrive dès que ton ami ouvre PepsGoal. Réessaie dans un instant.', 'lock'); return null; }
         const attachments = [];
         let local = null;
@@ -853,27 +898,54 @@
           <div class="sheet-f"><button class="btn btn-primary" type="submit">${icon('lock')}Changer le mot de passe</button></div>
         </form></section>${vaultCard()}`;
     };
-    // Coffre de clés : activé à la connexion ; une session ouverte avant la 1.2.0 l'active ici avec son mot de passe
+    // Coffre de clés : ouvert à la connexion ; sinon un bandeau dans la messagerie le propose (mot de passe demandé une fois)
     const vaultCard = () => {
       const { k } = keyStore(), on = !!k.vault, n = Object.keys(k.pairs || {}).length;
       return `<section class="glass card"><div class="card-h"><h2>Clés de chiffrement</h2><span class="chip ${on ? 't-goal' : 'st-warn'}">${icon(on ? 'check' : 'lock')}${on ? 'Synchronisées' : 'Sur cet appareil'}</span></div>
         <p class="muted small" style="margin-bottom:10px">${on
           ? `${pl(n, 'clé de conversation', 'clés de conversation')}. Une copie chiffrée avec ton mot de passe est gardée sur le serveur : tes autres appareils retrouvent tes conversations dès la connexion. Ni l’éditeur ni l’hébergeur ne peuvent l’ouvrir.`
-          : 'Active la synchronisation : une copie de tes clés, chiffrée avec ton mot de passe, sera gardée sur le serveur pour que tes autres appareils retrouvent tes conversations.'}</p>
-        ${on ? '' : `<form class="gform" data-form="vault-unlock"><div class="field"><label for="vault-pw">Mot de passe</label><input type="password" id="vault-pw" name="password" autocomplete="current-password"></div>
-          <p class="form-err" id="vault-err" role="alert" hidden></p><div class="sheet-f"><button class="btn btn-primary" type="submit">${icon('lock')}Synchroniser mes clés</button></div></form>`}
+          : 'Tes clés de conversation ne sont pas encore synchronisées sur cet appareil.'}</p>
+        ${on ? '' : vaultForm()}
       </section>`;
     };
+    const vaultForm = () => {
+      const locked = S.vaultIssue === 'password';
+      return `<div class="vault-box">
+        ${locked ? '<p class="small"><b>Ton coffre de clés a été créé avec un ancien mot de passe.</b> Saisis cet ancien mot de passe pour le rouvrir, ou recrée le coffre avec ton mot de passe actuel (les clés absentes de tes appareils seront perdues).</p>' : ''}
+        <form class="c-form" data-form="vault-unlock"><input type="password" name="password" aria-label="${locked ? 'Ancien mot de passe' : 'Mot de passe'}" autocomplete="current-password" placeholder="${locked ? 'Ancien mot de passe' : 'Ton mot de passe'}"><button class="btn btn-primary sm" type="submit">${icon('lock')}Déverrouiller</button></form>
+        ${locked ? `<button type="button" class="linkbtn" data-act="vault-reset">Recréer le coffre avec mon mot de passe actuel</button>` : ''}
+        <p class="form-err" role="alert" hidden></p></div>`;
+    };
+    O.e2eNotice = e2eNotice;
+    e2eNotice = function () {
+      if (!S.acct || keyStore().k.vault) return S.acct ? '' : O.e2eNotice();
+      return `<div class="e2e-banner" role="region" aria-label="Clés de chiffrement"><p>${icon('lock')}<span><b>Retrouve tes messages sur tous tes appareils</b><br>Confirme ton mot de passe une seule fois : tes clés de conversation seront synchronisées, chiffrées, entre tes appareils.</span></p>${vaultForm()}</div>`;
+    };
+    const vaultDone = async msg => { await decryptAll(); render(); if (UI.modal) renderModal(); updateChat(true); toast(msg, 'lock'); };
     FORMS['vault-unlock'] = async function (f) {
-      const pw = String(new FormData(f).get('password') || ''), err = f.querySelector('#vault-err'), failF = m => { err.textContent = m; err.hidden = false; };
+      const pw = String(new FormData(f).get('password') || ''), err = f.parentElement.querySelector('.form-err'), failF = m => { if (err) { err.textContent = m; err.hidden = false; } else toast(m, 'x'); };
       if (!pw) return failF('Indique ton mot de passe.');
+      const btn = f.querySelector('[type=submit]'); if (btn) btn.disabled = true;
       try {
-        // Vérification du mot de passe auprès du serveur avant d'ouvrir (ou de créer) le coffre
-        const r = await api('POST', '/v1/auth/login', { username: me().username, password: pw }), old = S.tokens?.refreshToken;
-        if (old) void api('POST', '/v1/auth/logout', { refreshToken: old }).catch(() => undefined);
-        S.tokens = { accessToken: r.accessToken, refreshToken: r.refreshToken }; ls.set(TOK_KEY, S.tokens);
-        await vaultUnlock(pw); await decryptAll(); render(); toast('Clés de chiffrement synchronisées.', 'lock');
+        // Mot de passe actuel : vérifié auprès du serveur avant d'ouvrir (ou de créer) le coffre
+        if (S.vaultIssue !== 'password') {
+          const r = await api('POST', '/v1/auth/login', { username: me().username, password: pw }), old = S.tokens?.refreshToken;
+          if (old) void api('POST', '/v1/auth/logout', { refreshToken: old }).catch(() => undefined);
+          S.tokens = { accessToken: r.accessToken, refreshToken: r.refreshToken }; ls.set(TOK_KEY, S.tokens);
+        }
+        const wasLocked = S.vaultIssue === 'password', res = await vaultUnlock(pw);
+        if (res === 'locked') { render(); if (UI.modal) renderModal(); return failF(wasLocked ? 'Ce mot de passe n’ouvre pas le coffre.' : 'Ton coffre a été créé avec un ancien mot de passe : saisis-le, ou recrée le coffre.'); }
+        await vaultDone('Clés de chiffrement synchronisées.');
       } catch (e) { failF(e.status === 401 ? 'Mot de passe incorrect.' : e.message); }
+      finally { if (btn) btn.disabled = false; }
+    };
+    ACT['vault-reset'] = async () => {
+      const input = document.querySelector('[data-form="vault-unlock"] input[name=password]'), pw = input?.value || '';
+      if (!pw) { toast('Saisis d’abord ton mot de passe actuel dans le champ.', 'lock'); input?.focus(); return; }
+      try {
+        await api('POST', '/v1/auth/login', { username: me().username, password: pw }).then(r => { S.tokens = { accessToken: r.accessToken, refreshToken: r.refreshToken }; ls.set(TOK_KEY, S.tokens); });
+        await vaultCreate(pw, true); await vaultDone('Nouveau coffre de clés créé.');
+      } catch (e) { toast(e.status === 401 ? 'Mot de passe actuel incorrect.' : e.message, 'x'); }
     };
     O.syncCard = syncCard;
     syncCard = function (u) {
@@ -1030,7 +1102,7 @@
       if (next !== next2) return failF('Les deux nouveaux mots de passe ne correspondent pas.');
       try {
         const r = await api('POST', '/v1/auth/password', { current: cur, next }); S.tokens = { accessToken: r.accessToken, refreshToken: r.refreshToken }; ls.set(TOK_KEY, S.tokens); f.reset();
-        await vaultRekey(next).catch(e => console.warn('PepsGoal : coffre de clés non rechiffré', e));
+        await vaultRewrap(cur, next).catch(e => console.warn('PepsGoal : coffre de clés non rechiffré', e));
         toast('Mot de passe modifié. Tes autres appareils devront se reconnecter.', 'lock');
       }
       catch (e) { failF(e.message); }
@@ -1082,16 +1154,31 @@
       UI.modal = { type: 'confirm', title: 'Supprimer la publication ?', text: 'Elle disparaîtra du feed de tes amis.', ok: 'Supprimer', danger: true, run: () => { DB.posts = DB.posts.filter(p => p.id !== id); rawSave(); render(); after(api('DELETE', `/v1/posts/${id}`)); } };
       renderModal();
     });
+    O.votePoll = votePoll;
+    votePoll = async function (p, oid) {
+      if (!S.acct) return O.votePoll(p, oid);
+      const poll = p.poll, cur = poll.options.filter(o => o.mine).map(o => o.id);
+      const next = poll.multi ? (cur.includes(oid) ? cur.filter(x => x !== oid) : [...cur, oid]) : (cur.includes(oid) ? [] : [oid]);
+      try {
+        await api('POST', `/v1/posts/${p.id}/vote`, { optionIds: next });
+        poll.options.forEach(o => { const now = next.includes(o.id); o.n = Math.max(0, (o.n || 0) + (now ? 1 : 0) - (o.mine ? 1 : 0)); o.mine = now; });
+        poll.voters = Math.max(0, (poll.voters || 0) + (next.length ? 1 : 0) - (cur.length ? 1 : 0));
+        rawSave(); render(); scheduleSocial(1500);
+      } catch (e) { fail(e); }
+    };
     wrapF('post', async function (f) {
       const fd = new FormData(f), text = (fd.get('text') || '').trim(), photo = f.querySelector('#post-photo-in') ? UI.postPhoto : null;
+      const poll = f.querySelector('.poll-edit') ? readPoll(fd) : null;
+      if (typeof poll === 'string') { toast(poll, 'x'); return; }
+      if (poll && !text) { toast('Écris la question du sondage dans ta publication.', 'x'); return; }
       if (!text && !photo) { toast('Écris quelque chose ou ajoute une photo avant de publier.', 'x'); return; }
       if (socialBlocked('de publier')) return;
       const goal = f.dataset.goal || fd.get('goal') || null, btn = f.querySelector('[type=submit]');
       try {
         if (btn) btn.disabled = true;
         const photoUrl = photo ? (photo.startsWith('data:') ? await uploadDataUrl(photo) : photo) : null;
-        const r = await api('POST', '/v1/posts', { text, photoUrl, visibility: fd.get('vis') === 'public' ? 'public' : 'friends', goalId: goal && UUID_RE.test(goal) ? goal : null, kind: 'manual' });
-        UI.postPhoto = null;
+        const r = await api('POST', '/v1/posts', { text, photoUrl, poll, visibility: fd.get('vis') === 'public' ? 'public' : 'friends', goalId: goal && UUID_RE.test(goal) ? goal : null, kind: 'manual' });
+        UI.postPhoto = null; UI.postPoll = false;
         UI.modal = null; UI.view = 'feed'; UI.feedTab = fd.get('vis') === 'public' && UI.feedTab === 'public' ? 'public' : 'friends';
         render(); toast(r.status === 'pending' ? 'Envoyé à la modération : ta publication sera visible après validation.' : 'Publié.', 'feed');
         await refreshSocial();
@@ -1231,7 +1318,9 @@
     setInterval(() => { if (S.acct && NET.online) { void syncNow(); void refreshSocial(); void e2eShareMissing().catch(() => undefined); } }, 60000);
     setInterval(() => {
       const m = UI.modal; if (!S.acct || !NET.online || m?.type !== 'chat') return;
-      void (m.group ? loadGroup(m.group, false) : loadConversation(m.with, false)).then(async () => { await decryptAll(); updateChat(); }).catch(() => undefined);
+      // Une fois sur deux : échange des clés de la conversation ouverte (transmission aux nouveaux appareils, réception des enveloppes)
+      const share = ++S.chatTick % 2 === 0 ? e2eOpenConv(m.group ? { group: m.group } : { peer: m.with }).catch(() => undefined) : null;
+      void Promise.resolve(share).then(() => m.group ? loadGroup(m.group, false) : loadConversation(m.with, false)).then(async () => { await decryptAll(); updateChat(); }).catch(() => undefined);
     }, 8000);
   }
 

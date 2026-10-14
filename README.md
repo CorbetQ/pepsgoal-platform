@@ -63,7 +63,7 @@ L'interface se modifie dans `apps/web-legacy/pepsgoal.html` ; relance `npm run b
 
 Au premier démarrage, le serveur crée le compte **PepsGoal Officiel** et le compte **admin**. En développement, le mot de passe admin est `password` (un avertissement s'affiche) ; en production, `ADMIN_BOOTSTRAP_PASSWORD` est obligatoire.
 
-Version 1.2.0 : messagerie chiffrée de bout en bout (photos, messages vocaux, objectifs, groupes) avec clés synchronisées entre appareils, photos dans les publications, blocage, e-mails de modération, emojis Fluent. Version 1.1.0 : mode hors ligne automatique, options d'accessibilité. Aucune donnée de démonstration côté serveur ; chaque installation démarre vide.
+Version 1.3.0 : sondages dans le feed et la messagerie, sélecteur d'emojis par catégorie (plus de 700 emojis Fluent), synchronisation des clés de chiffrement fiabilisée, application sous licence MIT. Version 1.2.0 : messagerie chiffrée de bout en bout (photos, messages vocaux, objectifs, groupes) avec clés synchronisées entre appareils, photos dans les publications, blocage, e-mails de modération, emojis Fluent. Version 1.1.0 : mode hors ligne automatique, options d'accessibilité. Aucune donnée de démonstration côté serveur ; chaque installation démarre vide.
 
 ## Vérifications
 
@@ -92,3 +92,13 @@ node apps/server/test/e2e.mjs
 | [docs/E2E.md](docs/E2E.md) | Chiffrement de bout en bout des messages privés |
 | [docs/GUIDE-HOSTINGER.md](docs/GUIDE-HOSTINGER.md) · [docs/GUIDE-WEB-HOSTINGER.md](docs/GUIDE-WEB-HOSTINGER.md) · [docs/GUIDE-STORES.md](docs/GUIDE-STORES.md) | Guides pas à pas : serveur sur Hostinger, version web (VPS ou hébergement web), publication sur les stores |
 | [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) | Mise en production du serveur, sauvegardes |
+
+## Liens
+
+- Site : https://site.pepsgoal.fr — application web : https://app.pepsgoal.fr
+- Signaler un problème : https://github.com/CorbetQ/pepsgoal-platform/issues
+
+## Licence
+
+PepsGoal est un logiciel libre distribué sous [licence MIT](LICENSE) © 2026 Quentin CORBET.
+Le nom PepsGoal et son logo ne sont pas concédés par la licence. Composants tiers : Fluent Emoji (MIT, Microsoft, voir `apps/web/emoji/LICENSE`), TweetNaCl (domaine public), JSZip (MIT), polices Unbounded et Manrope (SIL OFL 1.1).

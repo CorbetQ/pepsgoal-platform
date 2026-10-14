@@ -129,12 +129,22 @@ export const posts = pgTable('posts', {
   goalId: uuid('goal_id').references(() => goals.id, { onDelete: 'set null' }),
   /** Photo jointe (image téléversée sur ce serveur, /media/…). */
   photoUrl: text('photo_url'),
+  /** Sondage : { multi, endsAt, options: [{ id: 'o0', text }] } ; les votes sont dans poll_votes. */
+  poll: jsonb('poll').$type<{ multi: boolean; endsAt: string; options: { id: string; text: string }[] }>(),
   kind: text('kind').notNull().default('manual'),
   status: text('status').notNull().default('visible'),
   commentsLocked: boolean('comments_locked').notNull().default(false),
   createdAt: ts('created_at').notNull().defaultNow(),
   deletedAt: ts('deleted_at')
 }, t => ({ authorIdx: index('posts_author_idx').on(t.authorId, t.createdAt) }));
+
+/** Votes aux sondages du feed : une ligne par option choisie. */
+export const pollVotes = pgTable('poll_votes', {
+  postId: uuid('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  optionId: text('option_id').notNull(),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.postId, t.userId, t.optionId] }) }));
 
 export const postLikes = pgTable('post_likes', {
   postId: uuid('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
@@ -313,6 +323,10 @@ export const e2eVaults = pgTable('e2e_vaults', {
   iterations: integer('iterations').notNull(),
   /** Valeur témoin chiffrée : vérifie que la clé dérivée est la bonne. */
   check: text('check').notNull(),
+  /** 1.3.0 : clé du coffre (aléatoire) chiffrée avec la clé dérivée du mot de passe ; null pour les coffres 1.2.0. */
+  wrappedKey: text('wrapped_key'),
+  /** Témoin chiffré avec la clé du coffre : un appareil vérifie que la clé qu'il garde est toujours la bonne. */
+  kcv: text('kcv'),
   updatedAt: ts('updated_at').notNull().defaultNow()
 });
 export const e2eVaultKeys = pgTable('e2e_vault_keys', {

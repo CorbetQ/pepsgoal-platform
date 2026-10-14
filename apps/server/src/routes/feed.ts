@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { CommentBody, Id, PostBody, ReportBody } from '@pepsgoal/shared';
+import { CommentBody, Id, PollVoteBody, PostBody, ReportBody } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { badRequest, forbidden, notFound } from '../lib/errors.js';
 import { env } from '../env.js';
@@ -57,13 +57,28 @@ export default async function feedRoutes(app: FastifyInstance) {
     const comments = ids.length ? await sql<Row[]>`
       select c.*, a.username, a.display_name, a.avatar, a.role from comments c join users a on a.id = c.author_id
       where c.post_id = any(${ids}) and c.deleted_at is null and a.deleted_at is null and ${notBlocked(u.id, 'c.author_id')} order by c.created_at` : [];
+    // Sondages : nombre de voix par option, votants distincts et mes choix
+    const pollIds = posts.filter(p => p.poll).map(p => p.id);
+    const votes = pollIds.length ? await sql<Row[]>`select post_id, option_id, count(*)::int as n, bool_or(user_id = ${u.id}) as mine
+      from poll_votes where post_id = any(${pollIds}) group by post_id, option_id` : [];
+    const voters = pollIds.length ? await sql<Row[]>`select post_id, count(distinct user_id)::int as n from poll_votes where post_id = any(${pollIds}) group by post_id` : [];
+    const pollOf = (p: Row) => {
+      if (!p.poll) return null;
+      const vs = votes.filter(v => v.post_id === p.id);
+      return {
+        multi: !!p.poll.multi, endsAt: p.poll.endsAt, closed: Date.parse(p.poll.endsAt) <= Date.now(),
+        voters: voters.find(v => v.post_id === p.id)?.n ?? 0,
+        options: (p.poll.options as { id: string; text: string }[]).map(o => ({ id: o.id, text: o.text, votes: vs.find(v => v.option_id === o.id)?.n ?? 0 })),
+        mine: vs.filter(v => v.mine).map(v => v.option_id)
+      };
+    };
     // Qui a encouragé chaque publication (affiché sous la publication, comme dans l'application)
     const likers = ids.length ? await sql<Row[]>`
       select l.post_id, a.id, a.username, a.display_name, a.avatar, a.role from post_likes l join users a on a.id = l.user_id
       where l.post_id = any(${ids}) and a.deleted_at is null and ${notBlocked(u.id, 'l.user_id')} order by l.created_at` : [];
     return {
       posts: posts.map(p => ({
-        id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: p.photo_url, visibility: p.visibility, goalId: p.goal_id, kind: p.kind,
+        id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: p.photo_url, poll: pollOf(p), visibility: p.visibility, goalId: p.goal_id, kind: p.kind,
         status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), likeCount: p.like_count, liked: p.liked,
         likers: likers.filter(l => l.post_id === p.id).slice(0, 100).map(toPublicUser),
         comments: comments.filter(c => c.post_id === p.id).slice(-20).map(c => ({ id: c.id, author: toPublicUser({ ...c, id: c.author_id }), text: c.text, createdAt: iso(c.created_at) }))
@@ -81,13 +96,14 @@ export default async function feedRoutes(app: FastifyInstance) {
     }
     // Seules les images téléversées sur ce serveur sont acceptées
     if (body.photoUrl && !body.photoUrl.startsWith(`${env.PUBLIC_URL}/media/`)) throw badRequest('Photo invalide : téléverse-la d’abord.');
+    const poll = body.poll ? { multi: body.poll.multi, endsAt: new Date(Date.now() + body.poll.hours * 3600_000).toISOString(), options: body.poll.options.map((text, i) => ({ id: `o${i}`, text })) } : null;
     // Compte sous avertissement : la publication attend la validation de la modération
     const status = u.warnedAt ? 'pending' : 'visible';
-    const [p] = await sql<Row[]>`insert into posts (author_id, text, photo_url, visibility, goal_id, status, kind) values (${u.id}, ${body.text}, ${body.photoUrl}, ${body.visibility}, ${body.goalId}, ${status}, ${body.kind}) returning id`;
+    const [p] = await sql<Row[]>`insert into posts (author_id, text, photo_url, poll, visibility, goal_id, status, kind) values (${u.id}, ${body.text}, ${body.photoUrl}, ${poll ? sql.json(poll) : null}, ${body.visibility}, ${body.goalId}, ${status}, ${body.kind}) returning id`;
     if (status === 'pending') await notifyAdmins(sql, `Nouvelle publication de ${u.displayName} à valider.`, {
       subject: `Publication à valider : ${u.displayName}`,
       details: [['Auteur', `${u.displayName} (@${u.username}), sous avertissement`], ['Visibilité', body.visibility === 'public' ? 'public' : 'amis'], ['Photo', body.photoUrl ? 'oui' : 'non']],
-      excerpt: body.text.slice(0, 500) || undefined
+      excerpt: [body.text.slice(0, 500), poll ? `Sondage : ${poll.options.map(o => o.text).join(' / ')}` : ''].filter(Boolean).join(' — ') || undefined
     });
     reply.status(201);
     return { id: p!.id, status };
@@ -116,6 +132,24 @@ export default async function feedRoutes(app: FastifyInstance) {
         await tx`update users set freezes = freezes + 1 where id = ${p.author_id}`;
         await notify(tx, p.author_id, 'freeze', `Tu as reçu ${FREEZE_EVERY} encouragements de plus : un gel de série t'est offert !`);
       }
+    });
+    return { ok: true };
+  });
+
+  /** Vote à un sondage : remplace mes choix (liste vide = retirer mon vote). Possible jusqu'à la fin du sondage. */
+  app.post('/v1/posts/:id/vote', { preHandler: requireSocial, config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async req => {
+    const { id } = params(req.params);
+    const { optionIds } = PollVoteBody.parse(req.body);
+    const u = me(req);
+    const p = await visiblePost(u, id);
+    if (!p.poll) throw notFound('Sondage introuvable.');
+    if (Date.parse(p.poll.endsAt) <= Date.now()) throw forbidden('Ce sondage est terminé.', 'poll_closed');
+    const ids = [...new Set(optionIds)], valid = new Set((p.poll.options as { id: string }[]).map(o => o.id));
+    if (ids.some(o => !valid.has(o))) throw badRequest('Option inconnue.');
+    if (!p.poll.multi && ids.length > 1) throw badRequest('Une seule réponse possible.');
+    await sql.begin(async tx => {
+      await tx`delete from poll_votes where post_id = ${id} and user_id = ${u.id}`;
+      for (const o of ids) await tx`insert into poll_votes (post_id, user_id, option_id) values (${id}, ${u.id}, ${o})`;
     });
     return { ok: true };
   });
