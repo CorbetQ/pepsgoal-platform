@@ -2,12 +2,12 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { E2EDeviceBody, E2EKeyUpload, E2EVaultBody, E2EVaultKeysBody, Id } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
-import { badRequest, forbidden, notFound } from '../lib/errors.js';
+import { badRequest, conflict, forbidden, notFound, unknownDevice } from '../lib/errors.js';
 import { areFriends, isBlocked, me, requireUser } from '../lib/guards.js';
 import { iso, type Row } from '../lib/mappers.js';
 
-/** Appareils conservés par compte : au-delà, les plus anciens (inactifs) sont retirés. */
-const MAX_DEVICES = 10;
+/** Appareils conservés par compte : au-delà, les moins récemment utilisés sont retirés ; inactifs depuis 90 jours aussi. */
+const MAX_DEVICES = 25, DEVICE_IDLE_DAYS = 90;
 const pair = (a: string, b: string) => (a < b ? [a, b] as const : [b, a] as const);
 const DeviceQuery = z.object({ deviceId: Id });
 
@@ -18,19 +18,20 @@ const DeviceQuery = z.object({ deviceId: Id });
 export default async function e2eRoutes(app: FastifyInstance) {
   async function myDevice(userId: string, deviceId: string) {
     const [d] = await sql<Row[]>`update e2e_devices set last_seen_at = now() where id = ${deviceId} and user_id = ${userId} returning id`;
-    if (!d) throw notFound('Appareil inconnu : reconnecte-toi.');
+    if (!d) throw unknownDevice();
   }
   async function friendOrThrow(userId: string, peerId: string) {
     if (userId === peerId || !(await areFriends(userId, peerId)) || (await isBlocked(userId, peerId))) throw forbidden('Vous devez être amis pour échanger des messages.');
   }
 
   /** Enregistre la clé publique d'un nouvel appareil (à la connexion). */
-  app.post('/v1/e2e/devices', { preHandler: requireUser, config: { rateLimit: { max: 10, timeWindow: '1 hour' } } }, async (req, reply) => {
+  app.post('/v1/e2e/devices', { preHandler: requireUser, config: { rateLimit: { max: 30, timeWindow: '1 hour' } } }, async (req, reply) => {
     const { publicKey } = E2EDeviceBody.parse(req.body);
     const u = me(req);
     const [d] = await sql<Row[]>`insert into e2e_devices (user_id, public_key) values (${u.id}, ${publicKey}) returning id`;
-    await sql`delete from e2e_devices where user_id = ${u.id} and id not in (
-      select id from e2e_devices where user_id = ${u.id} order by last_seen_at desc limit ${MAX_DEVICES})`;
+    await sql`delete from e2e_devices where user_id = ${u.id} and id <> ${d!.id} and (
+      last_seen_at < now() - make_interval(days => ${DEVICE_IDLE_DAYS})
+      or id not in (select id from e2e_devices where user_id = ${u.id} order by last_seen_at desc limit ${MAX_DEVICES}))`;
     reply.status(201);
     return { deviceId: d!.id };
   });
@@ -41,22 +42,40 @@ export default async function e2eRoutes(app: FastifyInstance) {
    */
   app.get('/v1/e2e/vault', { preHandler: requireUser }, async req => {
     const u = me(req);
-    const [v] = await sql<Row[]>`select salt, iterations, "check", updated_at from e2e_vaults where user_id = ${u.id}`;
+    const [v] = await sql<Row[]>`select salt, iterations, "check", wrapped_key, kcv, updated_at from e2e_vaults where user_id = ${u.id}`;
     if (!v) return { vault: null, keys: [] };
     const keys = await sql<Row[]>`select key_id, nonce, box from e2e_vault_keys where user_id = ${u.id} order by created_at`;
-    return { vault: { salt: v.salt, iterations: v.iterations, check: v.check, updatedAt: iso(v.updated_at) }, keys: keys.map(k => ({ keyId: k.key_id, nonce: k.nonce, box: k.box })) };
+    return { vault: { salt: v.salt, iterations: v.iterations, check: v.check, wrappedKey: v.wrapped_key, kcv: v.kcv, updatedAt: iso(v.updated_at) }, keys: keys.map(k => ({ keyId: k.key_id, nonce: k.nonce, box: k.box })) };
   });
 
   /** Création du coffre, ou remplacement complet après un changement de mot de passe (toutes les clés rechiffrées). */
   app.put('/v1/e2e/vault', { preHandler: requireUser, config: { rateLimit: { max: 10, timeWindow: '1 hour' } } }, async req => {
     const b = E2EVaultBody.parse(req.body);
     const u = me(req);
+    const insertKeys = async (tx: typeof sql, keys: typeof b.keys) => {
+      for (const k of keys ?? []) await tx`insert into e2e_vault_keys (user_id, key_id, nonce, box) values (${u.id}, ${k.keyId}, ${k.nonce}, ${k.box}) on conflict do nothing`;
+    };
     await sql.begin(async tx => {
-      await tx`insert into e2e_vaults (user_id, salt, iterations, "check") values (${u.id}, ${b.salt}, ${b.iterations}, ${b.check})
-        on conflict (user_id) do update set salt = excluded.salt, iterations = excluded.iterations, "check" = excluded."check", updated_at = now()`;
-      if (b.keys) {
+      const [cur] = await tx<Row[]>`select 1 from e2e_vaults where user_id = ${u.id} for update`;
+      if (b.mode === 'create') {
+        // Deux appareils qui créent le coffre en même temps : le second l'ouvre au lieu de l'écraser
+        if (cur) throw conflict('Le coffre existe déjà.', 'vault_exists');
+        await tx`insert into e2e_vaults (user_id, salt, iterations, "check", wrapped_key, kcv) values (${u.id}, ${b.salt}, ${b.iterations}, ${b.check}, ${b.wrappedKey!}, ${b.kcv!})`;
+        await insertKeys(tx as unknown as typeof sql, b.keys);
+      } else if (b.mode === 'rewrap') {
+        // Nouveau mot de passe : seule la clé du coffre est rechiffrée, les clés de conversation ne changent pas
+        if (!cur) throw notFound('Coffre de clés absent.');
+        await tx`update e2e_vaults set salt = ${b.salt}, iterations = ${b.iterations}, "check" = ${b.check}, wrapped_key = ${b.wrappedKey!}, kcv = ${b.kcv!}, updated_at = now() where user_id = ${u.id}`;
+      } else if (b.mode === 'reset') {
         await tx`delete from e2e_vault_keys where user_id = ${u.id}`;
-        for (const k of b.keys) await tx`insert into e2e_vault_keys (user_id, key_id, nonce, box) values (${u.id}, ${k.keyId}, ${k.nonce}, ${k.box}) on conflict do nothing`;
+        await tx`insert into e2e_vaults (user_id, salt, iterations, "check", wrapped_key, kcv) values (${u.id}, ${b.salt}, ${b.iterations}, ${b.check}, ${b.wrappedKey!}, ${b.kcv!})
+          on conflict (user_id) do update set salt = excluded.salt, iterations = excluded.iterations, "check" = excluded."check", wrapped_key = excluded.wrapped_key, kcv = excluded.kcv, updated_at = now()`;
+        await insertKeys(tx as unknown as typeof sql, b.keys);
+      } else {
+        // Format 1.2.0 : la clé dérivée du mot de passe chiffre directement les clés
+        await tx`insert into e2e_vaults (user_id, salt, iterations, "check") values (${u.id}, ${b.salt}, ${b.iterations}, ${b.check})
+          on conflict (user_id) do update set salt = excluded.salt, iterations = excluded.iterations, "check" = excluded."check", wrapped_key = null, kcv = null, updated_at = now()`;
+        if (b.keys) { await tx`delete from e2e_vault_keys where user_id = ${u.id}`; await insertKeys(tx as unknown as typeof sql, b.keys); }
       }
     });
     return { ok: true };
@@ -119,7 +138,7 @@ export default async function e2eRoutes(app: FastifyInstance) {
     const byId = new Map(devices.map(d => [d.id as string, d]));
     for (const e of envelopes) {
       if (!byId.has(e.deviceId)) throw badRequest('Appareil destinataire inconnu.');
-      if (byId.get(e.senderDeviceId)?.user_id !== u.id) throw forbidden('L’appareil expéditeur doit être le tien.');
+      if (byId.get(e.senderDeviceId)?.user_id !== u.id) throw unknownDevice();
     }
     let created = false;
     await sql.begin(async tx => {

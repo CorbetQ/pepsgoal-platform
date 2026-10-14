@@ -4,7 +4,7 @@ import { stat, writeFile } from 'node:fs/promises';
 import { z } from 'zod';
 import { E2EKeyUpload, GroupCreateBody, GroupMembersBody, GroupPatchBody, Id, MessageBody } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
-import { badRequest, conflict, forbidden, notFound } from '../lib/errors.js';
+import { badRequest, conflict, forbidden, notFound, unknownDevice } from '../lib/errors.js';
 import { attachmentPath, ensureAttachmentDir } from '../lib/files.js';
 import { areFriends, isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
@@ -206,7 +206,7 @@ export default async function groupRoutes(app: FastifyInstance) {
     const u = me(req);
     const g = await groupOf(id, u.id);
     const [d] = await sql`update e2e_devices set last_seen_at = now() where id = ${deviceId} and user_id = ${u.id} returning id`;
-    if (!d) throw notFound('Appareil inconnu : reconnecte-toi.');
+    if (!d) throw unknownDevice();
     const devices = await sql<Row[]>`select d.id, d.user_id, d.public_key from e2e_devices d join chat_group_members m on m.user_id = d.user_id and m.group_id = ${id} order by d.created_at`;
     const keys = await sql<Row[]>`
       select k.key_id, k.created_by, k.created_at, e.nonce, e.box, e.sender_public_key,
@@ -235,7 +235,7 @@ export default async function groupRoutes(app: FastifyInstance) {
     const byId = new Map(devices.map(d => [d.id as string, d]));
     for (const e of envelopes) {
       if (!byId.has(e.deviceId)) throw badRequest('Appareil destinataire hors du groupe.');
-      if (byId.get(e.senderDeviceId)?.user_id !== u.id) throw forbidden('L’appareil expéditeur doit être le tien.');
+      if (byId.get(e.senderDeviceId)?.user_id !== u.id) throw unknownDevice();
     }
     let created = false;
     await sql.begin(async tx => {

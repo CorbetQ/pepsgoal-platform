@@ -9,8 +9,8 @@ api.pepsgoal.fr {
 	reverse_proxy server:8080
 }
 
-# Site vitrine (deploy/site, généré par deploy/site-src/build.mjs), pages légales comprises (/cgu, /mentions-legales, /confidentialite)
-pepsgoal.fr {
+# Site vitrine (deploy/site, généré par deploy/site-src/build.mjs), pages légales comprises (/cgu, /mentions-legales, /confidentialite, /licence)
+pepsgoal.fr, site.pepsgoal.fr {
 	root * /srv/site
 	encode zstd gzip
 	try_files {path} {path}.html {path}/index.html

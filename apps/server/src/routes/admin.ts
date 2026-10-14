@@ -127,7 +127,7 @@ export default async function adminRoutes(app: FastifyInstance) {
       where p.deleted_at is null and ${scope === 'pending' ? sql`p.status = 'pending'`
         : scope === 'reported' ? sql`exists (select 1 from reports r where r.post_id = p.id and r.closed_at is null)` : sql`true`}
       order by ${scope === 'reported' ? sql`report_count desc,` : sql``} p.created_at desc limit 100`;
-    return rows.map(p => ({ id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: p.photo_url, visibility: p.visibility, status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), reportCount: p.report_count, reasons: p.reasons ?? [] }));
+    return rows.map(p => ({ id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: p.photo_url, poll: p.poll, visibility: p.visibility, status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), reportCount: p.report_count, reasons: p.reasons ?? [] }));
   });
 
   for (const action of ['approve', 'reject', 'delete', 'lock', 'unlock', 'dismiss'] as const) {

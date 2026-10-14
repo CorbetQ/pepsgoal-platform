@@ -50,7 +50,7 @@ synchroniser plusieurs appareils, à sauvegarder et à faire fonctionner les fon
   Chaque ligne porte `rev` (séquence `sync_rev_seq`) et `deleted_at` (suppression transmise aux autres appareils).
 - **Partagé** : `goal_members` (défis de groupe et duels), binôme de motivation (`goals.buddy_id`, validations `pending`).
 - **Messagerie** : `messages` (privé : `recipient_id`, groupe : `group_id`, pièces jointes citées : `attachments`), `chat_groups`, `chat_group_members`, `attachments` (fichiers chiffrés, jamais servis publiquement).
-- **Social** : `friendships`, `blocks`, `posts` (photo : `photo_url`), `post_likes`, `cheer_credits` (gels de série), `comments`, `stories` (expirent après 24 h), `story_views`, `messages` (chiffrés de bout en bout, colonne `e2e` ; seul PepsGoal Officiel écrit en clair), `e2e_devices`, `e2e_pair_keys`, `e2e_envelopes`, `e2e_vaults`, `e2e_vault_keys` (voir E2E.md), `notifications`.
+- **Social** : `friendships`, `blocks`, `posts` (photo : `photo_url`, sondage : `poll`), `poll_votes`, `post_likes`, `cheer_credits` (gels de série), `comments`, `stories` (expirent après 24 h), `story_views`, `messages` (chiffrés de bout en bout, colonne `e2e` ; seul PepsGoal Officiel écrit en clair), `e2e_devices`, `e2e_pair_keys`, `e2e_envelopes`, `e2e_vaults` (clé du coffre chiffrée, témoins), `e2e_vault_keys` (voir E2E.md), `notifications`.
 - **Modération** : `reports`, `appeals`, `mod_actions` (journal), `maintenance`, `announcements` ; colonnes de sanction sur `users` (`warned_at`, `ban_until`, `ban_permanent`, `comments_restricted`).
 
 Les types d'objectifs et leurs réglages sont définis une seule fois dans `packages/shared/src/schemas.ts` (`GoalDataByType`)

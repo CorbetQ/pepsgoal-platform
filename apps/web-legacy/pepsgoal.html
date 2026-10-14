@@ -580,11 +580,59 @@ textarea:focus,input:focus,select:focus{outline:none;border-color:var(--focus);b
 .field-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 fieldset{border:0;padding:0;margin:0;min-width:0}
 legend{padding:0}
+/* Sélecteur d'emojis à catégories */
+.ep{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:16px;padding:8px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.ep-cats{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.ep-cat{flex:none;width:40px;height:40px;border-radius:12px;border:1.5px solid transparent;background:none;font-size:22px;display:grid;place-items:center;cursor:pointer;padding:0}
+.ep-cat[aria-selected="true"]{border-color:var(--flame);background:color-mix(in srgb,var(--flame) 14%,transparent)}
+.ep-label{font-size:12px;font-weight:800;color:var(--ink-2);margin:0 4px}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:4px;max-height:212px;overflow-y:auto;overscroll-behavior:contain}
+.ep-e{height:42px;border-radius:12px;border:1.5px solid transparent;background:none;font-size:24px;display:grid;place-items:center;cursor:pointer;padding:0}
+.ep-e:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.ep-e[aria-pressed="true"]{border-color:var(--flame);background:color-mix(in srgb,var(--flame) 16%,transparent)}
+.ep-cat:focus-visible,.ep-e:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+/* Sondages */
+.poll{display:flex;flex-direction:column;gap:6px;margin:4px 0}
+.poll-q{display:flex;align-items:center;gap:6px;margin:0 0 2px}
+.poll-q svg{width:16px;height:16px;flex:none}
+.poll-opt{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px;padding:9px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--glass-strong);color:var(--ink);font:inherit;font-weight:700;text-align:left;cursor:pointer;overflow:hidden;isolation:isolate}
+.poll-opt::before{content:"";position:absolute;inset:0;width:var(--pct,0%);background:color-mix(in srgb,var(--flame) 18%,transparent);z-index:-1;transition:width .35s ease}
+.poll-opt.lead::before{background:color-mix(in srgb,var(--flame) 30%,transparent)}
+.poll-opt.on{border-color:var(--flame)}
+.poll-opt:disabled{cursor:default;opacity:.9}
+.poll-opt:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.po-t{display:inline-flex;align-items:center;gap:6px;min-width:0;overflow-wrap:anywhere}
+.po-t svg{width:15px;height:15px;flex:none;color:var(--flame)}
+.po-n{flex:none;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.poll-meta{font-size:12px;color:var(--ink-2);margin:2px 2px 0}
+.msg.k-poll{width:min(86%,340px)}
+.msg.me .poll-opt{background:rgba(255,255,255,.88);border-color:rgba(255,255,255,.6);color:#14152E}
+.msg.me .poll-opt.on{border-color:#14152E}
+.msg.me .poll-meta,.msg.me .po-n{color:inherit;opacity:.85}
+.poll-edit{display:flex;flex-direction:column;gap:8px}
+.poll-opts{display:flex;flex-direction:column;gap:6px}
+.poll-form{margin-bottom:8px;padding:10px;border-radius:16px;border:1px solid var(--line)}
+.composer-tools,.chat-tools{display:flex;flex-wrap:wrap;gap:8px}
+.composer-tools [aria-pressed="true"],.chat-f [aria-pressed="true"]{color:var(--flame);border-color:var(--flame)}
+.chat-tools{margin-bottom:8px}
+#chat-extra .ep{margin-bottom:8px}
+/* Bandeau des clés de chiffrement (version connectée) */
+.e2e-banner{display:flex;flex-direction:column;gap:8px;padding:12px;margin-bottom:12px;border-radius:16px;border:1px solid color-mix(in srgb,var(--flame) 45%,transparent);background:color-mix(in srgb,var(--flame) 10%,var(--glass-strong))}
+.e2e-banner>p{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:13.5px}
+.e2e-banner>p svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--flame)}
+.vault-box{display:flex;flex-direction:column;gap:8px}
+.vault-box .c-form input{flex:1;min-width:0}
+/* Conversation rendue ligne par ligne */
+.msg-wait{display:inline-flex;gap:6px;align-items:flex-start;font-size:13px;opacity:.85}
+.msg-wait svg{width:15px;height:15px;flex:none;margin-top:2px}
+.mrow{display:flex;flex-direction:column}
+.legal pre.license{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;padding:12px;border-radius:12px;background:color-mix(in srgb,var(--ink) 6%,transparent);overflow-x:auto}
 /* Emojis Fluent : à la taille du texte qui les entoure */
 .emj{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;margin:0 .02em;object-fit:contain;user-select:all}
 /* Photos des publications et visionneuse */
 .post-photo{display:block;width:100%;padding:0;border:0;background:color-mix(in srgb,var(--ink) 6%,transparent);border-radius:var(--r-md);overflow:hidden;cursor:zoom-in}
-.post-photo img{display:block;width:100%;max-height:520px;object-fit:cover}
+.post-photo{max-height:520px}
+.post-photo img{display:block;width:100%;height:100%;max-height:520px;object-fit:cover}
 .post-photo.mod{max-width:260px;margin:8px 0}
 .pp-prev{position:relative;border-radius:var(--r-md);overflow:hidden;max-width:320px}
 .pp-prev img{display:block;width:100%;max-height:260px;object-fit:cover}
@@ -906,7 +954,7 @@ function emojify(root){
       if (!key) { buf += g; continue; }
       if (buf) { frag.append(buf); buf = ''; }
       const img = document.createElement('img');
-      img.className = 'emj'; img.alt = g; img.draggable = false; img.decoding = 'async';
+      img.className = 'emj'; img.alt = g; img.draggable = false;
       img.onerror = () => img.replaceWith(g);
       img.src = `${EMOJI.base}${key}.webp`;
       frag.append(img); changed = true;
@@ -1022,6 +1070,10 @@ const P = {
   send:'<path d="M4 12l16-8-6 16-3-7z"/><path d="M11 13l9-9"/>',
   pause:'<path d="M8 5v14M16 5v14"/>',
   mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  smile:'<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c.9 1.2 2.1 1.8 3.5 1.8s2.6-.6 3.5-1.8M9 9.5h.01M15 9.5h.01"/>',
+  poll:'<path d="M5 20V11M12 20V5M19 20v-6"/>',
+  github:'<path d="M9 19c-4 1.3-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6 0C6.8 2.8 5.8 3.1 5.8 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4.4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/>',
+  link:'<path d="M10 14a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7.1-7.1l-1.1 1.1M14 10a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7.1 7.1l1.1-1.1"/>',
   shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/>',
   flameo:'<path d="M12 21.5c-4 0-7-2.9-7-6.8 0-3.4 2.2-5.4 3.7-7.3.4 1.8 1.2 3 2.4 3.5-.4-3 .7-6 3.4-8-.3 3.3 1.5 5.1 3 7.2 1.1 1.5 1.7 3.1 1.7 4.9 0 3.9-3 6.5-7.2 6.5z"/>'
 };
@@ -1096,7 +1148,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.3.0';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -2439,7 +2491,7 @@ function viewAuth(){
       <p class="auth-legal" style="text-align:center;margin-top:-6px">Sans compte : données sur cet appareil uniquement, sans synchronisation ni fonctions sociales.</p>
       <button class="btn block" data-act="demo-login">${flame(18)}Mode démonstration</button>
       <button class="btn btn-ghost block" data-act="zip-import" data-id="account">${icon('folder')}Restaurer un compte (.zip)</button>
-      <p class="auth-legal"><button class="linkbtn" data-act="open-legal" data-id="cgu">CGU</button> · <button class="linkbtn" data-act="open-legal" data-id="mentions">Mentions légales</button> · <button class="linkbtn" data-act="open-legal" data-id="privacy">Confidentialité</button> · <button class="linkbtn" data-act="open-a11y">Accessibilité</button></p>
+      <p class="auth-legal"><button class="linkbtn" data-act="open-legal" data-id="cgu">CGU</button> · <button class="linkbtn" data-act="open-legal" data-id="mentions">Mentions légales</button> · <button class="linkbtn" data-act="open-legal" data-id="privacy">Confidentialité</button> · <button class="linkbtn" data-act="open-legal" data-id="license">Licence</button> · <button class="linkbtn" data-act="open-a11y">Accessibilité</button></p>
       <p class="auth-legal" style="text-align:center">Mode démonstration : profils et données d’exemple, rien n’est enregistré. · PepsGoal ${APP_VERSION}</p>
     </section>
     </div>
@@ -2594,7 +2646,8 @@ function postHtml(p){
     ${pend ? `<span class="chip st-warn">${icon('clock')}En attente de validation par la modération</span>` : ''}
     ${p.kind === 'milestone' ? `<span class="milestone">${icon('medal')}Palier atteint</span>` : ''}
     ${p.text ? `<p class="post-text">${esc(p.text)}</p>` : ''}
-    ${p.photo ? `<button class="post-photo" data-act="view-post-photo" data-id="${p.id}" aria-label="Agrandir la photo"><img src="${esc(p.photo)}" alt="Photo partagée par ${esc(a.name)}" loading="lazy"></button>` : ''}
+    ${p.poll ? pollHtml(p) : ''}
+    ${p.photo ? `<button class="post-photo" data-act="view-post-photo" data-id="${p.id}" aria-label="Agrandir la photo" ${IMG_DIMS.has(p.photo) ? `style="aspect-ratio:${IMG_DIMS.get(p.photo)}"` : ''}><img src="${esc(p.photo)}" alt="Photo partagée par ${esc(a.name)}" loading="lazy"></button>` : ''}
     ${p.goalId ? goalAttach(goalById(p.goalId)) : ''}
     <footer class="post-f">
       <button class="cheer ${liked ? 'on' : ''} ${UI.justLiked === p.id ? 'just' : ''}" data-act="like" data-id="${p.id}" aria-pressed="${liked}">${flame(18)}<span>${p.likes.length}</span>Encourager</button>
@@ -2698,7 +2751,7 @@ function mGoalForm(){
       ${g ? typeTile(type, true, true, false) : TYPE_GROUPS.map(([lab, ks]) => { const list = ks.filter(k => !(EXT[k]?.social && !socialOn())); return list.length ? `<p class="tg-lab">${lab}</p>${list.map((k, i) => typeTile(k, k === type, false, list.length % 2 === 1 && i === list.length - 1)).join('')}` : ''; }).join('')}
     </fieldset>
     <div class="field"><label for="g-title">Intitulé</label><input type="text" id="g-title" name="title" maxlength="80" value="${v('title')}" placeholder="Ex. Courir 30 minutes" autofocus></div>
-    <fieldset class="field"><legend>Icône</legend><div class="emoji-pick">${EMOJIS.map((e, i) => `<label><input type="radio" name="icon" value="${e}" ${(g ? g.icon === e : i === 0) ? 'checked' : ''}><span>${e}</span></label>`).join('')}</div></fieldset>
+    <fieldset class="field"><legend>Icône</legend>${emojiPicker('goal', { name:'icon', value:g ? g.icon : EMOJIS[0] })}</fieldset>
     <div data-sec="objective" class="gform">
       <div class="field-row">
         <div class="field"><label for="g-target">Cible</label><input type="number" id="g-target" name="target" min="1" step="any" value="${v('target', 10)}"></div>
@@ -2856,7 +2909,7 @@ function mAvatar(){
   const kinds = [['initials','Initiales'],['photo','Photo'],['emoji','Emoji'],['picto','Pictogramme']];
   let picker = '';
   if (d.kind === 'photo') picker = `<div class="field" style="align-items:flex-start"><button type="button" class="btn" data-act="av-pick">${icon('image')}${d.photo ? 'Changer de photo' : 'Choisir une photo'}</button><input type="file" id="av-file" accept="image/*" class="sr"><small class="muted">La photo est recadrée en carré et reste dans ce navigateur. La couleur choisie forme l'anneau autour.</small></div>`;
-  if (d.kind === 'emoji') picker = `<div class="pick-grid" role="group" aria-label="Emoji">${AV_EMOJIS.map(e => `<button type="button" class="pick" data-act="av-emoji" data-id="${e}" aria-pressed="${d.emoji === e}">${e}</button>`).join('')}</div>`;
+  if (d.kind === 'emoji') picker = emojiPicker('avatar', { value:d.emoji });
   if (d.kind === 'picto') picker = `<div class="pick-grid" role="group" aria-label="Pictogramme">${PICTOS.map(p => `<button type="button" class="pick" data-act="av-picto" data-id="${p}" aria-pressed="${d.picto === p}" aria-label="${p}"><svg class="i" viewBox="0 0 24 24">${P[p]}</svg></button>`).join('')}</div>`;
   if (d.kind === 'initials') picker = `<p class="muted small">Tes initiales sont tirées de ton nom affiché.</p>`;
   return `${sheetHead('Icône de profil')}
@@ -3200,7 +3253,7 @@ const ACT = {
   'open-goal': id => { UI.modal = { type:'goal', id }; renderModal(); },
   'open-user': id => { UI.modal = { type:'user', id }; renderModal(); },
   'open-notifs': () => { UI.modal = { type:'notifs' }; renderModal(); DB.notifs.forEach(n => { if (n.userId === me().id) n.read = true; }); save(); updateBell(); },
-  close: () => { stopRec(true); UI.chatGoal = false; UI.modal = null; renderModal(); },
+  close: () => { stopRec(true); UI.chatPanel = null; UI.modal = null; renderModal(); },
   'limit-add': id => {
     const g = goalById(id); addCheck(g, 'use', 1, 0);
     const used = EXT.limit.used(g), ex = todayDone(g);
@@ -3448,10 +3501,14 @@ const FORMS = {
   },
   post(f){
     const fd = new FormData(f), text = (fd.get('text') || '').trim(), photo = f.querySelector('#post-photo-in') ? UI.postPhoto : null;
+    const poll = f.querySelector('.poll-edit') ? readPoll(fd) : null;
+    if (typeof poll === 'string') { toast(poll, 'x'); return; }
+    if (poll && !text) { toast('Écris la question du sondage dans ta publication.', 'x'); return; }
     if (!text && !photo) { toast('Écris quelque chose ou ajoute une photo avant de publier.', 'x'); return; }
     if (socialBlocked('de publier')) return;
     const np = { id:uid(), userId:me().id, text, visibility:fd.get('vis') || 'friends', goalId:f.dataset.goal || fd.get('goal') || null, kind:'manual', at:Date.now(), likes:[], comments:[] };
     if (photo) { np.photo = photo; UI.postPhoto = null; }
+    if (poll) { np.poll = { options:poll.options.map((t, i) => ({ id:'o' + i, t, votes:[] })), multi:poll.multi, endsAt:Date.now() + poll.hours * 3600e3 }; UI.postPoll = false; }
     if (me().warned) { np.status = 'pending'; admins().forEach(a => notify(a.id, `Nouvelle publication de ${me().name} à valider.`, { type:'verify' })); }
     DB.posts.push(np); if (!np.status) demoReactions(np);
     UI.modal = null; UI.view = 'feed'; UI.feedTab = fd.get('vis') === 'public' && UI.feedTab === 'public' ? 'public' : 'friends';
@@ -3583,7 +3640,7 @@ function statusChips(x){
 }
 function modPostCard(p, extra){
   const a = userById(p.userId);
-  return `<li class="mod-post"><div class="mp-h">${avatar(a, 30)}<b>${esc(a.name)}</b><small class="muted">@${esc(a.username)} · ${ago(p.at)} · ${VIS[p.visibility].l}</small>${statusChips(a)}</div>${p.text ? `<p class="post-text">${esc(p.text)}</p>` : ''}${p.photo ? `<button class="post-photo mod" data-act="view-post-photo" data-id="${p.id}" aria-label="Agrandir la photo"><img src="${esc(p.photo)}" alt="Photo de la publication" loading="lazy"></button>` : ''}<div class="quick">${extra}</div></li>`;
+  return `<li class="mod-post"><div class="mp-h">${avatar(a, 30)}<b>${esc(a.name)}</b><small class="muted">@${esc(a.username)} · ${ago(p.at)} · ${VIS[p.visibility].l}</small>${statusChips(a)}</div>${p.text ? `<p class="post-text">${esc(p.text)}</p>` : ''}${p.poll ? `<p class="muted small">${icon('poll')} Sondage : ${p.poll.options.map(o => esc(o.t)).join(' · ')}</p>` : ''}${p.photo ? `<button class="post-photo mod" data-act="view-post-photo" data-id="${p.id}" aria-label="Agrandir la photo"><img src="${esc(p.photo)}" alt="Photo de la publication" loading="lazy"></button>` : ''}<div class="quick">${extra}</div></li>`;
 }
 function modUserResults(){
   const q = (UI.modQuery || '').trim().toLowerCase();
@@ -3759,17 +3816,19 @@ const GROUP_EMOJIS = ['💬', '🔥', '🏃', '💪', '📚', '🎯', '🧘', '�
 function msgBody(m){
   const raw = m.e2e ? E2E.cache.get(m.id) : m.text;
   if (raw == null) return null;
-  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text'].includes(o.k)) return o; } catch(e){} }
+  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote'].includes(o.k)) return o; } catch(e){} }
   return { pg:1, k:'text', t:String(raw) };
 }
 const fmtDur = s => `${Math.floor((s || 0) / 60)}:${String(Math.round((s || 0) % 60)).padStart(2, '0')}`;
 // Aperçu d'un message (liste des conversations, notifications, export)
 function msgPreview(m){
   if (m.e2e && !E2E.cache.has(m.id)) return '🔒 …';
-  const b = msgBody(m); if (!b) return '🔒 Message chiffré : sa clé n’est pas sur cet appareil.';
+  const b = msgBody(m); if (!b) return '🔒 Message chiffré : clé en attente';
   if (b.k === 'photo') return '📷 Photo' + (b.t ? ` · ${b.t}` : '');
   if (b.k === 'voice') return `🎤 Message vocal (${fmtDur(b.a?.dur)})`;
   if (b.k === 'goal') return `🎯 ${b.g?.title || 'Objectif partagé'}`;
+  if (b.k === 'poll') return `📊 ${b.q || 'Sondage'}`;
+  if (b.k === 'vote') return '📊 A voté au sondage';
   return b.t;
 }
 
@@ -3781,7 +3840,8 @@ const grpKeyId = gid => `grp|${gid}`;
 const hiddenFrom = (m, uid) => m.from !== uid && blockedBy(uid, m.from);
 const convo = (a, b) => (DB.messages || []).filter(m => !m.chat && ((m.from === a && m.to === b) || (m.from === b && m.to === a))).sort((x, y) => x.at - y.at);
 const groupConvo = (gid, uid) => (DB.messages || []).filter(m => m.chat === gid && !hiddenFrom(m, uid)).sort((x, y) => x.at - y.at);
-const isUnread = (m, uid) => m.chat ? m.from !== uid && !(m.readBy || []).includes(uid) && !hiddenFrom(m, uid) && !!chatById(m.chat)?.members.includes(uid) : m.to === uid && !m.read;
+// Les votes aux sondages ne comptent pas comme des messages non lus
+const isUnread = (m, uid) => msgBody(m)?.k !== 'vote' && (m.chat ? m.from !== uid && !(m.readBy || []).includes(uid) && !hiddenFrom(m, uid) && !!chatById(m.chat)?.members.includes(uid) : m.to === uid && !m.read);
 const unreadFrom = (meId, other) => (DB.messages || []).filter(m => !m.chat && m.to === meId && m.from === other && !m.read).length;
 const unreadGroup = (meId, gid) => (DB.messages || []).filter(m => m.chat === gid && isUnread(m, meId)).length;
 const unreadMsgs = meId => (DB.messages || []).filter(m => isUnread(m, meId) && (m.chat || (userById(m.from) && !blockedBy(meId, m.from)))).length;
@@ -3898,33 +3958,18 @@ async function waveform(blob){
 function msgInner(m){
   if (m.e2e && !E2E.cache.has(m.id)) return '🔒 …';
   const b = msgBody(m);
-  if (!b) return esc('🔒 Message chiffré : sa clé n’est pas sur cet appareil.');
+  if (!b) return `<span class="msg-wait">${icon('lock')}<span>Message chiffré : sa clé arrive dès qu’un appareil qui la possède est en ligne${e2eNotice() ? ', ou déverrouille tes clés avec ton mot de passe ci-dessus' : ''}.</span></span>`;
   if (b.k === 'photo') {
     const src = attSrc(m, b), ratio = b.a?.w && b.a?.h ? `${b.a.w}/${b.a.h}` : '4/3';
     return `<button class="msg-photo" data-act="view-photo" data-id="${m.id}" aria-label="Agrandir la photo" style="aspect-ratio:${ratio}">${src ? `<img src="${esc(src)}" alt="Photo envoyée">` : `<span class="att-wait">${icon('image')}</span>`}</button>${b.t ? `<span class="msg-cap">${esc(b.t)}</span>` : ''}`;
   }
   if (b.k === 'voice') return voicePlayer(m, b);
+  if (b.k === 'poll') return chatPollHtml(m, b);
   if (b.k === 'goal') {
     const g = b.g || {}, type = TYPES[g.type] ? g.type : 'routine';
     return `<button class="attach msg-goal t-${type}" data-act="open-shared-goal" data-id="${m.id}"><span class="gi" aria-hidden="true">${esc(g.icon || '🎯')}</span><span><b>${esc(g.title || 'Objectif')}</b><small>${TYPES[type].label}${g.v ? ` · ${esc(g.v)} ${esc(g.l || '')}` : ''}</small></span></button>${b.t ? `<span class="msg-cap">${esc(b.t)}</span>` : ''}`;
   }
   return esc(b.t);
-}
-function chatLog(){
-  const u = me(), m0 = UI.modal, g = m0.group ? chatById(m0.group) : null;
-  const list = g ? groupConvo(g.id, u.id) : convo(u.id, m0.with);
-  let lastDay = '', lastFrom = '';
-  const body = list.map(m => {
-    const d = ymd(m.at), sep = d !== lastDay ? `<p class="chat-day">${d === today() ? "Aujourd'hui" : esc(fmtDate(d))}</p>` : '';
-    if (sep) lastFrom = '';
-    lastDay = d;
-    const mine = m.from === u.id, who = g && !mine && m.from !== lastFrom ? (userById(m.from)?.name || 'Ancien membre') : null;
-    lastFrom = m.from;
-    const kind = (m.e2e && !E2E.cache.has(m.id)) ? 'text' : (msgBody(m)?.k || 'text');
-    return `${sep}${who ? `<p class="msg-who">${esc(who)}</p>` : ''}<div class="msg ${mine ? 'me' : 'them'} ${m.official ? 'official' : ''} k-${kind}">${m.official && OFFICIAL_TAGS[m.tag] ? otag(m.tag) : ''}${msgInner(m)}<small>${new Date(m.at).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}</small></div>`;
-  }).join('');
-  return (body || `<p class="muted small chat-empty">${g ? 'Aucun message pour l’instant. Dis bonjour au groupe !' : "Aucun message pour l'instant. Lance la conversation !"}</p>`)
-    + (!g && UI.typing === m0.with ? `<div class="msg them typing" aria-label="En train d'écrire"><i></i><i></i><i></i></div>` : '');
 }
 function markRead(){
   const u = me(), m0 = UI.modal; if (!u || m0?.type !== 'chat') return;
@@ -3937,23 +3982,26 @@ function markRead(){
   });
   if (ch) save();
 }
-// Met à jour la conversation ouverte sans la reconstruire si rien n'a changé (un message vocal en cours de lecture n'est pas coupé)
+// Met à jour la conversation ouverte ligne par ligne : seules les lignes nouvelles ou modifiées sont redessinées
 function updateChat(force){
   if (UI.modal?.type !== 'chat') return;
   const el = document.getElementById('chat-log'); if (!el) return;
   markRead();
-  const html = chatLog();
-  if (html === el._html && !force) return;
-  if (!force && [...el.querySelectorAll('audio')].some(a => !a.paused)) { UI.chatDirty = true; return; }
   const atEnd = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
-  el.innerHTML = html; el._html = html; UI.chatDirty = false;
-  if (force || atEnd) el.scrollTop = el.scrollHeight;
+  const changed = reconcileRows(el, chatRows());
+  if (force || (changed && atEnd)) el.scrollTop = el.scrollHeight;
 }
-document.addEventListener('ended', e => { if (e.target.tagName === 'AUDIO' && UI.chatDirty) updateChat(); }, true);
-document.addEventListener('pause', e => { if (e.target.tagName === 'AUDIO' && UI.chatDirty) setTimeout(() => updateChat(), 300); }, true);
 function chatExtra(){
   if (UI.rec) return `<div class="rec-bar" role="status"><span class="rec-dot" aria-hidden="true"></span><span id="rec-time">${fmtDur(UI.rec.secs)}</span><span class="muted small">Enregistrement · ${fmtDur(MAX_VOICE)} max</span><button type="button" class="btn btn-ghost sm" data-act="rec-cancel">Annuler</button><button type="button" class="btn btn-primary sm" data-act="rec-send">${icon('send')}Envoyer</button></div>`;
-  if (UI.chatGoal) {
+  const p = UI.chatPanel;
+  if (p === 'tools') return `<div class="chat-tools" role="group" aria-label="Joindre">
+    <button type="button" class="btn sm" data-act="chat-photo">${icon('image')}Photo</button>
+    <button type="button" class="btn sm" data-act="chat-goal">${icon('target')}Objectif</button>
+    <button type="button" class="btn sm" data-act="chat-poll">${icon('poll')}Sondage</button></div>`;
+  if (p === 'emoji') return emojiPicker('chat', { mode:'insert', target:'chat-input' });
+  if (p === 'poll') return `<form class="gform poll-form" data-form="chat-poll" novalidate>${pollEditor(true)}<p class="form-err" id="cp-err" role="alert" hidden></p>
+    <div class="sheet-f"><button type="button" class="btn btn-ghost sm" data-act="chat-panel" data-id="">Annuler</button><button class="btn btn-primary sm" type="submit">${icon('send')}Envoyer le sondage</button></div></form>`;
+  if (p === 'goal') {
     const goals = DB.goals.filter(g => g.userId === me().id && !g.archived);
     return `<div class="goal-pick"><p class="muted small">Choisis l’objectif à partager :</p>${goals.length
       ? `<div class="gp-list">${goals.map(g => { const s = statBig(g); return `<button type="button" class="attach t-${g.type}" data-act="chat-goal-send" data-id="${g.id}"><span class="gi" aria-hidden="true">${esc(g.icon)}</span><span><b>${esc(g.title)}</b><small>${TYPES[g.type].label} · ${esc(String(s.v))} ${esc(s.l)}</small></span></button>`; }).join('')}</div>`
@@ -3963,13 +4011,13 @@ function chatExtra(){
 }
 const refreshChatExtra = () => {
   const el = document.getElementById('chat-extra'); if (el) el.innerHTML = chatExtra();
-  document.querySelector('[data-act="chat-goal"]')?.setAttribute('aria-pressed', UI.chatGoal ? 'true' : 'false');
+  document.querySelectorAll('[data-chat-panel]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.chatPanel === UI.chatPanel)));
 };
 function chatComposer(attrs){
   return `<div id="chat-extra">${chatExtra()}</div>
   <form class="c-form chat-f" data-form="chat" ${attrs}>
-    <button type="button" class="icon-btn plain" data-act="chat-photo" aria-label="Envoyer une photo">${icon('image')}</button>
-    <button type="button" class="icon-btn plain" data-act="chat-goal" aria-label="Partager un objectif" aria-pressed="${UI.chatGoal ? 'true' : 'false'}">${icon('target')}</button>
+    <button type="button" class="icon-btn plain" data-act="chat-panel" data-id="tools" data-chat-panel="tools" aria-label="Joindre une photo, un objectif ou un sondage" aria-pressed="${UI.chatPanel === 'tools'}">${icon('plus')}</button>
+    <button type="button" class="icon-btn plain" data-act="chat-panel" data-id="emoji" data-chat-panel="emoji" aria-label="Emojis" aria-pressed="${UI.chatPanel === 'emoji'}">${icon('smile')}</button>
     <label class="sr" for="chat-input">Message</label><input type="text" id="chat-input" name="text" placeholder="Écrire un message…" maxlength="500" autocomplete="off" autofocus>
     <button type="button" class="icon-btn plain" data-act="chat-voice" aria-label="Enregistrer un message vocal">${icon('mic')}</button>
     <button class="btn btn-primary sm" type="submit" aria-label="Envoyer">${icon('send')}</button>
@@ -3979,20 +4027,24 @@ function mChat(){
   const u = me(), m0 = UI.modal, g = m0.group ? chatById(m0.group) : null, x = g ? null : userById(m0.with);
   if (g ? !g.members.includes(u.id) : !x) { UI.modal = null; return ''; }
   markRead();
-  setTimeout(() => { const el = document.getElementById('chat-log'); if (el) { el.scrollTop = el.scrollHeight; el._html = el.innerHTML; } }, 0);
+  setTimeout(() => {
+    const el = document.getElementById('chat-log'); if (!el) return;
+    const rows = chatRows(); [...el.children].forEach((c, i) => { if (rows[i]?.k === c.dataset.k) c._h = rows[i].h; });
+    el.scrollTop = el.scrollHeight;
+  }, 0);
   const cid = g ? grpKeyId(g.id) : pairId(u.id, x.id);
   if (g || !isOfficial(x)) keyPrintConv(cid).then(p => { const el = document.getElementById('e2e-print'); if (el && p) el.textContent = `Empreinte de la clé : ${p}.`; }).catch(() => {});
   void decryptPending();
   const banned = isBanned(u);
   if (g) {
     return `<div class="sheet-h"><button class="who" data-act="group-info" data-id="${g.id}" aria-label="Infos du groupe ${esc(g.name)}"><span class="grp-av">${esc(g.emoji)}</span><span><b id="m-title">${esc(g.name)}</b><small>${pl(g.members.length, 'membre', 'membres')} · infos et membres</small></span></button><button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>
-    <p class="e2e-note">${icon('lock')}<span>Groupe chiffré de bout en bout : une clé propre au groupe, présente uniquement sur les appareils de ses membres. <span id="e2e-print"></span></span></p>
+    <p class="e2e-note">${icon('lock')}<span>Groupe chiffré de bout en bout : une clé propre au groupe, présente uniquement sur les appareils de ses membres. <span id="e2e-print"></span></span></p>${e2eNotice()}
     <div class="chat-log" id="chat-log" aria-live="polite">${chatLog()}</div>
     ${banned ? `<p class="muted small">Ta messagerie est suspendue ${esc(banText(u))}.</p>` : chatComposer(`data-group="${g.id}"`)}`;
   }
   const iBlocked = blockedBy(u.id, x.id), theyBlocked = blockedBy(x.id, u.id), friends = areFriends(u.id, x.id);
   return `<div class="sheet-h"><div class="who">${avatar(x, 40)}<span><b id="m-title">${esc(x.name)}${isOfficial(x) ? verified() : ''}</b>${x.demo ? '<span class="demo">démo</span>' : ''}<small>${isOfficial(x) ? 'Compte officiel' : '@' + esc(x.username)}</small></span></div><button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>
-  ${isOfficial(x) ? '' : `<p class="e2e-note">${icon('lock')}<span>Chiffrée de bout en bout : une clé propre à votre paire, stockée uniquement sur vos appareils. <span id="e2e-print"></span></span></p>`}
+  ${isOfficial(x) ? '' : `<p class="e2e-note">${icon('lock')}<span>Chiffrée de bout en bout : une clé propre à votre paire, présente uniquement sur vos appareils. <span id="e2e-print"></span></span></p>${e2eNotice()}`}
   <div class="chat-log" id="chat-log" aria-live="polite">${chatLog()}</div>
   ${isOfficial(x) ? `<p class="muted small">Compte officiel : il ne reçoit pas de réponses. Pour contester une décision de modération, utilise la demande de débannissement dans le Feed.</p>`
     : banned ? `<p class="muted small">Ta messagerie est suspendue ${esc(banText(u))}.</p>`
@@ -4070,7 +4122,7 @@ async function startRec(){
     if (UI.rec.secs >= MAX_VOICE) stopRec(false);
   }, 250) };
   mr.start(250);
-  UI.chatGoal = false; refreshChatExtra();
+  UI.chatPanel = null; refreshChatExtra();
 }
 function stopRec(cancel){
   const r = UI.rec; if (!r) return;
@@ -4122,7 +4174,7 @@ function mGroupNew(){
   return `${sheetHead('Nouveau groupe')}
   <form class="gform" data-form="group-new" novalidate>
     <div class="field"><label for="gn-name">Nom du groupe</label><input type="text" id="gn-name" name="name" maxlength="40" placeholder="Ex. Team running du dimanche" autocomplete="off" autofocus></div>
-    <fieldset class="field"><legend>Icône</legend><div class="emoji-pick">${GROUP_EMOJIS.map((e, i) => `<label><input type="radio" name="emoji" value="${e}" ${i ? '' : 'checked'}><span aria-label="${e}">${e}</span></label>`).join('')}</div></fieldset>
+    <fieldset class="field"><legend>Icône</legend>${emojiPicker('grp-new', { name:'emoji', value:GROUP_EMOJIS[0] })}</fieldset>
     <fieldset class="field"><legend>Membres</legend>${groupFriendPicker(u, [u.id], 'm')}</fieldset>
     <p class="muted small">${icon('lock')} Les messages du groupe sont chiffrés de bout en bout.</p>
     <p class="form-err" id="gn-err" role="alert" hidden></p>
@@ -4138,7 +4190,7 @@ function mGroupInfo(){
   <div class="gform">
     ${owner ? `<form class="gform" data-form="group-edit" novalidate>
       <div class="field"><label for="ge-name">Nom du groupe</label><input type="text" id="ge-name" name="name" maxlength="40" value="${esc(g.name)}" autocomplete="off"></div>
-      <fieldset class="field"><legend>Icône</legend><div class="emoji-pick">${GROUP_EMOJIS.map(e => `<label><input type="radio" name="emoji" value="${e}" ${g.emoji === e ? 'checked' : ''}><span aria-label="${e}">${e}</span></label>`).join('')}</div></fieldset>
+      <fieldset class="field"><legend>Icône</legend>${emojiPicker('grp-edit', { name:'emoji', value:g.emoji })}</fieldset>
       <div class="sheet-f" style="justify-content:flex-start"><button class="btn sm" type="submit">${icon('check')}Enregistrer</button></div>
     </form>` : ''}
     <h3 class="h2" style="font-size:14px">Membres (${members.length})</h3>
@@ -4162,7 +4214,7 @@ function messagesSection(u){
   const canGroup = socialOn(u) && !isGuest(u) && !isBanned(u) && friendsOf(u.id).length > 0;
   if (!rows.length && !canGroup) return '';
   const total = unreadMsgs(u.id), cut = s => s.length > 60 ? s.slice(0, 60) + '…' : s;
-  return `<section class="glass card"><div class="card-h"><h2>Messages</h2><div class="card-h-tools">${total ? `<span class="chip t-deadline">${total} non lus</span>` : ''}${canGroup ? `<button class="btn btn-ghost sm" data-act="group-new">${icon('group')}Nouveau groupe</button>` : ''}</div></div>
+  return `<section class="glass card">${e2eNotice()}<div class="card-h"><h2>Messages</h2><div class="card-h-tools">${total ? `<span class="chip t-deadline">${total} non lus</span>` : ''}${canGroup ? `<button class="btn btn-ghost sm" data-act="group-new">${icon('group')}Nouveau groupe</button>` : ''}</div></div>
     ${rows.length ? `<ul class="people">${rows.map(r => r.kind === 'dm'
       ? `<li class="person ${isOfficial(r.x) ? 'pinned' : ''}"><button class="who conv" data-act="open-chat" data-id="${r.x.id}">${avatar(r.x, 44)}<span><b>${esc(r.x.name)}${isOfficial(r.x) ? verified() : ''}</b><small class="${r.n ? 'unread' : ''}">${r.last.from === u.id ? 'Toi : ' : ''}${esc(cut(msgPreview(r.last)))} · ${ago(r.last.at)}</small></span></button>${r.n ? `<span class="badge static">${r.n}</span>` : ''}</li>`
       : `<li class="person"><button class="who conv" data-act="open-group" data-id="${r.g.id}"><span class="grp-av" style="--s:44px" aria-hidden="true">${esc(r.g.emoji)}</span><span><b>${esc(r.g.name)}</b><small class="${r.n ? 'unread' : ''}">${r.last ? `${r.last.from === u.id ? 'Toi' : esc(first(userById(r.last.from)?.name || '?'))} : ${esc(cut(msgPreview(r.last)))} · ${ago(r.last.at)}` : `Groupe · ${pl(r.g.members.length, 'membre', 'membres')}`}</small></span></button>${r.n ? `<span class="badge static">${r.n}</span>` : ''}</li>`).join('')}</ul>`
@@ -4195,7 +4247,7 @@ function blockedSection(u){
 const postPhotoPrev = () => UI.postPhoto ? `<div class="pp-prev"><img src="${esc(UI.postPhoto)}" alt="Aperçu de la photo"><button type="button" class="icon-btn" data-act="post-photo-del" aria-label="Retirer la photo">${icon('x')}</button></div>` : '';
 
 Object.assign(ACT, {
-  'open-group': id => { UI.chatGoal = false; UI.modal = { type:'chat', group:id }; renderModal(); updateBadges(); },
+  'open-group': id => { UI.chatPanel = null; UI.modal = { type:'chat', group:id }; renderModal(); updateBadges(); },
   'group-new': () => { if (socialBlocked('de créer un groupe')) return; UI.modal = { type:'groupNew' }; renderModal(); },
   'group-info': id => { UI.modal = { type:'groupInfo', group:id }; renderModal(); },
   'grp-member-rm': id => {
@@ -4213,12 +4265,11 @@ Object.assign(ACT, {
     UI.modal = { type:'confirm', title:`Supprimer « ${g.name} » ?`, text:'Le groupe et tous ses messages seront supprimés pour tous les membres.', ok:'Supprimer', danger:true, back:{ type:'groupInfo', group:g.id }, run: async () => { await groupDelete(g.id); render(); toast('Groupe supprimé.', 'trash'); } };
     renderModal();
   },
-  'chat-photo': () => { if (chatTarget()) document.getElementById('chat-photo-in')?.click(); },
-  'chat-goal': () => { if (UI.rec) return; UI.chatGoal = !UI.chatGoal; refreshChatExtra(); },
+  'chat-photo': () => { if (!chatTarget()) return; UI.chatPanel = null; refreshChatExtra(); document.getElementById('chat-photo-in')?.click(); },
   'chat-goal-send': id => {
     const g = goalById(id); if (!g) return;
     const s = statBig(g);
-    UI.chatGoal = false; refreshChatExtra();
+    UI.chatPanel = null; refreshChatExtra();
     void sendRich({ k:'goal', g:{ id:g.id, owner:g.userId, title:g.title, icon:g.icon, type:g.type, v:String(s.v), l:s.l } });
   },
   'chat-voice': () => { if (chatTarget()) void startRec(); },
@@ -4288,6 +4339,223 @@ document.addEventListener('change', e => {
   }
 });
 
+/* ================= emojis par catégorie, sondages (feed et messagerie) ================= */
+// Catalogue d'emojis (tous disponibles en version Fluent) : [identifiant, libellé, emoji de l'onglet, liste]
+const EMOJI_CATS = [
+  ["sport", "Sport et mouvement", "🏃", ["🏃", "🚴", "🏊", "🧘", "💪", "🏋️", "🤸", "🧗", "🚶", "🥾", "⛷️", "🏂", "🏄", "🚣", "🤽", "🤾", "🏌️", "🏇", "🤺", "🥊", "🥋", "⚽", "🏀", "🏈", "⚾", "🥎", "🎾", "🏐", "🏉", "🥏", "🎳", "🏏", "🏑", "🏒", "🥍", "🏓", "🏸", "⛳", "🏹", "🎣", "🤿", "🛹", "🛼", "⛸️", "🥌", "🎿", "🛷", "🚵", "🤼", "🤹", "🧍", "🏆", "🥇", "🥈", "🥉", "🏅", "🎽", "👟", "⌚", "⏱️"]],
+  ["food", "Alimentation et santé", "🥗", ["🥗", "🍎", "🍏", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🫐", "🍒", "🍑", "🥭", "🍍", "🥥", "🥝", "🍅", "🥑", "🥦", "🥬", "🥒", "🌶️", "🌽", "🥕", "🧄", "🧅", "🥔", "🍠", "🥜", "🌰", "🍞", "🥐", "🥖", "🥨", "🥯", "🧀", "🥚", "🍳", "🥞", "🧇", "🥩", "🍗", "🍖", "🍔", "🍟", "🍕", "🌭", "🥪", "🌮", "🌯", "🥙", "🍝", "🍜", "🍲", "🍛", "🍣", "🍱", "🥟", "🍚", "🍙", "🍤", "🍿", "🧂", "🍰", "🎂", "🧁", "🍩", "🍪", "🍫", "🍬", "🍭", "🍦", "🥛", "☕", "🍵", "🧃", "🥤", "🧋", "💧", "🍷", "🍺", "🥂", "🚭", "💊", "🩺", "🦷", "🩹", "❤️‍🩹", "🫀", "🫁"]],
+  ["mind", "Bien-être et sommeil", "🧘", ["🧘", "😌", "😴", "🛌", "🛀", "🧖", "💆", "🙏", "🕯️", "🌿", "🍃", "🌸", "🌙", "⭐", "🌞", "☀️", "🌅", "🌄", "🌈", "☁️", "🫧", "🧠", "❤️", "💚", "💙", "💜", "🤍", "🫶", "🤗", "😊", "🥰", "😇", "🎧", "🎶", "🍵", "📵", "📴", "🔕", "🧊", "🚿", "🧴", "🧼", "🪥", "🪞", "💤", "⏰", "🌊", "🏝️"]],
+  ["study", "Études et travail", "📚", ["📚", "📖", "📝", "✍️", "🖊️", "✏️", "📓", "📔", "📒", "📕", "📗", "📘", "📙", "🎓", "🏫", "🧑‍🎓", "🧑‍🏫", "🧑‍💻", "💻", "🖥️", "⌨️", "🖱️", "📱", "☎️", "📞", "📧", "📨", "📅", "📆", "🗓️", "📌", "📍", "📎", "🗂️", "📁", "📊", "📈", "📉", "💼", "🧑‍💼", "🏢", "🗣️", "🌐", "🔬", "🔭", "🧪", "🧬", "🧮", "📐", "📏", "🧠", "💡", "🔍", "🗃️", "🖨️", "🎤", "🧾"]],
+  ["money", "Argent et projets", "💰", ["💰", "💶", "💵", "💷", "💴", "💳", "🪙", "🏦", "🐷", "💸", "🧾", "📈", "📉", "📊", "💹", "🏷️", "🛒", "🛍️", "🎁", "🏠", "🏡", "🚗", "🏍️", "⛵", "🎯", "🚀", "🏗️", "🧱", "🔧", "🔨", "🛠️", "⚙️", "🗝️", "🔑", "📦", "✅", "☑️", "🏁", "🚩", "⏳", "🔒", "💎", "👑", "🤝", "📜", "🪜"]],
+  ["home", "Maison et quotidien", "🏠", ["🏠", "🛏️", "🛋️", "🪑", "🚪", "🪟", "🧹", "🧺", "🧽", "🧼", "🧴", "🪣", "🧯", "🗑️", "♻️", "🪴", "🌱", "🌵", "💐", "🕰️", "⏰", "🧸", "🧦", "👕", "👖", "👗", "👟", "🧥", "🎒", "👜", "🧳", "☂️", "🔑", "💡", "🔌", "🔋", "🧲", "🧰", "🪛", "🍳", "🥘", "🫖", "🧊", "🚿", "🛁", "🚽", "🧻", "🪥", "🐶", "🐱", "🐟", "🐦", "🐹", "🐰", "👶", "👵", "📞", "✉️"]],
+  ["hobby", "Loisirs et créativité", "🎨", ["🎨", "🖌️", "🖍️", "✂️", "🧵", "🧶", "📷", "📸", "🎥", "🎬", "📺", "🎮", "🕹️", "🎲", "♟️", "🧩", "🃏", "🎯", "🎸", "🎹", "🥁", "🎺", "🎷", "🎻", "🪕", "🎤", "🎧", "🎼", "🎵", "📻", "💃", "🕺", "🎭", "🎪", "🎟️", "📖", "✍️", "🪴", "🌻", "🧁", "🍳", "🛠️", "🪚", "🧗", "🎣", "⛺", "🏕️", "🔭", "🪁", "🎈", "🎉", "🪅"]],
+  ["nature", "Nature et animaux", "🌱", ["🌱", "🌿", "🍀", "🌳", "🌲", "🌴", "🌵", "🌾", "🍁", "🍂", "🍃", "🌸", "🌼", "🌻", "🌺", "🌹", "🌷", "💐", "🍄", "🌍", "🌊", "🏔️", "⛰️", "🌋", "🏞️", "🌞", "🌙", "⭐", "🌈", "❄️", "🔥", "💧", "⚡", "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🦉", "🦋", "🐝", "🐞", "🐢", "🐍", "🐙", "🐬", "🐳", "🐟", "🦄", "🦖", "🐴", "🐑", "🦔", "🐿️", "🦒", "🐘"]],
+  ["travel", "Voyages et sorties", "✈️", ["✈️", "🧳", "🗺️", "🧭", "🏖️", "🏝️", "🏕️", "⛺", "🏔️", "🗻", "🏙️", "🌆", "🌃", "🗼", "🗽", "🏰", "🎡", "🎢", "🚆", "🚄", "🚇", "🚌", "🚗", "🚕", "🚲", "🛴", "🛵", "🏍️", "⛵", "🚤", "🚢", "🚁", "🚀", "🛰️", "🛫", "🛬", "🎫", "🛂", "📸", "🗿", "🍹", "🌮", "🍝", "🍣", "🥐", "🌍", "🌎", "🌏", "🏨", "🌉"]],
+  ["faces", "Humeurs et personnages", "😀", ["😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "😉", "😊", "😇", "🥰", "😍", "🤩", "😘", "😋", "😛", "😜", "🤪", "😎", "🤓", "🧐", "🤔", "🤗", "🤭", "🫡", "😏", "😌", "😴", "🥱", "😮‍💨", "😤", "😢", "😭", "😱", "🥵", "🥶", "😡", "🤯", "🥳", "😬", "🙄", "😶", "🤐", "🤒", "🤕", "😺", "😸", "😻", "🙈", "🙉", "🙊", "👻", "🤖", "👽", "💀", "🎃", "🥷", "🧙", "🦸", "🦹", "🧚", "🧜", "🤠", "👑", "💩"]],
+  ["gestures", "Gestes et personnes", "👍", ["👍", "👎", "👏", "🙌", "👐", "🤲", "🤝", "🙏", "✌️", "🤞", "🤟", "🤘", "👌", "🤌", "👈", "👉", "👆", "👇", "☝️", "✋", "🤚", "🖐️", "🖖", "👋", "🤙", "💪", "🦾", "✍️", "🫶", "❤️‍🔥", "👀", "🧠", "🫂", "👶", "🧒", "👦", "👧", "🧑", "👨", "👩", "🧓", "👴", "👵", "🧑‍🍳", "🧑‍🔬", "🧑‍🎨", "🧑‍🚀", "🧑‍⚕️", "🧑‍🌾", "🧑‍🔧", "🧑‍🚒"]],
+  ["symbols", "Symboles et fêtes", "⭐", ["⭐", "🌟", "✨", "💫", "🔥", "💥", "💯", "✅", "✔️", "❌", "❗", "❓", "⚠️", "🔔", "📣", "💬", "💭", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔", "💖", "💝", "💘", "♾️", "🔆", "🌀", "🎯", "🏁", "🚩", "🎉", "🎊", "🎈", "🎁", "🎂", "🎄", "🎃", "🪔", "🧨", "🎆", "🎇", "🏆", "🥇", "🎖️", "🔑", "💎", "📌", "🔒", "🔓", "☮️", "☯️", "♻️", "⚡", "🆕", "🆗", "🔝", "🔜", "➕", "➖", "➗", "✖️"]]
+];
+const epCatOf = e => (EMOJI_CATS.find(c => c[3].includes(e)) || EMOJI_CATS[0])[0];
+// Réactions propres à un sélecteur (ex. aperçu de l'avatar)
+const EP_HOOKS = {
+  avatar: e => { if (UI.modal?.type === 'avatar') { UI.modal.draft.emoji = e; UI.modal.draft.kind = 'emoji'; renderModal(); } }
+};
+/**
+ * Sélecteur d'emojis à onglets de catégories.
+ * mode « value » : choisit une valeur (champ caché `name`) ; mode « insert » : insère l'emoji dans le champ `target`.
+ */
+function emojiPicker(id, opt = {}){
+  if (UI.epFor !== UI.modal) { UI.ep = {}; UI.epFor = UI.modal; }
+  UI.ep = UI.ep || {};
+  const cat = UI.ep[id] || (opt.value ? epCatOf(opt.value) : EMOJI_CATS[0][0]); UI.ep[id] = cat;
+  const c = EMOJI_CATS.find(x => x[0] === cat) || EMOJI_CATS[0];
+  return `<div class="ep" data-ep="${id}" data-mode="${opt.mode || 'value'}" ${opt.target ? `data-target="${opt.target}"` : ''}>
+    ${opt.name ? `<input type="hidden" name="${opt.name}" value="${esc(opt.value || '')}">` : ''}
+    <div class="ep-cats" role="tablist" aria-label="Catégories d’emojis">${EMOJI_CATS.map(([k, l, ic]) => `<button type="button" role="tab" class="ep-cat" data-act="ep-cat" data-id="${id}|${k}" aria-selected="${k === cat}" title="${l}" aria-label="${l}">${ic}</button>`).join('')}</div>
+    <p class="ep-label">${c[1]}</p>
+    <div class="ep-grid" role="group" aria-label="${c[1]}">${epGrid(id, c, opt.value)}</div>
+  </div>`;
+}
+const epGrid = (id, c, value) => c[3].map(e => `<button type="button" class="ep-e" data-act="ep-pick" data-id="${id}|${e}" aria-pressed="${e === value}" aria-label="${e}">${e}</button>`).join('');
+// Insère du texte à la position du curseur, sans dépasser la longueur maximale du champ
+function insertAtCursor(t, text){
+  if (!t) return;
+  const max = t.maxLength > 0 ? t.maxLength : Infinity, s = t.selectionStart ?? t.value.length, en = t.selectionEnd ?? s;
+  if (t.value.length - (en - s) + text.length > max) { toast('Message trop long.', 'x'); return; }
+  t.setRangeText(text, s, en, 'end'); t.dispatchEvent(new Event('input', { bubbles:true }));
+  t.focus({ preventScroll:true });
+}
+
+/* ---- sondages du feed : la question est le texte de la publication ---- */
+const pollOptInput = i => `<div class="field"><label class="sr" for="po-${i}">Choix ${i + 1}</label><input type="text" id="po-${i}" name="popt" maxlength="80" placeholder="Choix ${i + 1}" autocomplete="off"></div>`;
+function pollEditor(withQuestion){
+  return `<div class="poll-edit">
+    ${withQuestion ? `<div class="field"><label for="cp-q">Question</label><input type="text" id="cp-q" name="pq" maxlength="140" placeholder="Ex. On court samedi ou dimanche ?" autocomplete="off"></div>`
+      : `<p class="muted small">${icon('poll')} La question du sondage est le texte de ta publication.</p>`}
+    <div class="poll-opts">${[0, 1].map(pollOptInput).join('')}</div>
+    <button type="button" class="btn btn-ghost sm" data-act="poll-add-opt">${icon('plus')}Ajouter un choix</button>
+    <label class="check-row"><span>Plusieurs réponses possibles</span><span class="switch"><input type="checkbox" name="pmulti"><span></span></span></label>
+    ${withQuestion ? '' : `<div class="seg" role="radiogroup" aria-label="Durée du sondage">${[[24, '1 jour'], [72, '3 jours'], [168, '1 semaine']].map(([h, l], i) => `<label><input type="radio" name="phours" value="${h}" ${i ? '' : 'checked'}><span>${l}</span></label>`).join('')}</div>`}
+  </div>`;
+}
+// Lecture du sondage d'un formulaire : { options, multi, hours } ou message d'erreur
+function readPoll(fd){
+  const options = fd.getAll('popt').map(s => String(s).trim()).filter(Boolean);
+  if (options.length < 2) return 'Ajoute au moins deux choix au sondage.';
+  if (new Set(options.map(o => o.toLowerCase())).size !== options.length) return 'Deux choix du sondage sont identiques.';
+  return { options:options.slice(0, 6), multi:fd.get('pmulti') === 'on', hours:Math.max(1, Math.min(336, Number(fd.get('phours')) || 24)) };
+}
+function fmtLeft(ms){
+  if (ms >= DAY) return `dans ${pl(Math.round(ms / DAY), 'jour', 'jours')}`;
+  if (ms >= 3600e3) return `dans ${Math.round(ms / 3600e3)} h`;
+  return `dans ${Math.max(1, Math.round(ms / 60e3))} min`;
+}
+// Votes : liste des votants (hors ligne) ou nombres fournis par le serveur (n, mine, voters)
+const pollCount = o => o.n ?? (o.votes || []).length;
+const pollMine = (o, uid) => o.mine ?? (o.votes || []).includes(uid);
+function pollHtml(p){
+  const u = me(), poll = p.poll, closed = Date.now() >= poll.endsAt;
+  const voters = poll.voters ?? new Set(poll.options.flatMap(o => o.votes || [])).size;
+  const voted = poll.options.some(o => pollMine(o, u.id)), showRes = closed || voted || p.userId === u.id;
+  const top = Math.max(0, ...poll.options.map(pollCount));
+  return `<div class="poll ${showRes ? 'res' : ''}" role="group" aria-label="Sondage">
+    ${poll.options.map(o => {
+      const n = pollCount(o), pct = voters ? Math.round(n / voters * 100) : 0, on = pollMine(o, u.id);
+      return `<button type="button" class="poll-opt ${on ? 'on' : ''} ${showRes && n && n === top ? 'lead' : ''}" data-act="poll-vote" data-id="${p.id}|${o.id}" aria-pressed="${on}" ${closed ? 'disabled' : ''} style="--pct:${showRes ? pct : 0}%"><span class="po-t">${on ? icon('check') : ''}${esc(o.t)}</span>${showRes ? `<span class="po-n">${pct} %</span>` : ''}</button>`;
+    }).join('')}
+    <p class="poll-meta">${pl(voters, 'votant', 'votants')} · ${poll.multi ? 'plusieurs réponses' : 'une réponse'} · ${closed ? 'sondage terminé' : `se termine ${fmtLeft(poll.endsAt - Date.now())}`}${!closed && !voted && p.userId !== u.id ? ' · vote pour voir les résultats' : ''}</p>
+  </div>`;
+}
+// Vote (remplacé par l'envoi au serveur dans la version connectée)
+async function votePoll(p, oid){
+  const uid = me().id, poll = p.poll, o = poll.options.find(x => x.id === oid); if (!o) return;
+  const on = o.votes.includes(uid);
+  if (!poll.multi) poll.options.forEach(x => { x.votes = x.votes.filter(v => v !== uid); });
+  if (on) o.votes = o.votes.filter(v => v !== uid); else o.votes.push(uid);
+  save(); render();
+}
+
+/* ---- sondages de la messagerie : chiffrés comme les messages ; chaque vote est un message chiffré invisible ---- */
+function chatPollVotes(m){
+  const list = m.chat ? groupConvo(m.chat, me().id) : convo(m.from, m.to), by = new Map();
+  for (const x of list) { if (x.at < m.at) continue; const b = msgBody(x); if (b?.k === 'vote' && b.p === m.id) by.set(x.from, Array.isArray(b.o) ? b.o : []); }
+  return by;
+}
+function chatPollHtml(m, b){
+  const u = me(), votes = chatPollVotes(m), mine = votes.get(u.id) || [], opts = Array.isArray(b.o) ? b.o.slice(0, 6) : [];
+  const voters = [...votes.values()].filter(v => v.length).length, counts = {};
+  votes.forEach(v => v.forEach(id => { counts[id] = (counts[id] || 0) + 1; }));
+  const names = id => [...votes.entries()].filter(([, v]) => v.includes(id)).map(([w]) => w === u.id ? 'toi' : first(userById(w)?.name || '?')).join(', ');
+  return `<div class="poll in-chat res"><p class="poll-q">${icon('poll')}<b>${esc(b.q || 'Sondage')}</b></p>
+    ${opts.map(o => { const n = counts[o.id] || 0, pct = voters ? Math.round(n / voters * 100) : 0, on = mine.includes(o.id);
+      return `<button type="button" class="poll-opt ${on ? 'on' : ''}" data-act="chat-poll-vote" data-id="${m.id}|${o.id}" aria-pressed="${on}" style="--pct:${pct}%" ${n ? `title="${esc(names(o.id))}"` : ''}><span class="po-t">${on ? icon('check') : ''}${esc(o.t)}</span><span class="po-n">${n}</span></button>`; }).join('')}
+    <p class="poll-meta">${pl(voters, 'votant', 'votants')} · ${b.multi ? 'plusieurs réponses' : 'une réponse'}</p></div>`;
+}
+
+/* ---- conversation : mise à jour ligne par ligne (les photos, vocaux et emojis déjà affichés ne sont pas recréés) ---- */
+function chatRows(){
+  const u = me(), m0 = UI.modal, g = m0.group ? chatById(m0.group) : null;
+  const list = (g ? groupConvo(g.id, u.id) : convo(u.id, m0.with)).filter(m => msgBody(m)?.k !== 'vote');
+  const rows = []; let lastDay = '', lastFrom = '';
+  for (const m of list) {
+    const d = ymd(m.at);
+    if (d !== lastDay) { rows.push({ k:'d:' + d, h:`<p class="chat-day">${d === today() ? "Aujourd'hui" : esc(fmtDate(d))}</p>` }); lastFrom = ''; lastDay = d; }
+    const mine = m.from === u.id, who = g && !mine && m.from !== lastFrom ? (userById(m.from)?.name || 'Ancien membre') : null;
+    lastFrom = m.from;
+    const kind = (m.e2e && !E2E.cache.has(m.id)) ? 'text' : (msgBody(m)?.k || 'text');
+    rows.push({ k:'m:' + m.id, h:`${who ? `<p class="msg-who">${esc(who)}</p>` : ''}<div class="msg ${mine ? 'me' : 'them'} ${m.official ? 'official' : ''} k-${kind}">${m.official && OFFICIAL_TAGS[m.tag] ? otag(m.tag) : ''}${msgInner(m)}<small>${new Date(m.at).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}</small></div>` });
+  }
+  if (!rows.length) rows.push({ k:'empty', h:`<p class="muted small chat-empty">${g ? 'Aucun message pour l’instant. Dis bonjour au groupe !' : "Aucun message pour l'instant. Lance la conversation !"}</p>` });
+  if (!g && UI.typing === m0.with) rows.push({ k:'typing', h:`<div class="msg them typing" aria-label="En train d'écrire"><i></i><i></i><i></i></div>` });
+  return rows;
+}
+const chatLog = () => chatRows().map(r => `<div class="mrow" data-k="${esc(r.k)}">${r.h}</div>`).join('');
+// Ne remplace que les lignes nouvelles ou modifiées ; les autres restent en place (pas de saut, lecture audio non coupée)
+function reconcileRows(el, rows){
+  const keys = new Set(rows.map(r => r.k));
+  const mk = r => { const t = document.createElement('div'); t.className = 'mrow'; t.dataset.k = r.k; t.innerHTML = r.h; t._h = r.h; return t; };
+  let changed = false, i = 0;
+  for (const r of rows) {
+    let cur = el.children[i];
+    while (cur && !keys.has(cur.dataset.k)) { cur.remove(); changed = true; cur = el.children[i]; }
+    if (cur && cur.dataset.k === r.k) {
+      if (cur._h === undefined) cur._h = r.h;
+      else if (cur._h !== r.h) { cur.replaceWith(mk(r)); changed = true; }
+      i++; continue;
+    }
+    const prev = [...el.children].find(c => c.dataset.k === r.k);
+    if (prev) prev.remove();
+    el.insertBefore(prev && prev._h === r.h ? prev : mk(r), cur || null);
+    changed = true; i++;
+  }
+  while (el.children[i]) { el.children[i].remove(); changed = true; }
+  return changed;
+}
+// Proportions des photos du feed déjà vues : la page ne saute plus quand elle se redessine
+const IMG_DIMS = new Map();
+document.addEventListener('load', e => { const t = e.target; if (t.tagName === 'IMG' && t.closest?.('.post-photo') && t.naturalWidth) IMG_DIMS.set(t.getAttribute('src'), `${t.naturalWidth}/${t.naturalHeight}`); }, true);
+// Bandeau du chiffrement (clés à déverrouiller…) : fourni par la version connectée
+function e2eNotice(){ return ''; }
+
+Object.assign(ACT, {
+  'ep-cat': v => {
+    const [id, cat] = v.split('|'), box = document.querySelector(`.ep[data-ep="${id}"]`), c = EMOJI_CATS.find(x => x[0] === cat); if (!box || !c) return;
+    UI.ep = UI.ep || {}; UI.ep[id] = cat;
+    box.querySelectorAll('.ep-cat').forEach(b => b.setAttribute('aria-selected', String(b.dataset.id === v)));
+    box.querySelector('.ep-label').textContent = c[1];
+    const grid = box.querySelector('.ep-grid'); grid.setAttribute('aria-label', c[1]);
+    grid.innerHTML = epGrid(id, c, box.querySelector('input[type=hidden]')?.value); grid.scrollTop = 0;
+  },
+  'ep-pick': v => {
+    const i = v.indexOf('|'), id = v.slice(0, i), e = v.slice(i + 1), box = document.querySelector(`.ep[data-ep="${id}"]`); if (!box) return;
+    if (box.dataset.mode === 'insert') { insertAtCursor(document.getElementById(box.dataset.target), e); return; }
+    const h = box.querySelector('input[type=hidden]'); if (h) h.value = e;
+    box.querySelectorAll('.ep-e').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === v)));
+    EP_HOOKS[id]?.(e);
+  },
+  'chat-panel': id => { if (UI.rec) return; UI.chatPanel = !id || UI.chatPanel === id ? null : id; refreshChatExtra(); },
+  'chat-goal': () => { if (UI.rec) return; UI.chatPanel = 'goal'; refreshChatExtra(); },
+  'chat-poll': () => { if (UI.rec) return; UI.chatPanel = 'poll'; refreshChatExtra(); setTimeout(() => document.getElementById('cp-q')?.focus(), 0); },
+  'poll-add-opt': () => {
+    const box = document.querySelector('.poll-opts'); if (!box) return;
+    const n = box.querySelectorAll('input[name=popt]').length;
+    if (n >= 6) { toast('Six choix au maximum.', 'x'); return; }
+    box.insertAdjacentHTML('beforeend', pollOptInput(n)); document.getElementById(`po-${n}`)?.focus();
+  },
+  'poll-vote': v => {
+    const [pid, oid] = v.split('|'), p = DB.posts.find(x => x.id === pid);
+    if (!p?.poll || Date.now() >= p.poll.endsAt) return;
+    if (socialBlocked('de voter')) return;
+    void votePoll(p, oid);
+  },
+  'chat-poll-vote': v => {
+    const [mid, oid] = v.split('|'), m = (DB.messages || []).find(x => x.id === mid), b = m && msgBody(m); if (b?.k !== 'poll') return;
+    const cur = chatPollVotes(m).get(me().id) || [];
+    const next = b.multi ? (cur.includes(oid) ? cur.filter(x => x !== oid) : [...cur, oid]) : (cur.includes(oid) ? [] : [oid]);
+    void sendRich({ k:'vote', p:mid, o:next });
+  },
+  'post-emoji': () => {
+    UI.postPanel = UI.postPanel === 'emoji' ? null : 'emoji';
+    const el = document.getElementById('post-emoji'); if (el) el.innerHTML = UI.postPanel === 'emoji' ? emojiPicker('post', { mode:'insert', target:'composer-text' }) : '';
+    document.querySelector('[data-act="post-emoji"]')?.setAttribute('aria-pressed', String(UI.postPanel === 'emoji'));
+  },
+  'post-poll': () => {
+    UI.postPoll = !UI.postPoll;
+    const el = document.getElementById('post-poll'); if (el) el.innerHTML = UI.postPoll ? pollEditor(false) : '';
+    document.querySelector('[data-act="post-poll"]')?.setAttribute('aria-pressed', String(!!UI.postPoll));
+    if (UI.postPoll) document.getElementById('composer-text')?.setAttribute('placeholder', 'Ta question…');
+  }
+});
+Object.assign(FORMS, {
+  'chat-poll'(f){
+    const fd = new FormData(f), q = String(fd.get('pq') || '').trim(), err = f.querySelector('#cp-err'), fail = m => { err.textContent = m; err.hidden = false; };
+    if (!q) return fail('Écris la question du sondage.');
+    const poll = readPoll(fd); if (typeof poll === 'string') return fail(poll);
+    UI.chatPanel = null; refreshChatExtra();
+    void sendRich({ k:'poll', q, o:poll.options.map((t, i) => ({ id:'o' + i, t })), multi:poll.multi });
+  }
+});
+
 /* ================= actions et formulaires de ce module ================= */
 Object.assign(ACT, {
   'grp-filter': id => { UI.groupFilter = id; render(); },
@@ -4300,7 +4568,7 @@ Object.assign(ACT, {
     if (UI.groupFilter === id) UI.groupFilter = 'all';
     save(); render(); toast(`Groupe « ${x.name} » supprimé. Ses objectifs sont conservés.`, 'folder');
   },
-  'open-chat': id => { UI.chatGoal = false; UI.modal = { type:'chat', with:id }; renderModal(); updateBadges(); },
+  'open-chat': id => { UI.chatPanel = null; UI.modal = { type:'chat', with:id }; renderModal(); updateBadges(); },
   'open-appeal': () => { UI.modal = { type:'appeal' }; renderModal(); },
   'report-post': id => { UI.modal = { type:'report', id }; renderModal(); },
   'mod-user': id => { UI.modal = { type:'modUser', id }; renderModal(); },
@@ -4642,7 +4910,9 @@ function mCompose(){
   <form class="composer" data-form="post">
     <div class="composer-top">${avatar(u, 42)}<div style="flex:1;min-width:0"><label class="sr" for="composer-text">Ta publication</label><textarea id="composer-text" name="text" maxlength="500" placeholder="Partage une victoire, un doute, un cap franchi…" autofocus></textarea></div></div>
     <div id="post-photo-prev">${postPhotoPrev()}</div>
-    <div><button type="button" class="btn sm" data-act="post-photo">${icon('image')}Ajouter une photo</button><input type="file" id="post-photo-in" accept="image/*" class="sr" tabindex="-1" aria-hidden="true"></div>
+    <div class="composer-tools"><button type="button" class="btn sm" data-act="post-photo">${icon('image')}Photo</button><button type="button" class="btn sm" data-act="post-emoji" aria-pressed="false">${icon('smile')}Emojis</button><button type="button" class="btn sm" data-act="post-poll" aria-pressed="false">${icon('poll')}Sondage</button><input type="file" id="post-photo-in" accept="image/*" class="sr" tabindex="-1" aria-hidden="true"></div>
+    <div id="post-emoji"></div>
+    <div id="post-poll"></div>
     <div class="seg" role="radiogroup" aria-label="Visibilité">
       <label><input type="radio" name="vis" value="friends" checked><span>${icon('users')}Amis</span></label>
       <label><input type="radio" name="vis" value="public"><span>${icon('globe')}Public</span></label>
@@ -4881,7 +5151,7 @@ function viewProfile(){
 }
 
 Object.assign(ACT, {
-  compose: () => { if (socialBlocked('de publier')) return; UI.postPhoto = null; UI.modal = { type:'compose' }; renderModal(); },
+  compose: () => { if (socialBlocked('de publier')) return; UI.postPhoto = null; UI.postPoll = false; UI.postPanel = null; UI.modal = { type:'compose' }; renderModal(); },
   'story-new': () => { if (socialBlocked('de publier une story')) return; UI.modal = { type:'storyNew', kind:'progress', period:'week', goalId:null, photo:null, text:'' }; renderModal(); },
   'story-kind': id => { UI.modal.kind = id; renderModal(); if (id === 'photo' && !UI.modal.photo) setTimeout(() => document.getElementById('story-file')?.click(), 0); },
   'story-period': id => { UI.modal.period = id; renderModal(); },
@@ -4997,7 +5267,10 @@ const cleanCheckin = c => { c = sobj(c); const date = sdate(c.date), kind = oneO
   if (c.pending) { o.pending = true; o.ptsPending = Math.round(snum(c.ptsPending)); } if (c.taskId) o.taskId = sid(c.taskId); return o; };
 const cleanPost = p => { p = sobj(p); const o = { id:sid(p.id), userId:sid(p.userId), text:sstr(p.text, 500), visibility:oneOf(p.visibility, ['friends','public'], 'friends'), goalId:sidOpt(p.goalId), kind:oneOf(p.kind, ['manual','milestone'], 'manual'), at:snum(p.at, Date.now()),
   likes:[...new Set(sarr(p.likes).map(sid))], comments:keep(p.comments, c => ({ id:sid(sobj(c).id), userId:sid(c.userId), text:sstr(c.text, 280), at:snum(c.at, Date.now()) })) };
-  if (p.status === 'pending') o.status = 'pending'; if (p.commentsLocked) o.commentsLocked = true; if (simg(p.photo)) o.photo = simg(p.photo); return o; };
+  if (p.status === 'pending') o.status = 'pending'; if (p.commentsLocked) o.commentsLocked = true; if (simg(p.photo)) o.photo = simg(p.photo);
+  const pl0 = sobj(p.poll), opts = keep(pl0.options, x => { x = sobj(x); return /^o[0-5]$/.test(x.id) && sstr(x.t, 80) ? { id:x.id, t:sstr(x.t, 80), votes:[...new Set(sarr(x.votes).map(sid))] } : null; });
+  if (opts.length >= 2) o.poll = { options:opts.slice(0, 6), multi:!!pl0.multi, endsAt:snum(pl0.endsAt, Date.now()) };
+  return o; };
 const cleanStory = s => { s = sobj(s); const kind = oneOf(s.kind, ['photo','recap','progress'], null); if (!kind) return null; const d = sobj(s.data);
   const o = { id:sid(s.id), userId:sid(s.userId), kind, text:sstr(s.text, 140), at:snum(s.at, 0), seenBy:[...new Set(sarr(s.seenBy).map(sid))] };
   if (kind === 'photo') { o.photo = simg(s.photo); if (!o.photo) return null; }
@@ -5208,7 +5481,9 @@ document.addEventListener('change', e => { const t = e.target; if (t.id === 'zip
 /* ================= documents légaux ================= */
 // Textes fixes (aucune donnée utilisateur). Éditeur : Quentin CORBET, particulier, Angers.
 const LEGAL_MAIL = '<a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a>';
-const LEGAL_UPDATED = '13 octobre 2026';
+// Liens publics du projet
+const LINKS = { site:'https://site.pepsgoal.fr', repo:'https://github.com/CorbetQ/pepsgoal-platform', issue:'https://github.com/CorbetQ/pepsgoal-platform/issues/new' };
+const LEGAL_UPDATED = '14 octobre 2026';
 const LEGAL = {
   cgu:{ title:'Conditions générales d’utilisation', short:'CGU', sections:[
     ['1. Objet', `<p>Les présentes conditions générales d’utilisation (CGU) encadrent l’accès à l’application PepsGoal et son utilisation, sur le web (app.pepsgoal.fr) et sur mobile (iOS et Android). PepsGoal permet de planifier des objectifs, de valider sa progression, de suivre des séries (« flammes ») et, si tu le souhaites, de partager ta progression avec d’autres personnes.</p><p>En créant un compte ou en utilisant l’application, tu acceptes les présentes CGU. Si tu ne les acceptes pas, n’utilise pas PepsGoal.</p>`],
@@ -5226,7 +5501,7 @@ const LEGAL = {
   mentions:{ title:'Mentions légales', short:'Mentions légales', sections:[
     ['Éditeur', `<p>L’application PepsGoal (version ${APP_VERSION}) est éditée par Quentin CORBET, particulier agissant à titre non professionnel, domicilié à Angers (Maine-et-Loire, France).</p><ul><li>Immatriculation : sans objet (éditeur particulier, aucune activité commerciale)</li><li>Numéro de TVA intracommunautaire : sans objet</li><li>Adresse électronique : ${LEGAL_MAIL}</li><li>Directeur de la publication : Quentin CORBET</li></ul>`],
     ['Hébergement', `<p>Le site pepsgoal.fr, l’application web app.pepsgoal.fr et le serveur de PepsGoal (api.pepsgoal.fr : comptes, synchronisation, fonctions sociales, photos) sont hébergés sur un serveur privé virtuel loué auprès de Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre (www.hostinger.fr).</p><p>En mode sans compte, les données ne sont pas envoyées à ce serveur : elles restent sur l’appareil de l’utilisateur.</p>`],
-    ['Propriété intellectuelle', `<p>Le code source de l’application est publié sous licence MIT (<a href="https://github.com/CorbetQ/pepsgoal-platform" target="_blank" rel="noopener">github.com/CorbetQ/pepsgoal-platform</a>) : il peut être utilisé, modifié et redistribué librement, à condition de conserver la mention de copyright et le texte de la licence.</p><p>Le nom PepsGoal et le logo ne sont pas couverts par cette licence : ils ne peuvent pas être utilisés pour désigner ou promouvoir un autre service sans l’autorisation de l’éditeur.</p><p>Les contenus publiés par les utilisateurs restent la propriété de leurs auteurs.</p>`],
+    ['Propriété intellectuelle et licence', `<p>Le code source de PepsGoal est un logiciel libre distribué sous <b>licence MIT</b> : tu peux l’utiliser, le copier, le modifier et le redistribuer en conservant la mention de copyright et la licence (voir le document « Licence MIT »). Il est publié sur <a href="${LINKS.repo}" target="_blank" rel="noopener">GitHub</a>.</p><p>Le nom PepsGoal et son logo identifient le service officiel : ils ne sont pas concédés par la licence et ne doivent pas être utilisés pour présenter un service dérivé comme officiel.</p><p>Les contenus publiés par les utilisateurs restent la propriété de leurs auteurs.</p>`],
     ['Crédits', `<ul><li>Polices de caractères : Unbounded et Manrope, sous licence SIL Open Font License, intégrées à l’application.</li><li>Archives .zip : bibliothèque JSZip (licence MIT). Chiffrement des messages : bibliothèque TweetNaCl (domaine public).</li><li>Emojis : Fluent Emoji de Microsoft (licence MIT), servis par PepsGoal.</li></ul>`],
     ['Signaler un contenu illicite', `<p>Tu peux signaler une publication avec le bouton « Signaler » présent sur chaque publication, ou écrire à ${LEGAL_MAIL} en précisant le contenu concerné, sa date et la raison du signalement. Chaque signalement est transmis immédiatement à la modération, y compris par e-mail, et traité dans les meilleurs délais.</p>`],
     ['Contact', `<p>Pour toute question sur l’application : ${LEGAL_MAIL}.</p>`]
@@ -5246,6 +5521,33 @@ const LEGAL = {
     ['Mineurs', `<p>PepsGoal est accessible dès 15 ans. Avant 15 ans, l’accord d’un parent ou d’un tuteur légal est nécessaire pour créer un compte.</p>`],
     ['Sécurité', `<p>Les échanges avec le serveur sont chiffrés (HTTPS). Les mots de passe sont protégés par bcrypt sur le serveur (PBKDF2 en mode sans compte) et ne sont jamais stockés en clair. Les sessions expirent et un jeton volé est automatiquement révoqué s’il est réutilisé. La base de données n’est pas accessible depuis internet. Les fichiers importés sont vérifiés avant d’être acceptés. Choisis un mot de passe unique et protège l’accès à ton appareil.</p>`],
     ['Évolution de cette charte', `<p>Cette charte peut être mise à jour, notamment lors de l’ajout de nouvelles fonctions. Toute modification importante t’est annoncée par un message du compte PepsGoal Officiel.</p>`]
+  ]},
+  license:{ title:'Licence MIT', short:'Licence', sections:[
+    ['Licence de PepsGoal', `<p>PepsGoal est un logiciel libre : son code source (application web, applications mobiles et serveur) est publié sur <a href="${LINKS.repo}" target="_blank" rel="noopener">GitHub</a> sous licence MIT. Tu peux l’utiliser, l’étudier, le modifier et le redistribuer, y compris à des fins commerciales, à condition de conserver la mention de copyright et le texte de la licence.</p><p>La licence porte sur le logiciel. Elle ne donne aucun droit sur les données des utilisateurs du service PepsGoal, ni sur le nom et le logo PepsGoal.</p>`],
+    ['Texte de la licence (version officielle, en anglais)', `<pre class="license">MIT License
+
+Copyright (c) 2026 Quentin CORBET
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre>`],
+    ['Traduction indicative', `<p>Seule la version anglaise ci-dessus fait foi.</p><p>Copyright (c) 2026 Quentin CORBET. L’autorisation est accordée, gratuitement, à toute personne qui obtient une copie de ce logiciel et des fichiers de documentation associés (le « Logiciel »), de traiter le Logiciel sans restriction, notamment les droits d’utiliser, copier, modifier, fusionner, publier, distribuer, sous-licencier et/ou vendre des copies du Logiciel, et de permettre aux personnes à qui le Logiciel est fourni de le faire, aux conditions suivantes : la mention de copyright ci-dessus et la présente autorisation doivent figurer dans toutes les copies ou parties substantielles du Logiciel.</p><p>LE LOGICIEL EST FOURNI « EN L’ÉTAT », SANS GARANTIE D’AUCUNE SORTE, EXPLICITE OU IMPLICITE, NOTAMMENT SANS GARANTIE DE QUALITÉ MARCHANDE, D’ADÉQUATION À UN USAGE PARTICULIER ET D’ABSENCE DE CONTREFAÇON. EN AUCUN CAS LES AUTEURS OU TITULAIRES DU COPYRIGHT NE PEUVENT ÊTRE TENUS RESPONSABLES DE TOUTE RÉCLAMATION, DE TOUT DOMMAGE OU DE TOUTE AUTRE RESPONSABILITÉ, QUE CE SOIT DANS LE CADRE D’UN CONTRAT, D’UN DÉLIT OU AUTRE, DÉCOULANT DU LOGICIEL, DE SON UTILISATION OU DE TOUTE AUTRE OPÉRATION LIÉE AU LOGICIEL.</p><p>Cette absence de garantie concerne le logiciel distribué. L’utilisation du service PepsGoal (app.pepsgoal.fr et applications des stores) reste régie par les conditions générales d’utilisation.</p>`],
+    ['Composants tiers', `<ul><li><b>Fluent Emoji</b> (Microsoft) : licence MIT.</li><li><b>TweetNaCl</b> (chiffrement des messages) : domaine public.</li><li><b>JSZip</b> (archives .zip) : licence MIT ou GPLv3, utilisée ici sous licence MIT.</li><li><b>Unbounded</b> et <b>Manrope</b> (polices) : SIL Open Font License 1.1.</li><li>Application mobile : React Native, Expo et leurs modules (licence MIT).</li><li>Serveur : Fastify, postgres.js, Drizzle ORM, zod, nodemailer, PostgreSQL… : chaque composant reste soumis à sa propre licence, indiquée dans son paquet.</li></ul>`],
+    ['Contribuer', `<p>Les signalements de problèmes et propositions d’amélioration sont les bienvenus sur <a href="${LINKS.issue}" target="_blank" rel="noopener">GitHub</a>. Une contribution envoyée au projet est publiée sous la même licence MIT.</p>`]
   ]}
 };
 function mLegal(){
@@ -5261,11 +5563,15 @@ function mLegal(){
 SET_BODY.help = function(){ return `<section class="glass card"><div class="settings">
     <div class="set-row"><div><b>Tutoriel</b><small>Revoir les bases de PepsGoal</small></div><button class="btn sm" data-act="open-tuto">${flame(18)}Revoir</button></div>
     <div class="set-row"><div><b>À propos</b><small>PepsGoal ${APP_VERSION}${SANDBOX ? ' · mode démonstration' : ''}. Version web : les données restent dans ce navigateur. Édité par Quentin CORBET.</small></div></div>
+    <div class="set-row"><div><b>Site de PepsGoal</b><small>Présentation, nouveautés et téléchargement des applications</small></div><a class="btn sm" href="${LINKS.site}" target="_blank" rel="noopener">${icon('globe')}Ouvrir</a></div>
+    <div class="set-row"><div><b>Code source</b><small>PepsGoal est un logiciel libre sous licence MIT, publié sur GitHub</small></div><a class="btn sm" href="${LINKS.repo}" target="_blank" rel="noopener">${icon('github')}GitHub</a></div>
+    <div class="set-row"><div><b>Signaler un problème</b><small>Un bug, une idée ? Ouvre un ticket sur GitHub, ou écris à ${LEGAL_MAIL}</small></div><a class="btn sm" href="${LINKS.issue}" target="_blank" rel="noopener">${icon('flag')}Signaler</a></div>
   </div></section>
   <section class="glass card"><div class="card-h"><h2>Informations légales</h2><span class="muted small">Mise à jour le ${LEGAL_UPDATED}</span></div><div class="settings">
     <div class="set-row"><div><b>Conditions générales d’utilisation</b><small>Règles d’utilisation, conduite sur l’espace social, modération</small></div><button class="btn sm" data-act="open-legal" data-id="cgu">${icon('book')}Lire</button></div>
     <div class="set-row"><div><b>Mentions légales</b><small>Éditeur, hébergement, propriété intellectuelle, crédits</small></div><button class="btn sm" data-act="open-legal" data-id="mentions">${icon('book')}Lire</button></div>
     <div class="set-row"><div><b>Charte de confidentialité</b><small>Données utilisées, stockage, partage et tes droits</small></div><button class="btn sm" data-act="open-legal" data-id="privacy">${icon('lock')}Lire</button></div>
+    <div class="set-row"><div><b>Licence MIT</b><small>Licence du logiciel PepsGoal et des composants qu’il utilise</small></div><button class="btn sm" data-act="open-legal" data-id="license">${icon('book')}Lire</button></div>
   </div></section>`; };
 Object.assign(ACT, {
   'open-a11y': () => { UI.modal = { type:'a11y' }; renderModal(); },
