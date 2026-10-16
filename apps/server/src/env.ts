@@ -21,7 +21,11 @@ const Env = z.object({
   SMTP_PASS: z.string().optional(),
   MAIL_FROM: z.string().optional(),
   MAIL_MAX_PER_HOUR: z.coerce.number().int().min(1).default(30),
-  APP_URL: z.string().url().default('https://app.pepsgoal.fr')
+  APP_URL: z.string().url().default('https://app.pepsgoal.fr'),
+  // Notifications push : clés générées et gardées en base si absentes
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().default('mailto:quentin-corbet@outlook.fr')
 }).superRefine((e, ctx) => {
   if (e.NODE_ENV === 'production' && (!e.ADMIN_BOOTSTRAP_PASSWORD || e.ADMIN_BOOTSTRAP_PASSWORD.length < 12)) {
     ctx.addIssue({ code:'custom', path:['ADMIN_BOOTSTRAP_PASSWORD'], message:'Obligatoire en production (12 caractères minimum).' });

@@ -9,6 +9,7 @@ import { attachmentPath, ensureAttachmentDir } from '../lib/files.js';
 import { areFriends, isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
 import { notify } from '../lib/notify.js';
+import { pushLater } from '../lib/push.js';
 
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
 const MAX_MEMBERS = 31;
@@ -184,7 +185,7 @@ export default async function groupRoutes(app: FastifyInstance) {
 
   app.post('/v1/groups/:id/messages', { preHandler: requireSocial, config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req, reply) => {
     const { id } = params(req.params);
-    const { e2e, attachments } = MessageBody.parse(req.body);
+    const { e2e, attachments, silent, mentions } = MessageBody.parse(req.body);
     const u = me(req);
     const g = await groupOf(id, u.id);
     // La clé doit appartenir au groupe et être postérieure au dernier départ d'un membre
@@ -194,6 +195,13 @@ export default async function groupRoutes(app: FastifyInstance) {
     await checkAttachments(u.id, attachments);
     const [m] = await sql<Row[]>`insert into messages (sender_id, group_id, e2e, attachments) values (${u.id}, ${id}, ${sql.json(e2e)}, ${attachments}) returning id, created_at`;
     await sql`update chat_group_members set last_read_at = now() where group_id = ${id} and user_id = ${u.id}`;
+    const others = await sql<Row[]>`select user_id from chat_group_members where group_id = ${id} and user_id <> ${u.id}`;
+    const tagged = new Set(mentions);
+    for (const o of others) {
+      // Mention : notification gardée dans la cloche (le contenu du message reste chiffré)
+      if (tagged.has(o.user_id)) await notify(sql, o.user_id, 'mention', `${u.displayName} t’a mentionné dans ${g.emoji} ${g.name}`, { groupId: id });
+      else if (!silent) pushLater(o.user_id, { title: `${g.emoji} ${g.name}`, body: `Nouveau message de ${u.displayName}`, tag: `grp:${id}`, view: 'friends' });
+    }
     reply.status(201);
     return { id: m!.id, createdAt: iso(m!.created_at) };
   });

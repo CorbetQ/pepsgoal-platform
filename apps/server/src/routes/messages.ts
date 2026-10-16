@@ -5,6 +5,7 @@ import { sql } from '../db/client.js';
 import { forbidden } from '../lib/errors.js';
 import { areFriends, isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
+import { pushLater } from '../lib/push.js';
 
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
 
@@ -40,7 +41,7 @@ export default async function messageRoutes(app: FastifyInstance) {
 
   app.post('/v1/conversations/:id', { preHandler: requireSocial, config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req, reply) => {
     const { id } = params(req.params);
-    const { e2e, attachments } = MessageBody.parse(req.body);
+    const { e2e, attachments, silent } = MessageBody.parse(req.body);
     const u = me(req);
     const [peer] = await sql<Row[]>`select role from users where id = ${id} and deleted_at is null`;
     if (!peer || peer.role === 'official') throw forbidden('Ce compte ne reçoit pas de messages.');
@@ -54,6 +55,7 @@ export default async function messageRoutes(app: FastifyInstance) {
       if ((r?.n ?? 0) !== new Set(attachments).size) throw forbidden('Pièce jointe inconnue.');
     }
     const [m] = await sql<Row[]>`insert into messages (sender_id, recipient_id, e2e, attachments) values (${u.id}, ${id}, ${sql.json(e2e)}, ${attachments}) returning id, created_at`;
+    if (!silent) pushLater(id, { title: u.displayName, body: 'Nouveau message', tag: `dm:${u.id}`, view: 'friends' });
     reply.status(201);
     return { id: m!.id, createdAt: iso(m!.created_at) };
   });

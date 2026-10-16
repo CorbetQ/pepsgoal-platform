@@ -1,6 +1,7 @@
 import { sql } from './db/client.js';
 import { env } from './env.js';
 import { hashPassword } from './lib/auth.js';
+import { removeMedia } from './lib/files.js';
 
 /** Crée au premier démarrage le compte « PepsGoal Officiel » (sans mot de passe) et le compte admin. */
 export async function bootstrap(log: { warn: (msg: string) => void; info: (msg: string) => void }): Promise<void> {
@@ -20,7 +21,9 @@ export async function bootstrap(log: { warn: (msg: string) => void; info: (msg: 
 
 /** Tâches périodiques : stories expirées, anciennes notifications, jetons et opérations de synchronisation périmés. */
 export async function housekeeping(): Promise<void> {
-  await sql`delete from stories where expires_at < now() - interval '1 day'`;
+  // Stories : archive personnelle d'un an, puis suppression (avec leur photo)
+  const old = await sql<{ media_url: string | null }[]>`delete from stories where created_at < now() - interval '365 days' returning media_url`;
+  await removeMedia(old.map(s => s.media_url));
   await sql`delete from notifications where read_at is not null and created_at < now() - interval '90 days'`;
   await sql`delete from refresh_tokens where expires_at < now() or revoked_at < now() - interval '7 days'`;
   await sql`delete from sync_ops where applied_at < now() - interval '30 days'`;

@@ -55,6 +55,11 @@
 }
 
 *{box-sizing:border-box}
+/* Les dégradés couvrent aussi la bordure transparente (sinon Android en répète un bord : liseré, carrés dans les pastilles) */
+/* Dégradés posés sous la bordure transparente : sans ça, ils se répètent dans la bordure (liseré clair sur Android). « background: » remet l'origine à padding-box, d'où !important */
+*,*::before,*::after{background-origin:border-box!important}
+/* Pictogramme sans taille précisée par son contexte : taille du texte */
+:where(svg.i){width:1.15em;height:1.15em;flex:none;vertical-align:-.18em}
 html,body{min-height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -622,6 +627,59 @@ legend{padding:0}
 .e2e-banner>p svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--flame)}
 .vault-box{display:flex;flex-direction:column;gap:8px}
 .vault-box .c-form input{flex:1;min-width:0}
+/* Corrections d'affichage */
+.fs .sv-card p,.fs .sv-card .eyebrow,.fs .sv-card b{color:rgba(16,16,42,.82)}
+.fs .sv-card .eyebrow{color:rgba(16,16,42,.68)}
+.av .emo .emj{width:1em;height:1em;margin:0;vertical-align:0}
+.poll-edit>p{display:flex;gap:6px;align-items:center}
+/* Stories : encouragements et archive */
+.sv-like{gap:8px;padding:12px 22px;font-size:15px}
+.sv-like svg{width:20px;height:20px;filter:grayscale(1) brightness(1.6)}
+.sv-like.on{background:#fff;color:#10102A;border-color:#fff}
+.sv-like.on svg{filter:none}
+.sv-like.pop svg{animation:likePop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes likePop{0%{transform:scale(.6)}60%{transform:scale(1.45) rotate(-8deg)}100%{transform:scale(1)}}
+.sv-count{cursor:default;gap:6px}
+.sv-liker{margin-left:auto;display:inline-flex}
+.st-archive{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-bottom:10px}
+.sta{position:relative;display:flex;flex-direction:column;gap:4px;padding:0;border:0;background:none;color:var(--ink);text-align:left;cursor:pointer}
+.sta small{font-size:11.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sta-img,.sta-card{display:block;aspect-ratio:9/14;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.sta-img img{width:100%;height:100%;object-fit:cover;display:block}
+.sta-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;background:linear-gradient(160deg,color-mix(in srgb,var(--c, #FF8A3D) 55%,#fff),var(--c, #FF8A3D));color:#10102A;text-align:center}
+.sta-e{font-size:30px;line-height:1}
+.sta-t{font-size:11px;font-weight:800;line-height:1.2;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sta-live{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;padding:2px 6px;border-radius:999px;background:var(--flame);color:var(--on-accent)}
+.sta:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:14px}
+/* Badges */
+.badges{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.bdg{flex-direction:row;align-items:flex-start;gap:12px}
+.bdg.off{opacity:.8}
+.bdg-txt{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.bdg-txt .bar{height:6px;margin-top:2px}
+.bdg-tier{font-weight:800;color:var(--ink)!important}
+.bdg-dots{display:flex;gap:4px}
+.bdg-dots i{width:8px;height:8px;border-radius:50%;background:color-mix(in srgb,var(--ink) 18%,transparent)}
+.bdg-dots i.on{background:var(--tc)}
+.bdg-medal{--s:52px;flex:none;position:relative;width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,color-mix(in srgb,var(--tc) 35%,#fff),var(--tc) 55%,color-mix(in srgb,var(--tc) 60%,#000));box-shadow:0 6px 16px -8px var(--tc),inset 0 0 0 3px rgba(255,255,255,.35)}
+.bdg-medal .bdg-e{font-size:calc(var(--s)*.5);line-height:1}
+.bdg-medal.locked{background:color-mix(in srgb,var(--ink) 10%,transparent);box-shadow:inset 0 0 0 2px var(--line)}
+.bdg-medal.locked .bdg-e{filter:grayscale(1);opacity:.45}
+.bdg .bdg-medal svg{width:auto;height:auto}
+/* Célébration d'un badge */
+.badge-fs .bd-stage{position:relative;width:200px;height:200px;display:grid;place-items:center;margin:0 auto 6px}
+.bd-rays{position:absolute;inset:-30px;border-radius:50%;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--tc) 55%,transparent) 0 10deg,transparent 10deg 24deg);mask:radial-gradient(circle,#000 30%,transparent 68%);-webkit-mask:radial-gradient(circle,#000 30%,transparent 68%);animation:bdSpin 14s linear infinite}
+.bd-medal{position:relative;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 30% 25%,color-mix(in srgb,var(--tc) 30%,#fff),var(--tc) 55%,color-mix(in srgb,var(--tc) 55%,#000));box-shadow:0 20px 50px -18px var(--tc),inset 0 0 0 6px rgba(255,255,255,.4);animation:bdPop .9s cubic-bezier(.2,1.4,.35,1) both}
+.bd-e{font-size:78px;line-height:1;animation:bdBounce 1.2s .7s ease-in-out both}
+.bd-shine{position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.65) 50%,transparent 65%);transform:translateX(-120%);animation:bdShine 2.4s 1s ease-in-out infinite}
+.bd-ribbon{position:absolute;bottom:4px;padding:5px 14px;border-radius:999px;background:#fff;color:#10102A;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 8px 20px -10px rgba(0,0,0,.5);animation:bdRibbon .5s .6s cubic-bezier(.2,1.4,.35,1) both}
+@keyframes bdPop{0%{transform:scale(.2) rotate(-35deg);opacity:0}70%{transform:scale(1.12) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes bdSpin{to{transform:rotate(360deg)}}
+@keyframes bdShine{0%{transform:translateX(-120%)}55%,100%{transform:translateX(120%)}}
+@keyframes bdBounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-10px) scale(1.06)}}
+@keyframes bdRibbon{from{transform:translateY(16px) scale(.6);opacity:0}to{transform:none;opacity:1}}
+:root[data-a11y-motion="off"] .bd-rays,:root[data-a11y-motion="off"] .bd-medal,:root[data-a11y-motion="off"] .bd-e,:root[data-a11y-motion="off"] .bd-shine,:root[data-a11y-motion="off"] .bd-ribbon,:root[data-a11y-motion="off"] .sv-like.pop svg{animation:none}
+@media (prefers-reduced-motion: reduce){.bd-rays,.bd-medal,.bd-e,.bd-shine,.bd-ribbon,.sv-like.pop svg{animation:none}}
 /* Conversation rendue ligne par ligne */
 .msg-wait{display:inline-flex;gap:6px;align-items:flex-start;font-size:13px;opacity:.85}
 .msg-wait svg{width:15px;height:15px;flex:none;margin-top:2px}
@@ -892,20 +950,315 @@ input[type=date],input[type=time],input[type=datetime-local]{min-width:0;color-s
 :root[data-a11y-contrast="high"] .glass,:root[data-a11y-contrast="high"] .sheet,:root[data-a11y-contrast="high"] .btn{border-width:2px}
 :root[data-a11y-contrast="high"] a,:root[data-a11y-contrast="high"] .linkbtn{text-decoration:underline}
 /* Mode daltonien : palette Okabe-Ito, distinguable avec deutéranopie, protanopie et tritanopie ; succès en bleu, alerte en vermillon */
-:root[data-a11y-cvd="on"]{
+:root[data-a11y-cvd]{
   --t-goal:#E69F00;--t-goal-ink:#8A5A00;--t-deadline:#D55E00;--t-deadline-ink:#A04400;--t-routine:#56B4E9;--t-routine-ink:#0B5E8F;
   --t-abst:#CC79A7;--t-abst-ink:#8E3F6B;--t-month:#F0E442;--t-month-ink:#6E6400;--t-limit:#F5B94D;--t-limit-ink:#8A5300;
   --t-dur:#009E73;--t-dur-ink:#006B4E;--t-proj:#0072B2;--t-proj-ink:#005080;--t-meas:#E3A6C8;--t-meas-ink:#8E3F6B;
   --t-group:#2BBF95;--t-group-ink:#006B4E;--t-duel:#F08C4A;--t-duel-ink:#9A4A10;--t-chal:#F7EE7F;--t-chal-ink:#6E6400;
   --t-prog:#9AD0F0;--t-prog-ink:#0B5E8F;--t-timed:#BBBBBB;--t-timed-ink:#4D4D4D;--ok:#0072B2;--danger:#D55E00}
-@media (prefers-color-scheme: dark){:root[data-a11y-cvd="on"]:not([data-theme="light"]){
+@media (prefers-color-scheme: dark){:root[data-a11y-cvd]:not([data-theme="light"]){
   --t-goal-ink:#FFC24D;--t-deadline-ink:#FF8A4D;--t-routine-ink:#8FD0F5;--t-abst-ink:#E7A6CB;--t-month-ink:#F5EC6E;--t-limit-ink:#FFD08A;--t-dur-ink:#3FD9AE;
   --t-proj-ink:#6CB6E8;--t-meas-ink:#F0C2DB;--t-group-ink:#5FE0B8;--t-duel-ink:#FFB07A;--t-chal-ink:#FAF29A;--t-prog-ink:#B7E0F7;--t-timed-ink:#DDDDDD;--ok:#56B4E9;--danger:#FF8A4D}}
-:root[data-theme="dark"][data-a11y-cvd="on"]{
+:root[data-theme="dark"][data-a11y-cvd]{
   --t-goal-ink:#FFC24D;--t-deadline-ink:#FF8A4D;--t-routine-ink:#8FD0F5;--t-abst-ink:#E7A6CB;--t-month-ink:#F5EC6E;--t-limit-ink:#FFD08A;--t-dur-ink:#3FD9AE;
   --t-proj-ink:#6CB6E8;--t-meas-ink:#F0C2DB;--t-group-ink:#5FE0B8;--t-duel-ink:#FFB07A;--t-chal-ink:#FAF29A;--t-prog-ink:#B7E0F7;--t-timed-ink:#DDDDDD;--ok:#56B4E9;--danger:#FF8A4D}
 .e2e-note{display:flex;gap:8px;align-items:flex-start;margin:-4px 0 10px;font-size:12.5px;color:var(--ink-2)}
 .e2e-note svg{width:16px;height:16px;flex:none;margin-top:2px}
+
+/* ===================== 2.0.0 ===================== */
+/* Fenêtre redessinée à l'identique (actualisation automatique) : pas d'animation d'entrée */
+.overlay.still,.overlay.still .sheet{animation:none!important}
+.sheet-h .e2e-btn{margin-left:auto}
+.sheet-h .e2e-btn[aria-expanded="true"]{color:var(--flame)}
+.e2e-info .e2e-note{margin:0 0 10px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--ink) 6%,transparent)}
+
+/* ---- favoris ---- */
+.fav-star{display:inline-flex;vertical-align:-.1em;margin-right:5px;color:#F5B400}
+.fav-star svg{width:.95em;height:.95em;fill:currentColor;stroke:currentColor}
+.fav-btn svg{transition:transform .25s cubic-bezier(.3,1.6,.5,1),fill .2s}
+.fav-btn.on{color:#F5B400}
+.fav-btn.on svg{fill:currentColor}
+.sheet-h-acts{display:flex;align-items:center;gap:2px;margin-left:auto}
+
+/* ---- étapes de projet réordonnables ---- */
+.tasks li{transition:background .2s,box-shadow .2s,transform .2s}
+.task-grip{display:grid;place-items:center;width:22px;height:30px;flex:none;color:var(--ink-3);cursor:grab;touch-action:none;border-radius:8px}
+.task-grip svg{width:16px;height:16px}
+.task-grip:active{cursor:grabbing}
+.task-acts{display:flex;align-items:center;flex:none}
+.task-acts .icon-btn{width:32px;height:32px}
+.task-acts .icon-btn svg{width:16px;height:16px}
+.task-acts .icon-btn:disabled{opacity:.25}
+.tasks li.dragging{background:color-mix(in srgb,var(--t-proj) 22%,var(--glass-strong));box-shadow:var(--shadow);transform:scale(1.02);position:relative;z-index:2}
+.tasks li.moved{animation:taskMoved .5s ease}
+@keyframes taskMoved{from{background:color-mix(in srgb,var(--t-proj) 30%,transparent)}}
+.tasks-tip{display:flex;align-items:center;gap:4px;margin:-4px 0 8px}
+.tasks-tip svg{width:14px;height:14px}
+
+/* ---- arrière-plans ---- */
+.bg-l,.snow{position:absolute;inset:0;display:none;pointer-events:none}
+:root[data-bg]:not([data-bg="blob"]) .blob{display:none}
+:root[data-bg="aurora"] .bg-aurora,:root[data-bg="waves"] .bg-waves,:root[data-bg="stars"] .bg-stars,:root[data-bg="mesh"] .bg-mesh,
+:root[data-bg="grid"] .bg-grid,:root[data-bg="custom"] .bg-img,:root[data-bg="custom"] .bg-dim,:root[data-egg-snow] .snow{display:block}
+:root[data-a11y-transp="off"] .bg-l,:root[data-a11y-transp="off"] .snow,:root[data-a11y-contrast="high"] .bg-l,:root[data-a11y-contrast="high"] .snow{display:none!important}
+.bg-aurora i{position:absolute;width:140vmax;height:46vmax;left:-20vmax;border-radius:50%;opacity:var(--blob-op)}
+.bg-aurora i:nth-child(1){top:-14vmax;background:radial-gradient(closest-side,var(--flame-2),transparent);transform:rotate(-12deg)}
+.bg-aurora i:nth-child(2){top:22vh;background:radial-gradient(closest-side,var(--pink),transparent);transform:rotate(8deg)}
+.bg-aurora i:nth-child(3){bottom:-20vmax;background:radial-gradient(closest-side,var(--blob-3),transparent);transform:rotate(-4deg)}
+.bg-waves svg{position:absolute;left:0;bottom:0;width:100%;height:46vh;overflow:hidden}
+.bg-waves path{opacity:calc(var(--blob-op) * .9)}
+.bg-waves g:nth-of-type(1) path{fill:var(--flame-2);opacity:calc(var(--blob-op) * .55)}
+.bg-waves g:nth-of-type(2) path{fill:var(--pink);opacity:calc(var(--blob-op) * .5)}
+.bg-waves g:nth-of-type(3) path{fill:var(--flame);opacity:calc(var(--blob-op) * .6)}
+.bg-waves::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 40% at 80% 10%,color-mix(in srgb,var(--blob-3) 45%,transparent),transparent);opacity:var(--blob-op)}
+.bg-stars{--star:rgba(30,32,90,.5)}
+:root[data-theme="dark"] .bg-stars{--star:rgba(255,255,255,.85)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bg-stars{--star:rgba(255,255,255,.85)}}
+.bg-stars::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 40% at 70% 20%,color-mix(in srgb,var(--pink) 50%,transparent),transparent),radial-gradient(40% 35% at 15% 80%,color-mix(in srgb,var(--blob-3) 50%,transparent),transparent);opacity:var(--blob-op)}
+.bg-stars i{position:absolute;inset:0;background-image:radial-gradient(1.4px 1.4px at 22px 34px,var(--star) 60%,transparent 70%),radial-gradient(1px 1px at 120px 80px,var(--star) 60%,transparent 70%),radial-gradient(1.8px 1.8px at 70px 150px,var(--star) 60%,transparent 70%),radial-gradient(1px 1px at 160px 20px,var(--star) 60%,transparent 70%),radial-gradient(1.2px 1.2px at 190px 120px,var(--star) 60%,transparent 70%);background-size:210px 190px}
+.bg-stars i:nth-child(2){background-size:330px 290px;background-position:60px 40px;opacity:.7}
+.bg-mesh{background:radial-gradient(at 0% 0%,var(--flame-2) 0,transparent 55%),radial-gradient(at 100% 0%,var(--pink) 0,transparent 50%),radial-gradient(at 100% 100%,var(--blob-3) 0,transparent 55%),radial-gradient(at 0% 100%,var(--flame) 0,transparent 50%);opacity:calc(var(--blob-op) + .1)}
+.bg-grid{background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 25%,transparent 75%);mask-image:radial-gradient(ellipse at 50% 30%,#000 25%,transparent 75%)}
+.bg-grid::after{content:"";position:absolute;left:50%;top:-10vh;width:70vmax;height:50vmax;transform:translateX(-50%);background:radial-gradient(closest-side,color-mix(in srgb,var(--flame) 55%,transparent),transparent);opacity:var(--blob-op)}
+.bg-img{background-size:cover;background-position:center}
+.bg-dim{--bg-dim:rgba(236,238,255,.35);background:var(--bg-dim)}
+:root[data-theme="dark"] .bg-dim{--bg-dim:rgba(7,8,26,.5)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bg-dim{--bg-dim:rgba(7,8,26,.5)}}
+/* Neige (couleur Glacier) */
+.snow i{position:absolute;top:-6vh;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;background:#fff;opacity:var(--o);box-shadow:0 0 6px rgba(160,215,255,.9)}
+:root[data-theme="light"] .snow i{background:#CBEBFF;box-shadow:0 0 5px rgba(60,150,230,.55)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .snow i{background:#CBEBFF;box-shadow:0 0 5px rgba(60,150,230,.55)}}
+/* Choix de l'arrière-plan */
+.bg-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px;margin:2px 0 6px}
+.bg-tile{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12.5px;font-weight:700;cursor:pointer;position:relative}
+.bg-tile input{position:absolute;opacity:0;pointer-events:none}
+.bt-prev{width:100%;aspect-ratio:4/3;border-radius:14px;border:2px solid var(--line);background-color:var(--bg);background-size:cover;background-position:center;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
+.bg-tile input:checked+.bt-prev{border-color:var(--flame);box-shadow:0 0 0 3px color-mix(in srgb,var(--flame) 35%,transparent)}
+.bg-tile input:focus-visible+.bt-prev{outline:3px solid var(--focus);outline-offset:2px}
+.bt-blob .bt-prev{background:radial-gradient(circle at 20% 25%,var(--blob-1),transparent 45%),radial-gradient(circle at 85% 40%,var(--blob-2),transparent 45%),radial-gradient(circle at 40% 95%,var(--blob-3),transparent 50%),var(--bg)}
+.bt-aurora .bt-prev{background:radial-gradient(120% 40% at 50% 10%,var(--flame-2),transparent 70%),radial-gradient(120% 40% at 50% 55%,var(--pink),transparent 70%),radial-gradient(120% 40% at 50% 100%,var(--blob-3),transparent 70%),var(--bg)}
+.bt-waves .bt-prev{background:radial-gradient(140% 50% at 30% 115%,var(--flame) 55%,transparent 56%),radial-gradient(140% 60% at 80% 120%,var(--pink) 55%,transparent 56%),var(--bg)}
+.bt-stars .bt-prev{background:radial-gradient(1.5px 1.5px at 20% 30%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 60% 20%,#fff 60%,transparent),radial-gradient(2px 2px at 80% 70%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 35% 75%,#fff 60%,transparent),radial-gradient(60% 50% at 70% 30%,var(--pink),transparent),#0B0C24}
+.bt-mesh .bt-prev{background:radial-gradient(at 0 0,var(--flame-2),transparent 60%),radial-gradient(at 100% 0,var(--pink),transparent 60%),radial-gradient(at 100% 100%,var(--blob-3),transparent 60%),radial-gradient(at 0 100%,var(--flame),transparent 60%),var(--bg)}
+.bt-grid .bt-prev{background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/12px 12px,radial-gradient(circle at 50% 0,var(--flame),transparent 60%),var(--bg)}
+.bt-plain .bt-prev{background:var(--bg)}
+.bt-custom .bt-prev{display:grid;place-items:center;color:var(--ink-3)}
+.bt-custom .bt-prev svg{width:24px;height:24px}
+.palette{display:flex;flex-wrap:wrap;gap:10px}
+.pal-sw{width:40px;height:40px;border-radius:50%;border:2px solid var(--glass-edge);background:var(--c);box-shadow:var(--shadow);cursor:pointer;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.pal-sw:hover,.pal-sw:focus-visible{transform:scale(1.12)}
+.pal-sw.on{outline:3px solid var(--ink);outline-offset:2px}
+
+/* ---- easter eggs : PepsGold, PepsCold ---- */
+.logo .grad.egg{display:inline-flex;--eg:linear-gradient(100deg,var(--flame-2),var(--flame) 45%,var(--pink));background:none;color:inherit}
+.logo .egg i{font-style:normal;display:inline-block;background-image:var(--eg);background-size:4.2em 100%;background-position:calc(var(--k) * -1.05em) 0;-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo.egg-gold .grad.egg{--eg:linear-gradient(100deg,#FFC21A,#FFB000 35%,#FFE680 50%,#FF9F1C 65%,#FFB000)}
+.logo.egg-gold svg{filter:drop-shadow(0 0 6px rgba(255,190,40,.75))}
+.logo.egg-cold .grad.egg{--eg:linear-gradient(100deg,#2B8FE0,#59C2FF 40%,#B9E6FF 52%,#5B8CFF 70%,#2B8FE0)}
+.logo.egg-cold svg{filter:hue-rotate(185deg) saturate(1.3) drop-shadow(0 0 6px rgba(120,200,255,.7))}
+:root[data-a11y-contrast="high"] .logo .egg i{background:none!important;color:var(--ink);-webkit-text-fill-color:currentColor}
+@keyframes eggFlip{0%{transform:rotateX(90deg) translateY(-.25em);filter:blur(3px);opacity:0}60%{transform:rotateX(-25deg) translateY(.04em);filter:blur(0);opacity:1}100%{transform:none}}
+@keyframes eggGlint{0%{transform:translateX(-120%) skewX(-20deg);opacity:0}30%{opacity:1}100%{transform:translateX(320%) skewX(-20deg);opacity:0}}
+@keyframes eggShimmer{to{background-position:calc(var(--k) * -1.05em - 4.2em) 0}}
+@keyframes snowFall{to{transform:translate3d(var(--sway),112vh,0)}}
+
+/* ---- accessibilité : types de daltonisme, monochrome, contraste sans dégradés ---- */
+:root[data-a11y-cvd="prot"]{--t-goal:#56B4E9;--t-goal-ink:#0B5E8F;--t-deadline:#E69F00;--t-deadline-ink:#8A5A00;--t-limit:#F0E442;--t-limit-ink:#6E6400;--t-duel:#CC79A7;--t-duel-ink:#8E3F6B;--danger:#B36B00;--t-chal:#FFD66E;--t-chal-ink:#7A5800}
+:root[data-a11y-cvd="trit"]{
+  --t-goal:#FF6F61;--t-goal-ink:#A3261B;--t-deadline:#D81B60;--t-deadline-ink:#9C0E44;--t-routine:#26A69A;--t-routine-ink:#00695C;
+  --t-abst:#F48FB1;--t-abst-ink:#A23E66;--t-month:#80CBC4;--t-month-ink:#00675E;--t-limit:#FFAB91;--t-limit-ink:#A0461E;
+  --t-dur:#4DD0C4;--t-dur-ink:#006B62;--t-proj:#00897B;--t-proj-ink:#005047;--t-meas:#F8BBD0;--t-meas-ink:#9C2F5B;
+  --t-group:#B2DFDB;--t-group-ink:#2F6F68;--t-duel:#E53935;--t-duel-ink:#A11512;--t-chal:#FFCDD2;--t-chal-ink:#A3262E;
+  --t-prog:#9E9E9E;--t-prog-ink:#424242;--t-timed:#D7CCC8;--t-timed-ink:#5D4037;--ok:#00897B;--danger:#D81B60}
+@media (prefers-color-scheme: dark){:root[data-a11y-cvd="trit"]:not([data-theme="light"]){--t-goal-ink:#FF9E94;--t-deadline-ink:#FF6FA0;--t-routine-ink:#6FE0D4;--t-abst-ink:#F8B6CC;--t-month-ink:#A6E3DD;--t-limit-ink:#FFC4B0;--t-dur-ink:#7FE8DE;--t-proj-ink:#4FC3B5;--t-meas-ink:#FBD0DF;--t-group-ink:#CDEDEA;--t-duel-ink:#FF8A87;--t-chal-ink:#FFD9DD;--t-prog-ink:#E0E0E0;--t-timed-ink:#EDE4E1;--ok:#4FC3B5;--danger:#FF6FA0}}
+:root[data-theme="dark"][data-a11y-cvd="trit"]{--t-goal-ink:#FF9E94;--t-deadline-ink:#FF6FA0;--t-routine-ink:#6FE0D4;--t-abst-ink:#F8B6CC;--t-month-ink:#A6E3DD;--t-limit-ink:#FFC4B0;--t-dur-ink:#7FE8DE;--t-proj-ink:#4FC3B5;--t-meas-ink:#FBD0DF;--t-group-ink:#CDEDEA;--t-duel-ink:#FF8A87;--t-chal-ink:#FFD9DD;--t-prog-ink:#E0E0E0;--t-timed-ink:#EDE4E1;--ok:#4FC3B5;--danger:#FF6FA0}
+:root[data-a11y-mono="on"]{filter:grayscale(1)}
+.a11y-sel{min-width:150px;padding:8px 12px;border-radius:12px}
+/* Contraste élevé : aucun dégradé ; les surfaces colorées deviennent pleines, avec texte et bordure nets */
+:root[data-a11y-contrast="high"] *,:root[data-a11y-contrast="high"] *::before,:root[data-a11y-contrast="high"] *::after{background-image:none!important;text-shadow:none!important}
+:root[data-a11y-contrast="high"] .btn-primary,:root[data-a11y-contrast="high"] .fab,:root[data-a11y-contrast="high"] .msg.me,:root[data-a11y-contrast="high"] .vp-btn{background-color:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important}
+:root[data-a11y-contrast="high"] .bar>i,:root[data-a11y-contrast="high"] .switch input:checked+span{background-color:var(--ink)!important}
+:root[data-a11y-contrast="high"] .switch span::after{background:var(--bg);border:2px solid var(--ink)}
+:root[data-a11y-contrast="high"] [style*="gradient"],:root[data-a11y-contrast="high"] .milestone,:root[data-a11y-contrast="high"] .perfect-chip,:root[data-a11y-contrast="high"] .sta-card,:root[data-a11y-contrast="high"] .bdg-medal,:root[data-a11y-contrast="high"] .bd-medal,:root[data-a11y-contrast="high"] .sv-card,:root[data-a11y-contrast="high"] .st-card{background-color:var(--glass-strong)!important;color:var(--ink)!important;border:2px solid var(--ink)!important}
+:root[data-a11y-contrast="high"] .sv-card *,:root[data-a11y-contrast="high"] .st-card *{color:var(--ink)!important}
+:root[data-a11y-contrast="high"] .sw[style*="--sw"]{background-color:var(--sw)!important}
+:root[data-a11y-contrast="high"] .logo .grad,:root[data-a11y-contrast="high"] .auth-hero h1 em{color:var(--ink)!important;-webkit-text-fill-color:currentColor}
+:root[data-a11y-contrast="high"] .fs{background-color:var(--bg)!important}
+:root[data-a11y-contrast="high"] .lv-ring::before,:root[data-a11y-contrast="high"] .lv-fx{display:none}
+
+/* ---- suggestions d'amis ---- */
+.sugg-list{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 8px;margin:0 -2px;scroll-snap-type:x mandatory;list-style:none}
+.sugg{position:relative;flex:0 0 150px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px 12px;border-radius:20px;background:color-mix(in srgb,var(--ink) 5%,transparent);border:1px solid var(--line);text-align:center;transition:transform .2s,box-shadow .2s}
+.sugg .who{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;color:inherit;padding:0;cursor:pointer;min-width:0;width:100%}
+.sugg .who b{font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sugg .who small{font-size:11.5px;color:var(--ink-3);line-height:1.3;min-height:2.6em}
+.sugg-x{position:absolute;top:4px;right:4px;width:30px;height:30px}
+.sugg-x svg{width:14px;height:14px}
+
+/* ---- modération : onglet Serveur ---- */
+.srv-health .card-h h2,.srv-h2{display:flex;align-items:center;gap:8px}
+.srv-health .card-h h2 svg{width:20px;height:20px}
+.srv-ok .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px;box-shadow:0 0 0 0 var(--ok)}
+.stat small{display:block;font-size:11.5px;color:var(--ink-3);margin-top:2px}
+.meter{margin:10px 0 2px}
+.meter-h{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--ink-2);margin-bottom:4px}
+.meter .bar{display:block}
+.meter .bar>i{transition:width .6s ease}
+.meter.hot .bar>i{background:var(--danger)}
+.sbars{display:flex;align-items:flex-end;gap:3px;height:70px;margin-top:8px}
+.sbars i{flex:1;min-width:2px;height:max(3px,calc(var(--h) * 100%));border-radius:4px 4px 2px 2px;background:linear-gradient(to top,var(--flame),var(--flame-2));opacity:.9;transform-origin:bottom}
+.sbars-min{height:44px;gap:1px}
+.sbars-min i{border-radius:2px}
+.spark-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.spark-card{padding:12px;border-radius:16px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.spark-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.srv-foot{text-align:center;margin:-4px 0 14px}
+
+/* ---- messagerie : réponses, réactions, mentions ---- */
+.msg{position:relative}
+.msg-act{position:absolute;top:50%;width:30px;height:30px;margin-top:-15px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--glass-strong);color:var(--ink-2);box-shadow:var(--shadow);opacity:0;cursor:pointer;transition:opacity .15s,transform .15s}
+.msg-act svg{width:16px;height:16px}
+.msg.me .msg-act{left:-36px}
+.msg.them .msg-act{right:-36px}
+.msg:hover .msg-act,.msg-act:focus-visible,.msg-act[aria-expanded="true"]{opacity:1}
+@media (hover:none){.msg-act{opacity:.55}}
+.rx-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:-2px;max-width:78%}
+.rx-row.me{align-self:flex-end;justify-content:flex-end}
+.rx-row.them{align-self:flex-start}
+.rx{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--glass-strong);font-size:13px;cursor:pointer;color:var(--ink)}
+.rx b{font-size:11.5px;font-weight:800}
+.rx.on{border-color:var(--flame);background:color-mix(in srgb,var(--flame) 16%,var(--glass-strong))}
+.msg-menu{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:6px;border-radius:18px;background:var(--glass-strong);border:1px solid var(--glass-edge);box-shadow:var(--shadow);max-width:min(100%,360px)}
+.msg-menu.me{align-self:flex-end}
+.msg-menu.them{align-self:flex-start}
+.rx-btn{width:36px;height:36px;border-radius:50%;border:0;background:none;font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center;color:var(--ink-2)}
+.rx-btn:hover,.rx-btn:focus-visible{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.rx-btn.on{background:color-mix(in srgb,var(--flame) 20%,transparent)}
+.rx-btn svg{width:18px;height:18px}
+.rx-more{display:flex;flex-wrap:wrap;gap:2px;width:100%}
+.msg-quote{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;margin:0 0 6px;padding:5px 9px;border:0;border-left:3px solid currentColor;border-radius:8px;background:color-mix(in srgb,currentColor 12%,transparent);color:inherit;text-align:left;font-size:12.5px;cursor:pointer}
+.msg-quote b{font-size:11.5px}
+.msg-quote span{opacity:.85;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mention{font-weight:800;color:var(--t-proj-ink)}
+.msg.me .mention{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.mention.me{background:color-mix(in srgb,var(--flame) 22%,transparent);border-radius:6px;padding:0 3px}
+.msg.mentioned{box-shadow:0 0 0 2px var(--flame)}
+.mrow.flash .msg{animation:msgFlash 1.4s ease}
+@keyframes msgFlash{0%,40%{box-shadow:0 0 0 4px color-mix(in srgb,var(--flame) 70%,transparent)}}
+.reply-bar{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:8px;border-radius:14px;background:color-mix(in srgb,var(--ink) 6%,transparent);border-left:3px solid var(--flame)}
+.reply-bar>svg{width:18px;height:18px;flex:none;color:var(--flame)}
+.reply-bar span{flex:1;min-width:0;display:flex;flex-direction:column}
+.reply-bar small{color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mention-pop{display:flex;flex-direction:column;gap:2px;padding:6px;margin-bottom:8px;border-radius:16px;background:var(--glass-strong);border:1px solid var(--glass-edge);box-shadow:var(--shadow);max-height:220px;overflow-y:auto}
+.mention-opt{display:flex;align-items:center;gap:10px;padding:6px 8px;border:0;border-radius:12px;background:none;color:var(--ink);text-align:left;cursor:pointer}
+.mention-opt:hover,.mention-opt:focus-visible{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.mention-opt span{display:flex;flex-direction:column}
+.mention-opt small{color:var(--ink-3)}
+
+/* ---- notes de version ---- */
+.notes details{border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:10px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.notes summary{cursor:pointer;display:flex;align-items:center;gap:10px;font-weight:800;list-style:none}
+.notes summary::-webkit-details-marker{display:none}
+.notes summary .v{font-family:var(--font-display);font-size:16px}
+.notes summary small{color:var(--ink-3);font-weight:600;margin-left:auto}
+.notes ul{margin:10px 0 2px 2px;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.45}
+.notes .tag-new{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--flame);color:var(--on-accent)}
+
+/* ---- anneau de niveau autour de l'icône de profil ---- */
+.lv-ring{position:relative;isolation:isolate;border-radius:50%}
+.lv-ring::before{content:"";position:absolute;inset:-6px;border-radius:50%;z-index:-1;pointer-events:none}
+.lv-fx{position:absolute;inset:-10px;border-radius:50%;pointer-events:none;z-index:-1}
+.lv1::before{background:radial-gradient(closest-side,color-mix(in srgb,var(--flame-2) 70%,transparent),transparent);opacity:.6}
+.lv2::before{background:radial-gradient(closest-side,var(--flame),transparent 90%);opacity:.75}
+.lv3::before,.lv4::before,.lv5::before,.lv6::before{background:conic-gradient(var(--flame-2),var(--flame),var(--pink),var(--flame-2));-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px))}
+.lv6::before{background:conic-gradient(#FF4A12,#FFB000,#B6FF2E,#22D3FF,#A98BFF,#FF3D96,#FF4A12)}
+.lv4 .lv-fx,.lv5 .lv-fx,.lv6 .lv-fx{box-shadow:0 0 22px 2px color-mix(in srgb,var(--flame) 55%,transparent)}
+.lv6 .lv-fx{box-shadow:0 0 28px 4px color-mix(in srgb,var(--pink) 55%,transparent),0 0 12px 1px color-mix(in srgb,var(--flame-2) 70%,transparent)}
+.lv5 .lv-fx::before,.lv5 .lv-fx::after,.lv6 .lv-fx::before,.lv6 .lv-fx::after{content:"";position:absolute;left:50%;top:-3px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--flame-2);box-shadow:0 0 8px 2px var(--flame-2);transform-origin:3.5px calc(50% + 3px)}
+.lv5 .lv-fx::after,.lv6 .lv-fx::after{background:var(--pink);box-shadow:0 0 8px 2px var(--pink);transform:rotate(180deg)}
+.lv-ring.sm::before{inset:-3px}
+.lv-ring.sm .lv-fx{display:none}
+@keyframes lvBreath{50%{transform:scale(1.12);opacity:.95}}
+@keyframes lvSpin{to{transform:rotate(360deg)}}
+@keyframes lvFlicker{0%,100%{opacity:.75}45%{opacity:1}55%{opacity:.6}}
+@keyframes lvOrbit{to{transform:rotate(360deg)}}
+@keyframes lvOrbit2{from{transform:rotate(180deg)}to{transform:rotate(540deg)}}
+
+/* ---- micro-animations (désactivées avec « Désactiver les animations » ou le réglage système) ---- */
+@media (prefers-reduced-motion:no-preference){
+  .logo.morph .egg i{animation:eggFlip .7s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:calc(var(--k) * 90ms)}
+  .logo.morph{position:relative;overflow:hidden}
+  .logo.morph::after{content:"";position:absolute;top:0;bottom:0;left:0;width:35%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:eggGlint 1.1s .35s ease-out both;pointer-events:none}
+  .logo.egg-gold .egg i,.logo.egg-cold .egg i{animation:eggShimmer 4s linear infinite}
+  .logo.morph.egg-gold .egg i,.logo.morph.egg-cold .egg i{animation:eggFlip .7s cubic-bezier(.2,.9,.3,1.3) both,eggShimmer 4s linear .8s infinite;animation-delay:calc(var(--k) * 90ms),.8s}
+  .snow i{animation:snowFall var(--d) linear var(--delay) infinite}
+  .bg-aurora i:nth-child(1){animation:drift1 26s ease-in-out infinite}
+  .bg-aurora i:nth-child(2){animation:drift2 32s ease-in-out infinite}
+  .bg-aurora i:nth-child(3){animation:drift1 38s ease-in-out infinite reverse}
+  .bg-waves g{animation:waveX var(--w,22s) linear infinite}
+  .bg-waves g:nth-of-type(2){--w:30s;animation-direction:reverse}
+  .bg-waves g:nth-of-type(3){--w:16s}
+  .bg-stars i:nth-child(2){animation:twinkle 5s ease-in-out infinite}
+  .bg-grid{animation:gridPan 40s linear infinite}
+  .lv1::before,.lv2::before{animation:lvBreath 3.2s ease-in-out infinite}
+  .lv3::before{animation:lvSpin 7s linear infinite}
+  .lv4::before{animation:lvSpin 4.5s linear infinite}
+  .lv4 .lv-fx{animation:lvFlicker 1.9s ease-in-out infinite}
+  .lv5::before{animation:lvSpin 3s linear infinite}
+  .lv6::before{animation:lvSpin 2.2s linear infinite}
+  .lv5 .lv-fx::before,.lv6 .lv-fx::before{animation:lvOrbit 2.8s linear infinite}
+  .lv5 .lv-fx::after,.lv6 .lv-fx::after{animation:lvOrbit2 3.6s linear infinite}
+  .lv6 .lv-fx{animation:lvFlicker 1.4s ease-in-out infinite}
+  .srv-ok .dot{animation:pulseDot 2s ease-out infinite}
+  .main.enter .sbars i{animation:sparkUp .6s cubic-bezier(.2,.9,.3,1.2) both;animation-delay:calc(var(--n,0) * 25ms)}
+  /* Boutons : léger enfoncement au toucher */
+  .btn,.icon-btn,.fchip,.mini-btn,.cheer,.rx,.rx-btn,.pal-sw,.tab,.nav-a,.chip[data-act]{transition:transform .14s cubic-bezier(.3,1.5,.5,1),background-color .2s,box-shadow .2s,color .2s}
+  .btn:active,.icon-btn:active,.fchip:active,.mini-btn:active,.cheer:active,.rx:active,.tab:active,.nav-a:active{transform:scale(.94)}
+  .btn-primary:hover{box-shadow:0 8px 22px -8px color-mix(in srgb,var(--flame) 70%,transparent)}
+  /* Cartes : elles se soulèvent au survol */
+  @media (hover:hover){
+    .gcard,.post,.sugg,.spark-card,.bg-tile .bt-prev{transition:transform .22s cubic-bezier(.2,.9,.3,1.2),box-shadow .22s}
+    .gcard:hover,.sugg:hover{transform:translateY(-3px)}
+    .bg-tile:hover .bt-prev{transform:translateY(-2px) scale(1.03)}
+    .fab:hover svg{transform:rotate(90deg)}
+    .logo:hover svg{animation:flick .9s ease-in-out}
+    #bell:hover svg{animation:wiggle .6s ease}
+    .msg-act:hover{transform:scale(1.1)}
+  }
+  .fab svg{transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
+  /* Onglet actif : l'icône rebondit */
+  .nav-enter .tab[aria-current="page"] svg,.nav-enter .nav-a[aria-current="page"] svg{animation:tabBounce .5s cubic-bezier(.3,1.6,.5,1)}
+  .fchip.pop[aria-pressed="true"]{animation:chipPop .3s cubic-bezier(.3,1.6,.5,1)}
+  /* Interrupteurs à ressort */
+  .switch span::after{transition:transform .32s cubic-bezier(.3,1.6,.5,1),width .2s}
+  .switch input:active+span::after{width:27px}
+  /* Pastilles, badges et réactions qui apparaissent */
+  .rx{animation:popIn .35s cubic-bezier(.3,1.6,.5,1)}
+  .fav-btn.on.pop svg{animation:favPop .45s cubic-bezier(.3,1.6,.5,1)}
+  .msg-menu{animation:menuIn .22s cubic-bezier(.2,.9,.3,1.2) both}
+  .msg-menu .rx-btn{animation:popIn .3s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i,0) * 30ms)}
+  .rx-btn:hover{transform:scale(1.25) translateY(-2px)}
+  .mrow.new .msg{animation:msgIn .28s cubic-bezier(.2,.9,.3,1.2) both}
+  .reply-bar,.mention-pop,.e2e-info:not([hidden]){animation:menuIn .22s ease both}
+  .sugg{animation:fadeUp .4s ease both;animation-delay:calc(var(--i,0) * 60ms)}
+  .notes details[open] ul{animation:fadeUp .3s ease}
+  .bar>i{transition:width .7s cubic-bezier(.2,.9,.3,1)}
+  input:focus-visible,textarea:focus-visible,select:focus-visible{transition:box-shadow .2s,border-color .2s}
+  .toast{animation:toastIn .35s cubic-bezier(.2,.9,.3,1.25) both}
+  .person{transition:background-color .2s}
+  .tasks li:not(.dragging){transition:transform .2s}
+}
+@keyframes waveX{to{transform:translateX(-1440px)}}
+@keyframes twinkle{50%{opacity:.25}}
+@keyframes gridPan{to{background-position:44px 44px,44px 44px}}
+@keyframes pulseDot{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
+@keyframes sparkUp{from{transform:scaleY(0)}}
+@keyframes tabBounce{0%{transform:scale(.7) translateY(3px)}60%{transform:scale(1.15) translateY(-2px)}100%{transform:none}}
+@keyframes chipPop{50%{transform:scale(1.08)}}
+@keyframes favPop{0%{transform:scale(.4) rotate(-40deg)}70%{transform:scale(1.35) rotate(12deg)}100%{transform:none}}
+@keyframes menuIn{from{opacity:0;transform:translateY(6px) scale(.96)}}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px) scale(.96)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px) scale(.94)}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -994,10 +1347,10 @@ const first = n => (n || '').split(/\s+/)[0];
 const fmtDate = s => parseYmd(s).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year: parseYmd(s).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined });
 // Accessibilité : réglages propres à cet appareil, actifs dès l'écran de connexion
 const A11Y_KEY = 'pepsgoal.a11y';
-const A11Y = (() => { const d = { contrast:false, cvd:false, motion:false, transp:false }; try { return Object.assign(d, JSON.parse(localStorage.getItem(A11Y_KEY) || '{}')); } catch(e){ return d; } })();
+const A11Y = (() => { const d = { contrast:false, cvd:false, mono:false, motion:false, transp:false }; try { const o = Object.assign(d, JSON.parse(localStorage.getItem(A11Y_KEY) || '{}')); if (o.cvd === true) o.cvd = 'deuter'; return o; } catch(e){ return d; } })();
 function applyA11y(){
   const r = document.documentElement, set = (k, on, v) => on ? r.setAttribute(k, v) : r.removeAttribute(k);
-  set('data-a11y-contrast', A11Y.contrast, 'high'); set('data-a11y-cvd', A11Y.cvd, 'on');
+  set('data-a11y-contrast', A11Y.contrast, 'high'); set('data-a11y-cvd', A11Y.cvd, A11Y.cvd); set('data-a11y-mono', A11Y.mono, 'on');
   set('data-a11y-motion', A11Y.motion, 'off'); set('data-a11y-transp', A11Y.transp, 'off');
 }
 applyA11y();
@@ -1148,7 +1501,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '1.3.0';
+const APP_VERSION = '2.0.0';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -1624,13 +1977,19 @@ function badges(id){
 function notify(userId, text, extra={}){
   DB.notifs.push(Object.assign({ id:uid(), userId, text, at:Date.now(), read:false }, extra));
   const u = me();
-  if (u && userId === u.id) { browserNotify('PepsGoal', text); updateBell(true); }
+  if (u && userId === u.id) { browserNotify('PepsGoal', text, extra.type); updateBell(true); }
 }
-function browserNotify(title, body){
-  try { if (me()?.settings.browser && 'Notification' in window && Notification.permission === 'granted') new Notification(title, { body }); } catch(e){}
+// Notification système : par le service worker quand il existe (Chrome sur Android refuse « new Notification »)
+function browserNotify(title, body, tag){
+  if (!notifOn()) return;
+  const opts = { body, tag:tag || 'pepsgoal', icon:'/icon-512.png', badge:'/favicon.png', data:{ view:'today' } };
+  const fallback = () => { try { new Notification(title, opts); } catch(e){} };
+  if (navigator.serviceWorker?.getRegistration) navigator.serviceWorker.getRegistration().then(r => r ? r.showNotification(title, opts) : fallback()).catch(fallback);
+  else fallback();
 }
 function checkReminders(){
   const u = me(); if (!u) return;
+  aprilEgg();
   if (UI.dayKey && UI.dayKey !== today()) { UI.dayKey = today(); softRender(); }
   UI.dayKey = today();
   applyFreezes(u);
@@ -1656,6 +2015,7 @@ function checkReminders(){
   }
   evaluateGoals(u, once);
   if (fired) save();
+  queueBadgeCheck();
 }
 
 /* ================= actions métier ================= */
@@ -1682,6 +2042,7 @@ function afterValidation(g, pts, wasLit){
     u.milestones.push(st.n + '@' + today());
     notify(u.id, `Série de ${st.n} jours ! Tu gagnes un nouveau palier de flamme.`, { type:'badge' });
   }
+  queueBadgeCheck();
 }
 function validate(id){
   const g = goalById(id), u = me(); if (!g || !isMember(g, u.id)) return;
@@ -1834,7 +2195,7 @@ function rowShell(x, metaHtml, right, opt = {}){
   const g = x.g, just = x.done && UI.justDone === g.id ? 'just' : '';
   return `<li class="item t-${g.type} ${x.done || opt.done ? 'done' : ''} ${just}">
     <button class="item-main" data-act="open-goal" data-id="${g.id}"><span class="gi" aria-hidden="true">${esc(g.icon)}</span>
-      <span class="item-txt"><b>${esc(g.title)}</b><small>${typeChip(g)}${metaHtml}${pendingTag(g)}</small>${opt.bar != null ? rowBar(opt.bar) : ''}</span></button>
+      <span class="item-txt"><b>${favStar(g)}${esc(g.title)}</b><small>${typeChip(g)}${metaHtml}${pendingTag(g)}</small>${opt.bar != null ? rowBar(opt.bar) : ''}</span></button>
     <div class="row-acts">${right}</div></li>`;
 }
 function checkBtn(x, label, disabled){
@@ -1859,6 +2220,7 @@ function finishWith(g, pts, msg, post){
   if (last && last.goalId === g.id) bumpPts(last, (last.pending ? last.ptsPending : last.pts) + pts);
   notify(g.userId, msg, { type:'badge', goalId:g.id });
   if (post) autoPost(userById(g.userId), g, post);
+  queueBadgeCheck();
 }
 
 const EXT = {
@@ -2047,7 +2409,8 @@ const EXT = {
     actions: () => '',
     detail(g){
       const own = g.userId === me().id;
-      return `<div class="t-project">${h3('Étapes')}<ul class="tasks">${(g.tasks || []).map(t => `<li class="${t.done ? 'done' : ''}"><label><input type="checkbox" data-act="task-toggle" data-id="${g.id}|${t.id}" ${t.done ? 'checked' : ''} ${own ? '' : 'disabled'}><span>${esc(t.t)}</span></label>${own ? `<button class="icon-btn plain" data-act="task-del" data-id="${g.id}|${t.id}" aria-label="Supprimer l'étape ${esc(t.t)}">${icon('x')}</button>` : ''}</li>`).join('')}</ul>
+      const ts = g.tasks || [], n = ts.length, mv = own && n > 1;
+      return `<div class="t-project">${h3('Étapes')}${mv ? `<p class="muted small tasks-tip">Fais glisser ${icon('grip')} ou utilise les flèches pour réordonner.</p>` : ''}<ul class="tasks" data-gid="${g.id}">${ts.map((t, i) => `<li class="${t.done ? 'done' : ''}" data-tid="${t.id}">${mv ? `<span class="task-grip" aria-hidden="true" title="Glisser pour déplacer">${icon('grip')}</span>` : ''}<label><input type="checkbox" data-act="task-toggle" data-id="${g.id}|${t.id}" ${t.done ? 'checked' : ''} ${own ? '' : 'disabled'}><span>${esc(t.t)}</span></label>${own ? `<span class="task-acts">${mv ? `<button class="icon-btn plain" data-act="task-move" data-id="${g.id}|${t.id}|-1" aria-label="Monter l'étape ${esc(t.t)}" ${i === 0 ? 'disabled' : ''}>${icon('up')}</button><button class="icon-btn plain" data-act="task-move" data-id="${g.id}|${t.id}|1" aria-label="Descendre l'étape ${esc(t.t)}" ${i === n - 1 ? 'disabled' : ''}>${icon('down')}</button>` : ''}<button class="icon-btn plain" data-act="task-del" data-id="${g.id}|${t.id}" aria-label="Supprimer l'étape ${esc(t.t)}">${icon('x')}</button></span>` : ''}</li>`).join('')}</ul>
         ${own ? `<form class="c-form" data-form="task" data-id="${g.id}" style="margin-bottom:16px"><label class="sr" for="task-new">Nouvelle étape</label><input type="text" id="task-new" name="t" placeholder="Ajouter une étape…" maxlength="120" autocomplete="off"><button class="btn sm" type="submit">Ajouter</button></form>` : ''}</div>`;
     },
     form: (v, g) => `${g ? `<p class="muted small">Ajoute, coche ou supprime les étapes depuis la fiche du projet.</p>` : `<div class="field"><label for="p-tasks">Étapes (une par ligne)</label><textarea id="p-tasks" name="ptasks" placeholder="Choisir un nom de domaine&#10;Maquetter la page d'accueil&#10;Mettre en ligne"></textarea></div>`}
@@ -2387,12 +2750,14 @@ function avatar(u, size=40, a=u.avatar){
 const typeChip = g => `<span class="chip t-${g.type}">${icon(TYPE_ICON[g.type])}${TYPES[g.type].label}</span>`;
 function applyTheme(){
   const t = me()?.settings.theme || 'system';
-  const ac = (ACCENTS[me()?.settings.accent ?? 0] || ACCENTS[0]).c, rs = document.documentElement.style;
+  const s0 = me()?.settings, ac = validAccent(s0?.accentCustom) ? s0.accentCustom : (ACCENTS[s0?.accent ?? 0] || ACCENTS[0]).c, rs = document.documentElement.style;
   rs.setProperty('--flame-2', ac[0]); rs.setProperty('--flame', ac[1]); rs.setProperty('--pink', ac[2]);
   if (t === 'system') { if (HOST_THEME) document.documentElement.setAttribute('data-theme', HOST_THEME); else document.documentElement.removeAttribute('data-theme'); }
   else document.documentElement.setAttribute('data-theme', t);
+  applyBackdrop();
 }
-const logo = () => `<span class="logo">${flame(28)}<span>Peps<span class="grad">Goal</span></span></span>`;
+// Easter egg : PepsGold avec la couleur Soleil, PepsCold avec Glacier
+const logo = () => { const w = eggWord(); return `<span class="logo egg-${w.toLowerCase()}">${flame(28)}<span>Peps<span class="grad egg">${[...w].map((c, i) => `<i style="--k:${i}">${c}</i>`).join('')}</span></span></span>`; };
 const unread = () => DB.notifs.filter(n => n.userId === me()?.id && !n.read).length;
 const bell = () => { const n = unread(); return `<button class="icon-btn" id="bell" data-act="open-notifs" aria-label="Notifications${n ? ` (${n} non lues)` : ''}">${icon('bell')}${n ? `<span class="badge">${n > 9 ? '9+' : n}</span>` : ''}</button>`; };
 function updateBell(ring){ const b = document.getElementById('bell'); if (b) { b.outerHTML = bell(); if (ring) document.getElementById('bell')?.classList.add('shake'); } }
@@ -2419,7 +2784,7 @@ function render(){
       ${nav.map(([k, l, i]) => `<button class="nav-a" data-act="nav" data-id="${k}" ${navKey === k ? 'aria-current="page"' : ''}>${icon(i)}<span>${l}</span>${nb(k)}</button>`).join('')}
       <div class="side-foot">
         <button class="btn btn-primary" data-act="new-goal">${icon('plus')}Nouvel objectif</button>
-        <button class="me-mini" data-act="nav" data-id="profile">${avatar(u, 38)}<span><b>${esc(u.name)}</b><small>@${esc(u.username)}</small></span></button>
+        <button class="me-mini" data-act="nav" data-id="profile"><span class="lv-ring sm lv${level(points(u.id)).idx}">${avatar(u, 38)}</span><span><b>${esc(u.name)}</b><small>@${esc(u.username)}</small></span></button>
       </div>
     </nav>
     <main class="main" id="main">
@@ -2448,11 +2813,13 @@ function render(){
   if (UI.renderedView !== UI.view) {
     UI.renderedView = UI.view;
     main.classList.add('enter'); stagger(main); countUps(main);
+    document.documentElement.classList.add('nav-enter'); setTimeout(() => document.documentElement.classList.remove('nav-enter'), 900);
     setTimeout(() => main.classList.remove('enter'), 1600);
   }
   const sn = globalStreak(u.id).n;
   if (UI.lastStreak != null && sn > UI.lastStreak) document.querySelector('.topbar .streak-pill')?.classList.add('bump');
   UI.lastStreak = sn; UI.justDone = null; UI.justLiked = null;
+  eggAfterRender();
   renderModal();
 }
 
@@ -2522,7 +2889,7 @@ function dueRow(x){
   const just = x.done && UI.justDone === g.id ? 'just' : '';
   return `<li class="item t-${g.type} ${x.done ? 'done' : ''} ${just}">
     <button class="item-main" data-act="open-goal" data-id="${g.id}"><span class="gi" aria-hidden="true">${esc(g.icon)}</span>
-      <span class="item-txt"><b>${esc(g.title)}</b><small>${typeChip(g)}<span>${esc(x.meta || metaLine(g))}</span><span>· ${esc(s.v)} ${esc(s.l)}</span>${pendingTag(g)}</small></span></button>
+      <span class="item-txt"><b>${favStar(g)}${esc(g.title)}</b><small>${typeChip(g)}<span>${esc(x.meta || metaLine(g))}</span><span>· ${esc(s.v)} ${esc(s.l)}</span>${pendingTag(g)}</small></span></button>
     <button class="check ${x.done ? 'on' : ''} ${just}" data-act="validate" data-id="${g.id}" aria-pressed="${x.done}" aria-label="${x.done ? 'Annuler la validation' : g.type === 'abstinence' ? "J'ai tenu aujourd'hui" : 'Valider'} : ${esc(g.title)}">${icon('check')}</button>
   </li>`;
 }
@@ -2532,12 +2899,12 @@ function ongoingRow(x){
   if (g.type === 'deadline') {
     const n = daysUntil(g.due);
     return `<li class="item t-deadline"><button class="item-main" data-act="open-goal" data-id="${g.id}"><span class="gi" aria-hidden="true">${esc(g.icon)}</span>
-      <span class="item-txt"><b>${esc(g.title)}</b><small>${typeChip(g)}<span class="countdown ${n <= 2 ? 'urgent' : ''}">${esc(dueText(g.due))}</span></small></span></button>
+      <span class="item-txt"><b>${favStar(g)}${esc(g.title)}</b><small>${typeChip(g)}<span class="countdown ${n <= 2 ? 'urgent' : ''}">${esc(dueText(g.due))}</span></small></span></button>
       <button class="mini-btn" data-act="validate" data-id="${g.id}">Terminé</button></li>`;
   }
   const mo = g.type === 'monthly', p = mo ? monthProgress(g) : objProgress(g), pct = Math.min(100, p / g.target * 100);
   return `<li class="item t-${g.type} ${mo && p >= g.target ? 'done' : ''}"><button class="item-main" data-act="open-goal" data-id="${g.id}"><span class="gi" aria-hidden="true">${esc(g.icon)}</span>
-    <span class="item-txt"><b>${esc(g.title)}</b><small>${typeChip(g)}<span>${fmtNum(p)} / ${g.target} ${esc(g.unit || '')}${mo ? ` · ${p >= g.target ? 'atteint ce mois-ci' : `${pl(daysLeftInMonth(), 'jour restant', 'jours restants')}`}` : ''}</span></small>
+    <span class="item-txt"><b>${favStar(g)}${esc(g.title)}</b><small>${typeChip(g)}<span>${fmtNum(p)} / ${g.target} ${esc(g.unit || '')}${mo ? ` · ${p >= g.target ? 'atteint ce mois-ci' : `${pl(daysLeftInMonth(), 'jour restant', 'jours restants')}`}` : ''}</span></small>
     <span class="bar" style="margin-top:4px"><i style="width:${pct}%"></i></span></span></button>
     <button class="mini-btn" data-act="validate" data-id="${g.id}" aria-label="Ajouter un progrès : ${esc(g.title)}">+ Progrès</button></li>`;
 }
@@ -2582,7 +2949,7 @@ function viewToday(){
   </div>
   <section class="glass card">
     <div class="card-h"><h2>À valider aujourd'hui</h2><span class="count">${done}/${total}</span></div>
-    ${total ? `<ul class="items">${plan.due.sort((a, b) => a.done - b.done).map(dueRow).join('')}</ul>` : `<div class="empty"><b>Rien de prévu aujourd'hui</b><p>Profite de ta journée, ou ajoute une routine.</p></div>`}
+    ${total ? `<ul class="items">${plan.due.sort((a, b) => a.done - b.done || isFav(b.g) - isFav(a.g)).map(dueRow).join('')}</ul>` : `<div class="empty"><b>Rien de prévu aujourd'hui</b><p>Profite de ta journée, ou ajoute une routine.</p></div>`}
   </section>
   ${verifySection()}
   ${plan.ongoing.length ? `<section class="glass card"><div class="card-h"><h2>En cours</h2><span class="count">${plan.ongoing.length}</span></div><ul class="items">${plan.ongoing.map(ongoingRow).join('')}</ul></section>` : ''}
@@ -2602,7 +2969,7 @@ function last7(g){
 function goalCard(g){
   const s = statBig(g);
   return `<button class="gcard glass t-${g.type}" data-act="open-goal" data-id="${g.id}">
-    <div class="gcard-h"><span class="gi" aria-hidden="true">${esc(g.icon)}</span><div><b>${esc(g.title)}</b><div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">${typeChip(g)}${g.members ? `<span class="vis">${icon('group')}${g.members.length} membres</span>` : visTag(g.visibility)}${g.buddy ? `<span class="vis">${icon('shield')}binôme</span>` : ''}</div></div></div>
+    <div class="gcard-h"><span class="gi" aria-hidden="true">${esc(g.icon)}</span><div><b>${favStar(g)}${esc(g.title)}</b><div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">${typeChip(g)}${g.members ? `<span class="vis">${icon('group')}${g.members.length} membres</span>` : visTag(g.visibility)}${g.buddy ? `<span class="vis">${icon('shield')}binôme</span>` : ''}</div></div></div>
     <div class="big"><span>${esc(s.v)}</span><span>${esc(s.l)}</span></div>
     ${g.type === 'objective' || g.type === 'monthly' ? `<span class="bar"><i style="width:${Math.min(100, (g.type === 'monthly' ? monthProgress(g) : objProgress(g)) / g.target * 100)}%"></i></span>` : ''}
     ${g.type === 'monthly' && g.cumulate ? `<small class="muted">Cumul : <b style="color:var(--c-ink)">${fmtNum(objProgress(g))} ${esc(g.unit || '')}</b> · ${pl(goalStreak(g), 'mois réussi d’affilée', 'mois réussis d’affilée')}</small>` : ''}
@@ -2613,10 +2980,11 @@ function goalCard(g){
 function viewGoals(){
   const u = me(), all = myGoals(u.id), present = new Set(all.map(g => g.type));
   const F = [['all','Tous'], ...TYPE_GROUPS.flatMap(([, ks]) => ks).filter(k => present.has(k)).map(k => [k, TYPES[k].label]), ['done','Terminés et archivés']];
+  if (all.some(isFav)) F.splice(1, 0, ['fav', '★ Favoris']);
   const isClosed = isClosedGoal;
   if (UI.groupFilter !== 'all' && UI.groupFilter !== 'none' && !groupsOf(u).some(x => x.id === UI.groupFilter)) UI.groupFilter = 'all';
   const inGroup = g => UI.groupFilter === 'all' || (groupOfGoal(u, g.id)?.id || 'none') === UI.groupFilter;
-  const list = all.filter(g => (UI.goalFilter === 'done' ? isClosed(g) : !isClosed(g) && (UI.goalFilter === 'all' || g.type === UI.goalFilter)) && inGroup(g));
+  const list = all.filter(g => (UI.goalFilter === 'done' ? isClosed(g) : !isClosed(g) && (UI.goalFilter === 'all' || g.type === UI.goalFilter || (UI.goalFilter === 'fav' && isFav(g)))) && inGroup(g)).sort((a, b) => isFav(b) - isFav(a));
   return `
   <div class="filters" role="group" aria-label="Filtrer">${F.map(([k, l]) => `<button class="fchip" data-act="goal-filter" data-id="${k}" aria-pressed="${UI.goalFilter === k}">${l}</button>`).join('')}</div>
   ${all.length ? groupBar(u, all.filter(g => !isClosed(g))) : ''}
@@ -2701,6 +3069,7 @@ function viewFriends(){
     ${friends.length ? `<ul class="people">${friends.map(x => personRow(x, `<button class="btn sm" data-act="open-chat" data-id="${x.id}">${icon('comment')}Message${unreadFrom(u.id, x.id) ? ` <span class="badge static">${unreadFrom(u.id, x.id)}</span>` : ''}</button><button class="btn btn-ghost sm" data-act="unfriend" data-id="${x.id}">Retirer</button>`)).join('')}</ul>` : `<div class="empty"><b>Pas encore d'amis</b><p>Cherche des personnes ci-dessous pour suivre vos séries ensemble.</p></div>`}
   </section>
   ${outgoing.length ? `<section class="glass card"><div class="card-h"><h2>Demandes envoyées</h2></div><ul class="people">${outgoing.map(f => personRow(userById(f.to), `<button class="btn btn-ghost sm" data-act="decline" data-id="${f.id}">Annuler</button>`)).join('')}</ul></section>` : ''}
+  ${suggestCard(u)}
   <section class="glass card">
     <div class="card-h"><h2>Trouver des amis</h2></div>
     <label class="sr" for="friend-q">Rechercher</label>
@@ -2725,11 +3094,21 @@ function gelProgress(u, compact){
 /* ---------- modales ---------- */
 function renderModal(){
   const m = UI.modal;
-  if (!m || (!me() && !['importPreview','legal','a11y'].includes(m.type))) { modalRoot.innerHTML = ''; lockScroll(); return; }
-  const body = { groupNew:mGroupNew, groupInfo:mGroupInfo, goalForm:mGoalForm, goal:mGoal, progress:mProgress, user:mUser, notifs:mNotifs, confirm:mConfirm, share:mShare, avatar:mAvatar, tuto:mTuto, importPreview:mImport, legal:mLegal, a11y:mA11y, shareText:mShareText, groups:mGroups, modUser:mModUser, appeal:mAppeal, report:mReport, chat:mChat, compose:mCompose, storyNew:mStoryNew, exportData:mExport }[m.type]();
-  modalRoot.innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-title">${body}</div></div>`;
+  if (!m || (!me() && !['importPreview','legal','a11y'].includes(m.type))) { modalRoot.innerHTML = ''; UI.modalKey = null; lockScroll(); return; }
+  const body = { groupNew:mGroupNew, groupInfo:mGroupInfo, goalForm:mGoalForm, goal:mGoal, progress:mProgress, user:mUser, notifs:mNotifs, confirm:mConfirm, share:mShare, avatar:mAvatar, tuto:mTuto, importPreview:mImport, legal:mLegal, a11y:mA11y, shareText:mShareText, groups:mGroups, modUser:mModUser, appeal:mAppeal, report:mReport, chat:mChat, compose:mCompose, storyNew:mStoryNew, exportData:mExport, notes:mNotes }[m.type]();
+  // Même fenêtre redessinée (actualisation automatique, validation, favori…) : on garde la position de lecture et le focus
+  const key = `${m.type}|${m.id || m.with || m.group || m.doc || ''}`, old = modalRoot.querySelector('.sheet'), same = !!old && UI.modalKey === key;
+  const top = same ? old.scrollTop : 0, act = same && old.contains(document.activeElement) ? document.activeElement : null;
+  const focusSel = act ? (act.id ? `#${CSS.escape(act.id)}` : act.dataset.act ? `[data-act="${act.dataset.act}"]${act.dataset.id ? `[data-id="${CSS.escape(act.dataset.id)}"]` : ''}` : null) : null;
+  modalRoot.innerHTML = `<div class="overlay ${same ? 'still' : ''}" data-act="close-bg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-title">${body}</div></div>`;
+  UI.modalKey = key;
   lockScroll();
   if (m.type === 'goalForm') syncGoalForm();
+  if (same) {
+    const sh = modalRoot.querySelector('.sheet'); if (sh) sh.scrollTop = top;
+    (focusSel && modalRoot.querySelector(focusSel) || sh)?.focus({ preventScroll:true });
+    return;
+  }
   const f = modalRoot.querySelector('[autofocus]') || modalRoot.querySelector('.sheet');
   if (f) { f.setAttribute('tabindex', f.getAttribute('tabindex') || '-1'); f.focus({ preventScroll:true }); }
 }
@@ -2825,7 +3204,7 @@ function mGoal(){
   }
   const weekInfo = g.type === 'routine' && g.mode === 'count' ? `<dt>Cette semaine</dt><dd>${weekCount(g, weekStart(new Date()))} / ${g.perWeek}</dd>` : '';
   const relapses = g.type === 'abstinence' ? DB.checkins.filter(c => c.goalId === g.id && c.kind === 'relapse').length : 0;
-  return `${sheetHead(esc(g.title))}
+  return `<div class="sheet-h"><h2 id="m-title">${esc(g.title)}</h2><div class="sheet-h-acts">${favButton(g)}<button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div></div>
   <div class="detail-hero t-${g.type}"><span class="gi" aria-hidden="true">${esc(g.icon)}</span><div><div class="big">${esc(s.v)}</div><div class="muted" style="font-weight:700">${esc(s.l)}</div></div></div>
   <div class="quick">${actions}</div>
   <dl class="dl">
@@ -2894,13 +3273,13 @@ function mUser(){
     <div class="stat"><b>${st.n}</b><span>Série</span></div><div class="stat"><b>${lv.pts}</b><span>Flammes</span></div><div class="stat"><b>${friendsOf(x.id).length}</b><span>Amis</span></div>
   </div>
   <h3 class="h2" style="font-size:14px;margin-bottom:8px">Objectifs visibles</h3>
-  ${goals.length ? `<ul class="items" style="margin-bottom:16px">${goals.map(g => { const s = statBig(g); return `<li class="item t-${g.type}"><span class="item-main"><span class="gi" aria-hidden="true">${esc(g.icon)}</span><span class="item-txt"><b>${esc(g.title)}</b><small>${typeChip(g)}<span>${esc(s.v)} ${esc(s.l)}</span></small></span></span></li>`; }).join('')}</ul>`
+  ${goals.length ? `<ul class="items" style="margin-bottom:16px">${goals.map(g => { const s = statBig(g); return `<li class="item t-${g.type}"><span class="item-main"><span class="gi" aria-hidden="true">${esc(g.icon)}</span><span class="item-txt"><b>${favStar(g)}${esc(g.title)}</b><small>${typeChip(g)}<span>${esc(s.v)} ${esc(s.l)}</span></small></span></span></li>`; }).join('')}</ul>`
     : `<p class="muted small" style="margin-bottom:16px">${areFriends(u.id, x.id) || self ? 'Aucun objectif partagé.' : 'Ajoute cette personne en ami pour voir ses objectifs partagés.'}</p>`}
   ${posts.length ? `<h3 class="h2" style="font-size:14px;margin-bottom:8px">Dernières publications</h3><div class="gform">${posts.map(p => `<div class="bubble"><small class="muted">${ago(p.at)} · ${VIS[p.visibility].l}${p.photo ? ' · 📷 photo' : ''}</small>${p.text ? `<br>${esc(p.text)}` : ''}</div>`).join('')}</div>` : ''}`;
 }
 function mNotifs(){
   const list = DB.notifs.filter(n => n.userId === me().id).sort((a, b) => b.at - a.at).slice(0, 40);
-  const ic = { group:'group', friend:'userplus', like:'feed', comment:'comment', reminder:'bell', deadline:'cal', badge:'medal', freeze:'snow', mod:'shield', official:'flameo' };
+  const ic = { mention:'comment', story:'image', group:'group', friend:'userplus', like:'feed', comment:'comment', reminder:'bell', deadline:'cal', badge:'medal', freeze:'snow', mod:'shield', official:'flameo' };
   return `${sheetHead('Notifications')}
   ${list.length ? `<div class="gform" style="gap:4px">${list.map(n => `<div class="notif ${n.read ? '' : 'unread'}"><span class="nic">${n.type === 'like' ? flame(19) : icon(ic[n.type] || 'bell')}</span><div><p>${esc(n.text)}</p><small>${ago(n.at)}</small></div></div>`).join('')}</div>` : `<div class="empty"><b>Tout est calme</b><p>Tes rappels et l'activité de tes amis apparaîtront ici.</p></div>`}`;
 }
@@ -2991,7 +3370,7 @@ function mShareText(){
 const fsRoot = document.getElementById('fs-root');
 let confettiRAF = null;
 function lockScroll(){ document.body.style.overflow = (UI.modal || UI.fs) ? 'hidden' : ''; }
-function closeFs(){ const sv = UI.fs?.type === 'storyview'; clearTimeout(UI.svTimer); UI.fs = null; fsRoot.innerHTML = ''; stopConfetti(); lockScroll(); if (sv) render(); }
+function closeFs(){ const sv = UI.fs?.type === 'storyview'; clearTimeout(UI.svTimer); UI.fs = null; fsRoot.innerHTML = ''; stopConfetti(); lockScroll(); if (sv) render(); if (UI.badgeQueue?.length) setTimeout(nextBadgeFs, 450); }
 function stagger(root){ [...root.children].forEach((c, i) => c.style.setProperty('--i', i)); }
 function countUps(root){
   if (reduced()) return;
@@ -3036,8 +3415,9 @@ function checkPerfect(){
   if (!total || plan.due.some(x => !x.done)) return;
   DB.perfectLog = DB.perfectLog || {};
   const k = u.id + '|' + today(); if (DB.perfectLog[k]) return;
-  DB.perfectLog[k] = 1; save();
-  setTimeout(showPerfect, 650);
+  DB.perfectLog[k] = 1;
+  u.perfectDays = [...new Set([...(u.perfectDays || []), today()])].slice(-1000); save();
+  setTimeout(showPerfect, 650); queueBadgeCheck();
 }
 function showPerfect(){
   const d = dayStats(me().id);
@@ -3362,14 +3742,6 @@ const ACT = {
   accept: id => { const f = DB.friendships.find(x => x.id === id); f.status = 'accepted'; notify(f.from, `${me().name} a accepté ta demande d'ami.`, { type:'friend' }); save(); if (UI.modal) UI.modal = { type:'user', id:f.from }; render(); toast("Vous êtes maintenant amis.", 'users'); },
   decline: id => { DB.friendships = DB.friendships.filter(x => x.id !== id); save(); render(); },
   unfriend: id => { const x = userById(id); UI.modal = { type:'confirm', title:`Retirer ${x.name} ?`, text:'Vous ne verrez plus vos publications réservées aux amis.', ok:'Retirer', danger:true, run: () => { DB.friendships = DB.friendships.filter(f => f !== friendship(me().id, id)); save(); render(); } }; renderModal(); },
-  'ask-notif': async () => {
-    const u = me();
-    try {
-      const r = await Notification.requestPermission();
-      u.settings.browser = r === 'granted'; save(); render();
-      toast(r === 'granted' ? 'Notifications du navigateur activées.' : "Le navigateur n'a pas autorisé les notifications. Les rappels restent visibles dans l'app.", 'bell');
-    } catch(e){ toast("Ce navigateur bloque les notifications ici. Les rappels restent visibles dans l'app.", 'bell'); }
-  },
   'test-reminder': () => {
     const u = me(), plan = todayPlan(u.id), pending = plan.due.filter(x => !x.done).length;
     const text = pending ? `Rappel : il te reste ${pl(pending, 'validation', 'validations')} aujourd'hui.` : "Rappel : tout est validé aujourd'hui, bravo !";
@@ -3412,7 +3784,9 @@ document.addEventListener('change', e => {
   const k = t.dataset.set; if (!k) return;
   const s = me().settings;
   if (k === 'theme') { s.theme = t.value; applyTheme(); }
-  if (k === 'accent') { s.accent = Number(t.value); save(); render(); return; }
+  if (k === 'accent') { if (t.value === 'custom') return; s.accent = Number(t.value); s.accentCustom = null; save(); render(); return; }
+  if (k === 'bg') { if (t.value === 'custom' && !bgImage()) { t.checked = false; document.getElementById('bg-file')?.click(); return; } s.bg = t.value; save(); render(); return; }
+  if (k === 'suggest') { s.noSuggest = !t.checked; save(); toast(t.checked ? 'Tu peux apparaître dans les suggestions d’amis.' : 'Tu n’apparais plus dans les suggestions d’amis.', 'users'); return; }
   if (k === 'defvis') return;
   if (k === 'social') { s.social = t.checked; save(); render(); toast(t.checked ? 'Fonctions sociales activées.' : 'Fonctions sociales masquées. Tu peux les réactiver ici à tout moment.', 'users'); return; }
   if (k === 'morning-time') s.morning.time = t.value || '08:30';
@@ -3816,7 +4190,7 @@ const GROUP_EMOJIS = ['💬', '🔥', '🏃', '💪', '📚', '🎯', '🧘', '�
 function msgBody(m){
   const raw = m.e2e ? E2E.cache.get(m.id) : m.text;
   if (raw == null) return null;
-  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote'].includes(o.k)) return o; } catch(e){} }
+  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote','react'].includes(o.k)) return o; } catch(e){} }
   return { pg:1, k:'text', t:String(raw) };
 }
 const fmtDur = s => `${Math.floor((s || 0) / 60)}:${String(Math.round((s || 0) % 60)).padStart(2, '0')}`;
@@ -3829,6 +4203,7 @@ function msgPreview(m){
   if (b.k === 'goal') return `🎯 ${b.g?.title || 'Objectif partagé'}`;
   if (b.k === 'poll') return `📊 ${b.q || 'Sondage'}`;
   if (b.k === 'vote') return '📊 A voté au sondage';
+  if (b.k === 'react') return `A réagi ${b.e || ''}`;
   return b.t;
 }
 
@@ -3841,7 +4216,7 @@ const hiddenFrom = (m, uid) => m.from !== uid && blockedBy(uid, m.from);
 const convo = (a, b) => (DB.messages || []).filter(m => !m.chat && ((m.from === a && m.to === b) || (m.from === b && m.to === a))).sort((x, y) => x.at - y.at);
 const groupConvo = (gid, uid) => (DB.messages || []).filter(m => m.chat === gid && !hiddenFrom(m, uid)).sort((x, y) => x.at - y.at);
 // Les votes aux sondages ne comptent pas comme des messages non lus
-const isUnread = (m, uid) => msgBody(m)?.k !== 'vote' && (m.chat ? m.from !== uid && !(m.readBy || []).includes(uid) && !hiddenFrom(m, uid) && !!chatById(m.chat)?.members.includes(uid) : m.to === uid && !m.read);
+const isUnread = (m, uid) => !['vote', 'react'].includes(msgBody(m)?.k) && (m.chat ? m.from !== uid && !(m.readBy || []).includes(uid) && !hiddenFrom(m, uid) && !!chatById(m.chat)?.members.includes(uid) : m.to === uid && !m.read);
 const unreadFrom = (meId, other) => (DB.messages || []).filter(m => !m.chat && m.to === meId && m.from === other && !m.read).length;
 const unreadGroup = (meId, gid) => (DB.messages || []).filter(m => m.chat === gid && isUnread(m, meId)).length;
 const unreadMsgs = meId => (DB.messages || []).filter(m => isUnread(m, meId) && (m.chat || (userById(m.from) && !blockedBy(meId, m.from)))).length;
@@ -3969,7 +4344,7 @@ function msgInner(m){
     const g = b.g || {}, type = TYPES[g.type] ? g.type : 'routine';
     return `<button class="attach msg-goal t-${type}" data-act="open-shared-goal" data-id="${m.id}"><span class="gi" aria-hidden="true">${esc(g.icon || '🎯')}</span><span><b>${esc(g.title || 'Objectif')}</b><small>${TYPES[type].label}${g.v ? ` · ${esc(g.v)} ${esc(g.l || '')}` : ''}</small></span></button>${b.t ? `<span class="msg-cap">${esc(b.t)}</span>` : ''}`;
   }
-  return esc(b.t);
+  return textHtml(b);
 }
 function markRead(){
   const u = me(), m0 = UI.modal; if (!u || m0?.type !== 'chat') return;
@@ -4014,7 +4389,7 @@ const refreshChatExtra = () => {
   document.querySelectorAll('[data-chat-panel]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.chatPanel === UI.chatPanel)));
 };
 function chatComposer(attrs){
-  return `<div id="chat-extra">${chatExtra()}</div>
+  return `<div id="chat-extra">${chatExtra()}</div><div id="chat-reply">${replyBar()}</div><div class="mention-pop" id="mention-pop" role="listbox" aria-label="Mentionner un membre" hidden></div>
   <form class="c-form chat-f" data-form="chat" ${attrs}>
     <button type="button" class="icon-btn plain" data-act="chat-panel" data-id="tools" data-chat-panel="tools" aria-label="Joindre une photo, un objectif ou un sondage" aria-pressed="${UI.chatPanel === 'tools'}">${icon('plus')}</button>
     <button type="button" class="icon-btn plain" data-act="chat-panel" data-id="emoji" data-chat-panel="emoji" aria-label="Emojis" aria-pressed="${UI.chatPanel === 'emoji'}">${icon('smile')}</button>
@@ -4037,14 +4412,14 @@ function mChat(){
   void decryptPending();
   const banned = isBanned(u);
   if (g) {
-    return `<div class="sheet-h"><button class="who" data-act="group-info" data-id="${g.id}" aria-label="Infos du groupe ${esc(g.name)}"><span class="grp-av">${esc(g.emoji)}</span><span><b id="m-title">${esc(g.name)}</b><small>${pl(g.members.length, 'membre', 'membres')} · infos et membres</small></span></button><button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>
-    <p class="e2e-note">${icon('lock')}<span>Groupe chiffré de bout en bout : une clé propre au groupe, présente uniquement sur les appareils de ses membres. <span id="e2e-print"></span></span></p>${e2eNotice()}
+    return `<div class="sheet-h"><button class="who" data-act="group-info" data-id="${g.id}" aria-label="Infos du groupe ${esc(g.name)}"><span class="grp-av">${esc(g.emoji)}</span><span><b id="m-title">${esc(g.name)}</b><small>${pl(g.members.length, 'membre', 'membres')} · infos et membres</small></span></button>${e2eBtn()}<button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>
+    ${e2eInfo('Groupe chiffré de bout en bout : une clé propre au groupe, présente uniquement sur les appareils de ses membres.')}${e2eNotice()}
     <div class="chat-log" id="chat-log" aria-live="polite">${chatLog()}</div>
     ${banned ? `<p class="muted small">Ta messagerie est suspendue ${esc(banText(u))}.</p>` : chatComposer(`data-group="${g.id}"`)}`;
   }
   const iBlocked = blockedBy(u.id, x.id), theyBlocked = blockedBy(x.id, u.id), friends = areFriends(u.id, x.id);
-  return `<div class="sheet-h"><div class="who">${avatar(x, 40)}<span><b id="m-title">${esc(x.name)}${isOfficial(x) ? verified() : ''}</b>${x.demo ? '<span class="demo">démo</span>' : ''}<small>${isOfficial(x) ? 'Compte officiel' : '@' + esc(x.username)}</small></span></div><button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>
-  ${isOfficial(x) ? '' : `<p class="e2e-note">${icon('lock')}<span>Chiffrée de bout en bout : une clé propre à votre paire, présente uniquement sur vos appareils. <span id="e2e-print"></span></span></p>${e2eNotice()}`}
+  return `<div class="sheet-h"><div class="who">${avatar(x, 40)}<span><b id="m-title">${esc(x.name)}${isOfficial(x) ? verified() : ''}</b>${x.demo ? '<span class="demo">démo</span>' : ''}<small>${isOfficial(x) ? 'Compte officiel' : '@' + esc(x.username)}</small></span></div>${isOfficial(x) ? '' : e2eBtn()}<button class="icon-btn plain" data-act="close" aria-label="Fermer">${icon('x')}</button></div>
+  ${isOfficial(x) ? '' : e2eInfo('Chiffrée de bout en bout : une clé propre à votre paire, présente uniquement sur vos appareils.') + e2eNotice()}
   <div class="chat-log" id="chat-log" aria-live="polite">${chatLog()}</div>
   ${isOfficial(x) ? `<p class="muted small">Compte officiel : il ne reçoit pas de réponses. Pour contester une décision de modération, utilise la demande de débannissement dans le Feed.</p>`
     : banned ? `<p class="muted small">Ta messagerie est suspendue ${esc(banText(u))}.</p>`
@@ -4076,7 +4451,9 @@ async function deliverMessage(target, body, blob){
   E2E.cache.set(id, raw);
   DB.messages = DB.messages || [];
   DB.messages.push(msg);
-  save(); updateChat(true); updateBadges();
+  // Mentions dans un groupe : les membres cités sont prévenus
+  if (target.chat && Array.isArray(body?.mn)) body.mn.forEach(x => notify(x, `${u.name} t’a mentionné dans ${chatById(target.chat)?.name || 'un groupe'}.`, { type:'mention' }));
+  save(); updateChat(!SILENT_K.includes(body?.k)); updateBadges();
   return msg;
 }
 // Profils de démonstration : réponse automatique
@@ -4455,7 +4832,8 @@ function chatPollHtml(m, b){
 /* ---- conversation : mise à jour ligne par ligne (les photos, vocaux et emojis déjà affichés ne sont pas recréés) ---- */
 function chatRows(){
   const u = me(), m0 = UI.modal, g = m0.group ? chatById(m0.group) : null;
-  const list = (g ? groupConvo(g.id, u.id) : convo(u.id, m0.with)).filter(m => msgBody(m)?.k !== 'vote');
+  const all = g ? groupConvo(g.id, u.id) : convo(u.id, m0.with), reacts = reactionsOf(all);
+  const list = all.filter(m => !SILENT_K.includes(msgBody(m)?.k));
   const rows = []; let lastDay = '', lastFrom = '';
   for (const m of list) {
     const d = ymd(m.at);
@@ -4463,7 +4841,8 @@ function chatRows(){
     const mine = m.from === u.id, who = g && !mine && m.from !== lastFrom ? (userById(m.from)?.name || 'Ancien membre') : null;
     lastFrom = m.from;
     const kind = (m.e2e && !E2E.cache.has(m.id)) ? 'text' : (msgBody(m)?.k || 'text');
-    rows.push({ k:'m:' + m.id, h:`${who ? `<p class="msg-who">${esc(who)}</p>` : ''}<div class="msg ${mine ? 'me' : 'them'} ${m.official ? 'official' : ''} k-${kind}">${m.official && OFFICIAL_TAGS[m.tag] ? otag(m.tag) : ''}${msgInner(m)}<small>${new Date(m.at).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}</small></div>` });
+    const b = (m.e2e && !E2E.cache.has(m.id)) ? null : msgBody(m), canAct = !m.official && !!b && !isBanned(u);
+    rows.push({ k:'m:' + m.id, h:`${who ? `<p class="msg-who">${esc(who)}</p>` : ''}<div class="msg ${mine ? 'me' : 'them'} ${m.official ? 'official' : ''} k-${kind} ${b?.mn?.includes(u.id) ? 'mentioned' : ''}">${m.official && OFFICIAL_TAGS[m.tag] ? otag(m.tag) : ''}${msgInner(m)}<small>${new Date(m.at).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}</small>${canAct ? `<button class="msg-act" data-act="msg-menu" data-id="${m.id}" aria-label="Réagir ou répondre" aria-expanded="${UI.msgMenu === m.id}">${icon('smile')}</button>` : ''}</div>${reactChips(m, reacts, mine)}${canAct && UI.msgMenu === m.id ? msgMenuHtml(m, reacts, mine) : ''}` });
   }
   if (!rows.length) rows.push({ k:'empty', h:`<p class="muted small chat-empty">${g ? 'Aucun message pour l’instant. Dis bonjour au groupe !' : "Aucun message pour l'instant. Lance la conversation !"}</p>` });
   if (!g && UI.typing === m0.with) rows.push({ k:'typing', h:`<div class="msg them typing" aria-label="En train d'écrire"><i></i><i></i><i></i></div>` });
@@ -4485,7 +4864,8 @@ function reconcileRows(el, rows){
     }
     const prev = [...el.children].find(c => c.dataset.k === r.k);
     if (prev) prev.remove();
-    el.insertBefore(prev && prev._h === r.h ? prev : mk(r), cur || null);
+    const nw = prev && prev._h === r.h ? prev : mk(r); if (!prev) nw.classList.add('new');
+    el.insertBefore(nw, cur || null);
     changed = true; i++;
   }
   while (el.children[i]) { el.children[i].remove(); changed = true; }
@@ -4554,6 +4934,168 @@ Object.assign(FORMS, {
     UI.chatPanel = null; refreshChatExtra();
     void sendRich({ k:'poll', q, o:poll.options.map((t, i) => ({ id:'o' + i, t })), multi:poll.multi });
   }
+});
+
+/* ================= notifications de l'appareil ================= */
+// Activées sur cet appareil ? (la version connectée y ajoute l'abonnement push du navigateur)
+function notifOn(){ return !!me()?.settings.browser && 'Notification' in window && Notification.permission === 'granted'; }
+async function setNotifications(on){
+  const u = me();
+  if (!on) { u.settings.browser = false; save(); return false; }
+  const r = await Notification.requestPermission();
+  u.settings.browser = r === 'granted'; save();
+  return u.settings.browser;
+}
+function notifRow(){
+  const perm = 'Notification' in window ? Notification.permission : 'unsupported', on = notifOn();
+  const help = perm === 'unsupported' ? 'Non prises en charge ici : les rappels restent visibles dans l’app.'
+    : perm === 'denied' ? 'Bloquées par le navigateur : autorise-les dans les réglages du site (icône du cadenas), puis reviens ici.'
+    : on ? 'Activées sur cet appareil.' : 'Rappels, messages et encouragements, même quand PepsGoal est en arrière-plan.';
+  return `<div class="set-row"><div><b>Notifications sur cet appareil</b><small>${help}</small></div>
+    <button class="btn sm ${on ? '' : 'btn-primary'}" data-act="notif-toggle" ${perm === 'unsupported' || perm === 'denied' ? 'disabled' : ''}>${icon('bell')}${on ? 'Désactiver' : 'Activer'}</button></div>`;
+}
+
+/* ================= stories : encouragements et archive personnelle ================= */
+const STORY_ARCHIVE_MAX = 30;   // sans serveur : les photos restent dans le navigateur
+const storyLikeCount = s => s.likeCount ?? (s.likes || []).length;
+const storyLiked = (s, uid) => s.liked ?? (s.likes || []).includes(uid);
+// Encourager une story (remplacé par l'appel au serveur dans la version connectée)
+async function likeStory(s, on){
+  const u = me(); s.likes = s.likes || [];
+  if (on && !s.likes.includes(u.id)) { s.likes.push(u.id); notify(s.userId, `${u.name} a encouragé ta story 🔥`, { type:'story', view:'feed' }); }
+  if (!on) s.likes = s.likes.filter(x => x !== u.id);
+  save();
+}
+const myStoryArchive = uid => (DB.stories || []).filter(s => s.userId === uid).sort((a, b) => b.at - a.at);
+function storyThumb(s){
+  if (s.kind === 'photo') return `<span class="sta-img"><img src="${esc(s.photo)}" alt="" loading="lazy"></span>`;
+  const d = s.data || {}, recap = s.kind === 'recap', type = TYPES[d.type] ? d.type : 'routine';
+  return `<span class="sta-card ${recap ? '' : 't-' + type}" ${recap ? `style="background:${SBG[0]}"` : ''}><span class="sta-e">${esc(recap ? d.e : d.icon)}</span><span class="sta-t">${esc(d.title || '')}</span></span>`;
+}
+function storyArchiveCard(u){
+  if (isGuest(u) || !socialOn(u)) return '';
+  const list = myStoryArchive(u.id), shown = UI.stArchiveAll ? list : list.slice(0, 12);
+  return `<section class="glass card" id="story-archive"><div class="card-h"><h2>Mes stories</h2><span class="count">${list.length}</span></div>
+    ${list.length ? `<div class="st-archive">${shown.map(s => { const live = Date.now() - s.at < STORY_TTL; return `<button class="sta" data-act="story-archive" data-id="${s.id}" aria-label="Revoir la story du ${esc(fmtDate(ymd(s.at)))}">${storyThumb(s)}${live ? '<span class="sta-live">En ligne</span>' : ''}<small>${live ? ago(s.at) : esc(fmtDate(ymd(s.at)))}${storyLikeCount(s) ? ` · ${storyLikeCount(s)} 🔥` : ''}</small></button>`; }).join('')}</div>
+      ${list.length > shown.length ? `<button class="btn btn-ghost sm" data-act="story-archive-all">Voir les ${list.length} stories</button>` : ''}`
+      : `<p class="muted small">Après leurs 24 heures en ligne, tes stories restent ici : toi seul peux les revoir.</p>`}
+  </section>`;
+}
+
+/* ================= badges : familles à paliers, progression et célébration ================= */
+const BADGE_TIERS = [['Bronze', '#D08A4F'], ['Argent', '#B9C3D6'], ['Or', '#FFC83D'], ['Platine', '#7FE3D9'], ['Diamant', '#B48CFF']];
+const BADGE_FAMILIES = [
+  { k:'streak', n:'Série', e:'🔥', d:n => `Atteindre une série de ${pl(n, 'jour', 'jours')}`, t:[3, 7, 30, 100, 365], v:x => x.streak },
+  { k:'checks', n:'Validations', e:'✅', d:n => `${pl(n, 'validation', 'validations')}`, t:[1, 25, 100, 500, 1000], v:x => x.checks },
+  { k:'days', n:'Assiduité', e:'📅', d:n => `${pl(n, 'jour actif', 'jours actifs')}`, t:[7, 30, 100, 250, 365], v:x => x.days },
+  { k:'perfect', n:'Journées parfaites', e:'🌟', d:n => `${pl(n, 'journée parfaite', 'journées parfaites')}`, t:[1, 5, 20, 50, 100], v:x => x.perfect },
+  { k:'finish', n:'Accomplissements', e:'🏁', d:n => `${pl(n, 'objectif accompli', 'objectifs accomplis')} (caps, challenges, mois réussis…)`, t:[1, 5, 15, 30, 60], v:x => x.finish },
+  { k:'ontime', n:'Dans les temps', e:'⏰', d:n => `${pl(n, 'deadline bouclée', 'deadlines bouclées')} à temps`, t:[1, 5, 15, 30], v:x => x.ontime },
+  { k:'team', n:'Esprit d’équipe', e:'🤝', d:n => `${pl(n, 'défi à plusieurs réussi', 'défis à plusieurs réussis')} (groupe ou duel gagné)`, t:[1, 3, 10, 25], v:x => x.team },
+  { k:'friends', n:'Tribu', e:'👥', d:n => `${pl(n, 'ami', 'amis')}`, t:[1, 3, 10, 25], v:x => x.friends },
+  { k:'cheers', n:'Encouragé', e:'💖', d:n => `${pl(n, 'encouragement reçu', 'encouragements reçus')}`, t:[10, 50, 200, 500], v:x => x.cheers },
+  { k:'shield', n:'Bouclier', e:'🧊', d:n => `${pl(n, 'gel de série utilisé', 'gels de série utilisés')}`, t:[1, 10, 30], v:x => x.shield },
+  { k:'variety', n:'Explorateur', e:'🧭', d:n => `${n} types d’objectifs différents`, t:[3, 6, 10, 14], v:x => x.variety },
+  { k:'level', n:'Flammes', e:'🏆', d:n => `${fmtNum(n)} flammes gagnées`, t:[100, 500, 1500, 3000, 6000], v:x => x.pts }
+];
+function badgeStats(id){
+  const u = userById(id), cs = userCheckins(id).filter(c => isWin(c)), gs = DB.goals.filter(g => g.userId === id);
+  const perfect = new Set([...(u?.perfectDays || []), ...Object.keys(DB.perfectLog || {}).filter(k => k.startsWith(id + '|')).map(k => k.split('|')[1])]).size;
+  return {
+    streak:bestStreak(id), checks:cs.length, days:activeDays(id).size, perfect,
+    finish:gs.filter(g => g.completedAt && !g.failedAt).length + gs.reduce((s, g) => s + (g.monthsDone || []).length, 0),
+    ontime:gs.filter(g => g.type === 'deadline' && g.completedAt && ymd(g.completedAt) <= g.due).length,
+    team:DB.goals.filter(g => (g.type === 'group' && g.completedAt && isMember(g, id)) || (g.type === 'duel' && g.winner === id)).length,
+    friends:friendsOf(id).filter(Boolean).length, cheers:(u?.cheersIn || []).length, shield:(u?.frozenDays || []).length,
+    variety:new Set(gs.map(g => g.type)).size, pts:points(id)
+  };
+}
+// Palier atteint par famille (-1 : aucun) et progression vers le suivant
+function badgeState(id){
+  const x = badgeStats(id);
+  return BADGE_FAMILIES.map(f => {
+    const v = f.v(x) || 0, tier = f.t.filter(n => v >= n).length - 1, next = f.t[tier + 1];
+    const prev = tier >= 0 ? f.t[tier] : 0;
+    return { f, v, tier, next, pct:next ? Math.max(0, Math.min(1, (v - prev) / (next - prev))) : 1 };
+  });
+}
+const badgeKeys = st => st.flatMap(b => b.f.t.slice(0, b.tier + 1).map((_, i) => `${b.f.k}:${i}`));
+function badgeMedal(b, size){
+  const tier = Math.max(0, b.tier), [, color] = BADGE_TIERS[tier];
+  return `<span class="bdg-medal ${b.tier < 0 ? 'locked' : ''}" style="--tc:${color};--s:${size}px" aria-hidden="true"><span class="bdg-e">${b.f.e}</span></span>`;
+}
+function badgesCard(u){
+  const st = badgeState(u.id), got = badgeKeys(st).length, total = BADGE_FAMILIES.reduce((s, f) => s + f.t.length, 0);
+  return `<section class="glass card" id="badges"><div class="card-h"><h2>Badges</h2><span class="count">${got} / ${total}</span></div>
+    <div class="badges">${st.map(b => `<div class="bdg ${b.tier >= 0 ? 'ok' : 'off'}">
+      ${badgeMedal(b, 52)}
+      <div class="bdg-txt"><b>${b.f.n}</b><small class="bdg-tier">${b.tier >= 0 ? BADGE_TIERS[b.tier][0] : 'À débloquer'}${b.f.t.length > 1 ? ` · ${b.tier + 1}/${b.f.t.length}` : ''}</small>
+      <span class="bdg-dots" aria-hidden="true">${b.f.t.map((_, i) => `<i style="--tc:${BADGE_TIERS[i][1]}" class="${i <= b.tier ? 'on' : ''}"></i>`).join('')}</span>
+      ${b.next ? `<span class="bar"><i style="width:${Math.round(b.pct * 100)}%"></i></span><small>${fmtNum(b.v)} / ${fmtNum(b.next)} · ${esc(b.f.d(b.next))}</small>` : `<small>Palier maximal atteint : ${esc(b.f.d(b.f.t[b.f.t.length - 1]))}</small>`}</div>
+    </div>`).join('')}</div></section>`;
+}
+// Nouveaux paliers : notification et animation (une à la fois). La liste des badges vus est synchronisée avec le compte.
+let badgeTimer = null;
+function queueBadgeCheck(){ clearTimeout(badgeTimer); badgeTimer = setTimeout(checkBadges, 900); }
+function checkBadges(){
+  const u = me(); if (!u) return;
+  const st = badgeState(u.id), keys = badgeKeys(st);
+  if (!Array.isArray(u.badges)) { u.badges = keys; save(); return; }   // première fois : pas de célébration rétroactive
+  const fresh = keys.filter(k => !u.badges.includes(k)); if (!fresh.length) return;
+  u.badges = [...new Set([...u.badges, ...fresh])]; save();
+  const items = fresh.map(k => { const [fk, ti] = k.split(':'), b = st.find(x => x.f.k === fk); return { b, tier:Number(ti) }; });
+  items.forEach(({ b, tier }) => notify(u.id, `Badge débloqué : ${b.f.n} ${BADGE_TIERS[tier][0]} (${b.f.d(b.f.t[tier])}).`, { type:'badge', view:'profile' }));
+  // Meilleur palier de chaque famille, le plus haut d'abord
+  const best = new Map(); items.forEach(it => { if (!best.has(it.b.f.k) || best.get(it.b.f.k).tier < it.tier) best.set(it.b.f.k, it); });
+  UI.badgeQueue = [...(UI.badgeQueue || []), ...[...best.values()].sort((a, b) => b.tier - a.tier)];
+  if (!UI.fs) nextBadgeFs();
+}
+function nextBadgeFs(){
+  const it = (UI.badgeQueue || []).shift(); if (!it || UI.fs) return;
+  const { b, tier } = it, [label, color] = BADGE_TIERS[tier], next = b.f.t[tier + 1], more = UI.badgeQueue.length;
+  UI.fs = { type:'perfect', text:`Nouveau badge sur PepsGoal : ${b.f.e} ${b.f.n} ${label} — ${b.f.d(b.f.t[tier])} !` };
+  fsRoot.innerHTML = `<div class="fs perfect badge-fs" role="dialog" aria-modal="true" aria-labelledby="bd-title" style="--tc:${color}">
+    <canvas id="confetti" aria-hidden="true"></canvas>
+    <button class="icon-btn fs-close" data-act="fs-close" aria-label="Fermer">${icon('x')}</button>
+    <div class="fs-inner">
+      <div class="bd-stage" aria-hidden="true"><span class="bd-rays"></span><span class="bd-medal"><span class="bd-e">${b.f.e}</span><span class="bd-shine"></span></span><span class="bd-ribbon">${label}</span></div>
+      <p class="eyebrow">Badge débloqué · palier ${tier + 1} sur ${b.f.t.length}</p>
+      <h2 id="bd-title" class="fs-title">${b.f.n} ${label}</h2>
+      <p>${esc(b.f.d(b.f.t[tier]))}</p>
+      <p class="small">${next ? `Prochain palier : ${esc(b.f.d(next))}.` : 'Tu as atteint le plus haut palier de ce badge !'}${more ? ` · ${pl(more, 'autre badge à découvrir', 'autres badges à découvrir')}` : ''}</p>
+      <div class="fs-actions">
+        <button class="btn btn-primary" data-act="fs-share">${icon('share')}${socialOn() ? 'Partager' : 'Copier'}</button>
+        <button class="btn" data-act="badges-open">Voir mes badges</button>
+      </div>
+    </div>
+  </div>`;
+  stagger(fsRoot.querySelector('.fs-inner')); lockScroll();
+  startConfetti(document.getElementById('confetti'));
+  fsRoot.querySelector('.btn-primary')?.focus({ preventScroll:true });
+}
+
+Object.assign(ACT, {
+  'notif-toggle': async () => {
+    const on = !notifOn();
+    try {
+      const ok = await setNotifications(on); render();
+      toast(on ? (ok ? 'Notifications activées sur cet appareil.' : 'Le navigateur n’a pas autorisé les notifications.') : 'Notifications désactivées sur cet appareil.', 'bell');
+    } catch(e){ toast(e?.message || 'Ce navigateur bloque les notifications ici.', 'bell'); }
+  },
+  'story-like': async id => {
+    const f = UI.fs, s = f?.groups?.[f.ui]?.list?.[f.si]; if (!s || s.id !== id) return;
+    if (socialBlocked('d’encourager')) return;
+    const on = !storyLiked(s, me().id);
+    try { await likeStory(s, on); } catch(e){ return; }
+    const b = fsRoot.querySelector('.sv-like');
+    if (b) { b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); b.querySelector('span').textContent = on ? 'Encouragé' : 'Encourager'; if (on) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); } }
+  },
+  'story-archive': id => {
+    const list = myStoryArchive(me().id).slice().reverse(), si = list.findIndex(s => s.id === id); if (si < 0) return;
+    UI.fs = { type:'storyview', groups:[{ u:me(), list }], ui:0, si, archive:true }; renderStoryView();
+  },
+  'story-archive-all': () => { UI.stArchiveAll = true; render(); },
+  'badges-open': () => { closeFs(); UI.view = 'profile'; UI.modal = null; render(); setTimeout(() => document.getElementById('badges')?.scrollIntoView({ behavior:reduced() ? 'auto' : 'smooth', block:'start' }), 80); }
 });
 
 /* ================= actions et formulaires de ce module ================= */
@@ -4628,7 +5170,10 @@ Object.assign(FORMS, {
     const text = String(new FormData(f).get('text') || '').trim(); if (!text) return;
     const target = chatTarget(); if (!target) return;
     f.reset();
-    if (target.to) sendMessage(target.to, text); else deliverMessage(target, text);
+    const body = chatTextBody(text, target);
+    UI.replyTo = null; refreshReply();
+    const pop = document.getElementById('mention-pop'); if (pop) { pop.hidden = true; pop.innerHTML = ''; }
+    if (target.to) sendMessage(target.to, body); else deliverMessage(target, body);
     document.getElementById('chat-input')?.focus({ preventScroll:true });
   },
   async password(f){
@@ -4722,7 +5267,7 @@ const REASON_LBL = { spam:'Spam', hate:'Propos haineux', harass:'Harcèlement', 
 function viewModeration(){
   if (!MOD_TABS.some(t => t[0] === UI.modTab)) UI.modTab = 'accounts';
   const counts = { reports:pendingPosts().length + openReports().length, appeals:openAppeals().length, maint:maintNow() ? '●' : maintNext() ? '◷' : 0 };
-  const body = { accounts:modAccounts, reports:modReports, appeals:modAppeals, maint:modMaint, news:modNews }[UI.modTab]();
+  const body = { accounts:modAccounts, reports:modReports, appeals:modAppeals, maint:modMaint, news:modNews, server:modServer }[UI.modTab]();
   return `
   <div class="filters mod-tabs" role="tablist" aria-label="Rubriques de modération">
     ${MOD_TABS.map(([k, l, i]) => `<button class="fchip" role="tab" aria-selected="${UI.modTab === k}" aria-pressed="${UI.modTab === k}" data-act="mod-tab" data-id="${k}">${icon(i)}${l}${counts[k] ? ` <span class="nb">${counts[k]}</span>` : ''}</button>`).join('')}
@@ -4926,7 +5471,13 @@ function mCompose(){
 const STORY_TTL = DAY, STORY_MS = 6000;
 const liveStories = () => (DB.stories || []).filter(s => Date.now() - s.at < STORY_TTL && userById(s.userId));
 const canSeeStory = (s, v) => s.userId === v || (areFriends(s.userId, v) && !isBlockedPair(s.userId, v));
-function purgeStories(){ const n = (DB.stories || []).length; DB.stories = liveStories(); return n !== DB.stories.length; }
+// Stories des amis : 24 heures. Les siennes restent dans son archive (un an, 30 au plus sans serveur).
+function purgeStories(){
+  const n = (DB.stories || []).length, now = Date.now(), byUser = {};
+  DB.stories = (DB.stories || []).filter(s => userById(s.userId) && (now - s.at < STORY_TTL || now - s.at < 365 * DAY))
+    .sort((a, b) => b.at - a.at).filter(s => now - s.at < STORY_TTL || (byUser[s.userId] = (byUser[s.userId] || 0) + 1) <= STORY_ARCHIVE_MAX);
+  return n !== DB.stories.length;
+}
 function storyUsers(v){
   const live = liveStories().filter(s => canSeeStory(s, v) && (s.userId === v || !isBanned(userById(s.userId))));
   return [...new Set(live.map(s => s.userId))].map(id => {
@@ -5008,14 +5559,15 @@ function renderStoryView(){
   clearTimeout(UI.svTimer);
   const f = UI.fs, g = f.groups[f.ui], s = g.list[f.si], u = me(), own = s.userId === u.id;
   if (!own && !s.seenBy.includes(u.id)) { s.seenBy.push(u.id); save(); }
-  const left = Math.max(1, Math.ceil((s.at + STORY_TTL - Date.now()) / 3600e3));
+  const left = Math.max(1, Math.ceil((s.at + STORY_TTL - Date.now()) / 3600e3)), live = Date.now() - s.at < STORY_TTL, liked = storyLiked(s, u.id), nLikes = storyLikeCount(s);
   fsRoot.innerHTML = `<div class="fs sv" data-act="sv-tap" role="dialog" aria-modal="true" aria-label="Story de ${esc(g.u.name)}">
     <div class="st-bars sv-bars" aria-hidden="true">${g.list.map((x, k) => `<i class="${k < f.si ? 'done' : k === f.si && !f.showSeen ? 'cur' : k === f.si ? 'done' : ''}"><b></b></i>`).join('')}</div>
-    <div class="sv-head">${avatar(g.u, 36)}<span><b>${own ? 'Ta story' : esc(g.u.name)}</b><small>${ago(s.at)} · encore ${left} h</small></span></div>
+    <div class="sv-head">${avatar(g.u, 36)}<span><b>${own ? 'Ta story' : esc(g.u.name)}</b><small>${live ? `${ago(s.at)} · encore ${left} h` : `${esc(fmtDate(ymd(s.at)))} · archive`}</small></span></div>
     <button class="icon-btn fs-close" data-act="fs-close" aria-label="Fermer les stories">${icon('x')}</button>
     <div class="sv-body">${storyContent(s)}${s.text ? `<p class="sv-cap">${esc(s.text)}</p>` : ''}</div>
-    ${own ? `<div class="sv-foot"><button class="btn sm" data-act="story-seen">${icon('users')}Vu par ${s.seenBy.length}</button><button class="btn sm" data-act="story-del" data-id="${s.id}">${icon('trash')}Supprimer</button></div>` : ''}
-    ${own && f.showSeen ? `<div class="sv-seen"><b>Vu par ${pl(s.seenBy.length, 'ami', 'amis')}</b>${s.seenBy.length ? `<ul>${s.seenBy.map(userById).filter(Boolean).map(x => `<li>${avatar(x, 30)}<span>${esc(x.name)}</span></li>`).join('')}</ul>` : '<p class="small">Personne pour l’instant.</p>'}<button class="btn sm" data-act="story-seen">Fermer</button></div>` : ''}
+    ${!own && live ? `<div class="sv-foot"><button class="btn sv-like ${liked ? 'on' : ''}" data-act="story-like" data-id="${s.id}" aria-pressed="${liked}">${flame(20)}<span>${liked ? 'Encouragé' : 'Encourager'}</span></button></div>` : ''}
+    ${own ? `<div class="sv-foot"><span class="btn sm sv-count" aria-label="${pl(nLikes, 'encouragement', 'encouragements')}">${flame(16)}${nLikes}</span><button class="btn sm" data-act="story-seen">${icon('users')}Vu par ${s.seenBy.length}</button><button class="btn sm" data-act="story-del" data-id="${s.id}">${icon('trash')}Supprimer</button></div>` : ''}
+    ${own && f.showSeen ? `<div class="sv-seen"><b>Vu par ${pl(s.seenBy.length, 'ami', 'amis')}</b>${s.seenBy.length ? `<ul>${s.seenBy.map(userById).filter(Boolean).map(x => `<li>${avatar(x, 30)}<span>${esc(x.name)}</span>${(s.likes || s.likers || []).includes(x.id) ? `<span class="sv-liker" aria-label="a encouragé">${flame(16)}</span>` : ''}</li>`).join('')}</ul>` : '<p class="small">Personne pour l’instant.</p>'}<button class="btn sm" data-act="story-seen">Fermer</button></div>` : ''}
   </div>`;
   lockScroll();
   if (!f.showSeen) UI.svTimer = setTimeout(() => svStep(1), STORY_MS);
@@ -5032,29 +5584,34 @@ function svStep(d){
 
 /* ================= paramètres ================= */
 const SET_CATS = [
-  ['appearance', 'Apparence', 'Thème, couleur d’accent, icône de profil', 'palette'],
+  ['appearance', 'Apparence', 'Thème, couleur d’accent, arrière-plan, icône de profil', 'palette'],
   ['reminders', 'Rappels et notifications', 'Rappels du matin et du soir, notifications', 'bell'],
   ['account', 'Compte', 'Profil, mot de passe, déconnexion', 'user'],
   ['privacy', 'Social et confidentialité', 'Fonctions sociales, visibilité, stories', 'lock'],
   ['data', 'Données', 'Export, stockage, réinitialisation', 'archive'],
-  ['a11y', 'Accessibilité', 'Contraste élevé, mode daltonien, animations, transparence', 'eye'],
-  ['help', 'Aide', 'Tutoriel et à propos', 'star']
+  ['a11y', 'Accessibilité', 'Contraste élevé, daltonisme, monochrome, animations, transparence', 'eye'],
+  ['help', 'Aide', 'Tutoriel, notes de version et à propos', 'star']
 ];
 const A11Y_OPTS = [
-  ['contrast', 'Contraste élevé', 'Texte et bordures en noir et blanc purs, liens soulignés.'],
-  ['cvd', 'Mode daltonien', 'Couleurs des types d’objectifs et des états distinguables avec tous les daltonismes courants.'],
+  ['contrast', 'Contraste élevé', 'Texte et bordures en noir et blanc purs, sans dégradés, liens soulignés.'],
+  ['cvd', 'Mode daltonien', 'Couleurs des types d’objectifs et des états adaptées à ton type de daltonisme.'],
+  ['mono', 'Mode monochrome', 'Toute l’interface en niveaux de gris ; les types restent reconnaissables à leurs icônes.'],
   ['motion', 'Désactiver les animations', 'Aucune animation ni transition, y compris les célébrations plein écran.'],
   ['transp', 'Désactiver la transparence', 'Panneaux opaques, sans flou ni halos colorés en arrière-plan.']
 ];
 const a11yCount = () => A11Y_OPTS.filter(o => A11Y[o[0]]).length;
-const a11yRows = () => A11Y_OPTS.map(([k, l, d]) => `<div class="set-row"><div><b id="a11y-${k}-l">${l}</b><small>${d}</small></div><span class="switch"><input type="checkbox" data-a11y="${k}" ${A11Y[k] ? 'checked' : ''} aria-labelledby="a11y-${k}-l"><span></span></span></div>`).join('');
+const CVD_TYPES = [['', 'Désactivé'], ['deuter', 'Deutéranopie (vert)'], ['prot', 'Protanopie (rouge)'], ['trit', 'Tritanopie (bleu-jaune)']];
+const a11yRows = () => A11Y_OPTS.map(([k, l, d]) => k === 'cvd'
+  ? `<div class="set-row"><div><b id="a11y-${k}-l">${l}</b><small>${d}</small></div><select class="a11y-sel" data-a11y="${k}" aria-labelledby="a11y-${k}-l">${CVD_TYPES.map(([v, t]) => `<option value="${v}" ${(A11Y.cvd || '') === v ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`
+  : `<div class="set-row"><div><b id="a11y-${k}-l">${l}</b><small>${d}</small></div><span class="switch"><input type="checkbox" data-a11y="${k}" ${A11Y[k] ? 'checked' : ''} aria-labelledby="a11y-${k}-l"><span></span></span></div>`).join('');
 const SET_BODY = {
   a11y(){ return `<section class="glass card"><div class="settings">${a11yRows()}</div><p class="muted small" style="margin-top:10px">Ces réglages s’appliquent à cet appareil, pour tous les comptes, dès l’écran de connexion.</p></section>`; },
   appearance(u){ const s = u.settings; return `<section class="glass card"><div class="settings">
     <div class="set-row"><div><b>Thème</b><small>Clair, sombre ou selon ton appareil</small></div>
       <div class="seg">${[['system','Auto'],['light','Clair'],['dark','Sombre']].map(([k, l]) => `<label><input type="radio" name="theme" value="${k}" data-set="theme" ${s.theme === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
-    <div class="set-row" role="radiogroup" aria-label="Couleur d'accent"><div><b>Couleur d'accent</b><small>${esc((ACCENTS[s.accent] || ACCENTS[0]).n)} · flammes, boutons et anneau de progression</small></div>
-      <div class="swatches">${ACCENTS.map((a, i) => `<label title="${esc(a.n)}"><input type="radio" name="accent" value="${i}" data-set="accent" ${s.accent === i ? 'checked' : ''} aria-label="${esc(a.n)}"><span class="sw" style="background:${accentGrad(i)}"></span></label>`).join('')}</div></div>
+    <div class="set-row" role="radiogroup" aria-label="Couleur d'accent"><div><b>Couleur d'accent</b><small>${validAccent(s.accentCustom) ? 'Tirée de ton arrière-plan' : esc((ACCENTS[s.accent] || ACCENTS[0]).n)} · flammes, boutons et anneau de progression</small></div>
+      <div class="swatches">${ACCENTS.map((a, i) => `<label title="${esc(a.n)}"><input type="radio" name="accent" value="${i}" data-set="accent" ${s.accent === i && !validAccent(s.accentCustom) ? 'checked' : ''} aria-label="${esc(a.n)}"><span class="sw" style="--sw:${a.c[1]};background:${accentGrad(i)}"></span></label>`).join('')}${validAccent(s.accentCustom) ? `<label title="Couleur de ton arrière-plan"><input type="radio" name="accent" value="custom" data-set="accent" checked aria-label="Couleur tirée de ton arrière-plan"><span class="sw" style="--sw:${s.accentCustom[1]};background:linear-gradient(135deg,${s.accentCustom[0]},${s.accentCustom[1]} 55%,${s.accentCustom[2]})"></span></label>` : ''}</div></div>
+    ${bgSettingsHtml(u)}
     <div class="set-row"><div style="display:flex;align-items:center;gap:12px">${avatar(u, 48)}<div><b>Icône de profil</b><small>Photo, emoji ou pictogramme</small></div></div><button class="btn sm" data-act="open-avatar">${icon('image')}Changer</button></div>
   </div></section>`; },
   reminders(u){ const s = u.settings, perm = 'Notification' in window ? Notification.permission : 'unsupported'; return `<section class="glass card"><div class="settings">
@@ -5062,8 +5619,7 @@ const SET_BODY = {
       <div class="toggle"><label class="sr" for="s-mt">Heure du rappel du matin</label><input type="time" id="s-mt" data-set="morning-time" value="${s.morning.time}"><span class="switch"><input type="checkbox" id="s-mo" data-set="morning-on" ${s.morning.on ? 'checked' : ''} aria-label="Activer le rappel du matin"><span></span></span></div></div>
     <div class="set-row"><div><b>Rappel du soir</b><small>Seulement s'il te reste des validations</small></div>
       <div class="toggle"><label class="sr" for="s-et">Heure du rappel du soir</label><input type="time" id="s-et" data-set="evening-time" value="${s.evening.time}"><span class="switch"><input type="checkbox" id="s-eo" data-set="evening-on" ${s.evening.on ? 'checked' : ''} aria-label="Activer le rappel du soir"><span></span></span></div></div>
-    <div class="set-row"><div><b>Notifications du navigateur</b><small>${perm === 'granted' ? 'Autorisées' : perm === 'denied' ? 'Bloquées par le navigateur : les rappels restent visibles dans l’app' : perm === 'unsupported' ? 'Non prises en charge ici : les rappels restent visibles dans l’app' : 'Recevoir les rappels même quand l’onglet est en arrière-plan'}</small></div>
-      <button class="btn sm" data-act="ask-notif" ${perm === 'unsupported' || perm === 'denied' ? 'disabled' : ''}>${icon('bell')}${perm === 'granted' && s.browser ? 'Activées' : 'Activer'}</button></div>
+    ${notifRow()}
     <div class="set-row"><div><b>Tester un rappel</b><small>Envoie un rappel maintenant</small></div><button class="btn sm" data-act="test-reminder">${icon('clock')}Tester</button></div>
   </div></section>`; },
   account(u){ return `${isGuest(u) ? guestUpgradeCard() : ''}<section class="glass card"><div class="card-h"><h2>Mon profil</h2></div>
@@ -5083,7 +5639,9 @@ const SET_BODY = {
       ${isGuest(u) ? `<span class="chip st-warn">${icon('lock')}Compte requis</span>` : `<span class="switch"><input type="checkbox" id="s-social" data-set="social" ${s.social !== false ? 'checked' : ''} aria-label="Activer les fonctions sociales"><span></span></span>`}</div>
     <div class="set-row"><div><b>Visibilité par défaut des nouveaux objectifs</b><small>Modifiable ensuite pour chaque objectif</small></div>
       <div class="seg">${Object.entries(VIS).map(([k, o]) => `<label><input type="radio" name="defvis" value="${k}" data-set="defvis" ${(s.defaultVis || 'friends') === k ? 'checked' : ''}><span>${icon(o.i)}${o.l}</span></label>`).join('')}</div></div>
-    <div class="set-row"><div><b>Stories</b><small>Toujours visibles uniquement par tes amis, et supprimées automatiquement après 24 heures.</small></div><span class="chip t-group">${icon('users')}Amis · 24 h</span></div>
+    <div class="set-row"><div><b>Apparaître dans les suggestions d’amis</b><small>Ton profil peut être proposé aux amis de tes amis, aux membres de tes groupes et aux nouveaux inscrits.</small></div>
+      ${isGuest(u) ? `<span class="chip st-warn">${icon('lock')}Compte requis</span>` : `<span class="switch"><input type="checkbox" data-set="suggest" ${s.noSuggest ? '' : 'checked'} aria-label="Apparaître dans les suggestions d’amis"><span></span></span>`}</div>
+    <div class="set-row"><div><b>Stories</b><small>Visibles uniquement par tes amis pendant 24 heures, puis gardées dans ton archive (visible par toi seul).</small></div><span class="chip t-group">${icon('users')}Amis · 24 h</span></div>
     <div class="set-row"><div><b>Amis</b><small>${pl(friendsOf(u.id).length, 'ami', 'amis')}</small></div><button class="btn sm" data-act="nav" data-id="friends" ${socialOn(u) ? '' : 'disabled'}>${icon('users')}Gérer</button></div>
     ${isGuest(u) ? '' : blockedSection(u)}
   </div></section>`; },
@@ -5132,7 +5690,7 @@ function viewProfile(){
   const done = DB.goals.filter(g => g.userId === u.id && g.completedAt).length;
   return `
   <section class="glass card">
-    <div class="prof"><button class="av-btn" data-act="open-avatar" aria-label="Changer mon icône de profil">${avatar(u, 76)}<span class="edit">${icon('edit')}</span></button>
+    <div class="prof"><button class="av-btn lv-ring lv${level(points(u.id)).idx}" data-act="open-avatar" aria-label="Changer mon icône de profil (anneau de niveau ${esc(level(points(u.id)).name)})">${avatar(u, 76)}<span class="lv-fx" aria-hidden="true"></span><span class="edit">${icon('edit')}</span></button>
       <div class="prof-main"><div class="prof-top"><h2>${esc(u.name)}</h2><button class="btn sm" data-act="nav-settings">${icon('gear')}Paramètres</button></div>
         <p class="muted">${isGuest(u) ? 'Sans compte · données sur cet appareil' : '@' + esc(u.username)} · Niveau ${lv.idx}, ${lv.name}${isAdmin(u) ? ' · Administrateur' : ''}</p>${isGuest(u) ? `<button class="btn btn-primary sm" style="margin-top:8px" data-act="set-cat-go" data-id="account">${icon('user')}Créer un compte</button>` : ''}${u.bio ? `<p style="margin-top:6px">${esc(u.bio)}</p>` : ''}</div></div>
     <div style="margin-top:16px" class="lvl"><span class="bar"><i style="width:${lv.pct * 100}%"></i></span><small class="muted">${lv.pts} flammes${lv.next ? ` · encore ${lv.next - lv.pts} pour « ${lv.nextName} »` : ''}</small></div>
@@ -5145,9 +5703,8 @@ function viewProfile(){
   </div>
   ${recapCard()}
   ${gelProgress(u, false)}
-  <section class="glass card"><div class="card-h"><h2>Badges</h2></div>
-    <div class="badges">${badges(u.id).map(b => `<div class="bdg ${b.ok ? 'ok' : 'off'}">${flame(26)}<b>${b.k}</b><small>${b.d}</small></div>`).join('')}</div>
-  </section>`;
+  ${storyArchiveCard(u)}
+  ${badgesCard(u)}`;
 }
 
 Object.assign(ACT, {
@@ -5230,6 +5787,8 @@ function cleanUser(u){
     avatar:{ kind:oneOf(av.kind, ['initials','photo','emoji','picto'], 'initials'), color:Math.max(0, Math.round(snum(av.color))), emoji:sstr(av.emoji, 16), picto:P[av.picto] ? av.picto : 'flameo', photo:simg(av.photo) },
     freezes:Math.max(0, Math.round(snum(u.freezes))), frozenDays:keep(u.frozenDays, x => sdate(x)),
     cheersIn:sarr(u.cheersIn).filter(x => typeof x === 'string').map(x => x.slice(0, 140)),
+    ...(Array.isArray(u.badges) ? { badges:u.badges.filter(x => typeof x === 'string' && /^[a-z]{2,12}:\d$/.test(x)).slice(0, 200) } : {}),
+    perfectDays:keep(u.perfectDays, x => sdate(x)).slice(-1000),
     tutorialDone:!!u.tutorialDone, tutoBonus:!!u.tutoBonus,
     goalGroups:keep(u.goalGroups, g => ({ id:sid(sobj(g).id), name:sstr(g.name, 30) || 'Groupe', icon:sstr(g.icon, 8) || '📁' })),
     goalGroupOf:Object.fromEntries(Object.entries(sobj(u.goalGroupOf)).map(([k, v]) => [sid(k), sid(v)])),
@@ -5272,7 +5831,7 @@ const cleanPost = p => { p = sobj(p); const o = { id:sid(p.id), userId:sid(p.use
   if (opts.length >= 2) o.poll = { options:opts.slice(0, 6), multi:!!pl0.multi, endsAt:snum(pl0.endsAt, Date.now()) };
   return o; };
 const cleanStory = s => { s = sobj(s); const kind = oneOf(s.kind, ['photo','recap','progress'], null); if (!kind) return null; const d = sobj(s.data);
-  const o = { id:sid(s.id), userId:sid(s.userId), kind, text:sstr(s.text, 140), at:snum(s.at, 0), seenBy:[...new Set(sarr(s.seenBy).map(sid))] };
+  const o = { id:sid(s.id), userId:sid(s.userId), kind, text:sstr(s.text, 140), at:snum(s.at, 0), seenBy:[...new Set(sarr(s.seenBy).map(sid))], likes:[...new Set(sarr(s.likes).map(sid))] };
   if (kind === 'photo') { o.photo = simg(s.photo); if (!o.photo) return null; }
   if (kind === 'recap') o.data = { title:sstr(d.title, 30), n:snum(d.n), pts:snum(d.pts), best:snum(d.best), reg:snum(d.reg), persona:sstr(d.persona, 30), e:sstr(d.e, 8) };
   if (kind === 'progress') o.data = { type:TYPES[d.type] ? d.type : 'routine', icon:sstr(d.icon, 16), title:sstr(d.title, 80), v:sstr(String(d.v ?? ''), 24), l:sstr(d.l, 60), label:sstr(d.label, 30), meta:sstr(d.meta, 140), pct:d.pct == null ? null : Math.min(1, Math.max(0, snum(d.pct))) };
@@ -5468,12 +6027,12 @@ Object.assign(ACT, {
 });
 document.addEventListener('change', e => {
   const k = e.target?.dataset?.a11y; if (!k || !(k in A11Y)) return;
-  A11Y[k] = e.target.checked; applyA11y();
+  A11Y[k] = e.target.type === 'checkbox' ? e.target.checked : (e.target.value || false); applyA11y();
   // Pastille du bouton « Accessibilité » de l'écran de connexion, sans reconstruire la page (le focus reste sur l'interrupteur)
   document.querySelectorAll('.a11y-btn').forEach(b => { const n = a11yCount(); let nb = b.querySelector('.nb'); if (!n) { nb?.remove(); } else { if (!nb) { nb = document.createElement('span'); nb.className = 'nb'; b.append(nb); } nb.textContent = n; } b.setAttribute('aria-label', `Options d’accessibilité${n ? ` (${n} activée${n > 1 ? 's' : ''})` : ''}`); });
-  document.querySelectorAll(`input[data-a11y="${k}"]`).forEach(i => { if (i !== e.target) i.checked = A11Y[k]; });
+  document.querySelectorAll(`[data-a11y="${k}"]`).forEach(i => { if (i === e.target) return; if (i.type === 'checkbox') i.checked = !!A11Y[k]; else i.value = A11Y[k] || ''; });
   try { localStorage.setItem(A11Y_KEY, JSON.stringify(A11Y)); } catch(_){}
-  toast(`${A11Y_OPTS.find(o => o[0] === k)[1]} : ${A11Y[k] ? 'activé' : 'désactivé'}.`, 'eye');
+  toast(`${A11Y_OPTS.find(o => o[0] === k)[1]} : ${typeof A11Y[k] === 'string' ? CVD_TYPES.find(c => c[0] === A11Y[k])[1].toLowerCase() : A11Y[k] ? 'activé' : 'désactivé'}.`, 'eye');
 });
 document.addEventListener('change', e => { const t = e.target; if (t.id === 'zip-file' && t.files?.[0]) readZip(t.files[0], UI.zipScope || 'account'); });
 
@@ -5483,7 +6042,7 @@ document.addEventListener('change', e => { const t = e.target; if (t.id === 'zip
 const LEGAL_MAIL = '<a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a>';
 // Liens publics du projet
 const LINKS = { site:'https://site.pepsgoal.fr', repo:'https://github.com/CorbetQ/pepsgoal-platform', issue:'https://github.com/CorbetQ/pepsgoal-platform/issues/new' };
-const LEGAL_UPDATED = '14 octobre 2026';
+const LEGAL_UPDATED = '16 octobre 2026';
 const LEGAL = {
   cgu:{ title:'Conditions générales d’utilisation', short:'CGU', sections:[
     ['1. Objet', `<p>Les présentes conditions générales d’utilisation (CGU) encadrent l’accès à l’application PepsGoal et son utilisation, sur le web (app.pepsgoal.fr) et sur mobile (iOS et Android). PepsGoal permet de planifier des objectifs, de valider sa progression, de suivre des séries (« flammes ») et, si tu le souhaites, de partager ta progression avec d’autres personnes.</p><p>En créant un compte ou en utilisant l’application, tu acceptes les présentes CGU. Si tu ne les acceptes pas, n’utilise pas PepsGoal.</p>`],
@@ -5491,7 +6050,7 @@ const LEGAL = {
     ['3. Fonctionnement du service', `<p>PepsGoal propose plusieurs types d’objectifs (routines, objectifs chiffrés, deadlines, abstinences, limites, durées, mesures, défis à plusieurs…), un système de validation, de séries, de flammes, de gels de série et de badges.</p><p>Avec un compte, tes données sont enregistrées sur le serveur de PepsGoal et synchronisées entre tes appareils. L’application reste utilisable hors connexion : tes modifications sont envoyées au retour de la connexion.</p><p>Les flammes, niveaux, gels et badges sont des éléments de motivation purement virtuels : ils n’ont aucune valeur monétaire, ne peuvent pas être échangés ni vendus et peuvent évoluer avec l’application.</p>`],
     ['4. Fonctions sociales et règles de conduite', `<p>Les fonctions sociales (feed et photos, stories, amis, messagerie privée et groupes de discussion, messages vocaux, encouragements, défis de groupe et duels) nécessitent un compte. Elles sont facultatives et peuvent être désactivées dans Paramètres › Social et confidentialité.</p><p>En les utilisant, tu t’engages à rester bienveillant et à ne pas publier ou envoyer :</p><ul><li>de propos haineux, discriminatoires, violents, harcelants ou menaçants ;</li><li>de contenus pornographiques, illicites ou portant atteinte à la dignité humaine ;</li><li>de publicité, de spam ou de messages promotionnels répétés ;</li><li>d’informations personnelles concernant une autre personne sans son accord ;</li><li>de contenus portant atteinte aux droits d’autrui (droit à l’image, droit d’auteur…).</li></ul><p>Chaque publication peut être signalée avec le bouton « Signaler ». Tu peux aussi <b>bloquer</b> une personne depuis son profil : vous ne voyez plus vos contenus respectifs, vous ne pouvez plus vous écrire ni vous ajouter en ami, et une amitié éventuelle est retirée. Tu peux la débloquer à tout moment dans Paramètres › Social et confidentialité.</p>`],
     ['5. Modération', `<p>Pour garantir un espace sûr, l’équipe de modération peut, selon la gravité des faits :</p><ul><li>supprimer une publication ou fermer ses commentaires ;</li><li>adresser un avertissement : tes publications sont alors vérifiées avant d’être visibles ;</li><li>restreindre ta possibilité de commenter ;</li><li>suspendre ton accès aux fonctions sociales, temporairement (24 heures, 7 ou 30 jours) ou définitivement ;</li><li>supprimer ton compte en cas de manquement grave ou répété.</li></ul><p>Chaque décision t’est notifiée, notamment par un message du compte PepsGoal Officiel. Une suspension peut être contestée à tout moment depuis le Feed (« Demander un débannissement ») ; la contestation est examinée par la modération, qui y répond.</p><p>Les messages privés et les groupes de discussion étant chiffrés de bout en bout, la modération ne peut pas les lire ; le blocage reste toujours possible.</p><p>Pendant une maintenance, certaines fonctions peuvent être temporairement indisponibles ou en lecture seule ; une maintenance complète ne casse pas ta série.</p>`],
-    ['6. Tes contenus', `<p>Tu restes propriétaire des contenus que tu publies ou envoies (textes, photos, stories, messages, messages vocaux). Tu autorises PepsGoal à les enregistrer et à les afficher aux personnes que tu as choisies (amis, public ou participants d’une conversation), uniquement pour faire fonctionner le service.</p><p>Les stories sont visibles uniquement par tes amis et disparaissent automatiquement après 24 heures. Tu garantis disposer des droits sur les photos que tu partages, notamment l’accord des personnes qui y figurent.</p>`],
+    ['6. Tes contenus', `<p>Tu restes propriétaire des contenus que tu publies ou envoies (textes, photos, stories, messages, messages vocaux). Tu autorises PepsGoal à les enregistrer et à les afficher aux personnes que tu as choisies (amis, public ou participants d’une conversation), uniquement pour faire fonctionner le service.</p><p>Les stories sont visibles uniquement par tes amis pendant 24 heures, puis restent un an dans ton archive personnelle, visible par toi seul, sauf si tu les supprimes. Tu garantis disposer des droits sur les photos que tu partages, notamment l’accord des personnes qui y figurent.</p>`],
     ['7. Données et sauvegardes', `<p><b>Avec un compte</b>, tes données sont enregistrées sur le serveur de PepsGoal, hébergé par Hostinger, et sauvegardées chaque jour. Une copie est conservée sur chacun de tes appareils pour le fonctionnement hors connexion.</p><p><b>Sans compte</b>, tes données restent uniquement dans le stockage de ton appareil : effacer les données de l’application ou du navigateur, changer d’appareil ou utiliser la navigation privée peut entraîner leur perte. Pense à exporter régulièrement une sauvegarde .zip (Paramètres › Données).</p><p>Le traitement de tes données est détaillé dans la charte de confidentialité.</p>`],
     ['8. Santé et responsabilité', `<p>PepsGoal est un outil de motivation : il ne fournit aucun conseil médical, diététique, sportif ou psychologique. Pour tout objectif lié à ta santé (sport intensif, alimentation, arrêt d’une substance…), demande l’avis d’un professionnel de santé.</p><p>PepsGoal est fourni « en l’état ». L’éditeur s’efforce d’assurer son bon fonctionnement et la sauvegarde des comptes, mais ne garantit pas l’absence d’erreurs ou d’interruptions, et ne saurait être tenu responsable de la perte de données enregistrées uniquement sur ton appareil (mode sans compte).</p>`],
     ['9. Fin d’utilisation', `<p>Tu peux supprimer ton compte à tout moment depuis Paramètres › Compte › Supprimer mon compte. La suppression est définitive : toutes tes données sont effacées du serveur, puis des sauvegardes au plus tard 14 jours après. Pense à exporter tes données avant si tu souhaites les conserver.</p>`],
@@ -5509,13 +6068,13 @@ const LEGAL = {
   privacy:{ title:'Charte de confidentialité', short:'Confidentialité', sections:[
     ['En résumé', `<ul><li><b>Avec un compte</b>, tes données sont enregistrées sur le serveur de PepsGoal (hébergé par Hostinger) pour être sauvegardées, synchronisées entre tes appareils et partagées avec les personnes que tu choisis.</li><li><b>Sans compte</b>, rien n’est envoyé au serveur : tout reste sur ton appareil.</li><li>Tes messages privés et groupes de discussion, y compris les photos et messages vocaux qui y sont échangés, sont chiffrés de bout en bout : seuls les participants peuvent les lire, pas même l’éditeur.</li><li>Aucune publicité, aucun cookie de suivi, aucune revente de données.</li><li>Tu peux exporter ou supprimer tes données à tout moment depuis les Paramètres.</li></ul>`],
     ['Responsable du traitement', `<p>Le responsable du traitement est Quentin CORBET, particulier domicilié à Angers (France), éditeur de PepsGoal. Contact pour toute question relative à tes données : ${LEGAL_MAIL}. Aucun délégué à la protection des données n’a été désigné, cette désignation n’étant pas obligatoire.</p>`],
-    ['Données traitées', `<ul><li><b>Compte :</b> nom affiché, nom d’utilisateur, bio, icône ou photo de profil, mot de passe (enregistré uniquement sous forme d’empreinte bcrypt, jamais en clair), date d’inscription. Aucune adresse e-mail ni numéro de téléphone n’est demandé.</li><li><b>Progression :</b> objectifs, validations, mesures, séries, flammes, gels, badges, groupes d’objectifs, réglages (thème, couleur, rappels, visibilité).</li><li><b>Fonctions sociales :</b> amis, comptes bloqués, publications et leurs photos, commentaires, encouragements, stories, défis partagés, binômes, notifications.</li><li><b>Messagerie :</b> messages privés et de groupe, photos, messages vocaux et objectifs partagés, tous chiffrés de bout en bout ; le serveur ne conserve que leur version chiffrée, ainsi que l’expéditeur, les destinataires, la date et la taille. Clés publiques de chiffrement de tes appareils, et copie chiffrée de tes clés de conversation (illisible sans ton mot de passe).</li><li><b>Modération :</b> signalements, avertissements, suspensions, contestations et journal des décisions.</li><li><b>Données techniques :</b> adresse IP et requêtes reçues par le serveur (journaux de sécurité), identifiants de session.</li></ul><p>PepsGoal ne collecte pas ta localisation, tes contacts ni de données publicitaires. Le micro n’est utilisé que pendant l’enregistrement d’un message vocal, et l’appareil photo ou la galerie uniquement quand tu choisis une photo.</p>`],
+    ['Données traitées', `<ul><li><b>Compte :</b> nom affiché, nom d’utilisateur, bio, icône ou photo de profil, mot de passe (enregistré uniquement sous forme d’empreinte bcrypt, jamais en clair), date d’inscription. Aucune adresse e-mail ni numéro de téléphone n’est demandé.</li><li><b>Progression :</b> objectifs, validations, mesures, séries, flammes, gels, badges, groupes d’objectifs, réglages (thème, couleur, arrière-plan, rappels, visibilité, apparition dans les suggestions d’amis). Une image d’arrière-plan personnalisée reste sur ton appareil et n’est jamais envoyée au serveur.</li><li><b>Fonctions sociales :</b> amis, comptes bloqués, publications et leurs photos, commentaires, encouragements, stories, défis partagés, binômes, notifications.</li><li><b>Messagerie :</b> messages privés et de groupe, photos, messages vocaux et objectifs partagés, tous chiffrés de bout en bout ; le serveur ne conserve que leur version chiffrée, ainsi que l’expéditeur, les destinataires, la date et la taille. Les réponses et réactions aux messages sont chiffrées de la même façon ; dans un groupe, la liste des membres que tu mentionnes avec @ est transmise au serveur pour les prévenir. Clés publiques de chiffrement de tes appareils, et copie chiffrée de tes clés de conversation (illisible sans ton mot de passe).</li><li><b>Modération :</b> signalements, avertissements, suspensions, contestations et journal des décisions.</li><li><b>Données techniques :</b> adresse IP et requêtes reçues par le serveur (journaux de sécurité), identifiants de session, et, si tu actives les notifications, l’adresse d’abonnement fournie par ton navigateur et ton fuseau horaire (pour l’heure des rappels).</li></ul><p>PepsGoal ne collecte pas ta localisation, tes contacts ni de données publicitaires. Le micro n’est utilisé que pendant l’enregistrement d’un message vocal, et l’appareil photo ou la galerie uniquement quand tu choisis une photo.</p>`],
     ['Pourquoi et sur quelle base', `<ul><li>Faire fonctionner ton compte, sauvegarder et synchroniser tes objectifs : exécution des CGU.</li><li>Afficher tes contenus et acheminer tes messages aux personnes que tu as choisies : exécution des CGU.</li><li>Assurer la sécurité du service, prévenir les abus et modérer l’espace social : intérêt légitime.</li><li>Afficher des notifications sur ton appareil : ton consentement, que tu peux retirer à tout moment dans les réglages de ton appareil ou de ton navigateur.</li></ul>`],
     ['Où sont tes données', `<p><b>Avec un compte :</b> sur le serveur de PepsGoal, un serveur privé virtuel loué auprès de Hostinger dans un centre de données situé dans l’Union européenne, accessible uniquement par l’éditeur. Les échanges avec le serveur sont chiffrés (HTTPS). Une copie de tes données est aussi conservée sur tes appareils pour le fonctionnement hors connexion.</p><p><b>Sans compte :</b> uniquement dans le stockage de ton appareil (application mobile ou navigateur).</p><p>Les clés de chiffrement de tes conversations ne quittent jamais tes appareils en clair. Pour que tes autres appareils retrouvent tes conversations, une copie de ces clés est gardée sur le serveur, chiffrée sur ton appareil avec une clé dérivée de ton mot de passe : le serveur ne peut pas l’ouvrir. Si tu oublies ton mot de passe, cette copie ne peut pas être récupérée.</p>`],
-    ['Qui peut voir quoi', `<ul><li><b>Privé :</b> toi seul.</li><li><b>Amis :</b> tes amis acceptés.</li><li><b>Public :</b> toute personne disposant d’un compte PepsGoal.</li><li><b>Stories :</b> tes amis uniquement, pendant 24 heures.</li><li><b>Messages privés et groupes :</b> les participants de la conversation uniquement. Le contenu (texte, photos, messages vocaux) est chiffré de bout en bout : ni l’éditeur, ni l’hébergeur, ni la modération ne peuvent le lire. Seuls les messages du compte PepsGoal Officiel sont en clair.</li><li><b>Comptes bloqués :</b> ne voient plus tes contenus et ne peuvent plus t’écrire.</li><li><b>Modération :</b> l’équipe de modération peut consulter les contenus publiés et signalés afin de faire respecter les CGU.</li></ul>`],
+    ['Qui peut voir quoi', `<ul><li><b>Privé :</b> toi seul.</li><li><b>Amis :</b> tes amis acceptés.</li><li><b>Public :</b> toute personne disposant d’un compte PepsGoal.</li><li><b>Stories :</b> tes amis uniquement, pendant 24 heures, avec leurs encouragements ; ensuite toi seul, dans ton archive.</li><li><b>Messages privés et groupes :</b> les participants de la conversation uniquement. Le contenu (texte, photos, messages vocaux) est chiffré de bout en bout : ni l’éditeur, ni l’hébergeur, ni la modération ne peuvent le lire. Seuls les messages du compte PepsGoal Officiel sont en clair.</li><li><b>Suggestions d’amis :</b> ton nom, ton nom d’utilisateur et ton icône peuvent être proposés aux amis de tes amis, aux membres de tes groupes et aux nouveaux inscrits, avec le nombre et le prénom d’amis en commun. Tu peux ne plus y apparaître dans Paramètres › Social et confidentialité.</li><li><b>Comptes bloqués :</b> ne voient plus tes contenus et ne peuvent plus t’écrire.</li><li><b>Modération :</b> l’équipe de modération peut consulter les contenus publiés et signalés afin de faire respecter les CGU.</li></ul>`],
     ['Notifications de modération par e-mail', `<p>Lorsqu’une publication est signalée, qu’une publication attend une validation ou qu’une contestation est envoyée, le serveur prévient l’éditeur par e-mail (envoyé depuis la messagerie de Hostinger vers l’adresse ${LEGAL_MAIL}, hébergée par Microsoft). Cet e-mail contient le type d’événement, les noms d’utilisateur concernés, le motif et un extrait du contenu concerné. Il ne contient jamais de message privé.</p>`],
-    ['Durées de conservation', `<ul><li>Compte, progression et contenus : jusqu’à la suppression de ton compte. La suppression efface immédiatement tes données du serveur ; elles disparaissent des sauvegardes au plus tard 14 jours après.</li><li>Stories : 24 heures.</li><li>Notifications : les 150 plus récentes.</li><li>Journaux techniques du serveur : rotation automatique, au plus 30 jours.</li><li>Données de modération : le temps nécessaire au traitement et au suivi des décisions, et au plus jusqu’à la suppression du compte concerné.</li><li>Mode sans compte : jusqu’à ce que tu effaces les données de l’application ou du navigateur.</li></ul>`],
-    ['Destinataires et services tiers', `<ul><li><b>Hostinger</b> (hébergeur) : héberge le serveur et ses sauvegardes, et achemine les e-mails de modération. Il agit comme sous-traitant et n’exploite pas les données.</li><li><b>Microsoft</b> (Outlook) : héberge la boîte de réception de l’éditeur qui reçoit les e-mails de modération.</li><li><b>Apple et Google</b> : distribuent les applications mobiles ; ils ne reçoivent aucune donnée de ton compte PepsGoal.</li></ul><p>Dans l’application publiée, les polices et bibliothèques sont intégrées : aucun autre service tiers n’est contacté.</p>`],
+    ['Durées de conservation', `<ul><li>Compte, progression et contenus : jusqu’à la suppression de ton compte. La suppression efface immédiatement tes données du serveur ; elles disparaissent des sauvegardes au plus tard 14 jours après.</li><li>Stories : visibles 24 heures par tes amis, puis gardées un an dans ton archive personnelle (visible par toi seul), sauf si tu les supprimes.</li><li>Notifications : les 150 plus récentes.</li><li>Journaux techniques du serveur : rotation automatique, au plus 30 jours.</li><li>Données de modération : le temps nécessaire au traitement et au suivi des décisions, et au plus jusqu’à la suppression du compte concerné.</li><li>Mode sans compte : jusqu’à ce que tu effaces les données de l’application ou du navigateur.</li></ul>`],
+    ['Destinataires et services tiers', `<ul><li><b>Hostinger</b> (hébergeur) : héberge le serveur et ses sauvegardes, et achemine les e-mails de modération. Il agit comme sous-traitant et n’exploite pas les données.</li><li><b>Microsoft</b> (Outlook) : héberge la boîte de réception de l’éditeur qui reçoit les e-mails de modération.</li><li><b>Apple et Google</b> : distribuent les applications mobiles ; ils ne reçoivent aucune donnée de ton compte PepsGoal.</li><li><b>Services de notification des navigateurs</b> (Google, Mozilla, Microsoft ou Apple selon ton navigateur) : acheminent les notifications si tu les actives. Leur contenu se limite au titre et à un court texte (rappel, nom de l’expéditeur d’un message, encouragement) ; jamais le contenu d’un message privé.</li></ul><p>Dans l’application publiée, les polices et bibliothèques sont intégrées : aucun autre service tiers n’est contacté.</p>`],
     ['Cookies et traceurs', `<p>PepsGoal n’utilise aucun cookie publicitaire ni outil de mesure d’audience. Le stockage local de l’appareil sert uniquement à faire fonctionner l’application (session, copie hors connexion, préférences, clés de chiffrement) : il est strictement nécessaire et ne requiert donc pas de consentement.</p>`],
     ['Tes droits', `<p>Conformément au RGPD et à la loi Informatique et Libertés, tu disposes des droits d’accès, de rectification, d’effacement, de limitation, d’opposition et de portabilité de tes données. Dans l’application :</p><ul><li><b>Accès et portabilité :</b> Paramètres › Données › Exporter mon compte (.zip) ou Copier mes données (JSON).</li><li><b>Rectification :</b> Paramètres › Compte.</li><li><b>Effacement :</b> Paramètres › Compte › Supprimer mon compte.</li></ul><p>Pour toute autre demande, contacte ${LEGAL_MAIL} : une réponse t’est apportée dans un délai d’un mois. Tu peux également introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>`],
     ['Mineurs', `<p>PepsGoal est accessible dès 15 ans. Avant 15 ans, l’accord d’un parent ou tuteur légal est nécessaire pour créer un compte.</p>`],
@@ -5562,6 +6121,7 @@ function mLegal(){
 }
 SET_BODY.help = function(){ return `<section class="glass card"><div class="settings">
     <div class="set-row"><div><b>Tutoriel</b><small>Revoir les bases de PepsGoal</small></div><button class="btn sm" data-act="open-tuto">${flame(18)}Revoir</button></div>
+    <div class="set-row"><div><b>Notes de version</b><small>Les nouveautés de chaque version de PepsGoal</small></div><button class="btn sm" data-act="open-notes">${icon('list')}Voir</button></div>
     <div class="set-row"><div><b>À propos</b><small>PepsGoal ${APP_VERSION}${SANDBOX ? ' · mode démonstration' : ''}. Version web : les données restent dans ce navigateur. Édité par Quentin CORBET.</small></div></div>
     <div class="set-row"><div><b>Site de PepsGoal</b><small>Présentation, nouveautés et téléchargement des applications</small></div><a class="btn sm" href="${LINKS.site}" target="_blank" rel="noopener">${icon('globe')}Ouvrir</a></div>
     <div class="set-row"><div><b>Code source</b><small>PepsGoal est un logiciel libre sous licence MIT, publié sur GitHub</small></div><a class="btn sm" href="${LINKS.repo}" target="_blank" rel="noopener">${icon('github')}GitHub</a></div>
@@ -5651,6 +6211,446 @@ window.addEventListener('offline', () => {
 });
 
 Object.assign(ACT, { 'set-cat-go': id => { UI.view = 'settings'; UI.setCat = id; render(); scrollTo({ top:0 }); } });
+
+
+/* ======================================================================================
+ * PepsGoal 2.0.0 : favoris, étapes réordonnables, arrière-plans, easter eggs, suggestions d'amis,
+ * onglet Serveur, réponses / réactions / mentions dans la messagerie, notes de version
+ * ====================================================================================== */
+Object.assign(P, {
+  reply:'<path d="M9 7 4 12l5 5"/><path d="M4 12h10a6 6 0 0 1 6 6v1"/>',
+  grip:'<circle cx="9" cy="6" r="1.1"/><circle cx="15" cy="6" r="1.1"/><circle cx="9" cy="12" r="1.1"/><circle cx="15" cy="12" r="1.1"/><circle cx="9" cy="18" r="1.1"/><circle cx="15" cy="18" r="1.1"/>',
+  up:'<path d="m6 15 6-6 6 6"/>', down:'<path d="m6 9 6 6 6-6"/>',
+  server:'<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01M11 7.5h6M11 16.5h6"/>',
+  wand:'<path d="m4 20 11-11M14 4v3M18 6l-2 2M20 10h-3M12 8l4 4"/>',
+  sparkle:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>'
+});
+
+/* ---------------- favoris ---------------- */
+const favIds = (u = me()) => (u && Array.isArray(u.favGoals)) ? u.favGoals : [];
+const isFav = g => !!g && favIds().includes(g.id);
+const favStar = g => isFav(g) ? `<span class="fav-star" aria-label="Favori" role="img">${icon('star')}</span>` : '';
+function toggleFav(id){
+  const u = me(), g = goalById(id); if (!u || !g) return;
+  const on = !isFav(g);
+  u.favGoals = favIds(u).filter(x => x !== id && goalById(x));
+  if (on) u.favGoals.unshift(id);
+  UI.favPop = id; save(); render(); setTimeout(() => { if (UI.favPop === id) UI.favPop = null; }, 600);
+  toast(on ? `« ${g.title} » ajouté à tes favoris.` : `« ${g.title} » retiré de tes favoris.`, 'star');
+}
+const favButton = g => `<button class="icon-btn plain fav-btn ${isFav(g) ? 'on' : ''} ${UI.favPop === g.id ? 'pop' : ''}" data-act="goal-fav" data-id="${g.id}" aria-pressed="${isFav(g)}" aria-label="${isFav(g) ? 'Retirer des favoris' : 'Ajouter aux favoris'}">${icon('star')}</button>`;
+
+/* ---------------- étapes de projet : réordonner (flèches ou glisser) ---------------- */
+function moveTask(gid, tid, to){
+  const g = goalById(gid); if (!g || g.userId !== me().id || !Array.isArray(g.tasks)) return false;
+  const i = g.tasks.findIndex(t => t.id === tid); if (i < 0) return false;
+  const j = Math.max(0, Math.min(g.tasks.length - 1, to)); if (i === j) return false;
+  const [t] = g.tasks.splice(i, 1); g.tasks.splice(j, 0, t);
+  return true;
+}
+function afterTaskMove(gid, tid, dir){
+  save(); render();
+  const li = document.querySelector(`.tasks li[data-tid="${tid}"]`); li?.classList.add('moved');
+  const b = document.querySelector(`[data-act="task-move"][data-id="${gid}|${tid}|${dir}"]:not([disabled])`) || document.querySelector(`[data-act="task-move"][data-id="${gid}|${tid}|${-dir}"]`);
+  b?.focus({ preventScroll:true });
+}
+document.addEventListener('pointerdown', e => {
+  const grip = e.target.closest?.('.task-grip'); if (!grip || e.button > 0) return;
+  const li = grip.closest('li'), ul = li?.parentElement; if (!ul?.dataset.gid) return;
+  e.preventDefault();
+  const before = [...ul.children].map(x => x.dataset.tid);
+  li.classList.add('dragging');
+  // Écoute sur le document : déplacer l'élément dans la page ferait perdre la capture du pointeur
+  const move = ev => {
+    if (ev.pointerId !== e.pointerId) return;
+    const over = document.elementFromPoint(ev.clientX, ev.clientY)?.closest?.('.tasks li');
+    if (!over || over === li || over.parentElement !== ul) return;
+    const r = over.getBoundingClientRect();
+    ul.insertBefore(li, ev.clientY < r.top + r.height / 2 ? over : over.nextSibling);
+  };
+  const end = ev => {
+    if (ev.pointerId !== e.pointerId) return;
+    document.removeEventListener('pointermove', move); document.removeEventListener('pointerup', end); document.removeEventListener('pointercancel', end);
+    li.classList.remove('dragging');
+    const order = [...ul.children].map(x => x.dataset.tid), g = goalById(ul.dataset.gid);
+    if (!g || order.join() === before.join()) return;
+    g.tasks.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    save(); render(); toast('Étapes réordonnées.', 'list');
+  };
+  document.addEventListener('pointermove', move); document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
+});
+
+/* ---------------- arrière-plans et couleurs extraites ---------------- */
+const BGS = [['blob','Blob'],['aurora','Aurore'],['waves','Vagues'],['stars','Constellation'],['mesh','Dégradé'],['grid','Grille'],['plain','Uni'],['custom','Mon image']];
+const BG_IMG_KEY = 'pepsgoal.bgimg.v1';
+function bgImage(){ try { const o = JSON.parse(localStorage.getItem(BG_IMG_KEY) || 'null'); return o && /^data:image\/(jpeg|png|webp);base64,/.test(o.img || '') ? o : null; } catch(e){ return null; } }
+const waveD = (y, a) => { let d = `M0 ${y} Q180 ${y - a} 360 ${y}`; for (let x = 720; x <= 2880; x += 360) d += ` T${x} ${y}`; return d + ' V320 H0 Z'; };
+const BG_LAYERS = `<div class="bg-l bg-aurora"><i></i><i></i><i></i></div>
+  <div class="bg-l bg-waves"><svg viewBox="0 0 1440 320" preserveAspectRatio="none"><g><path d="${waveD(150, 46)}"/></g><g><path d="${waveD(200, 38)}"/></g><g><path d="${waveD(250, 30)}"/></g></svg></div>
+  <div class="bg-l bg-stars"><i></i><i></i></div><div class="bg-l bg-mesh"></div><div class="bg-l bg-grid"></div>
+  <div class="bg-l bg-img"></div><div class="bg-l bg-dim"></div><div class="snow"></div>`;
+let snowHtml = '';
+function snowFlakes(){
+  if (snowHtml) return snowHtml;
+  for (let i = 0; i < 46; i++) {
+    const s = 2 + Math.random() * 5;
+    snowHtml += `<i style="--x:${(Math.random() * 100).toFixed(1)}%;--s:${s.toFixed(1)}px;--o:${(.45 + Math.random() * .5).toFixed(2)};--d:${(9 + Math.random() * 14).toFixed(1)}s;--delay:-${(Math.random() * 20).toFixed(1)}s;--sway:${(Math.random() * 16 - 8).toFixed(1)}vw;top:${(Math.random() * 100).toFixed(0)}vh"></i>`;
+  }
+  return snowHtml;
+}
+function applyBackdrop(){
+  const bd = document.querySelector('.backdrop'); if (!bd) return;
+  if (!bd.dataset.ready) { bd.insertAdjacentHTML('beforeend', BG_LAYERS); bd.dataset.ready = '1'; }
+  const s = me()?.settings || {}, root = document.documentElement;
+  let kind = BGS.some(b => b[0] === s.bg) ? s.bg : 'blob';
+  const img = kind === 'custom' ? bgImage() : null;
+  if (kind === 'custom' && !img) kind = 'blob';
+  root.dataset.bg = kind;
+  const layer = bd.querySelector('.bg-img'), stamp = img ? String(img.at) : '';
+  if (layer.dataset.at !== stamp) { layer.style.backgroundImage = img ? `url("${img.img}")` : ''; layer.dataset.at = stamp; }
+  // Easter egg : il neige sur PepsCold
+  const cold = eggWord() === 'Cold';
+  root.toggleAttribute('data-egg-snow', cold);
+  const snow = bd.querySelector('.snow'); if (cold && !snow.childElementCount) snow.innerHTML = snowFlakes();
+}
+const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+function hexOf(r, g, b){ return '#' + [r, g, b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('').toUpperCase(); }
+function rgbOf(hex){ const n = parseInt(hex.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function hslOf([r, g, b]){
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  let h = 0, s = 0;
+  if (d) { s = d / (1 - Math.abs(2 * l - 1)); h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; if (h < 0) h += 360; }
+  return [h, s, l];
+}
+function hexHsl(h, s, l){
+  const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+  const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+  return hexOf((r + m) * 255, (g + m) * 255, (b + m) * 255);
+}
+// Couleurs dominantes d'une image : histogramme de teintes quantifiées, les plus présentes et les plus vives d'abord
+function extractPalette(img, n = 6){
+  const W = 72, H = Math.max(1, Math.round(W * img.naturalHeight / img.naturalWidth));
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d', { willReadFrequently:true }); x.drawImage(img, 0, 0, W, H);
+  const d = x.getImageData(0, 0, W, H).data, buckets = new Map();
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i + 3] < 128) continue;
+    const k = (d[i] >> 4) << 8 | (d[i + 1] >> 4) << 4 | (d[i + 2] >> 4);
+    const b = buckets.get(k) || [0, 0, 0, 0]; b[0] += d[i]; b[1] += d[i + 1]; b[2] += d[i + 2]; b[3]++; buckets.set(k, b);
+  }
+  const cand = [...buckets.values()].map(b => { const rgb = [b[0] / b[3], b[1] / b[3], b[2] / b[3]], [, s, l] = hslOf(rgb); return { rgb, n:b[3], score:b[3] * (0.3 + s) * (l > .08 && l < .95 ? 1 : .3) }; }).sort((a, b) => b.score - a.score);
+  const out = [];
+  for (const cnd of cand) {
+    if (out.every(o => Math.hypot(o[0] - cnd.rgb[0], o[1] - cnd.rgb[1], o[2] - cnd.rgb[2]) > 60)) out.push(cnd.rgb);
+    if (out.length >= n) break;
+  }
+  return out.map(rgb => hexOf(...rgb));
+}
+// Couleur d'accent personnalisée (3 nuances), toujours assez claire pour porter du texte foncé
+function accentFrom(hex){
+  const [h, s0] = hslOf(rgbOf(hex)), s = Math.max(.5, Math.min(.95, s0 || .6));
+  return [hexHsl(h, s, .78), hexHsl(h, s, .6), hexHsl((h + 28) % 360, s, .6)];
+}
+const validAccent = a => Array.isArray(a) && a.length === 3 && a.every(c => /^#[0-9A-F]{6}$/i.test(c));
+async function loadBgFile(file){
+  if (!/^image\//.test(file.type)) { toast('Ce fichier n’est pas une image.', 'image'); return; }
+  if (file.size > 30 * 1024 * 1024) { toast('Image trop lourde (30 Mo maximum).', 'image'); return; }
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await loadImg(url), palette = extractPalette(img);
+    for (const [max, q] of [[1920, .82], [1440, .75], [1080, .7]]) {
+      const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      try { localStorage.setItem(BG_IMG_KEY, JSON.stringify({ img:c.toDataURL('image/jpeg', q), palette, at:Date.now() })); break; }
+      catch(e){ if (max === 1080) throw new Error('Espace insuffisant dans ce navigateur pour garder cette image.'); }
+    }
+    const u = me(); u.settings.bg = 'custom'; save(); render();
+    toast('Arrière-plan appliqué. Touche une couleur extraite pour l’utiliser comme accent.', 'image');
+  } catch(e){ toast(e?.message || 'Impossible de lire cette image. Essaie un fichier JPG ou PNG.', 'image'); }
+  finally { URL.revokeObjectURL(url); }
+}
+document.addEventListener('change', e => { const t = e.target; if (t.id === 'bg-file' && t.files?.[0]) { void loadBgFile(t.files[0]); t.value = ''; } });
+function bgSettingsHtml(u){
+  const s = u.settings, img = bgImage(), cur = s.bg === 'custom' && !img ? 'blob' : (BGS.some(b => b[0] === s.bg) ? s.bg : 'blob');
+  const ac = validAccent(s.accentCustom) ? s.accentCustom[1] : null;
+  return `<div class="set-row" style="border:0;padding-bottom:4px"><div><b>Arrière-plan</b><small>${esc(BGS.find(b => b[0] === cur)[1])} · derrière toute l’application</small></div></div>
+    <div class="bg-tiles" role="radiogroup" aria-label="Arrière-plan">${BGS.map(([k, l]) => `<label class="bg-tile bt-${k}"><input type="radio" name="bg" value="${k}" data-set="bg" ${cur === k ? 'checked' : ''}><span class="bt-prev" ${k === 'custom' && img ? `style="background-image:url('${img.img}')"` : ''}>${k === 'custom' && !img ? icon('image') : ''}</span><span>${l}</span></label>`).join('')}</div>
+    <div class="set-row"><div><b>Image personnalisée</b><small>Une photo à toi en fond d’écran (JPG, PNG, WebP), gardée sur cet appareil.</small></div>
+      <div class="quick" style="margin:0"><button class="btn sm" data-act="bg-pick">${icon('image')}${img ? 'Changer' : 'Choisir'}</button>${img ? `<button class="btn btn-ghost sm" data-act="bg-clear">Retirer</button>` : ''}</div></div>
+    ${img?.palette?.length ? `<div class="set-row"><div><b>${icon('wand')} Couleurs de ton arrière-plan</b><small>Extraites de ton image : touche-en une pour en faire ta couleur d’accent.</small></div>
+      <div class="palette" role="group" aria-label="Couleurs extraites">${img.palette.map(c => `<button class="pal-sw ${ac && accentFrom(c)[1] === ac ? 'on' : ''}" style="--c:${c}" data-act="accent-from" data-id="${c}" aria-label="Utiliser la couleur ${c}" title="${c}"></button>`).join('')}</div></div>` : ''}
+    <input type="file" id="bg-file" accept="image/*" class="sr" tabindex="-1" aria-hidden="true">`;
+}
+
+/* ---------------- easter eggs ---------------- */
+const ACC_SUN = ACCENTS.findIndex(a => a.n === 'Soleil'), ACC_ICE = ACCENTS.findIndex(a => a.n === 'Glacier');
+function eggWord(){
+  const s = me()?.settings; if (!s || validAccent(s.accentCustom)) return 'Goal';
+  return s.accent === ACC_SUN ? 'Gold' : s.accent === ACC_ICE ? 'Cold' : 'Goal';
+}
+function eggAfterRender(){
+  const w = eggWord();
+  if (UI.eggPrev && UI.eggPrev !== w) {
+    document.querySelectorAll('.logo').forEach(l => { l.classList.remove('morph'); void l.offsetWidth; l.classList.add('morph'); setTimeout(() => l.classList.remove('morph'), 1800); });
+    if (w === 'Gold') toast('PepsGold ✨ La couleur Soleil fait briller ton titre.', 'sun');
+    if (w === 'Cold') toast('PepsCold ❄️ Le Glacier fait tomber la neige.', 'snow');
+  }
+  UI.eggPrev = w;
+}
+// Poisson d'avril (version locale) ; avec un compte, c'est le serveur qui l'envoie
+function aprilEgg(){
+  if (window.PGCloud?.state?.acct) return;
+  const u = me(), t = today(); if (!u || !t.endsWith('-04-01') || u.aprilFool === t) return;
+  u.aprilFool = t; officialSend(u.id, 'test cedric', { tag:'info' }); save();
+}
+
+/* ---------------- suggestions d'amis ---------------- */
+function friendSuggestions(u){
+  const mine = new Set(friendsOf(u.id)), score = new Map();
+  const ok = x => x && x.id !== u.id && !x.role && !x.guest && !friendship(u.id, x.id) && !isBlockedPair(u.id, x.id) && x.settings?.social !== false && !x.settings?.noSuggest;
+  const add = (id, k, via) => { const x = userById(id); if (!ok(x)) return; const e = score.get(id) || { user:x, mutual:0, via:[], groups:0 }; if (k === 'm') { e.mutual++; if (via) e.via.push(via); } else e.groups++; score.set(id, e); };
+  for (const f of mine) for (const ff of friendsOf(f)) if (!mine.has(ff)) add(ff, 'm', userById(f)?.name);
+  for (const c of myChats(u.id)) for (const id of c.members) if (!mine.has(id)) add(id, 'g');
+  const list = [...score.values()].sort((a, b) => b.mutual - a.mutual || b.groups - a.groups);
+  if (list.length < 6) DB.users.filter(x => ok(x) && !score.has(x.id)).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 6 - list.length).forEach(x => list.push({ user:x, mutual:0, via:[], groups:0 }));
+  return list.map(s => Object.assign(s, { reason:s.mutual ? 'mutual' : s.groups ? 'group' : 'new' }));
+}
+const suggestWhy = s => s.mutual ? `${pl(s.mutual, 'ami en commun', 'amis en commun')}${s.via?.length ? ' · ' + s.via.slice(0, 2).map(first).join(', ') : ''}` : s.groups ? 'Dans un de tes groupes' : 'Nouveau sur PepsGoal';
+function suggestCard(u){
+  if (!socialOn(u) || isGuest(u)) return '';
+  const hidden = new Set(u.hiddenSuggest || []);
+  const list = friendSuggestions(u).filter(s => !hidden.has(s.user.id)).slice(0, 8);
+  if (!list.length) return '';
+  return `<section class="glass card sugg-card"><div class="card-h"><h2>Suggestions d’amis</h2><button class="btn btn-ghost sm" data-act="set-cat-go" data-id="privacy" aria-label="Réglages des suggestions">${icon('gear')}</button></div>
+    <ul class="sugg-list">${list.map((s, i) => `<li class="sugg" style="--i:${i}"><button class="sugg-x icon-btn plain" data-act="suggest-hide" data-id="${s.user.id}" aria-label="Ne plus suggérer ${esc(s.user.name)}">${icon('x')}</button>
+      <button class="who" data-act="open-user" data-id="${s.user.id}">${avatar(s.user, 56)}<b>${esc(s.user.name)}</b><small>${esc(suggestWhy(s))}</small></button>
+      <button class="btn btn-primary sm" data-act="add-friend" data-id="${s.user.id}">${icon('userplus')}Ajouter</button></li>`).join('')}</ul></section>`;
+}
+
+/* ---------------- modération : onglet Serveur ---------------- */
+MOD_TABS.push(['server', 'Serveur', 'server']);
+const PAGE_T0 = Date.now();
+const fmtBytes = b => { if (b == null || isNaN(b)) return '—'; const u = ['o', 'Ko', 'Mo', 'Go', 'To']; let i = 0, v = Number(b); while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; } return `${v < 10 && i ? v.toFixed(1).replace('.', ',') : Math.round(v)} ${u[i]}`; };
+const fmtUptime = s => { s = Math.max(0, Math.round(s || 0)); const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return d ? `${d} j ${h} h` : h ? `${h} h ${m} min` : `${m} min`; };
+function localStats(){
+  const users = DB.users.filter(x => !x.role && !x.guest), now = Date.now(), D = 864e5;
+  const recent = (ms, f, list) => list.filter(x => now - f(x) < ms).length;
+  let bytes = 0; try { for (const k of Object.keys(localStorage)) bytes += (localStorage.getItem(k) || '').length * 2; } catch(e){}
+  const days = Array.from({ length:14 }, (_, i) => { const d = ymd(addDays(new Date(), i - 13)); return { day:d, signups:users.filter(x => x.createdAt && ymd(x.createdAt) === d).length, messages:(DB.messages || []).filter(m => ymd(m.at) === d).length, checkins:DB.checkins.filter(c => c.date === d).length }; });
+  const pm = performance.memory;
+  return { local:true,
+    server:{ version:APP_VERSION, node:'—', platform:(navigator.userAgentData?.platform || navigator.platform || 'Navigateur'), uptimeSec:(now - PAGE_T0) / 1000, cpus:navigator.hardwareConcurrency || 0, load:[], memory:pm ? { rss:pm.usedJSHeapSize, systemTotal:0 } : null },
+    traffic:null, database:{ bytes, version:'' }, storage:null,
+    counts:{ users:users.length, users_1d:recent(D, x => x.createdAt || 0, users), users_7d:recent(7 * D, x => x.createdAt || 0, users), users_30d:recent(30 * D, x => x.createdAt || 0, users),
+      goals:DB.goals.length, checkins:DB.checkins.length, checkins_1d:recent(D, c => c.at || 0, DB.checkins), posts:DB.posts.length, posts_1d:recent(D, p => p.at || 0, DB.posts),
+      comments:DB.posts.reduce((n, p) => n + (p.comments?.length || 0), 0), stories_live:(DB.stories || []).filter(s => now - s.at < D).length, stories:(DB.stories || []).length,
+      messages:(DB.messages || []).length, messages_1d:recent(D, m => m.at || 0, DB.messages || []), groups:(DB.chats || []).length, friendships:DB.friendships.filter(f => f.status === 'accepted').length },
+    days };
+}
+const meter = (label, r) => `<div class="meter ${r > .85 ? 'hot' : ''}"><div class="meter-h"><span>${label}</span><span>${Math.round(r * 100)} %</span></div><span class="bar"><i style="width:${Math.min(100, r * 100)}%"></i></span></div>`;
+function statsHtml(d){
+  const c = d.counts || {}, s = d.server || {}, t = d.traffic, mem = s.memory, n = v => v == null ? '—' : fmtNum(v);
+  const tile = (v, l, sub) => `<div class="stat"><b>${v}</b><span>${l}</span>${sub ? `<small>${sub}</small>` : ''}</div>`;
+  const plus = v => v ? `+${fmtNum(v)} en 24 h` : 'rien en 24 h';
+  const spark = (key, label) => { const vals = (d.days || []).map(x => x[key] || 0), mx = Math.max(1, ...vals); return `<div class="spark-card"><div class="spark-h"><b>${label}</b><span class="muted small">${fmtNum(vals.reduce((a, b) => a + b, 0))} sur 14 jours</span></div><div class="sbars" role="img" aria-label="${label} par jour : ${vals.join(', ')}">${vals.map((v, i) => `<i style="--h:${v / mx};--n:${i}" title="${esc(fmtDate(d.days[i].day))} : ${v}"></i>`).join('')}</div></div>`; };
+  const pmx = t ? Math.max(1, ...t.perMinute) : 1;
+  return `
+  <section class="glass card srv-health"><div class="card-h"><h2>${icon('server')}${d.local ? 'Cet appareil' : 'Serveur'}</h2><span class="chip t-goal srv-ok"><span class="dot"></span>${d.local ? 'Mode local' : 'En ligne'}</span></div>
+    <div class="stats">${tile(esc(s.version || '—'), 'Version')}${tile(fmtUptime(s.uptimeSec), d.local ? 'Session ouverte depuis' : 'En marche depuis')}${mem ? tile(fmtBytes(mem.rss), d.local ? 'Mémoire de la page' : 'Mémoire du serveur', mem.heapUsed ? `${fmtBytes(mem.heapUsed)} de tas JavaScript` : '') : ''}${s.load?.length ? tile(String(s.load[0]).replace('.', ','), 'Charge (1 min)', `${pl(s.cpus, 'processeur', 'processeurs')}`) : s.cpus ? tile(s.cpus, 'Cœurs du processeur') : ''}</div>
+    ${mem?.systemTotal ? meter('Mémoire de la machine', (mem.systemTotal - mem.systemFree) / mem.systemTotal) : ''}
+    ${s.load?.length && s.cpus ? meter('Charge du processeur', Math.min(1, s.load[0] / s.cpus)) : ''}
+    <p class="muted small" style="margin-top:10px">${esc([s.node && s.node !== '—' ? `Node.js ${s.node}` : '', s.platform, d.database?.version].filter(Boolean).join(' · '))}</p></section>
+  ${t ? `<section class="glass card"><div class="card-h"><h2>Trafic</h2><span class="muted small">depuis le démarrage</span></div>
+    <div class="stats">${tile(n(t.requests), 'Requêtes')}${tile(n(t.lastHour), 'Dernière heure')}${tile(`${String(t.avgMs).replace('.', ',')} ms`, 'Temps de réponse moyen')}${tile(n(t.serverErrors), 'Erreurs serveur', `${n(t.clientErrors)} requêtes refusées (4xx)`)}</div>
+    <div class="sbars sbars-min" role="img" aria-label="Requêtes par minute sur la dernière heure">${t.perMinute.map((v, i) => `<i style="--h:${v / pmx};--n:${i % 20}" title="${v}"></i>`).join('')}</div><p class="muted small">Requêtes par minute, dernière heure</p></section>` : ''}
+  <section class="glass card"><div class="card-h"><h2>Communauté</h2></div>
+    <div class="stats">${tile(n(c.users), 'Comptes', plus(c.users_1d))}${c.active_1d != null ? tile(n(c.active_1d), 'Connectés (24 h)', `${n(c.active_7d)} sur 7 jours`) : ''}${tile(n(c.users_7d), 'Inscrits (7 jours)', `${n(c.users_30d)} sur 30 jours`)}${tile(n(c.friendships), 'Amitiés')}${tile(n(c.groups), 'Groupes de discussion')}${c.push_subs != null ? tile(n(c.push_subs), 'Abonnés aux notifications', `${n(c.devices)} appareils chiffrés`) : ''}</div></section>
+  <section class="glass card"><div class="card-h"><h2>Contenus</h2></div>
+    <div class="stats">${tile(n(c.goals), 'Objectifs')}${tile(n(c.checkins), 'Validations', plus(c.checkins_1d))}${tile(n(c.posts), 'Publications', plus(c.posts_1d))}${tile(n(c.comments), 'Commentaires')}${tile(n(c.stories_live), 'Stories en ligne', `${n(c.stories)} au total`)}${tile(n(c.messages), 'Messages', plus(c.messages_1d))}</div></section>
+  <section class="glass card"><div class="card-h"><h2>Stockage</h2></div>
+    <div class="stats">${tile(fmtBytes(d.database?.bytes), d.local ? 'Données du navigateur' : 'Base de données')}${d.storage ? tile(fmtBytes(d.storage.bytes), 'Photos et pièces jointes', `${pl(d.storage.files, 'fichier', 'fichiers')}`) : ''}${c.attachments != null ? tile(n(c.attachments), 'Pièces jointes chiffrées') : ''}${c.notifs_1d != null ? tile(n(c.notifs_1d), 'Notifications (24 h)') : ''}</div></section>
+  <section class="glass card"><div class="card-h"><h2>14 derniers jours</h2></div><div class="spark-grid">${spark('signups', 'Inscriptions')}${spark('checkins', 'Validations')}${spark('messages', 'Messages')}</div></section>
+  <p class="muted small srv-foot">${d.local ? 'Statistiques calculées sur cet appareil (version sans serveur).' : `Mis à jour à ${new Date(UI.statsAt || Date.now()).toLocaleTimeString('fr-FR')} · actualisation automatique toutes les 30 secondes.`} <button class="linkbtn" data-act="stats-refresh">Actualiser</button></p>`;
+}
+// Version connectée : remplacée par cloud.js (statistiques du serveur, /v1/admin/stats)
+function modServer(){ return statsHtml(localStats()); }
+
+/* ---------------- messagerie : réponses, réactions, mentions ---------------- */
+const SILENT_K = ['vote', 'react'];
+const QUICK_REACTS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '👏'];
+const MORE_REACTS = ['🙏', '💪', '🎉', '😍', '🤣', '😅', '🥳', '😎', '🤔', '👀', '💯', '✅', '⭐', '🙌', '😴', '🤯', '🥲', '😡'];
+const msgById = id => (DB.messages || []).find(m => m.id === id);
+// Réactions d'une conversation : la dernière réaction de chaque personne pour chaque emoji fait foi (ajout ou retrait)
+function reactionsOf(list){
+  const map = new Map();
+  for (const m of list) {
+    const b = msgBody(m); if (b?.k !== 'react' || !b.p || !b.e) continue;
+    const per = map.get(b.p) || new Map(); const set = per.get(b.e) || new Set();
+    if (b.on === false) set.delete(m.from); else set.add(m.from);
+    per.set(b.e, set); map.set(b.p, per);
+  }
+  return map;
+}
+function currentConvo(){
+  const u = me(), m0 = UI.modal; if (!u || m0?.type !== 'chat') return [];
+  return m0.group ? groupConvo(m0.group, u.id) : convo(u.id, m0.with);
+}
+function reactChips(m, reacts, mine){
+  const per = reacts.get(m.id); if (!per) return '';
+  const uid0 = me().id, items = [...per].filter(([, set]) => set.size);
+  if (!items.length) return '';
+  return `<div class="rx-row ${mine ? 'me' : 'them'}">${items.map(([e, set]) => { const names = [...set].map(id => id === uid0 ? 'toi' : first(userById(id)?.name || '')).join(', '); return `<button class="rx ${set.has(uid0) ? 'on' : ''}" data-act="msg-react" data-id="${m.id}|${e}" aria-pressed="${set.has(uid0)}" aria-label="${e} : ${esc(names)}" title="${esc(names)}">${e}<b>${set.size}</b></button>`; }).join('')}</div>`;
+}
+function msgMenuHtml(m, reacts, mine){
+  const per = reacts.get(m.id), uid0 = me().id, on = e => per?.get(e)?.has(uid0);
+  return `<div class="msg-menu ${mine ? 'me' : 'them'}" role="group" aria-label="Réagir ou répondre">${QUICK_REACTS.map((e, i) => `<button class="rx-btn ${on(e) ? 'on' : ''}" style="--i:${i}" data-act="msg-react" data-id="${m.id}|${e}" aria-label="Réagir ${e}" aria-pressed="${!!on(e)}">${e}</button>`).join('')}
+    <button class="rx-btn" data-act="msg-react-more" data-id="${m.id}" aria-label="Plus d’emojis" aria-expanded="${!!UI.msgMore}">${icon('plus')}</button>
+    <button class="btn btn-ghost sm" data-act="msg-reply" data-id="${m.id}">${icon('reply')}Répondre</button>
+    ${UI.msgMore ? `<div class="rx-more">${MORE_REACTS.map(e => `<button class="rx-btn ${on(e) ? 'on' : ''}" data-act="msg-react" data-id="${m.id}|${e}" aria-label="Réagir ${e}">${e}</button>`).join('')}</div>` : ''}</div>`;
+}
+function textHtml(b){
+  const u = me();
+  const q = b.r ? `<button type="button" class="msg-quote" data-act="msg-jump" data-id="${esc(String(b.r.id || ''))}"><b>${b.r.f === u.id ? 'Toi' : esc(first(userById(b.r.f)?.name || 'Message'))}</b><span>${esc(b.r.s || '…')}</span></button>` : '';
+  let t = esc(b.t || '');
+  const g = UI.modal?.group ? chatById(UI.modal.group) : null;
+  if (g) t = t.replace(/(^|\s)@([\w.]{2,30})/g, (all, sp, un) => { const x = DB.users.find(y => y.username === un.toLowerCase() && g.members.includes(y.id)); return x ? `${sp}<span class="mention ${x.id === u.id ? 'me' : ''}">@${esc(un)}</span>` : all; });
+  return q + t;
+}
+// Texte envoyé : chaîne simple, ou objet si c'est une réponse ou s'il mentionne des membres du groupe
+function chatTextBody(text, target){
+  const o = { k:'text', t:text }, u = me();
+  const r = UI.replyTo && UI.replyTo.chat === chatKey() ? msgById(UI.replyTo.id) : null;
+  if (r) o.r = { id:r.id, f:r.from, s:String(msgPreview(r) || '').slice(0, 90) };
+  if (target.chat) {
+    const g = chatById(target.chat);
+    const mn = (g?.members || []).filter(id => id !== u.id && (() => { const x = userById(id); return x && new RegExp(`(^|\\s)@${x.username.replace(/[.]/g, '\\.')}(?![\\w.])`, 'i').test(text); })());
+    if (mn.length) o.mn = mn;
+  }
+  return o.r || o.mn ? o : text;
+}
+const chatKey = () => UI.modal?.type === 'chat' ? (UI.modal.group ? 'g:' + UI.modal.group : 'u:' + UI.modal.with) : '';
+function replyBar(){
+  const r = UI.replyTo && UI.replyTo.chat === chatKey() ? msgById(UI.replyTo.id) : null; if (!r) return '';
+  const who = r.from === me().id ? 'toi-même' : first(userById(r.from)?.name || '');
+  return `<div class="reply-bar">${icon('reply')}<span><b>Réponse à ${esc(who)}</b><small>${esc(String(msgPreview(r) || ''))}</small></span><button type="button" class="icon-btn plain" data-act="reply-cancel" aria-label="Annuler la réponse">${icon('x')}</button></div>`;
+}
+const refreshReply = () => { const el = document.getElementById('chat-reply'); if (el) el.innerHTML = replyBar(); };
+async function sendSilent(body){
+  const target = chatTarget(); if (!target) return;
+  try { await deliverMessage(target, body); } catch(e){ toast(e?.message || 'Envoi impossible, réessaie.', 'x'); }
+}
+// Mentions : liste des membres pendant la saisie de « @… » dans un groupe
+document.addEventListener('input', e => {
+  const t = e.target; if (t.id !== 'chat-input') return;
+  const pop = document.getElementById('mention-pop'); if (!pop) return;
+  const g = UI.modal?.group ? chatById(UI.modal.group) : null;
+  const m = g && /(^|\s)@([\w.]{0,30})$/.exec(t.value.slice(0, t.selectionStart ?? t.value.length));
+  if (!m) { pop.hidden = true; pop.innerHTML = ''; return; }
+  const q = m[2].toLowerCase(), list = g.members.filter(id => id !== me().id).map(userById).filter(x => x && (x.username.startsWith(q) || x.name.toLowerCase().includes(q))).slice(0, 6);
+  pop.innerHTML = list.map(x => `<button type="button" class="mention-opt" data-act="mention-pick" data-id="${esc(x.username)}">${avatar(x, 28)}<span><b>${esc(x.name)}</b><small>@${esc(x.username)}</small></span></button>`).join('');
+  pop.hidden = !list.length;
+});
+const e2eBtn = () => `<button class="icon-btn plain e2e-btn" data-act="e2e-info" aria-expanded="${!!UI.e2eOpen}" aria-controls="e2e-info" aria-label="Chiffrement de bout en bout : en savoir plus">${icon('lock')}</button>`;
+const e2eInfo = text => `<div class="e2e-info" id="e2e-info" ${UI.e2eOpen ? '' : 'hidden'}><p class="e2e-note">${icon('lock')}<span>${text} Personne d’autre, pas même PepsGoal, ne peut lire vos messages. <span id="e2e-print"></span></span></p></div>`;
+
+/* ---------------- notes de version ---------------- */
+const PATCH_NOTES = [
+  ['2.0.0', '16 octobre 2026', [
+    'Messagerie : réponds à un message précis et réagis avec des emojis ; mentionne les membres d’un groupe avec @ (ils sont notifiés).',
+    'Le texte sur le chiffrement s’affiche maintenant avec le bouton cadenas de la conversation.',
+    'Suggestions d’amis (amis en commun, groupes, nouveaux inscrits), avec un réglage pour ne pas y apparaître.',
+    'Objectifs favoris : une étoile pour les garder en tête de liste, et un filtre « Favoris ».',
+    'Projets : réordonne les étapes en les faisant glisser ou avec les flèches.',
+    'Nouveaux arrière-plans (Aurore, Vagues, Constellation, Dégradé, Grille, Uni) et ta propre image, avec extraction de ses couleurs principales pour l’accent.',
+    'Accessibilité : mode daltonien par type (deutéranopie, protanopie, tritanopie), mode monochrome, contraste élevé sans dégradés.',
+    'Anneau animé autour de ton icône de profil, qui évolue avec ton niveau.',
+    'Plein de micro-animations dans l’interface (boutons, onglets, interrupteurs, cartes…).',
+    'Modération : nouvel onglet Serveur (santé, trafic, volumes, activité des 14 derniers jours).',
+    'Quelques surprises cachées dans les couleurs d’accent…',
+    'Correction : la fiche d’un objectif ne remonte plus en haut à chaque actualisation automatique.'
+  ]],
+  ['1.4.0', '16 octobre 2026', [
+    'Notifications push sur la version web : rappels, messages et encouragements, même application fermée.',
+    'Mode hors ligne à la demande (Paramètres › Données).',
+    'Encouragements sur les stories et archive personnelle des stories dans le profil.',
+    'Badges à paliers (Bronze à Diamant) avec une animation à chaque déblocage.',
+    'Corrections visuelles (icônes, avatars emoji, story de progression, liserés sur Android).'
+  ]],
+  ['1.3.0', '14 octobre 2026', [
+    'Sondages dans le feed et dans la messagerie.',
+    'Sélecteur d’emojis par catégorie, avec plus de 700 emojis Fluent.',
+    'Liens d’aide : site, code source et signalement de problèmes ; PepsGoal passe sous licence MIT.',
+    'Synchronisation des clés de chiffrement fiabilisée entre appareils.'
+  ]],
+  ['1.2.0', '12 octobre 2026', [
+    'Messagerie chiffrée de bout en bout : photos, messages vocaux, objectifs partagés et groupes.',
+    'Photos dans les publications, blocage de comptes, e-mails de modération et emojis Fluent.'
+  ]],
+  ['1.1.0', '11 octobre 2026', ['Mode hors ligne automatique et options d’accessibilité (contraste, daltonisme, animations, transparence).']],
+  ['1.0.0', '10 octobre 2026', ['Première version : objectifs de tous types, séries et flammes, feed, stories, amis et modération.']]
+];
+function mNotes(){
+  return `${sheetHead('Notes de version')}<div class="notes">${PATCH_NOTES.map(([v, d, items], i) => `<details ${i === 0 ? 'open' : ''}><summary><span class="v">${v}</span>${v === APP_VERSION ? '<span class="tag-new">Actuelle</span>' : ''}<small>${d}</small></summary><ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>`).join('')}</div>
+  <p class="muted small">Le détail technique de chaque version est publié sur GitHub.</p>`;
+}
+
+/* ---------------- actions ---------------- */
+Object.assign(ACT, {
+  'goal-fav': id => toggleFav(id),
+  'task-move': ref => { const [gid, tid, d] = ref.split('|'), g = goalById(gid), dir = Number(d); if (!g) return; const i = g.tasks.findIndex(t => t.id === tid); if (moveTask(gid, tid, i + dir)) afterTaskMove(gid, tid, dir); },
+  'bg-pick': () => document.getElementById('bg-file')?.click(),
+  'bg-clear': () => { try { localStorage.removeItem(BG_IMG_KEY); } catch(e){} const u = me(); if (u.settings.bg === 'custom') u.settings.bg = 'blob'; save(); render(); toast('Image d’arrière-plan retirée.', 'image'); },
+  'accent-from': hex => { if (!/^#[0-9A-F]{6}$/i.test(hex)) return; const u = me(); u.settings.accentCustom = accentFrom(hex); save(); render(); toast('Couleur d’accent tirée de ton arrière-plan.', 'palette'); },
+  'suggest-hide': id => { const u = me(); u.hiddenSuggest = [...new Set([...(u.hiddenSuggest || []), id])].slice(-300); save(); render(); toast('Cette personne ne te sera plus suggérée.', 'users'); },
+  'stats-refresh': () => render(),
+  'open-notes': () => { UI.modal = { type:'notes' }; renderModal(); },
+  'e2e-info': () => {
+    UI.e2eOpen = !UI.e2eOpen;
+    const el = document.getElementById('e2e-info'); if (el) el.hidden = !UI.e2eOpen;
+    document.querySelectorAll('[data-act="e2e-info"]').forEach(b => b.setAttribute('aria-expanded', String(!!UI.e2eOpen)));
+  },
+  'msg-menu': id => { UI.msgMenu = UI.msgMenu === id ? null : id; UI.msgMore = false; updateChat(); document.querySelector(`[data-act="msg-menu"][data-id="${id}"]`)?.focus({ preventScroll:true }); },
+  'msg-react-more': id => { UI.msgMore = !UI.msgMore; updateChat(); document.querySelector(`[data-act="msg-react-more"][data-id="${id}"]`)?.focus({ preventScroll:true }); },
+  'msg-react': ref => {
+    const i = ref.indexOf('|'), mid = ref.slice(0, i), e = ref.slice(i + 1); if (!mid || !e) return;
+    const on = !reactionsOf(currentConvo()).get(mid)?.get(e)?.has(me().id);
+    UI.msgMenu = null; UI.msgMore = false;
+    void sendSilent({ k:'react', p:mid, e, on }).then(() => updateChat());
+    updateChat();
+  },
+  'msg-reply': id => { UI.replyTo = { id, chat:chatKey() }; UI.msgMenu = null; UI.msgMore = false; updateChat(); refreshReply(); document.getElementById('chat-input')?.focus({ preventScroll:true }); },
+  'reply-cancel': () => { UI.replyTo = null; refreshReply(); document.getElementById('chat-input')?.focus({ preventScroll:true }); },
+  'msg-jump': id => {
+    const row = document.querySelector(`#chat-log [data-k="m:${CSS.escape(id)}"]`);
+    if (!row) { toast('Ce message n’est plus affiché dans la conversation.', 'comment'); return; }
+    row.scrollIntoView({ block:'center', behavior:reduced() ? 'auto' : 'smooth' });
+    row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+  },
+  'mention-pick': un => {
+    const inp = document.getElementById('chat-input'), pop = document.getElementById('mention-pop'); if (!inp) return;
+    const pos = inp.selectionStart ?? inp.value.length, pre = inp.value.slice(0, pos).replace(/@([\w.]{0,30})$/, `@${un} `);
+    inp.value = pre + inp.value.slice(pos); inp.focus(); inp.setSelectionRange(pre.length, pre.length);
+    if (pop) { pop.hidden = true; pop.innerHTML = ''; }
+  }
+});
+// Filtre choisi : petit rebond de la puce (après le nouveau rendu)
+document.addEventListener('click', e => {
+  const c = e.target.closest?.('.fchip[data-act]'); if (!c) return;
+  const sel = `.fchip[data-act="${c.dataset.act}"]${c.dataset.id ? `[data-id="${CSS.escape(c.dataset.id)}"]` : ''}`;
+  requestAnimationFrame(() => document.querySelector(sel)?.classList.add('pop'));
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && UI.msgMenu && UI.modal?.type === 'chat') { e.stopPropagation(); UI.msgMenu = null; UI.msgMore = false; updateChat(); } }, true);
+// Une seule fois après la mise à jour : où trouver les nouveautés
+setTimeout(() => {
+  try {
+    const k = 'pepsgoal.seenVersion', u = me();
+    if (localStorage.getItem(k) === APP_VERSION) return;
+    localStorage.setItem(k, APP_VERSION);
+    if (u && u.tutorialDone) toast(`PepsGoal ${APP_VERSION} est là ! Les nouveautés sont dans Paramètres › Aide › Notes de version.`, 'sparkle');
+  } catch(e){}
+}, 2500);
 
 /* ================= démarrage ================= */
 if (me() && !me().tutorialDone) UI.modal = { type:'tuto', step:0 };

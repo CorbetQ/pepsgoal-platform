@@ -179,6 +179,39 @@ export const stories = pgTable('stories', {
   expiresAt: ts('expires_at').notNull()
 });
 
+/** Encouragements sur les stories (un par personne et par story). */
+export const storyLikes = pgTable('story_likes', {
+  storyId: uuid('story_id').notNull().references(() => stories.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.storyId, t.userId] }) }));
+
+/** Abonnements aux notifications push (Web Push) : un par navigateur ; tz sert aux rappels du matin et du soir. */
+export const pushSubscriptions = pgTable('push_subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  endpoint: text('endpoint').notNull(),
+  p256dh: text('p256dh').notNull(),
+  auth: text('auth').notNull(),
+  tz: text('tz').notNull().default('Europe/Paris'),
+  createdAt: ts('created_at').notNull().defaultNow(),
+  lastOkAt: ts('last_ok_at')
+}, t => ({ endpointIdx: uniqueIndex('push_subscriptions_endpoint_idx').on(t.endpoint), userIdx: index('push_subscriptions_user_idx').on(t.userId) }));
+
+/** Rappels envoyés par le serveur (un de chaque sorte par jour et par compte). */
+export const reminderPushes = pgTable('reminder_pushes', {
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  day: text('day').notNull(),
+  kind: text('kind').notNull(),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.userId, t.day, t.kind] }) }));
+
+/** Réglages internes du serveur (clés VAPID des notifications push, générées au premier démarrage). */
+export const appSettings = pgTable('app_settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull()
+});
+
 export const storyViews = pgTable('story_views', {
   storyId: uuid('story_id').notNull().references(() => stories.id, { onDelete: 'cascade' }),
   viewerId: uuid('viewer_id').notNull().references(() => users.id, { onDelete: 'cascade' }),

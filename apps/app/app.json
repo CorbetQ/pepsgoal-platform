@@ -3,7 +3,7 @@
     "name": "PepsGoal",
     "slug": "pepsgoal",
     "scheme": "pepsgoal",
-    "version": "1.3.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#07081A",

@@ -91,6 +91,7 @@ mkdirSync(path.join(dist, 'fonts'), { recursive: true });
 for (const f of fonts) copyFileSync(f.file, path.join(dist, 'fonts', f.name));
 writeFileSync(path.join(dist, 'index.html'), page({ platform: 'web', fonts, fontUrl: f => `/fonts/${f.name}` }));
 copyFileSync(path.join(here, 'public/.htaccess'), path.join(dist, '.htaccess'));
+copyFileSync(path.join(here, 'public/sw.js'), path.join(dist, 'sw.js'));   // notifications push
 if (emojiKeys.length) cpSync(EMOJI_DIR, path.join(dist, 'emoji'), { recursive: true, filter: f => !f.endsWith('index.json') });
 copyFileSync(path.join(root, 'apps/app/assets/icon.png'), path.join(dist, 'icon-512.png'));
 copyFileSync(path.join(root, 'apps/app/assets/favicon.png'), path.join(dist, 'favicon.png'));

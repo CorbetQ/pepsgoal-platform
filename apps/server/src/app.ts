@@ -20,7 +20,9 @@ import miscRoutes from './routes/account-misc.js';
 import adminRoutes from './routes/admin.js';
 import e2eRoutes from './routes/e2e.js';
 import groupRoutes from './routes/groups.js';
+import pushRoutes from './routes/push.js';
 import { ATT_SUBDIR } from './lib/files.js';
+import { recordResponse } from './lib/metrics.js';
 
 export async function buildApp() {
   const app = Fastify({ logger: { level: env.NODE_ENV === 'production' ? 'info' : 'debug', redact: ['req.headers.authorization'] }, trustProxy: true });
@@ -35,6 +37,9 @@ export async function buildApp() {
   // Images publiques (photos de profil, publications, stories). Les pièces jointes chiffrées (att/) passent par /v1/attachments.
   await app.register(fastifyStatic, { root: mediaDir, prefix: '/media/', decorateReply: false, maxAge: '30d', immutable: true, allowedPath: p => { try { return !decodeURIComponent(p).toLowerCase().split(/[\/]+/).includes(ATT_SUBDIR); } catch { return false; } } });
 
+  // Compteurs de trafic (onglet Serveur de la modération)
+  app.addHook('onResponse', async (_req, reply) => { recordResponse(reply.statusCode, reply.elapsedTime); });
+
   app.setErrorHandler((err: FastifyError | Error, req, reply) => {
     if (err instanceof ZodError) {
       return reply.status(400).send({ error: 'invalid', message: 'Données invalides.', issues: err.issues.map(i => ({ path: i.path.join('.'), message: i.message })) });
@@ -47,7 +52,7 @@ export async function buildApp() {
     return reply.status(500).send({ error: 'server', message: 'Erreur interne, réessaie plus tard.' });
   });
 
-  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, groupRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
+  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, groupRoutes, pushRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
     await app.register(routes);
   }
   return app;

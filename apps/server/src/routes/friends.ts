@@ -48,6 +48,47 @@ export default async function friendRoutes(app: FastifyInstance) {
     };
   });
 
+  /**
+   * Suggestions d'amis : amis de mes amis (classés par amis en commun), membres de mes groupes, puis nouveaux inscrits.
+   * Exclus : moi, mes amis et demandes en cours, comptes bloqués dans un sens ou l'autre, fonctions sociales coupées,
+   * et toute personne ayant désactivé « Apparaître dans les suggestions » (réglage extra.noSuggest).
+   */
+  app.get('/v1/friends/suggestions', { preHandler: requireUser }, async req => {
+    const u = me(req);
+    const rows = await sql<Row[]>`
+      with mine as (
+        select case when requester_id = ${u.id} then addressee_id else requester_id end as id
+        from friendships where status = 'accepted' and (requester_id = ${u.id} or addressee_id = ${u.id})
+      ), related as (
+        select case when requester_id = ${u.id} then addressee_id else requester_id end as id
+        from friendships where requester_id = ${u.id} or addressee_id = ${u.id}
+      ), fof as (
+        select case when f.requester_id = m.id then f.addressee_id else f.requester_id end as id, m.id as via
+        from friendships f join mine m on f.requester_id = m.id or f.addressee_id = m.id where f.status = 'accepted'
+      ), grp as (
+        select gm2.user_id as id from chat_group_members gm1 join chat_group_members gm2 on gm2.group_id = gm1.group_id where gm1.user_id = ${u.id}
+      ), fresh as (
+        select id from users where role = 'user' and deleted_at is null and created_at > now() - interval '30 days' order by created_at desc limit 40
+      )
+      select x.id, x.username, x.display_name, x.avatar, x.role, x.created_at,
+        (select count(distinct via)::int from fof where fof.id = x.id) as mutual,
+        (select count(*)::int from grp where grp.id = x.id) as groups,
+        (select array_agg(y.display_name order by y.display_name) from (select distinct via from fof where fof.id = x.id limit 3) v join users y on y.id = v.via) as via_names
+      from users x
+      where x.id in (select id from fof union select id from grp union select id from fresh)
+        and x.id <> ${u.id} and x.id not in (select id from related)
+        and x.deleted_at is null and x.role = 'user'
+        and coalesce((x.settings->>'social')::boolean, true)
+        and not coalesce((x.settings->'extra'->>'noSuggest')::boolean, false)
+        and not exists (select 1 from blocks b where (b.blocker_id = ${u.id} and b.blocked_id = x.id) or (b.blocker_id = x.id and b.blocked_id = ${u.id}))
+      order by mutual desc, groups desc, x.created_at desc
+      limit 12`;
+    return rows.map(r => ({
+      user: toPublicUser(r), mutual: r.mutual, groups: r.groups, via: (r.via_names as string[] | null) ?? [],
+      reason: r.mutual ? 'mutual' : r.groups ? 'group' : 'new'
+    }));
+  });
+
   app.post('/v1/friends/requests', { preHandler: requireSocial, config: { rateLimit: { max: 30, timeWindow: '1 minute' } } }, async (req, reply) => {
     const { userId } = z.object({ userId: Id }).parse(req.body);
     const u = me(req);

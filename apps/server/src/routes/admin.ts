@@ -8,6 +8,7 @@ import { badRequest, forbidden, notFound } from '../lib/errors.js';
 import { me, requireAdmin } from '../lib/guards.js';
 import { invalidateMaintenanceCache } from '../lib/maintenance.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
+import { serverStats } from '../lib/metrics.js';
 import { logMod, modNotify, notify, officialMessage } from '../lib/notify.js';
 
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
@@ -32,6 +33,9 @@ export default async function adminRoutes(app: FastifyInstance) {
       (select count(*)::int from appeals where status = 'pending') as open_appeals`;
     return c;
   });
+
+  /** Onglet « Serveur » : santé du processus, trafic, volumes et activité récente (compteurs uniquement). */
+  app.get('/v1/admin/stats', pre, async () => serverStats());
 
   /* ---------- comptes ---------- */
   app.get('/v1/admin/users', pre, async req => {
