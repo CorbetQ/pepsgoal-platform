@@ -1,6 +1,6 @@
 // Assemble le site vitrine pepsgoal.fr : chaque page de pages/ reçoit l'en-tête et le pied de page communs (partials/),
 // puis est écrite dans deploy/site/, servi tel quel par Caddy. Usage : node deploy/site-src/build.mjs
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, copyFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { dsBlocks } from './ds-gen.mjs';
 import { buildIcons } from './icons.mjs';
 import { emojiPicker } from './emoji-gen.mjs';
+import { changelogBlocks } from './changelog-gen.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const out = path.join(here, '..', 'site');
@@ -20,12 +21,15 @@ const icons = buildIcons(app, path.join(here, 'icons-extra.svg'), path.join(out,
 // Blocs générés : tokens du design system (page design-system.html), échantillon du sélecteur d'emojis
 const gen = {
   ...dsBlocks(path.join(here, 'tokens.json'), icons.app),
-  ...emojiPicker(app, path.join(here, '..', '..', 'apps', 'web', 'emoji'), path.join(out, 'emoji'))
+  ...emojiPicker(app, path.join(here, '..', '..', 'apps', 'web', 'emoji'), path.join(out, 'emoji')),
+  ...changelogBlocks(path.join(here, '..', '..', 'CHANGELOG.md'))
 };
+// Emojis Fluent cités par les pages (emoji/<code>.webp) : copiés depuis l'application s'ils manquent
+const emojiSrc = path.join(here, '..', '..', 'apps', 'web', 'emoji');
+const copyEmojis = html => { for (const [, f] of html.matchAll(/emoji\/([0-9a-f-]+\.webp)/g)) { const to = path.join(out, 'emoji', f); if (existsSync(to)) continue; const from = path.join(emojiSrc, f); if (!existsSync(from)) throw new Error(`Emoji introuvable : ${f}`); copyFileSync(from, to); } };
 // Numéro de version de l'application ({{VERSION}} dans les pages)
 const APP_VERSION = (app.match(/const APP_VERSION = '([^']+)'/) || [])[1];
 if (!APP_VERSION) throw new Error('APP_VERSION introuvable dans pepsgoal.html');
-const fill = src => src.replace(/\{\{VERSION\}\}/g, APP_VERSION).replace(/<!--GEN:(\w+)-->|\/\*GEN:(\w+)\*\//g, (m, a, b) => { const k = a || b; if (!(k in gen)) throw new Error(`Bloc inconnu : ${k}`); return gen[k]; });
 // Documents légaux : mêmes textes que dans l'application (constante LEGAL de apps/web-legacy/pepsgoal.html)
 const LEGAL = (() => {
   const a = app.indexOf('const LEGAL_MAIL = '), b = app.indexOf('\n};\n', app.indexOf('const LEGAL = {', a));
@@ -34,6 +38,7 @@ const LEGAL = (() => {
   vm.runInNewContext(app.slice(a, b + 3) + '\nthis.LEGAL = LEGAL; this.LEGAL_UPDATED = LEGAL_UPDATED;', ctx);
   return { docs: ctx.LEGAL, updated: ctx.LEGAL_UPDATED };
 })();
+const fill = src => src.replace(/\{\{VERSION\}\}/g, APP_VERSION).replace(/\{\{LEGAL_UPDATED\}\}/g, LEGAL.updated).replace(/<!--GEN:(\w+)-->|\/\*GEN:(\w+)\*\//g, (m, a, b) => { const k = a || b; if (!(k in gen)) throw new Error(`Bloc inconnu : ${k}`); return gen[k]; });
 const LEGAL_PAGES = [['cgu', 'cgu', 'Conditions d’utilisation'], ['mentions', 'mentions-legales', 'Mentions légales'], ['privacy', 'confidentialite', 'Confidentialité'], ['license', 'licence', 'Licence MIT']];
 function legalSource(key) {
   const d = LEGAL.docs[key], strip = h => h.replace(/<[^>]+>/g, '');
@@ -117,7 +122,7 @@ for (const [file, src] of sources) {
 <link rel="preload" href="fonts/unbounded-latin-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/manrope-latin-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
-<script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('pepsgoal.site.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('pepsgoal.site.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;var b=localStorage.getItem('pepsgoal.site.bg');if(b)document.documentElement.dataset.bg=b}catch(e){}</script>
 </head>
 <body>
 ${header}
@@ -128,6 +133,7 @@ ${fill(foot)}</body>
 </html>
 `;
   const page = withVersions(typography(html));
+  copyEmojis(page);
   // La page 404 peut s'afficher à n'importe quelle adresse : ses liens partent de la racine du site
   writeFileSync(path.join(out, file), file === '404.html' ? page.replace(/(href|src)="(?!https?:|mailto:|#|\/)/g, '$1="/') : page);
   console.log(`${file} (${(html.length / 1024).toFixed(1)} Ko)`);

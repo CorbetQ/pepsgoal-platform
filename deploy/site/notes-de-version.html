@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Notes de version · PepsGoal</title>
+<meta name="description" content="Toutes les nouveautés de PepsGoal, version par version : messagerie, social, objectifs, apparence, accessibilité et technique.">
+<meta name="theme-color" content="#07081A" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ECEEFF" media="(prefers-color-scheme: light)">
+<meta property="og:title" content="Notes de version · PepsGoal">
+<meta property="og:description" content="Toutes les nouveautés de PepsGoal, version par version : messagerie, social, objectifs, apparence, accessibilité et technique.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/unbounded-latin-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/manrope-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css?v=0ccef00cf5">
+<script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('pepsgoal.site.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;var b=localStorage.getItem('pepsgoal.site.bg');if(b)document.documentElement.dataset.bg=b}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<div class="progress" aria-hidden="true"></div>
+<div class="backdrop" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="bgl bg-aurora"></div><div class="bgl bg-waves"></div><div class="bgl bg-stars"></div><div class="bgl bg-mesh"></div><div class="bgl bg-grid"></div><div class="grain"></div></div>
+<div class="glow" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--pink)"/><stop offset=".5" style="stop-color:var(--flame)"/><stop offset="1" style="stop-color:var(--flame-2)"/></linearGradient>
+  <linearGradient id="gCore" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--flame-2)"/><stop offset="1" stop-color="#FFF6CC"/></linearGradient>
+  <symbol id="flame" viewBox="0 0 24 24"><path fill="url(#gFlame)" d="M12 22.5c-4.4 0-7.6-3.1-7.6-7.3 0-3.6 2.4-5.8 4-7.8.4 1.9 1.3 3.2 2.6 3.7-.4-3.2.7-6.4 3.6-8.6-.3 3.5 1.6 5.5 3.2 7.7 1.2 1.6 1.8 3.3 1.8 5.2 0 4.2-3.2 7.1-7.6 7.1z"/><path fill="url(#gCore)" d="M12 21.6c-2 0-3.4-1.4-3.4-3.3 0-1.6 1-2.7 2-3.7.2 1 .7 1.6 1.3 1.8.1-1.7.8-3 2.1-3.9 0 1.7.6 2.7 1.1 3.6.3.6.5 1.2.5 2.1 0 1.9-1.6 3.4-3.6 3.4z"/></symbol>
+</defs></svg>
+<header class="site-h glass">
+  <a class="logo" href="index.html" aria-label="PepsGoal, accueil"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></a>
+  <nav class="nav" aria-label="Navigation principale">
+    <a href="index.html" data-nav="index">Accueil</a>
+    <a href="fonctionnalites.html" data-nav="fonctionnalites">Fonctionnalités</a>
+    <a href="design-system.html" data-nav="design-system">Design system</a>
+    <a href="technique.html" data-nav="technique">Technique</a>
+    <a href="informations-legales.html" data-nav="informations-legales">Légal</a>
+  </nav>
+  <div class="h-acts">
+    <button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="Changer de thème"><svg class="i moon"><use href="assets/icons.svg?v=344b344443#moon"/></svg><svg class="i sun"><use href="assets/icons.svg?v=344b344443#sun"/></svg></button>
+    <a class="btn btn-primary sm btn-app" href="https://app.pepsgoal.fr"><svg class="i"><use href="assets/icons.svg?v=344b344443#bolt"/></svg><span>Ouvrir l’app</span></a>
+    <button class="icon-btn menu-btn" type="button" data-menu aria-label="Ouvrir le menu"><svg class="i"><use href="assets/icons.svg?v=344b344443#menu"/></svg></button>
+  </div>
+</header>
+<div class="drawer" aria-hidden="true" inert>
+  <div class="drawer-in" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer-top"><span class="logo"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></span><button class="icon-btn" type="button" data-close aria-label="Fermer le menu"><svg class="i"><use href="assets/icons.svg?v=344b344443#x"/></svg></button></div>
+    <nav aria-label="Navigation mobile">
+      <a href="index.html" data-nav="index"><svg class="i"><use href="assets/icons.svg?v=344b344443#sun"/></svg>Accueil</a>
+      <a href="fonctionnalites.html" data-nav="fonctionnalites"><svg class="i"><use href="assets/icons.svg?v=344b344443#sparkle"/></svg>Fonctionnalités</a>
+      <a href="design-system.html" data-nav="design-system"><svg class="i"><use href="assets/icons.svg?v=344b344443#palette"/></svg>Design system</a>
+      <a href="technique.html" data-nav="technique"><svg class="i"><use href="assets/icons.svg?v=344b344443#code"/></svg>Technique</a>
+      <a href="informations-legales.html" data-nav="informations-legales"><svg class="i"><use href="assets/icons.svg?v=344b344443#scale"/></svg>Informations légales</a>
+    </nav>
+    <a class="btn btn-primary block lg" href="https://app.pepsgoal.fr" style="width:100%"><svg class="i"><use href="assets/icons.svg?v=344b344443#bolt"/></svg>Ouvrir l’app</a>
+  </div>
+</div>
+
+<main id="main">
+<style>
+  .notes{display:grid;grid-template-columns:200px minmax(0,1fr);gap:40px;align-items:start;padding-bottom:40px}
+  .notes-toc{position:sticky;top:100px;display:flex;flex-direction:column;gap:2px;padding:12px}
+  .notes-toc a{padding:8px 12px;border-radius:12px;font-weight:800;font-size:14px;color:var(--ink-2);text-decoration:none;font-variant-numeric:tabular-nums;transition:background .2s,color .2s}
+  .notes-toc a:hover{color:var(--ink)}
+  .notes-toc a.on{background:var(--ink);color:var(--bg)}
+  .notes-list{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .notes-v{scroll-margin-top:100px;padding:26px 28px}
+  .notes-v h3{font-size:clamp(24px,3vw,32px);display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .notes-v h4{font-family:var(--font-body);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:18px 0 8px}
+  .notes-v ul{list-style:disc;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--ink-2)}
+  .notes-v ul+ul{margin-top:6px}
+  @media (max-width:860px){.notes{grid-template-columns:minmax(0,1fr)}.notes-toc{position:sticky;top:86px;z-index:20;flex-direction:row;overflow-x:auto;border-radius:var(--r-pill);padding:6px;scrollbar-width:none}.notes-toc::-webkit-scrollbar{display:none}.notes-toc a{flex:none}}
+</style>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow rv">Notes de version</span>
+    <h1 data-split>Ce qui a changé, <span class="grad-text">version par version.</span></h1>
+    <p class="lead rv" style="--d:2">Version actuelle : <b>2.0.0</b>, du 16 octobre 2026. Les mêmes notes sont consultables dans l’application, dans Paramètres › Aide › Notes de version.</p>
+    <div class="crumbs rv" style="--d:3"><a href="https://app.pepsgoal.fr">Ouvrir l’app</a><a href="fonctionnalites.html#nouveautes">Les nouveautés en images</a><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/CHANGELOG.md">CHANGELOG sur GitHub</a></div>
+  </div>
+</section>
+
+<div class="wrap notes">
+  <nav class="notes-toc glass doc-toc" aria-label="Versions"><a href="#v2-0-0">2.0.0</a><a href="#v1-4-0">1.4.0</a><a href="#v1-3-0">1.3.0</a><a href="#v1-2-0">1.2.0</a><a href="#v1-1-0">1.1.0</a><a href="#v1-0-0">1.0.0</a></nav>
+  <div class="notes-list">
+    <article class="card notes-v rv" id="v2-0-0"><h3>2.0.0 <span class="chip" style="--c:var(--flame);--c-ink:var(--ink)">actuelle</span> <small class="muted" style="font-family:var(--font-body);font-size:13px">16 octobre 2026</small></h3><h4>Messagerie</h4><ul><li>Répondre à un message précis (citation cliquable qui ramène au message d’origine).</li><li>Réagir avec des emojis (7 réactions rapides et 18 autres) ; toucher une réaction existante l’ajoute ou la retire.</li><li>Mentions <code>@nom</code> dans les groupes, avec une liste des membres pendant la saisie ; les membres mentionnés reçoivent une notification.</li><li>Réponses et réactions sont chiffrées de bout en bout comme les messages ; les réactions ne déclenchent pas de notification push.</li><li>Le texte explicatif sur le chiffrement n’est plus affiché en permanence : il s’ouvre avec le bouton cadenas de la conversation.</li></ul><h4>Social</h4><ul><li>Suggestions d’amis : amis de tes amis (classés par amis en commun), membres de tes groupes, puis nouveaux inscrits. Chaque suggestion peut être masquée.</li><li>Nouveau réglage « Apparaître dans les suggestions d’amis » (Paramètres › Social et confidentialité).</li></ul><h4>Objectifs</h4><ul><li>Objectifs favoris : étoile dans la fiche, favoris en tête des listes et filtre « Favoris ».</li><li>Projets : étapes réordonnables par glisser-déposer ou avec les flèches (accessibles au clavier).</li><li>Correction : la fiche d’un objectif ne remonte plus en haut à chaque actualisation automatique (la position de lecture et le focus sont conservés).</li></ul><h4>Apparence</h4><ul><li>Nouveaux arrière-plans : Aurore, Vagues, Constellation, Dégradé, Grille et Uni, en plus de Blob.</li><li>Image d’arrière-plan personnalisée (gardée sur l’appareil) et extraction de ses couleurs principales, utilisables comme couleur d’accent.</li><li>Anneau animé autour de l’icône de profil, qui évolue avec le niveau (de l’Étincelle à la Supernova).</li><li>Micro-animations dans toute l’interface : boutons, onglets, interrupteurs, cartes, réactions, menus. Elles respectent « Désactiver les animations » et le réglage du système.</li><li>Quelques surprises cachées dans les couleurs d’accent, et une autre le 1er avril.</li></ul><h4>Accessibilité</h4><ul><li>Mode daltonien par type : deutéranopie, protanopie, tritanopie.</li><li>Mode monochrome (niveaux de gris).</li><li>Contraste élevé sans aucun dégradé (surfaces pleines, texte et bordures nets).</li></ul><h4>Modération</h4><ul><li>Nouvel onglet « Serveur » : version, durée de fonctionnement, mémoire, charge, trafic (requêtes, erreurs, temps de réponse, requêtes par minute), volumes de la communauté et des contenus, stockage, activité des 14 derniers jours ; actualisation toutes les 30 secondes.</li></ul><h4>Aide</h4><ul><li>Notes de version consultables dans l’application.</li></ul><h4>Technique</h4><ul><li>API : <code>GET /v1/friends/suggestions</code>, <code>GET /v1/admin/stats</code>, champs <code>silent</code> et <code>mentions</code> à l’envoi d’un message, notification <code>mention</code>.</li><li>Aucune migration de base de données.</li></ul></article>
+    <article class="card notes-v rv" id="v1-4-0"><h3>1.4.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">16 octobre 2026</small></h3><ul><li>Notifications push sur la version web (rappels du matin et du soir, messages, encouragements), même application fermée.</li><li>Mode hors ligne à la demande.</li><li>Encouragements sur les stories et archive personnelle des stories dans le profil.</li><li>Badges à paliers (Bronze à Diamant) avec animation de déblocage.</li><li>Corrections visuelles.</li></ul></article>
+    <article class="card notes-v rv" id="v1-3-0"><h3>1.3.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">14 octobre 2026</small></h3><ul><li>Sondages dans le feed et dans la messagerie ; sélecteur d’emojis par catégorie.</li><li>Liens d’aide (site, code source, signalement) ; licence MIT.</li><li>Synchronisation des clés de chiffrement fiabilisée.</li></ul></article>
+    <article class="card notes-v rv" id="v1-2-0"><h3>1.2.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">12 octobre 2026</small></h3><ul><li>Messagerie chiffrée de bout en bout (photos, messages vocaux, objectifs partagés, groupes).</li><li>Photos dans les publications, blocage, e-mails de modération, emojis Fluent.</li></ul></article>
+    <article class="card notes-v rv" id="v1-1-0"><h3>1.1.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">11 octobre 2026</small></h3><ul><li>Mode hors ligne automatique et options d’accessibilité.</li></ul></article>
+    <article class="card notes-v rv" id="v1-0-0"><h3>1.0.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">10 octobre 2026</small></h3><ul><li>Première version.</li></ul></article>
+  </div>
+</div>
+</main>
+<footer class="site-f">
+  <div class="wrap">
+    <div class="foot glass">
+      <div class="foot-brand">
+        <a class="logo" href="index.html"><svg class="fl" aria-hidden="true"><use href="#flame"/></svg><span>Peps<span class="grad">Goal</span></span></a>
+        <p>Fixe le cap. Garde la flamme. Une app gratuite, sans publicité, conçue à Angers.</p>
+        <a class="btn btn-primary sm" href="https://app.pepsgoal.fr"><svg class="i"><use href="assets/icons.svg?v=344b344443#bolt"/></svg>Ouvrir l’app</a>
+      </div>
+      <div><h4>Découvrir</h4><ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="fonctionnalites.html">Fonctionnalités</a></li>
+        <li><a href="design-system.html">Design system</a></li>
+        <li><a href="technique.html">Détails techniques</a></li>
+        <li><a href="notes-de-version.html">Notes de version</a></li>
+      </ul></div>
+      <div><h4>Légal</h4><ul>
+        <li><a href="informations-legales.html">Informations légales</a></li>
+        <li><a href="mentions-legales.html">Mentions légales</a></li>
+        <li><a href="cgu.html">Conditions d’utilisation</a></li>
+        <li><a href="confidentialite.html">Confidentialité</a></li>
+        <li><a href="licence.html">Licence MIT</a></li>
+      </ul></div>
+      <div><h4>Contact</h4><ul>
+        <li><a class="foot-mail" href="mailto:quentin-corbet@outlook.fr"><svg class="i"><use href="assets/icons.svg?v=344b344443#mail"/></svg>quentin-corbet@outlook.fr</a></li>
+        <li><a href="https://github.com/CorbetQ/pepsgoal-platform" rel="noopener"><svg class="i"><use href="assets/icons.svg?v=344b344443#github"/></svg>Code source sur GitHub</a></li>
+        <li><a href="informations-legales.html#signaler"><svg class="i"><use href="assets/icons.svg?v=344b344443#flag"/></svg>Signaler un contenu</a></li>
+      </ul></div>
+    </div>
+    <div class="foot-legal glass">
+      <dl>
+        <div><dt>Éditeur</dt><dd>Quentin CORBET, particulier, Angers (Maine-et-Loire, France). Directeur de la publication : Quentin CORBET.</dd></div>
+        <div><dt>Hébergeur</dt><dd>Hostinger International Ltd, 61 Lordou Vironos Street, 6023 Larnaca, Chypre · <a href="https://www.hostinger.fr" rel="noopener">www.hostinger.fr</a></dd></div>
+        <div><dt>Contact</dt><dd><a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a></dd></div>
+      </dl>
+    </div>
+    <div class="foot-b"><span>© <span data-year>2026</span> PepsGoal · Quentin CORBET</span><span>Version 2.0.0 · aucun cookie, aucun traceur</span></div>
+  </div>
+</footer>
+<div id="live" class="sr" aria-live="polite"></div>
+<script src="assets/site.js?v=7f2fd7b24e" defer></script>
+</body>
+</html>

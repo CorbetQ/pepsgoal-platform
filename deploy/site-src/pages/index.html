@@ -1,4 +1,4 @@
-<!--meta title="PepsGoal · Fixe le cap. Garde la flamme." description="PepsGoal : fixe tes objectifs, valide chaque jour et garde ta flamme allumée. 14 formats d’objectifs, séries, gels, amis, sondages et messagerie chiffrée. Gratuit, sans publicité, hors ligne." nav="index"-->
+<!--meta title="PepsGoal · Fixe le cap. Garde la flamme." description="PepsGoal : fixe tes objectifs, valide chaque jour et garde ta flamme allumée. 14 formats d’objectifs, séries, gels, amis, sondages, notifications et messagerie chiffrée. Gratuit, sans publicité, hors ligne." nav="index"-->
 <style>
   /* Accueil : un héros typographique autour d'une démo vivante, puis trois raisons et un appel final */
   .home-hero{position:relative;padding:56px 0 24px;overflow:hidden}
@@ -94,13 +94,16 @@
   .explore small{color:var(--ink-2);font-size:13px}
   .explore .go{margin-left:auto;width:18px;height:18px;color:var(--ink-3)}
   @media (max-width:860px){.final{grid-template-columns:minmax(0,1fr)}}
+  .fav-star{width:15px;height:15px;vertical-align:-2px;fill:var(--t-chal);stroke:var(--t-chal-ink)}
+  .lvl-ring{position:relative;z-index:1}
+  .lvl-ring::after{content:"";position:absolute;inset:-5px;border-radius:50%;padding:3px;background:conic-gradient(from var(--a,0deg),var(--flame-2),var(--flame),var(--pink),var(--flame-2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin-a 4s linear infinite;z-index:-1}
 </style>
 
 <section class="home-hero">
   <div class="wrap">
     <span class="ghost" aria-hidden="true" data-count="27">27</span>
     <div class="hh-txt">
-      <a class="new-pill rv" href="fonctionnalites.html#nouveautes"><b>Nouveau</b>Version {{VERSION}} : sondages et sélecteur d’emojis<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
+      <a class="new-pill rv" href="fonctionnalites.html#nouveautes"><b>Nouveau</b>Version {{VERSION}} : réponses, réactions et suggestions d’amis<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       <span class="eyebrow rv">Suivi d’objectifs · web, iOS et Android</span>
       <h1 data-split>Fixe le cap. <span class="grad-text">Garde la flamme.</span></h1>
       <p class="lead rv" style="--d:2">Routines, objectifs chiffrés, deadlines, abstinences : valide chaque jour, entretiens ta série et avance avec tes amis.</p>
@@ -138,7 +141,7 @@
           <div class="hero-flame"><svg class="fl flame-anim"><use href="#flame"/></svg><div class="streak-num" data-streak>27</div><div class="streak-lbl">jours</div></div>
         </section>
         <ul class="items">
-          <li class="item t-routine"><span class="item-main"><span class="gi"><img src="emoji/1f3c3.webp" alt=""></span><span class="item-txt"><b>Courir 30 min</b><small><span class="chip t-routine"><svg class="i"><use href="assets/icons.svg#repeat"/></svg>Routine</span><span>lun, mer, ven</span></small></span></span><button class="check" data-demo data-pts="10" aria-pressed="false" aria-label="Valider : Courir 30 min"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
+          <li class="item t-routine"><span class="item-main"><span class="gi"><img src="emoji/1f3c3.webp" alt=""></span><span class="item-txt"><b>Courir 30 min <svg class="i fav-star" aria-label="Favori"><use href="assets/icons.svg#star"/></svg></b><small><span class="chip t-routine"><svg class="i"><use href="assets/icons.svg#repeat"/></svg>Routine</span><span>lun, mer, ven</span></small></span></span><button class="check" data-demo data-pts="10" aria-pressed="false" aria-label="Valider : Courir 30 min"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
           <li class="item t-abstinence done"><span class="item-main"><span class="gi"><img src="emoji/1f6ad.webp" alt=""></span><span class="item-txt"><b>Sans cigarette</b><small><span class="chip t-abstinence"><svg class="i"><use href="assets/icons.svg#ban"/></svg>Abstinence</span><span>41 jours</span></small></span></span><button class="check on" data-demo data-pts="8" aria-pressed="true" aria-label="Valider : Sans cigarette"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
           <li class="item t-objective"><span class="item-main"><span class="gi"><img src="emoji/1f4da.webp" alt=""></span><span class="item-txt"><b>Lire 20 pages</b><small><span class="chip t-objective"><svg class="i"><use href="assets/icons.svg#target"/></svg>Objectif</span><span>8/12 livres</span></small></span></span><button class="check" data-demo data-pts="15" aria-pressed="false" aria-label="Valider : Lire 20 pages"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
           <li class="item t-deadline"><span class="item-main"><span class="gi"><img src="emoji/1f9fe.webp" alt=""></span><span class="item-txt"><b>Déclaration d’impôts</b><small><span class="chip t-deadline"><svg class="i"><use href="assets/icons.svg#cal"/></svg>Deadline</span><span class="countdown urgent">encore 9 h</span></small></span></span><button class="check" data-demo data-pts="40" aria-pressed="false" aria-label="Valider : Déclaration d’impôts"><svg class="i"><use href="assets/icons.svg#check"/></svg></button></li>
@@ -186,19 +189,19 @@
           <div><svg class="fl" style="--k:5"><use href="#flame"/></svg>D</div>
           <div><svg class="fl" style="--k:6"><use href="#flame"/></svg>L</div>
         </div>
-        <p>Un jour manqué ? Un gel protège ta série automatiquement. Chaque validation rapporte des flammes, d’Étincelle à Supernova.</p>
+        <p>Un jour manqué ? Un gel protège ta série automatiquement. Chaque validation rapporte des flammes, d’Étincelle à Supernova, et fait progresser tes badges, de Bronze à Diamant.</p>
         <div class="lvl-track"><div class="row"><span>Brasier</span><span>1 196 / 1 500</span></div><div class="bar"><i style="--w:80%"></i></div></div>
         <a class="more" href="fonctionnalites.html#motivation">Flammes, gels et badges<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       </article>
 
       <article class="card t-duel rv" style="--d:1">
         <span class="tag t-group"><svg class="i"><use href="assets/icons.svg#users"/></svg>Ensemble</span>
-        <h3>Encourage, sonde, défie : avance à plusieurs.</h3>
+        <h3>Encourage, sonde, réagis : avance à plusieurs.</h3>
         <div class="avs">
           <span class="av" style="--g:linear-gradient(135deg,#6FF7FF,#22D3FF 55%,#4D9BFF)">LM</span>
           <span class="av" style="--g:linear-gradient(135deg,#F4FF5C,#B6FF2E 55%,#3DFF8A)"><img src="emoji/1f9d8.webp" alt=""></span>
           <span class="av" style="--g:linear-gradient(135deg,#DCCBFF,#A98BFF 55%,#FF7AD9)">SB</span>
-          <span class="av">Toi</span>
+          <span class="av lvl-ring">Toi</span>
           <button class="cheer" data-demo aria-pressed="false"><svg class="fl"><use href="#flame"/></svg><span data-n>12</span> Encourager</button>
         </div>
         <div class="poll" data-poll="single" data-voters="11"><p class="poll-q"><svg class="i"><use href="assets/icons.svg#poll"/></svg>On court samedi ou dimanche ?</p><button type="button" class="poll-opt" data-n="5" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Samedi matin</span><span class="po-n">0 %</span></button><button type="button" class="poll-opt" data-n="4" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Dimanche matin</span><span class="po-n">0 %</span></button><button type="button" class="poll-opt" data-n="2" aria-pressed="false"><span class="po-t"><svg class="i"><use href="assets/icons.svg#check"/></svg>Les deux !</span><span class="po-n">0 %</span></button><p class="poll-meta">11 votants · une réponse · vote pour voir les résultats</p></div>

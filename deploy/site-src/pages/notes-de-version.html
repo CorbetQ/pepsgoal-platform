@@ -1,0 +1,31 @@
+<!--meta title="Notes de version · PepsGoal" description="Toutes les nouveautés de PepsGoal, version par version : messagerie, social, objectifs, apparence, accessibilité et technique." nav="none"-->
+<style>
+  .notes{display:grid;grid-template-columns:200px minmax(0,1fr);gap:40px;align-items:start;padding-bottom:40px}
+  .notes-toc{position:sticky;top:100px;display:flex;flex-direction:column;gap:2px;padding:12px}
+  .notes-toc a{padding:8px 12px;border-radius:12px;font-weight:800;font-size:14px;color:var(--ink-2);text-decoration:none;font-variant-numeric:tabular-nums;transition:background .2s,color .2s}
+  .notes-toc a:hover{color:var(--ink)}
+  .notes-toc a.on{background:var(--ink);color:var(--bg)}
+  .notes-list{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .notes-v{scroll-margin-top:100px;padding:26px 28px}
+  .notes-v h3{font-size:clamp(24px,3vw,32px);display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .notes-v h4{font-family:var(--font-body);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:18px 0 8px}
+  .notes-v ul{list-style:disc;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--ink-2)}
+  .notes-v ul+ul{margin-top:6px}
+  @media (max-width:860px){.notes{grid-template-columns:minmax(0,1fr)}.notes-toc{position:sticky;top:86px;z-index:20;flex-direction:row;overflow-x:auto;border-radius:var(--r-pill);padding:6px;scrollbar-width:none}.notes-toc::-webkit-scrollbar{display:none}.notes-toc a{flex:none}}
+</style>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow rv">Notes de version</span>
+    <h1 data-split>Ce qui a changé, <span class="grad-text">version par version.</span></h1>
+    <p class="lead rv" style="--d:2">Version actuelle : <b><!--GEN:latestversion--></b>, du <!--GEN:latestdate-->. Les mêmes notes sont consultables dans l’application, dans Paramètres › Aide › Notes de version.</p>
+    <div class="crumbs rv" style="--d:3"><a href="https://app.pepsgoal.fr">Ouvrir l’app</a><a href="fonctionnalites.html#nouveautes">Les nouveautés en images</a><a href="https://github.com/CorbetQ/pepsgoal-platform/blob/main/CHANGELOG.md">CHANGELOG sur GitHub</a></div>
+  </div>
+</section>
+
+<div class="wrap notes">
+  <nav class="notes-toc glass doc-toc" aria-label="Versions"><!--GEN:changelogtoc--></nav>
+  <div class="notes-list">
+    <!--GEN:changelogfull-->
+  </div>
+</div>

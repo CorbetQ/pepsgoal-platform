@@ -120,7 +120,8 @@
         <div class="block t-routine"><span class="bi"><svg class="i"><use href="assets/icons.svg#layers"/></svg></span><span><b>Interface PepsGoal</b><small>HTML, CSS et JavaScript sans framework, identique sur web, iOS et Android</small></span></div>
         <div class="block t-objective"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><span><b>Données locales</b><small>Stockage de la page, copie complète pour le mode hors ligne</small></span></div>
         <div class="block t-project"><span class="bi"><svg class="i"><use href="assets/icons.svg#cloud"/></svg></span><span><b>Couche connectée · cloud.js</b><small>Comptes, synchro, social, messages chiffrés, modération</small></span></div>
-        <div class="block t-limit"><span class="bi"><svg class="i"><use href="assets/icons.svg#heartbeat"/></svg></span><span><b>Surveillance réseau</b><small>navigator.onLine + /v1/status : 5 s, 10 s, 20 s, 40 s puis chaque minute</small></span></div>
+        <div class="block t-limit"><span class="bi"><svg class="i"><use href="assets/icons.svg#heartbeat"/></svg></span><span><b>Surveillance réseau</b><small>navigator.onLine + /v1/status : 5 s, 10 s, 20 s, 40 s puis chaque minute ; mode hors ligne à la demande</small></span></div>
+        <div class="block t-deadline"><span class="bi"><svg class="i"><use href="assets/icons.svg#bell"/></svg></span><span><b>Service worker</b><small>Reçoit les notifications push, même application fermée (version web)</small></span></div>
       </div>
       <div class="wire" aria-hidden="true">
         <div class="lane"><span>push · HTTPS + JWT</span><i></i><i></i></div>
@@ -132,6 +133,7 @@
         <div class="block t-measure"><span class="bi"><svg class="i"><use href="assets/icons.svg#bolt"/></svg></span><span><b>API Fastify 4 + zod</b><small>Près de 90 routes, chaque entrée validée par un schéma partagé</small></span></div>
         <div class="block t-abstinence"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><span><b>PostgreSQL 16</b><small>Schéma et migrations Drizzle, révisions de synchro, cascades RGPD</small></span></div>
         <div class="block t-monthly"><span class="bi"><svg class="i"><use href="assets/icons.svg#image"/></svg></span><span><b>Médias</b><small>Photos et pièces jointes chiffrées, sur disque ou S3</small></span></div>
+        <div class="block t-deadline"><span class="bi"><svg class="i"><use href="assets/icons.svg#bell"/></svg></span><span><b>Notifications push</b><small>Web Push (VAPID) : rappels vérifiés toutes les 5 minutes, messages sans leur contenu, notifications</small></span></div>
       </div>
     </div>
     <div class="tbl-wrap rv" style="margin-top:28px"><table>
@@ -139,6 +141,7 @@
       <tbody>
         <tr><td><b>Compte + en ligne</b></td><td>✓</td><td>✓</td><td>Automatique : démarrage, retour au premier plan, chaque minute</td></tr>
         <tr><td><b>Compte + hors ligne</b></td><td>✓ base locale</td><td>Masqués temporairement</td><td>File d’attente, envoyée au retour de la connexion</td></tr>
+        <tr><td><b>Hors ligne à la demande</b></td><td>✓ base locale</td><td>Masqués</td><td>Aucun appel au serveur jusqu’à la désactivation</td></tr>
         <tr><td><b>Sans compte</b></td><td>✓ base locale</td><td>Indisponibles</td><td>Tout est conservé si un compte est créé plus tard</td></tr>
         <tr><td><b>Maintenance sociale</b></td><td>✓</td><td>Lecture seule</td><td>✓</td></tr>
         <tr><td><b>Maintenance complète</b></td><td>✓ base locale</td><td>Masqués</td><td>Suspendue (503), sans casser la série</td></tr>
@@ -160,6 +163,8 @@
       <article class="card tech tilt rv t-duration"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#box"/></svg></span><div><span class="role">Hébergement</span><br><b>Docker + Caddy</b></div></div><p>Un VPS Hostinger dans l’Union européenne, Docker Compose, HTTPS automatique, sauvegardes quotidiennes.</p></article>
       <article class="card tech tilt rv t-month" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#archive"/></svg></span><div><span class="role">Données</span><br><b>JSZip</b></div></div><p>Export et import de ton compte en .zip, clés de conversation comprises, directement sur l’appareil.</p></article>
       <article class="card tech tilt rv t-timed" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#test"/></svg></span><div><span class="role">Qualité</span><br><b>Vitest + TypeScript</b></div></div><p>Tests du protocole et du chiffrement, scénario de bout en bout d’une quarantaine de vérifications contre un serveur vierge.</p></article>
+      <article class="card tech tilt rv t-deadline"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#bell"/></svg></span><div><span class="role">Notifications</span><br><b>Web Push</b></div></div><p>Bibliothèque web-push et clés VAPID côté serveur, service worker <code>sw.js</code> côté navigateur. Rappels du matin et du soir à l’heure choisie, dans le fuseau du navigateur.</p></article>
+      <article class="card tech tilt rv t-measure" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#gauge"/></svg></span><div><span class="role">Exploitation</span><br><b>Onglet Serveur</b></div></div><p>Pour la modération : version, durée de fonctionnement, mémoire, charge, trafic, volumes et activité des 14 derniers jours, actualisés toutes les 30 secondes.</p></article>
     </div>
   </div>
 </section>
@@ -215,6 +220,8 @@
           <li><b>Coffre de clés v2</b> : une copie de tes clés, chiffrée avec une clé aléatoire de 32 octets, elle-même protégée par une clé dérivée de ton mot de passe (PBKDF2-SHA-256, 310 000 itérations). Un nouvel appareil retrouve tout l’historique ; changer de mot de passe ne rechiffre que la clé du coffre.</li>
           <li><b>Appareils</b> : jusqu’à 25 par compte, retirés après 90 jours d’inactivité ; un appareil oublié par le serveur est réenregistré automatiquement.</li>
           <li><b>Sondages chiffrés</b> : la question, les choix et chaque vote voyagent comme des messages chiffrés ; le serveur ne voit rien.</li>
+          <li><b>Réponses et réactions</b> (2.0.0) : la citation et l’emoji sont chiffrés avec le message ; une réaction part sans notification push.</li>
+          <li><b>Mentions @</b> dans les groupes : le texte reste chiffré ; seule la liste des membres mentionnés est transmise au serveur, pour qu’il les prévienne.</li>
           <li><b>Groupes</b> : une clé par groupe, en versions ; un membre qui part ne reçoit pas la suivante.</li>
           <li><b>Photos et messages vocaux</b> : chiffrés avec une clé à usage unique qui voyage dans le message chiffré.</li>
           <li><b>Code de sécurité</b> de 30 chiffres, calculé sur les clés publiques de tous les appareils.</li>
@@ -236,7 +243,7 @@
       <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#clock"/></svg><div><b>Limitation de débit</b><p>300 requêtes par minute, avec des limites plus strictes pour la connexion, l’inscription, la publication et les signalements.</p></div></div>
       <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#trash"/></svg><div><b>Suppression en cascade</b><p>Supprimer son compte efface toutes ses données ; elles disparaissent des sauvegardes sous 14 jours.</p></div></div>
       <div class="sec-item rv"><svg class="i"><use href="assets/icons.svg#cookie"/></svg><div><b>Aucun traceur</b><p>Pas de publicité, pas de mesure d’audience. Polices et bibliothèques intégrées : aucun service tiers contacté.</p></div></div>
-      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#flag"/></svg><div><b>Modération outillée</b><p>Signalements, sanctions graduées, contestations, journal des décisions et alertes par e-mail.</p></div></div>
+      <div class="sec-item rv" style="--d:1"><svg class="i"><use href="assets/icons.svg#flag"/></svg><div><b>Modération outillée</b><p>Signalements, sanctions graduées, contestations, journal des décisions, alertes par e-mail et onglet Serveur pour suivre la santé du service.</p></div></div>
     </div>
   </div>
 </section>
@@ -249,7 +256,7 @@
 ├── <span class="d">packages/shared/</span>  <span class="c">modèle, zod, synchro, séries, E2E</span>
 ├── <span class="d">apps/server/</span>      <span class="c">API Fastify + PostgreSQL</span>
 ├── <span class="d">apps/web-legacy/</span>  <span class="c">l’interface : tous les écrans</span>
-├── <span class="d">apps/web/</span>         <span class="c">cloud.js, polices, emojis, build</span>
+├── <span class="d">apps/web/</span>         <span class="c">cloud.js, service worker, emojis, build</span>
 ├── <span class="d">apps/app/</span>         <span class="c">coque iOS / Android (Expo)</span>
 ├── <span class="d">deploy/</span>           <span class="c">Caddy, Docker, ce site</span>
 ├── <span class="d">docs/</span>             <span class="c">architecture, API, E2E, stores</span>
@@ -257,9 +264,10 @@
       <div class="card rv right"><div class="models">
         <h4 style="margin-top:0">Personnel, synchronisé</h4><span>goals</span><span>checkins</span><span>goal_groups</span><span>users.settings</span>
         <h4>Partagé</h4><span>goal_members</span><span>goals.buddy_id</span>
-        <h4>Social</h4><span>friendships</span><span>blocks</span><span>posts</span><span>poll_votes</span><span>post_likes</span><span>comments</span><span>stories</span><span>story_views</span><span>cheer_credits</span><span>notifications</span>
+        <h4>Social</h4><span>friendships</span><span>blocks</span><span>posts</span><span>poll_votes</span><span>post_likes</span><span>comments</span><span>stories</span><span>story_views</span><span>story_likes</span><span>cheer_credits</span><span>notifications</span>
         <h4>Messagerie</h4><span>messages</span><span>chat_groups</span><span>attachments</span><span>e2e_devices</span><span>e2e_envelopes</span><span>e2e_vaults</span><span>e2e_vault_keys</span>
-        <h4>Modération</h4><span>reports</span><span>appeals</span><span>mod_actions</span><span>maintenance</span><span>announcements</span>
+        <h4>Modération</h4><span>reports</span><span>appeals</span><span>mod_actions</span><span>maintenance</span><span>announcements</span><span>app_settings</span>
+        <h4>Notifications</h4><span>push_subscriptions</span><span>reminder_pushes</span>
       </div></div>
     </div>
   </div>
@@ -302,11 +310,9 @@
   <div class="wrap">
     <div class="sec-h"><span class="eyebrow rv">Versions</span><h2 class="rv" style="--d:1">Le journal <span class="grad-text">des nouveautés.</span></h2></div>
     <div class="tl">
-      <div class="tl-i rv"><div class="card"><h3>1.3.0 <span class="chip" style="--c:var(--flame);--c-ink:var(--ink)">actuelle</span> <small class="muted" style="font-family:var(--font-body);font-size:13px">14 octobre 2026</small></h3><ul><li>Sondages dans le feed (résultats après le vote, durée, réponses multiples) et dans la messagerie, chiffrés de bout en bout.</li><li>Sélecteur d’emojis par catégorie : 12 catégories, plus de 700 emojis Fluent.</li><li>Coffre de clés v2, bandeau de déverrouillage, réenregistrement automatique des appareils, récupération des clés manquantes.</li><li>Conversations mises à jour message par message, liens d’aide vers le site et GitHub, licence MIT.</li><li>Retrait des anciens écrans React Native, conservés dans <code>archive/</code>.</li></ul></div></div>
-      <div class="tl-i rv"><div class="card"><h3>1.2.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">12 octobre 2026</small></h3><ul><li>Messagerie enrichie : photos, messages vocaux, objectifs partagés, groupes de discussion.</li><li>Clés de chiffrement synchronisées entre appareils (coffre).</li><li>Photos dans les publications, blocage entre utilisateurs, e-mails de modération, emojis Fluent.</li></ul></div></div>
-      <div class="tl-i rv"><div class="card"><h3>1.1.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">11 octobre 2026</small></h3><ul><li>Mode hors ligne automatique et surveillance du réseau.</li><li>Options d’accessibilité : contraste élevé, daltonisme, transparence, animations.</li><li>Messagerie chiffrée de bout en bout.</li></ul></div></div>
-      <div class="tl-i rv"><div class="card"><h3>1.0.0 <small class="muted" style="font-family:var(--font-body);font-size:13px">10 octobre 2026</small></h3><ul><li>Serveur de synchronisation, comptes, fonctions sociales et modération.</li><li>Application web, iOS et Android à partir d’une même interface.</li></ul></div></div>
+      <!--GEN:changelog-->
     </div>
+    <p class="rv" style="margin-top:18px"><a class="btn" href="notes-de-version.html"><svg class="i"><use href="assets/icons.svg#doc"/></svg>Toutes les notes de version<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a></p>
   </div>
 </section>
 

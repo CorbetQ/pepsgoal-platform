@@ -14,13 +14,13 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/unbounded-latin-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/manrope-latin-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/site.css?v=6cd464aaea">
-<script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('pepsgoal.site.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="stylesheet" href="assets/site.css?v=0ccef00cf5">
+<script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('pepsgoal.site.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;var b=localStorage.getItem('pepsgoal.site.bg');if(b)document.documentElement.dataset.bg=b}catch(e){}</script>
 </head>
 <body>
 <a class="skip" href="#main">Aller au contenu</a>
 <div class="progress" aria-hidden="true"></div>
-<div class="backdrop" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="grain"></div></div>
+<div class="backdrop" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="bgl bg-aurora"></div><div class="bgl bg-waves"></div><div class="bgl bg-stars"></div><div class="bgl bg-mesh"></div><div class="bgl bg-grid"></div><div class="grain"></div></div>
 <div class="glow" aria-hidden="true"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--pink)"/><stop offset=".5" style="stop-color:var(--flame)"/><stop offset="1" style="stop-color:var(--flame-2)"/></linearGradient>
@@ -152,24 +152,161 @@
   .ep-preview .gi img{width:28px;height:28px;transition:transform .35s var(--ease-bounce)}
   .ep-preview:hover{transform:none}
   @media (max-width:900px){.news{grid-template-columns:minmax(0,1fr)}.news>*{grid-column:auto!important}}
+  /* nouveautés 2.0.0 */
+  .v2{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px}
+  .v2 .card{display:flex;flex-direction:column;gap:14px;overflow:hidden}
+  .v2 h3{font-size:clamp(20px,2.4vw,26px);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .v2-chat,.v2-bg{grid-column:span 3}
+  .v2-fav,.v2-sug,.v2-a11y{grid-column:span 2}
+  .v2-fav h3,.v2-sug h3,.v2-a11y h3{font-size:20px}
+  .v2-convo{padding:12px;border-radius:var(--r-md);background:color-mix(in srgb,var(--ink) 4%,transparent)}
+  .msg-who{display:block;font-size:11.5px;font-weight:800;color:var(--ink-3)}
+  .msg[data-rx-target]{position:relative;margin-bottom:14px}
+  .rx-chips{position:absolute;left:10px;bottom:-14px;display:flex;gap:4px}
+  .rx-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:var(--r-pill);background:var(--glass-strong);border:1px solid var(--line);font-size:12px;font-weight:800;color:var(--ink);box-shadow:0 4px 10px -6px rgba(0,0,0,.4);animation:pop .4s var(--ease-bounce)}
+  .rx-chip img{width:15px;height:15px}
+  .rx-chip.mine{border-color:var(--flame);background:color-mix(in srgb,var(--flame) 14%,var(--glass-strong))}
+  .quote{display:block;margin:0 0 6px;padding:5px 9px;border-left:3px solid rgba(16,16,42,.55);border-radius:8px;background:rgba(255,255,255,.35);font-size:12.5px;line-height:1.35}
+  .quote b{display:block;font-size:11.5px}
+  .mention{font-weight:800;padding:0 4px;border-radius:6px;background:rgba(255,255,255,.4)}
+  .rx-bar{display:flex;flex-wrap:wrap;gap:6px;padding:6px;border-radius:var(--r-pill);background:var(--glass-strong);border:1px solid var(--line);align-self:flex-start}
+  .rx-btn{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:1.5px solid transparent;background:transparent;padding:0;transition:transform .2s var(--ease-bounce)}
+  .rx-btn img{width:26px;height:26px}
+  .rx-btn:hover{transform:translateY(-4px) scale(1.15)}
+  .rx-btn[aria-pressed="true"]{border-color:var(--flame);background:color-mix(in srgb,var(--flame) 14%,transparent)}
+  .bg-seg{flex-wrap:wrap}
+  .extract{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:700;color:var(--ink-2)}
+  .extract .ex-img{width:54px;height:40px;border-radius:10px;background:linear-gradient(180deg,#2E6F9E 0 45%,#F2B55C 45% 62%,#E8735A 62%)}
+  .extract svg{width:16px;height:16px}
+  .extract i{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.45)}
+  .steps-list{list-style:none;display:flex;flex-direction:column;gap:6px;counter-reset:st}
+  .steps-list li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);background:var(--glass-strong);border:1px solid var(--line);font-weight:700;cursor:grab;transition:transform .25s var(--ease-out),box-shadow .25s}
+  .steps-list li.drag{opacity:.5}
+  .steps-list li.moved{animation:pop .4s var(--ease-bounce)}
+  .steps-list .grip{color:var(--ink-3);letter-spacing:-2px;font-weight:800}
+  .steps-list .st-t{flex:1;min-width:0}
+  .st-mv{display:flex;gap:2px}
+  .st-mv button{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink-2);padding:0}
+  .st-mv button svg{width:15px;height:15px}
+  .st-mv button[data-mv="-1"] svg{transform:rotate(-90deg)}
+  .st-mv button[data-mv="1"] svg{transform:rotate(90deg)}
+  .fav-btn{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-pill);border:1.5px solid var(--line);background:transparent;font-weight:800;font-size:13px;color:var(--ink-2)}
+  .fav-btn svg{width:18px;height:18px;transition:transform .35s var(--ease-bounce)}
+  .fav-btn[aria-pressed="true"]{border-color:var(--t-chal);color:var(--ink);background:color-mix(in srgb,var(--t-chal) 18%,transparent)}
+  .fav-btn[aria-pressed="true"] svg{fill:var(--t-chal);stroke:var(--t-chal-ink);transform:rotate(72deg) scale(1.1)}
+  .sug-list{display:flex;flex-direction:column;gap:8px}
+  .sug-list li{display:flex;align-items:center;gap:10px;transition:opacity .3s,transform .3s}
+  .sug-list li.gone{opacity:0;transform:translateX(30px)}
+  .sug-list .who{flex:1;min-width:0}
+  .sug-list .who small{display:block;color:var(--ink-3);font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sug-list .btn.done{background:var(--ok);color:#fff;border-color:transparent}
+  .v14-h{font-size:20px;margin:34px 0 14px}
+  .v14{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .v14-c{display:flex;flex-direction:column;gap:10px;padding:20px}
+  .v14-c h4{font-family:var(--font-display);font-size:17px}
+  .v14-c p{font-size:14px}
+  .push-demo{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);background:var(--glass-strong);border:1px solid var(--line);box-shadow:var(--shadow);animation:pushin 4s var(--ease-bounce) infinite}
+  .push-demo .fl{width:28px;height:28px;flex:none}
+  .push-demo b{display:block;font-size:13px}
+  .push-demo small{display:block;font-size:12px;color:var(--ink-2)}
+  @keyframes pushin{0%{transform:translateY(-14px);opacity:0}12%,80%{transform:none;opacity:1}100%{transform:translateY(-14px);opacity:0}}
+  .tiers{display:flex;flex-wrap:wrap;gap:5px}
+  .tiers i{font-style:normal;padding:3px 9px;border-radius:var(--r-pill);font-size:11.5px;font-weight:800;color:#10102A;background:var(--t)}
+  .bdg.tier{position:relative;border-color:color-mix(in srgb,var(--t) 70%,transparent);background:color-mix(in srgb,var(--t) 12%,var(--glass-strong))}
+  .bdg.tier img{width:28px;height:28px}
+  .tier-pill{align-self:flex-start;margin-top:4px;padding:2px 8px;border-radius:var(--r-pill);font-size:11px;font-weight:800;color:#10102A;background:var(--t)}
+  @media (max-width:1000px){.v14{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:900px){.v2{grid-template-columns:minmax(0,1fr)}.v2>*{grid-column:auto!important}}
+  @media (max-width:520px){.v14{grid-template-columns:minmax(0,1fr)}}
 </style>
 
 <section class="page-hero">
   <div class="wrap">
     <span class="eyebrow rv">Fonctionnalités</span>
     <h1 data-split>Tout ce qu’il faut pour <span class="grad-text">tenir le cap.</span></h1>
-    <p class="lead rv" style="--d:2">Quatorze formats d’objectifs, une flamme qui récompense la régularité, des amis pour se motiver, des sondages et une messagerie chiffrée. Le tout utilisable hors ligne, avec ou sans compte.</p>
-    <div class="crumbs rv" style="--d:3"><a href="https://app.pepsgoal.fr">Essayer maintenant</a><a href="#nouveautes">Nouveautés 1.3.0</a><a href="#formats">Les formats</a><a href="#faq">Questions fréquentes</a></div>
+    <p class="lead rv" style="--d:2">Quatorze formats d’objectifs, une flamme qui récompense la régularité, des amis pour se motiver, des sondages et une messagerie chiffrée avec réponses et réactions. Le tout utilisable hors ligne, avec ou sans compte.</p>
+    <div class="crumbs rv" style="--d:3"><a href="https://app.pepsgoal.fr">Essayer maintenant</a><a href="#nouveautes">Nouveautés 2.0.0</a><a href="#formats">Les formats</a><a href="#faq">Questions fréquentes</a></div>
   </div>
 </section>
 
 <nav class="subnav glass" aria-label="Sections de la page">
-  <a href="#nouveautes">Nouveautés</a><a href="#formats">Formats</a><a href="#motivation">Motivation</a><a href="#social">Social</a><a href="#messagerie">Messagerie</a><a href="#perso">Personnalisation</a><a href="#a11y">Accessibilité</a><a href="#donnees">Données</a><a href="#faq">FAQ</a>
+  <a href="#nouveautes">Nouveautés</a><a href="#sondages">Sondages</a><a href="#formats">Formats</a><a href="#motivation">Motivation</a><a href="#social">Social</a><a href="#messagerie">Messagerie</a><a href="#perso">Personnalisation</a><a href="#a11y">Accessibilité</a><a href="#donnees">Données</a><a href="#faq">FAQ</a>
 </nav>
 
 <section class="section" id="nouveautes">
   <div class="wrap">
-    <div class="sec-h"><span class="eyebrow rv">Nouveau · version 1.3.0</span><h2 class="rv" style="--d:1">Sonder tes amis, <span class="grad-text">choisir le bon emoji.</span></h2><p class="rv" style="--d:2">La mise à jour 1.3.0 ajoute les sondages, dans le feed comme dans la messagerie, et un nouveau sélecteur d’emojis. La messagerie chiffrée devient aussi plus fiable d’un appareil à l’autre.</p></div>
+    <div class="sec-h"><span class="eyebrow rv">Nouveau · version 2.0.0</span><h2 class="rv" style="--d:1">Plus expressif, <span class="grad-text">plus personnel.</span></h2><p class="rv" style="--d:2">La version 2.0.0 apporte les réponses et réactions dans la messagerie, les suggestions d’amis, les objectifs favoris, sept arrière-plans et de nouveaux réglages d’accessibilité. Elle inclut la 1.4.0 : notifications push, badges à paliers et archive des stories.</p></div>
+    <div class="v2">
+      <article class="card v2-chat tilt rv" data-tilt="3">
+        <span class="tag t-project"><svg class="i"><use href="assets/icons.svg?v=344b344443#comment"/></svg>Messagerie</span>
+        <h3>Réponds, réagis, mentionne.</h3>
+        <p class="muted">Cite un message précis, réagis avec un emoji, mentionne un membre avec @ dans un groupe. Réponses et réactions sont chiffrées de bout en bout, comme les messages.</p>
+        <div class="chat v2-convo">
+          <div class="msg them" data-rx-target><span class="msg-who">Léo</span>Qui vient courir dimanche matin ?<small>18:02</small><span class="rx-chips" aria-live="polite"><span class="rx-chip"><img src="emoji/1f525.webp" alt="🔥"> 2</span></span></div>
+          <div class="msg me"><span class="quote"><b>Léo</b>Qui vient courir dimanche matin ?</span>Moi ! <span class="mention">@Inès</span> tu nous rejoins ?<small>18:04</small></div>
+        </div>
+        <div class="rx-bar" role="group" aria-label="Réagir au message de Léo">
+          <button type="button" class="rx-btn" data-rx="1f44d" aria-pressed="false" aria-label="Réagir 👍"><img src="emoji/1f44d.webp" alt=""></button><button type="button" class="rx-btn" data-rx="2764" aria-pressed="false" aria-label="Réagir ❤️"><img src="emoji/2764.webp" alt=""></button><button type="button" class="rx-btn" data-rx="1f602" aria-pressed="false" aria-label="Réagir 😂"><img src="emoji/1f602.webp" alt=""></button><button type="button" class="rx-btn" data-rx="1f62e" aria-pressed="false" aria-label="Réagir 😮"><img src="emoji/1f62e.webp" alt=""></button><button type="button" class="rx-btn" data-rx="1f622" aria-pressed="false" aria-label="Réagir 😢"><img src="emoji/1f622.webp" alt=""></button><button type="button" class="rx-btn" data-rx="1f525" aria-pressed="false" aria-label="Réagir 🔥"><img src="emoji/1f525.webp" alt=""></button><button type="button" class="rx-btn" data-rx="1f44f" aria-pressed="false" aria-label="Réagir 👏"><img src="emoji/1f44f.webp" alt=""></button>
+        </div>
+        <p class="muted" style="font-size:13px">Essaie : touche une réaction pour l’ajouter ou la retirer.</p>
+      </article>
+
+      <article class="card v2-bg tilt rv" style="--d:1" data-tilt="3">
+        <span class="tag t-abstinence"><svg class="i"><use href="assets/icons.svg?v=344b344443#palette"/></svg>Arrière-plans</span>
+        <h3>Sept fonds, ou ta propre image.</h3>
+        <p class="muted">Blob, Aurore, Vagues, Constellation, Dégradé, Grille ou Uni, tous aux couleurs de ton accent. Choisis une photo : PepsGoal en extrait les couleurs principales pour te proposer un accent assorti. L’image reste sur ton appareil.</p>
+        <div class="seg bg-seg" role="group" aria-label="Arrière-plan de cette page">
+          <button type="button" aria-pressed="true" data-bg="blob">Blob</button><button type="button" aria-pressed="false" data-bg="aurora">Aurore</button><button type="button" aria-pressed="false" data-bg="waves">Vagues</button><button type="button" aria-pressed="false" data-bg="stars">Constellation</button><button type="button" aria-pressed="false" data-bg="mesh">Dégradé</button><button type="button" aria-pressed="false" data-bg="grid">Grille</button><button type="button" aria-pressed="false" data-bg="plain">Uni</button>
+        </div>
+        <p class="muted" style="font-size:13px">Essaie : le fond de cette page change avec toi.</p>
+        <div class="extract" aria-hidden="true"><span class="ex-img"></span><svg class="i"><use href="assets/icons.svg?v=344b344443#arrow"/></svg><i style="background:#2E6F9E"></i><i style="background:#F2B55C"></i><i style="background:#E8735A"></i><span>Accent extrait de ta photo</span></div>
+      </article>
+
+      <article class="card v2-fav tilt rv t-project" data-tilt="4">
+        <span class="tag"><svg class="i"><use href="assets/icons.svg?v=344b344443#star"/></svg>Objectifs</span>
+        <h3>Favoris et étapes à réordonner.</h3>
+        <p class="muted">Une étoile met un objectif en tête de liste, avec un filtre « Favoris ». Les étapes d’un projet se réordonnent en les glissant, ou avec les flèches au clavier.</p>
+        <ol class="steps-list" aria-label="Étapes du projet Repeindre la chambre">
+          <li draggable="true"><span class="grip" aria-hidden="true">⋮⋮</span><span class="st-t">Acheter la peinture</span><span class="st-mv"><button type="button" data-mv="-1" aria-label="Monter : Acheter la peinture"><svg class="i"><use href="assets/icons.svg?v=344b344443#arrow"/></svg></button><button type="button" data-mv="1" aria-label="Descendre : Acheter la peinture"><svg class="i"><use href="assets/icons.svg?v=344b344443#arrow"/></svg></button></span></li>
+          <li draggable="true"><span class="grip" aria-hidden="true">⋮⋮</span><span class="st-t">Poncer les murs</span><span class="st-mv"><button type="button" data-mv="-1" aria-label="Monter : Poncer les murs"><svg class="i"><use href="assets/icons.svg?v=344b344443#arrow"/></svg></button><button type="button" data-mv="1" aria-label="Descendre : Poncer les murs"><svg class="i"><use href="assets/icons.svg?v=344b344443#arrow"/></svg></button></span></li>
+          <li draggable="true"><span class="grip" aria-hidden="true">⋮⋮</span><span class="st-t">Première couche</span><span class="st-mv"><button type="button" data-mv="-1" aria-label="Monter : Première couche"><svg class="i"><use href="assets/icons.svg?v=344b344443#arrow"/></svg></button><button type="button" data-mv="1" aria-label="Descendre : Première couche"><svg class="i"><use href="assets/icons.svg?v=344b344443#arrow"/></svg></button></span></li>
+        </ol>
+        <button type="button" class="fav-btn" aria-pressed="true"><svg class="i"><use href="assets/icons.svg?v=344b344443#star"/></svg><span>Favori</span></button>
+      </article>
+
+      <article class="card v2-sug tilt rv t-group" style="--d:1" data-tilt="4">
+        <span class="tag"><svg class="i"><use href="assets/icons.svg?v=344b344443#userplus"/></svg>Suggestions d’amis</span>
+        <h3>Retrouve tes proches.</h3>
+        <p class="muted">Les amis de tes amis d’abord, puis les membres de tes groupes et les nouveaux inscrits. Une suggestion se masque d’un geste, et un réglage te retire des suggestions des autres.</p>
+        <ul class="sug-list">
+          <li><span class="av" style="--g:linear-gradient(135deg,#FFC2A8,#FF7B6B 55%,#FF4F8B)">NA</span><span class="who"><b>Nora</b><small>3 amis en commun · Léo, Inès…</small></span><button type="button" class="btn sm" data-sug="add">Ajouter</button><button type="button" class="icon-btn plain" data-sug="hide" aria-label="Masquer la suggestion Nora"><svg class="i"><use href="assets/icons.svg?v=344b344443#x"/></svg></button></li>
+          <li><span class="av" style="--g:linear-gradient(135deg,#A8FFE4,#2EF2B0 55%,#22D3FF)">TB</span><span class="who"><b>Tom</b><small>Membre de Team vélo</small></span><button type="button" class="btn sm" data-sug="add">Ajouter</button><button type="button" class="icon-btn plain" data-sug="hide" aria-label="Masquer la suggestion Tom"><svg class="i"><use href="assets/icons.svg?v=344b344443#x"/></svg></button></li>
+          <li><span class="av" style="--g:linear-gradient(135deg,#FFE45C,#FFB000 55%,#FF7A3D)">JL</span><span class="who"><b>Jade</b><small>Nouvelle sur PepsGoal</small></span><button type="button" class="btn sm" data-sug="add">Ajouter</button><button type="button" class="icon-btn plain" data-sug="hide" aria-label="Masquer la suggestion Jade"><svg class="i"><use href="assets/icons.svg?v=344b344443#x"/></svg></button></li>
+        </ul>
+      </article>
+
+      <article class="card v2-a11y tilt rv t-timed" style="--d:2" data-tilt="4">
+        <span class="tag"><svg class="i"><use href="assets/icons.svg?v=344b344443#eye"/></svg>Accessibilité</span>
+        <h3>Daltonisme par type, monochrome.</h3>
+        <p class="muted">Le mode daltonien s’adapte à la deutéranopie, à la protanopie ou à la tritanopie. Le mode monochrome passe tout en niveaux de gris, et le contraste élevé supprime les dégradés.</p>
+        <label class="a11y-opt"><span><b>Mode monochrome</b><small>Essaie-le sur cette page</small></span><span class="switch"><input type="checkbox" id="mono-demo"><span></span></span></label>
+      </article>
+    </div>
+
+    <h3 class="v14-h rv">Arrivé avec la 1.4.0</h3>
+    <div class="v14">
+      <article class="card v14-c tilt rv t-deadline"><span class="ic-b"><svg class="i"><use href="assets/icons.svg?v=344b344443#bell"/></svg></span><h4>Notifications push</h4><p class="muted">Rappels du matin et du soir, messages et encouragements, même application fermée (version web).</p><div class="push-demo" aria-hidden="true"><svg class="fl"><use href="#flame"/></svg><span><b>PepsGoal</b><small>Il te reste 2 objectifs pour garder ta série.</small></span></div></article>
+      <article class="card v14-c tilt rv t-challenge" style="--d:1"><span class="ic-b"><svg class="i"><use href="assets/icons.svg?v=344b344443#medal"/></svg></span><h4>Badges à paliers</h4><p class="muted">12 familles de badges, de Bronze à Diamant, avec une animation à chaque déblocage.</p><div class="tiers" aria-label="Paliers : Bronze, Argent, Or, Platine, Diamant"><i style="--t:#D08A4F">Bronze</i><i style="--t:#B9C3D6">Argent</i><i style="--t:#FFC83D">Or</i><i style="--t:#7FE3D9">Platine</i><i style="--t:#B48CFF">Diamant</i></div></article>
+      <article class="card v14-c tilt rv t-measure" style="--d:2"><span class="ic-b"><svg class="i"><use href="assets/icons.svg?v=344b344443#heart"/></svg></span><h4>Stories encouragées</h4><p class="muted">Encourage les stories de tes amis ; les tiennes restent un an dans ton archive personnelle, visible par toi seul.</p></article>
+      <article class="card v14-c tilt rv t-duration" style="--d:3"><span class="ic-b"><svg class="i"><use href="assets/icons.svg?v=344b344443#cloudoff"/></svg></span><h4>Hors ligne à la demande</h4><p class="muted">Un interrupteur coupe tout échange avec le serveur ; tes objectifs restent disponibles.</p></article>
+    </div>
+    <p class="rv" style="margin-top:18px"><a class="btn" href="notes-de-version.html"><svg class="i"><use href="assets/icons.svg?v=344b344443#doc"/></svg>Toutes les notes de version<svg class="i arrow"><use href="assets/icons.svg?v=344b344443#arrow"/></svg></a></p>
+  </div>
+</section>
+
+<section class="section" id="sondages">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Depuis la version 1.3.0</span><h2 class="rv" style="--d:1">Sonder tes amis, <span class="grad-text">choisir le bon emoji.</span></h2><p class="rv" style="--d:2">Les sondages, dans le feed comme dans la messagerie, et le sélecteur d’emojis à catégories.</p></div>
     <div class="news">
       <article class="card news-main tilt rv" data-tilt="3">
         <span class="tag t-group"><svg class="i"><use href="assets/icons.svg?v=344b344443#poll"/></svg>Sondages</span>
@@ -230,12 +367,13 @@
         <h3 class="rv" style="--d:1">Flammes, séries et gels : <span class="grad-text">la régularité récompensée.</span></h3>
         <p class="rv" style="--d:2">Une validation par jour suffit pour allumer la flamme du jour. Les jours d’affilée forment ta série, visible en haut de l’écran.</p>
         <ul class="ticks rv" style="--d:3">
-          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Flammes et niveaux</b> : six niveaux, d’Étincelle à Supernova (3 000 flammes).</span></li>
+          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Flammes et niveaux</b> : six niveaux, d’Étincelle à Supernova (3 000 flammes), affichés par un anneau animé autour de ton icône de profil.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Gels de série</b> : un jour manqué est protégé automatiquement. Un gel tous les 10 encouragements reçus, 5 offerts à la fin du tutoriel.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Paliers de série</b> célébrés à 7, 14, 21, 30, 50, 100, 200 et 365 jours.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Journée parfaite</b> : tout est validé, place à l’écran plein et aux confettis.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Récaps</b> de la semaine, du mois et de l’année, à partager.</span></li>
-          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Rappels</b> du matin et du soir, à l’heure que tu choisis.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Badges à paliers</b> : 12 familles, de Bronze à Diamant, fêtées à chaque déblocage.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Rappels</b> du matin et du soir, à l’heure que tu choisis, en notification push sur la version web.</span></li>
         </ul>
       </div>
       <div class="demo-stack rv right" style="--d:1">
@@ -247,20 +385,8 @@
           <span><svg class="fl"><use href="#flame"/></svg>7</span><span><svg class="fl"><use href="#flame"/></svg>14</span><span><svg class="fl"><use href="#flame"/></svg>21</span><span><svg class="fl"><use href="#flame"/></svg>30</span><span><svg class="fl"><use href="#flame"/></svg>50</span><span><svg class="fl"><use href="#flame"/></svg>100</span><span><svg class="fl"><use href="#flame"/></svg>200</span><span><svg class="fl flame-anim"><use href="#flame"/></svg>365</span>
         </div></div>
         <div class="card">
-          <p class="eyebrow" style="margin-bottom:12px">11 badges</p>
-          <div class="badges">
-            <div class="bdg ok"><svg class="fl"><use href="#flame"/></svg><b>Première étincelle</b><small>Valider une première action</small></div>
-            <div class="bdg ok"><svg class="fl"><use href="#flame"/></svg><b>Semaine en feu</b><small>7 jours de série</small></div>
-            <div class="bdg ok"><svg class="fl"><use href="#flame"/></svg><b>Mois brûlant</b><small>30 jours de série</small></div>
-            <div class="bdg off"><svg class="fl"><use href="#flame"/></svg><b>Centurion</b><small>100 validations</small></div>
-            <div class="bdg ok"><svg class="fl"><use href="#flame"/></svg><b>Dans les temps</b><small>Boucler une deadline à temps</small></div>
-            <div class="bdg off"><svg class="fl"><use href="#flame"/></svg><b>Cap atteint</b><small>Atteindre un objectif chiffré</small></div>
-            <div class="bdg off"><svg class="fl"><use href="#flame"/></svg><b>Mois réussi</b><small>Atteindre un objectif mensuel</small></div>
-            <div class="bdg off"><svg class="fl"><use href="#flame"/></svg><b>Défi relevé</b><small>Terminer un challenge</small></div>
-            <div class="bdg ok"><svg class="fl"><use href="#flame"/></svg><b>Esprit d’équipe</b><small>Réussir un défi de groupe</small></div>
-            <div class="bdg off"><svg class="fl"><use href="#flame"/></svg><b>Duelliste</b><small>Gagner un duel</small></div>
-            <div class="bdg ok"><svg class="fl"><use href="#flame"/></svg><b>Tribu</b><small>Avoir 3 amis</small></div>
-          </div>
+          <p class="eyebrow" style="margin-bottom:12px">12 familles de badges</p>
+          <div class="badges"><div class="bdg tier" style="--t:#FFC83D"><img src="emoji/1f525.webp" alt="" width="28" height="28"><b>Série</b><small>Série de 30 jours</small><span class="tier-pill">Or</span></div><div class="bdg tier" style="--t:#FFC83D"><img src="emoji/2705.webp" alt="" width="28" height="28"><b>Validations</b><small>100 validations</small><span class="tier-pill">Or</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f4c5.webp" alt="" width="28" height="28"><b>Assiduité</b><small>30 jours actifs</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f31f.webp" alt="" width="28" height="28"><b>Journées parfaites</b><small>5 journées parfaites</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f3c1.webp" alt="" width="28" height="28"><b>Accomplissements</b><small>5 objectifs accomplis</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#D08A4F"><img src="emoji/23f0.webp" alt="" width="28" height="28"><b>Dans les temps</b><small>1 deadline à temps</small><span class="tier-pill">Bronze</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f91d.webp" alt="" width="28" height="28"><b>Esprit d’équipe</b><small>3 défis à plusieurs</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#FFC83D"><img src="emoji/1f465.webp" alt="" width="28" height="28"><b>Tribu</b><small>10 amis</small><span class="tier-pill">Or</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f496.webp" alt="" width="28" height="28"><b>Encouragé</b><small>50 encouragements</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#D08A4F"><img src="emoji/1f9ca.webp" alt="" width="28" height="28"><b>Bouclier</b><small>1 gel utilisé</small><span class="tier-pill">Bronze</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f9ed.webp" alt="" width="28" height="28"><b>Explorateur</b><small>6 types d’objectifs</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#FFC83D"><img src="emoji/1f3c6.webp" alt="" width="28" height="28"><b>Flammes</b><small>1 500 flammes</small><span class="tier-pill">Or</span></div></div>
         </div>
       </div>
     </div>
@@ -276,9 +402,10 @@
         <p class="rv" style="--d:2">Les fonctions sociales demandent un compte et restent facultatives : un réglage les coupe entièrement.</p>
         <ul class="ticks rv" style="--d:3">
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Feed</b> avec photos et paliers, visibilité au choix pour chaque publication.</span></li>
-          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Stories</b> visibles par tes amis pendant 24 heures, avec la liste des vues.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Stories</b> visibles par tes amis pendant 24 heures, avec la liste des vues et les encouragements ; elles restent un an dans ton archive personnelle.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Encourager</b> plutôt que « liker », et commenter.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Amis, classement</b> de la semaine et profils avec statistiques et badges.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Suggestions d’amis</b> : amis en commun, membres de tes groupes et nouveaux inscrits ; tu peux ne pas y apparaître.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Défis de groupe, duels et binômes</b> de motivation.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Sondages</b> dans le feed : 2 à 6 choix, une ou plusieurs réponses, résultats après ton vote.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Signaler et bloquer</b> : une modération active, des sanctions graduées et un droit de contestation.</span></li>
@@ -317,6 +444,7 @@
         <p class="rv" style="--d:2">Les messages privés et les groupes sont chiffrés de bout en bout sur ton appareil. Ni l’éditeur, ni l’hébergeur, ni la modération ne peuvent les lire.</p>
         <ul class="ticks rv" style="--d:3">
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Texte, photos, messages vocaux</b> (jusqu’à 2 minutes) et <b>objectifs partagés</b>.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Réponses, réactions et mentions @</b> : cite un message, réagis avec un emoji, interpelle un membre d’un groupe.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Groupes de discussion</b> avec leur emoji ; un membre qui part ne lit plus la suite.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Sondages chiffrés</b> : la question, les choix et les votes restent illisibles pour le serveur.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span><b>Clés synchronisées</b> entre tes appareils, dans un coffre que seul ton mot de passe ouvre ; changer de mot de passe ne coupe pas tes autres appareils.</span></li>
@@ -359,7 +487,7 @@
           <span class="av" style="--g:linear-gradient(135deg,#A8FFE4,#2EF2B0 55%,#22D3FF)"><svg class="i" style="width:56%;height:56%;stroke:#10102A;stroke-width:2.2"><use href="assets/icons.svg?v=344b344443#mountain"/></svg></span>
           <span class="av" style="--g:linear-gradient(135deg,#FFE45C,#FFB000 55%,#FF7A3D)"><img src="emoji/1f3b8.webp" alt=""></span>
         </div>
-        <p class="muted">Initiales, emoji (parmi plus de 700, rangés par catégorie), pictogramme ou photo. Thème clair, sombre ou celui du système. Groupes d’objectifs avec leur icône pour ranger ta liste.</p>
+        <p class="muted">Initiales, emoji (parmi plus de 700, rangés par catégorie), pictogramme ou photo. Thème clair, sombre ou celui du système, sept arrière-plans ou ta propre image. Groupes d’objectifs avec leur icône pour ranger ta liste.</p>
         <div class="seg" data-press-group role="group" aria-label="Thème"><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg?v=344b344443#sun"/></svg>Clair</button><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg?v=344b344443#moon"/></svg>Sombre</button><button aria-pressed="true" type="button"><svg class="i"><use href="assets/icons.svg?v=344b344443#phone"/></svg>Système</button></div>
       </div>
     </div>
@@ -372,7 +500,7 @@
       <div class="feat-txt">
         <span class="eyebrow rv">Accessibilité</span>
         <h3 class="rv" style="--d:1">Lisible par <span class="grad-text">tout le monde.</span></h3>
-        <p class="rv" style="--d:2">Quatre réglages propres à l’appareil, disponibles dès l’écran de connexion, se combinent avec le thème clair ou sombre.</p>
+        <p class="rv" style="--d:2">Cinq réglages propres à l’appareil, disponibles dès l’écran de connexion, se combinent avec le thème clair ou sombre.</p>
         <ul class="ticks rv" style="--d:3">
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span>Navigation complète au clavier, anneau de focus visible.</span></li>
           <li><svg class="i"><use href="assets/icons.svg?v=344b344443#check"/></svg><span>Contrastes AA vérifiés sur chaque format d’objectif.</span></li>
@@ -380,8 +508,9 @@
         </ul>
       </div>
       <div class="a11y-grid rv left" style="--d:1">
-        <label class="a11y-opt"><span><b>Contraste élevé</b><small>Noir et blanc purs, bordures pleines</small></span><span class="switch"><input type="checkbox"><span></span></span></label>
-        <label class="a11y-opt"><span><b>Daltonisme</b><small>Palette Okabe-Ito pour les formats</small></span><span class="switch"><input type="checkbox"><span></span></span></label>
+        <label class="a11y-opt"><span><b>Contraste élevé</b><small>Noir et blanc purs, sans aucun dégradé</small></span><span class="switch"><input type="checkbox"><span></span></span></label>
+        <label class="a11y-opt"><span><b>Daltonisme</b><small>Deutéranopie, protanopie ou tritanopie</small></span><span class="switch"><input type="checkbox"><span></span></span></label>
+        <label class="a11y-opt"><span><b>Monochrome</b><small>Niveaux de gris, icônes pour distinguer les types</small></span><span class="switch"><input type="checkbox" data-mono-switch><span></span></span></label>
         <label class="a11y-opt"><span><b>Sans transparence</b><small>Surfaces pleines, sans flou ni halos</small></span><span class="switch"><input type="checkbox" checked><span></span></span></label>
         <label class="a11y-opt"><span><b>Animations désactivées</b><small>Coupe toutes les animations</small></span><span class="switch"><input type="checkbox"><span></span></span></label>
       </div>
@@ -393,7 +522,7 @@
   <div class="wrap">
     <div class="sec-h"><span class="eyebrow rv">Données</span><h2 class="rv" style="--d:1">Tes données <span class="grad-text">restent les tiennes.</span></h2></div>
     <div class="grid g3">
-      <article class="card tilt rv"><span class="ic-badge t-duration" style="display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c-ink);margin-bottom:12px"><svg class="i" style="width:24px;height:24px"><use href="assets/icons.svg?v=344b344443#cloudoff"/></svg></span><h3 style="font-size:19px;margin-bottom:8px">Hors ligne d’abord</h3><p class="muted">Objectifs, validations et séries fonctionnent sans réseau. Les modifications partent au retour de la connexion.</p></article>
+      <article class="card tilt rv"><span class="ic-badge t-duration" style="display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c-ink);margin-bottom:12px"><svg class="i" style="width:24px;height:24px"><use href="assets/icons.svg?v=344b344443#cloudoff"/></svg></span><h3 style="font-size:19px;margin-bottom:8px">Hors ligne d’abord</h3><p class="muted">Objectifs, validations et séries fonctionnent sans réseau, et tu peux couper la connexion au serveur à la demande. Les modifications partent au retour de la connexion.</p></article>
       <article class="card tilt rv" style="--d:1"><span class="t-objective" style="display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c-ink);margin-bottom:12px"><svg class="i" style="width:24px;height:24px"><use href="assets/icons.svg?v=344b344443#phone"/></svg></span><h3 style="font-size:19px;margin-bottom:8px">Avec ou sans compte</h3><p class="muted">Sans compte, rien ne quitte ton appareil. Crée un compte plus tard : tout est conservé et synchronisé.</p></article>
       <article class="card tilt rv" style="--d:2"><span class="t-abstinence" style="display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c-ink);margin-bottom:12px"><svg class="i" style="width:24px;height:24px"><use href="assets/icons.svg?v=344b344443#download"/></svg></span><h3 style="font-size:19px;margin-bottom:8px">Export et suppression</h3><p class="muted">Exporte ton compte en .zip ou en JSON, importe une sauvegarde, supprime ton compte en un geste depuis les Paramètres.</p></article>
     </div>
@@ -409,6 +538,7 @@
       <details class="rv"><summary>Sur quels appareils ?<svg class="i"><use href="assets/icons.svg?v=344b344443#plus"/></svg></summary><p>Dans n’importe quel navigateur récent, sur <a href="https://app.pepsgoal.fr">app.pepsgoal.fr</a>. Les applications iOS et Android, qui embarquent la même interface et fonctionnent hors ligne, arrivent bientôt sur les stores.</p></details>
       <details class="rv"><summary>Que se passe-t-il si je rate un jour ?<svg class="i"><use href="assets/icons.svg?v=344b344443#plus"/></svg></summary><p>Si tu as un gel, il protège ta série automatiquement. Sinon, la série repart de zéro, mais tes flammes, ton niveau et tes badges restent acquis.</p></details>
       <details class="rv"><summary>Qui peut lire mes messages ?<svg class="i"><use href="assets/icons.svg?v=344b344443#plus"/></svg></summary><p>Seuls les participants à la conversation. Le contenu est chiffré sur ton appareil avant l’envoi ; le serveur ne stocke qu’une version illisible.</p></details>
+      <details class="rv"><summary>Puis-je recevoir des rappels ?<svg class="i"><use href="assets/icons.svg?v=344b344443#plus"/></svg></summary><p>Oui. Sur la version web, active les notifications dans les Paramètres : rappels du matin et du soir à l’heure choisie, nouveaux messages et encouragements, même quand l’application est fermée. Le contenu des messages n’apparaît jamais dans la notification.</p></details>
       <details class="rv"><summary>Puis-je réutiliser le code de PepsGoal ?<svg class="i"><use href="assets/icons.svg?v=344b344443#plus"/></svg></summary><p>Oui. PepsGoal est un logiciel libre sous <a href="licence.html">licence MIT</a> : tu peux l’utiliser, le modifier et le redistribuer en conservant la mention de copyright. Le nom PepsGoal et son logo ne sont pas concédés par la licence. Le code est sur <a href="https://github.com/CorbetQ/pepsgoal-platform">GitHub</a>.</p></details>
       <details class="rv"><summary>À partir de quel âge ?<svg class="i"><use href="assets/icons.svg?v=344b344443#plus"/></svg></summary><p>Dès 15 ans, ou avant avec l’accord d’un parent ou d’un tuteur légal.</p></details>
     </div>
@@ -459,6 +589,7 @@
         <li><a href="fonctionnalites.html">Fonctionnalités</a></li>
         <li><a href="design-system.html">Design system</a></li>
         <li><a href="technique.html">Détails techniques</a></li>
+        <li><a href="notes-de-version.html">Notes de version</a></li>
       </ul></div>
       <div><h4>Légal</h4><ul>
         <li><a href="informations-legales.html">Informations légales</a></li>
@@ -480,10 +611,10 @@
         <div><dt>Contact</dt><dd><a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a></dd></div>
       </dl>
     </div>
-    <div class="foot-b"><span>© <span data-year>2026</span> PepsGoal · Quentin CORBET</span><span>Version 1.3.0 · aucun cookie, aucun traceur</span></div>
+    <div class="foot-b"><span>© <span data-year>2026</span> PepsGoal · Quentin CORBET</span><span>Version 2.0.0 · aucun cookie, aucun traceur</span></div>
   </div>
 </footer>
 <div id="live" class="sr" aria-live="polite"></div>
-<script src="assets/site.js?v=a2d2acfc77" defer></script>
+<script src="assets/site.js?v=7f2fd7b24e" defer></script>
 </body>
 </html>

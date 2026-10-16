@@ -259,3 +259,65 @@
     });
   });
 })();
+
+/* ---------- démonstrations 2.0.0 : réactions, arrière-plans, favoris, étapes, suggestions, monochrome ---------- */
+(() => {
+  const root = document.documentElement;
+  const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k, v){ try { localStorage.setItem(k, v); } catch(e){} } };
+  // Arrière-plan choisi : gardé pour tout le site, sur cet appareil
+  const BGS = ['blob', 'aurora', 'waves', 'stars', 'mesh', 'grid', 'plain'];
+  const setBg = bg => { if (!BGS.includes(bg)) bg = 'blob'; root.dataset.bg = bg; document.querySelectorAll('.bg-seg [data-bg]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.bg === bg))); };
+  setBg(store.get('pepsgoal.site.bg') || 'blob');
+  document.addEventListener('click', e => { const b = e.target.closest('.bg-seg [data-bg]'); if (!b) return; setBg(b.dataset.bg); store.set('pepsgoal.site.bg', b.dataset.bg); });
+
+  // Réactions : toucher une réaction l'ajoute ou la retire sous le message
+  document.querySelectorAll('.rx-bar').forEach(bar => {
+    const target = bar.closest('.card')?.querySelector('[data-rx-target] .rx-chips'); if (!target) return;
+    const base = {};
+    target.querySelectorAll('.rx-chip').forEach(c => { base[c.querySelector('img').src.split('/').pop().replace('.webp', '')] = parseInt(c.textContent, 10) || 1; });
+    const mine = new Set();
+    const render = () => {
+      const keys = [...new Set([...Object.keys(base), ...mine])];
+      target.innerHTML = keys.map(k => { const n = (base[k] || 0) + (mine.has(k) ? 1 : 0); return `<span class="rx-chip${mine.has(k) ? ' mine' : ''}"><img src="emoji/${k}.webp" alt=""> ${n}</span>`; }).join('');
+    };
+    bar.addEventListener('click', e => {
+      const b = e.target.closest('.rx-btn'); if (!b) return;
+      const k = b.dataset.rx, on = !mine.has(k);
+      on ? mine.add(k) : mine.delete(k); b.setAttribute('aria-pressed', String(on)); render();
+      if (on) { const r = b.getBoundingClientRect(); window.pgSparks?.(r.left + r.width / 2, r.top + r.height / 2, null, 10); }
+    });
+  });
+
+  // Favori
+  document.addEventListener('click', e => { const b = e.target.closest('.fav-btn'); if (!b) return; const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on)); b.querySelector('span').textContent = on ? 'Favori' : 'Ajouter aux favoris'; });
+
+  // Étapes de projet : flèches (clavier) et glisser-déposer
+  document.querySelectorAll('.steps-list').forEach(list => {
+    const flash = li => { li.classList.remove('moved'); void li.offsetWidth; li.classList.add('moved'); };
+    list.addEventListener('click', e => {
+      const b = e.target.closest('[data-mv]'); if (!b) return;
+      const li = b.closest('li'), dir = +b.dataset.mv, sib = dir < 0 ? li.previousElementSibling : li.nextElementSibling; if (!sib) return;
+      dir < 0 ? list.insertBefore(li, sib) : list.insertBefore(sib, li);
+      flash(li); b.focus();
+    });
+    let dragged = null;
+    list.addEventListener('dragstart', e => { dragged = e.target.closest('li'); dragged?.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; });
+    list.addEventListener('dragend', () => { dragged?.classList.remove('drag'); if (dragged) flash(dragged); dragged = null; });
+    list.addEventListener('dragover', e => {
+      e.preventDefault(); const over = e.target.closest('li'); if (!dragged || !over || over === dragged) return;
+      const r = over.getBoundingClientRect(); list.insertBefore(dragged, e.clientY > r.top + r.height / 2 ? over.nextElementSibling : over);
+    });
+  });
+
+  // Suggestions d'amis : ajouter ou masquer
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-sug]'); if (!b) return;
+    const li = b.closest('li');
+    if (b.dataset.sug === 'add') { b.textContent = 'Envoyée'; b.classList.add('done'); b.disabled = true; }
+    else { li.classList.add('gone'); setTimeout(() => li.remove(), 320); }
+  });
+
+  // Mode monochrome : interrupteurs synchronisés, effet sur toute la page (non mémorisé)
+  const monos = [...document.querySelectorAll('#mono-demo, [data-mono-switch]')];
+  monos.forEach(m => m.addEventListener('change', () => { const on = m.checked; monos.forEach(x => { x.checked = on; }); on ? root.setAttribute('data-mono', '') : root.removeAttribute('data-mono'); }));
+})();
