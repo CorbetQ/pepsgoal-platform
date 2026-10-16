@@ -43,6 +43,13 @@
       "when": 1791995737498,
       "tag": "0005_polls_vault_v2",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792156312699,
+      "tag": "0006_stories_push",
+      "breakpoints": true
     }
   ]
 }

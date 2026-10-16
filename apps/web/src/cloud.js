@@ -16,6 +16,7 @@
   const CFG = window.PEPSGOAL_CONFIG;
   if (!CFG || !CFG.api) return;
   const API = String(CFG.api).replace(/\/$/, '');
+  const OFF_KEY = 'pepsgoal.offline.v1', PUSH_KEY = 'pepsgoal.push.v1';
   const ACCT_KEY = 'pepsgoal.account.v1', TOK_KEY = 'pepsgoal.tokens.v1', DEV_KEY = 'pepsgoal.e2e.v1';
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const SOCIAL_TYPES = ['group', 'duel'];
@@ -48,6 +49,7 @@
   }
   async function ping() {
     clearTimeout(S.pingTimer);
+    if (S.forceOffline) return;   // mode hors ligne choisi dans les paramètres : aucun appel au serveur
     const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 6000);
     try {
       const r = await fetch(API + '/v1/status', { signal: ctrl.signal, cache: 'no-store' });
@@ -84,6 +86,7 @@
     return refreshing;
   }
   async function api(method, path, body, retry = true) {
+    if (S.forceOffline) throw new ApiError(0, 'offline', 'Mode hors ligne activé : repasse en ligne dans Paramètres › Données.');
     const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 20000);
     let res;
     try {
@@ -178,10 +181,13 @@
     return c;
   }
   // État d'interface propre au compte, synchronisé avec les réglages
-  const EXTRA_KEYS = ['tutorialDone', 'goalGroups', 'goalGroupOf', 'frozenDays', 'milestones', 'browser', 'defaultVis'];
+  const USER_KEYS = ['tutorialDone', 'goalGroups', 'goalGroupOf', 'frozenDays', 'milestones', 'badges', 'perfectDays', 'favGoals', 'hiddenSuggest', 'aprilFool'];
+  // Réglages rangés dans u.settings côté application (noSuggest est lu par le serveur pour les suggestions d'amis)
+  const SETTING_KEYS = ['browser', 'defaultVis', 'bg', 'accentCustom', 'noSuggest'];
+  const EXTRA_KEYS = [...USER_KEYS, ...SETTING_KEYS];
   function toServerSettings(u) {
     const s = u.settings || {}, extra = {};
-    for (const k of EXTRA_KEYS) { const v = k === 'browser' || k === 'defaultVis' ? s[k] : u[k]; if (v !== undefined) extra[k] = v; }
+    for (const k of EXTRA_KEYS) { const v = SETTING_KEYS.includes(k) ? s[k] : u[k]; if (v !== undefined) extra[k] = v; }
     return {
       theme: ['system', 'light', 'dark'].includes(s.theme) ? s.theme : 'system', accent: Math.min(31, Math.max(0, Number(s.accent) || 0)), social: s.social !== false,
       defaultVisibility: ['private', 'friends', 'public'].includes(s.defaultVis) ? s.defaultVis : 'friends',
@@ -192,9 +198,8 @@
     if (!st) return;
     Object.assign(u.settings, { theme: st.theme, accent: st.accent, social: st.social, morning: st.morning, evening: st.evening });
     const x = st.extra || {};
-    if (x.browser !== undefined) u.settings.browser = x.browser;
-    if (x.defaultVis !== undefined) u.settings.defaultVis = x.defaultVis;
-    for (const k of ['tutorialDone', 'goalGroups', 'goalGroupOf', 'frozenDays', 'milestones']) if (x[k] !== undefined) u[k] = x[k];
+    for (const k of SETTING_KEYS) if (x[k] !== undefined) u.settings[k] = x[k];
+    for (const k of USER_KEYS) if (x[k] !== undefined) u[k] = x[k];
   }
   // Utilisateur du serveur -> utilisateur de l'application
   function mapAvatar(a) {
@@ -245,6 +250,8 @@
   }
   function leaveAccount(callServer) {
     const rt = S.tokens?.refreshToken, uid0 = meId();
+    // Ce navigateur ne doit plus recevoir les notifications du compte (l'abonnement est retiré, le choix est gardé pour le prochain compte)
+    if (callServer && S.pushOn) { const keep = ls.get(PUSH_KEY); void pushUnsubscribe().then(() => ls.set(PUSH_KEY, keep)); }
     if (callServer && rt) void api('POST', '/v1/auth/logout', { refreshToken: rt }).catch(() => undefined);
     if (callServer && uid0) void e2eForget(true);
     S.acct = false; S.tokens = null; ls.del(TOK_KEY); ls.del(ACCT_KEY);
@@ -386,10 +393,11 @@
     if (S.refreshing) return S.refreshing;
     S.refreshing = (async () => {
       try {
-        const [meR, fr, feedF, feedP, stories, notifs, convs, groups, blocks] = await Promise.all([
+        const [meR, fr, feedF, feedP, stories, notifs, convs, groups, blocks, myStories, sugg] = await Promise.all([
           api('GET', '/v1/me'), api('GET', '/v1/friends'), api('GET', '/v1/feed?tab=friends'), api('GET', '/v1/feed?tab=public'),
           api('GET', '/v1/stories'), api('GET', '/v1/notifications'), api('GET', '/v1/conversations'),
-          api('GET', '/v1/groups').catch(() => []), api('GET', '/v1/blocks').catch(() => [])
+          api('GET', '/v1/groups').catch(() => []), api('GET', '/v1/blocks').catch(() => []), api('GET', '/v1/me/stories').catch(() => []),
+          api('GET', '/v1/friends/suggestions').catch(() => null)
         ]);
         const mine = meId();
         // Moi
@@ -423,11 +431,13 @@
         DB.stories = [];
         for (const grp of stories) {
           upsertUser(grp.author);
-          for (const s of grp.stories) DB.stories.push({ id: s.id, userId: grp.author.id, kind: s.kind, data: s.data || undefined, photo: s.mediaUrl || undefined, text: s.text || '', at: msOf(s.createdAt), seenBy: s.seen ? [mine] : [], _views: s.viewCount });
+          for (const s of grp.stories) DB.stories.push({ id: s.id, userId: grp.author.id, kind: s.kind, data: s.data || undefined, photo: s.mediaUrl || undefined, text: s.text || '', at: msOf(s.createdAt), seenBy: s.seen ? [mine] : [], _views: s.viewCount, liked: !!s.liked, ...(s.likeCount !== undefined ? { likeCount: s.likeCount } : {}) });
         }
-        await Promise.all(DB.stories.filter(s => s.userId === mine && s._views).map(async s => {
-          try { const v = await api('GET', `/v1/stories/${s.id}/views`); v.forEach(x => upsertUser(x)); s.seenBy = v.map(x => x.id); } catch (e) { /* liste indisponible */ }
-        }));
+        await Promise.all(DB.stories.filter(s => s.userId === mine && s._views).map(s => loadStoryViews(s)));
+        // Archive : mes stories expirées (visibles par moi seul), nombre de vues connu sans charger la liste
+        for (const s of myStories) if (!DB.stories.some(x => x.id === s.id)) {
+          DB.stories.push({ id: s.id, userId: mine, kind: s.kind, data: s.data || undefined, photo: s.mediaUrl || undefined, text: s.text || '', at: msOf(s.createdAt), seenBy: Array.from({ length: s.viewCount || 0 }, () => ''), _views: s.viewCount, likeCount: s.likeCount || 0, liked: false });
+        }
         // Notifications du serveur + rappels locaux
         const VIEW = { like: 'feed', comment: 'feed', friend: 'friends', official: 'friends', mod: 'feed', group: 'friends' };
         DB.notifs = DB.notifs.filter(n => !n._srv && n.userId === mine).concat(notifs.map(n => ({
@@ -449,16 +459,28 @@
         for (const g of groups) if (g.unread > 0 || (g.last && !DB.messages.some(m => m.chat === g.id))) await loadGroup(g.id, true);
         // Comptes que j'ai bloqués
         DB.blocks = blocks.map(b => { upsertUser(b.user); return { by: mine, who: b.user.id, at: msOf(b.blockedAt) || Date.now() }; });
+        // Suggestions d'amis calculées par le serveur (amis en commun, groupes, nouveaux inscrits)
+        if (Array.isArray(sugg)) S.suggest = sugg.map(x => { upsertUser(x.user); return { id: x.user.id, mutual: x.mutual || 0, groups: x.groups || 0, via: x.via || [], reason: x.reason }; });
         if (isAdmin(u)) await refreshModeration();
         repairRefs(DB);
         rawSave();
         await decryptAll();
-        softRender(); updateBadges(); updateBell();
+        softRender(); updateBadges(); updateBell(); queueBadgeCheck();
       } catch (e) { if (e.status !== 0) console.warn('PepsGoal : actualisation sociale impossible', e); }
       finally { S.refreshing = null; }
     })();
     return S.refreshing;
   }
+  let statsLoading = null;
+  function loadStats(force) {
+    if (statsLoading && !force) return statsLoading;
+    statsLoading = api('GET', '/v1/admin/stats')
+      .then(d => { S.stats = d; S.statsError = null; UI.statsAt = Date.now(); })
+      .catch(e => { S.statsError = e?.message || 'Statistiques indisponibles.'; UI.statsAt = Date.now(); })
+      .finally(() => { statsLoading = null; if (UI.view === 'mod' && UI.modTab === 'server') softRender(); });
+    return statsLoading;
+  }
+  setInterval(() => { if (S.acct && NET.online && UI.view === 'mod' && UI.modTab === 'server' && !document.hidden) void loadStats(); }, 30e3);
   async function loadConversation(peerId, quiet) {
     const list = await api('GET', `/v1/conversations/${peerId}`);
     const mine = meId();
@@ -473,6 +495,9 @@
   // Sondage du serveur : nombres de voix par option (la liste des votants n'est pas transmise)
   const pollFromServer = x => ({ multi: !!x.multi, endsAt: Date.parse(x.endsAt) || Date.now(), voters: x.voters || 0,
     options: x.options.map(o => ({ id: o.id, t: o.text, n: o.votes || 0, mine: (x.mine || []).includes(o.id) })) });
+  async function loadStoryViews(s) {
+    try { const v = await api('GET', `/v1/stories/${s.id}/views`); v.forEach(x => upsertUser(x)); s.seenBy = v.map(x => x.id); s.likers = v.filter(x => x.liked).map(x => x.id); s._viewsLoaded = true; } catch (e) { /* liste indisponible */ }
+  }
   async function loadGroup(gid, quiet) {
     const list = await api('GET', `/v1/groups/${gid}/messages`);
     const mine = meId();
@@ -728,7 +753,7 @@
   const O = {};
   function install() {
     // Réseau : en ligne = connexion de l'appareil ET serveur joignable
-    Object.defineProperty(NET, 'online', { configurable: true, get: () => S.navOnline && S.serverOk, set: () => undefined });
+    Object.defineProperty(NET, 'online', { configurable: true, get: () => S.navOnline && S.serverOk && !S.forceOffline, set: () => undefined });
     const guardNet = e => { if (!e.pg) { e.stopImmediatePropagation(); S.navOnline = navigator.onLine !== false; if (S.navOnline) { S.failures = 0; void ping(); } else setOnline(false); } };
     window.addEventListener('online', guardNet, true);
     window.addEventListener('offline', guardNet, true);
@@ -778,6 +803,9 @@
       }
     };
     // Séries et flammes des amis : calculées par le serveur (leurs validations ne sont pas copiées sur l'appareil)
+    // Badges : seulement une fois les données du compte reçues (sinon des badges « nouveaux » seraient célébrés à tort)
+    O.checkBadges = checkBadges;
+    checkBadges = function () { if (S.acct && !pulledBefore()) return; return O.checkBadges(); };
     O.checkReminders = checkReminders;
     checkReminders = function () { if (S.acct && !pulledBefore()) return; return O.checkReminders(); };
     O.activeDays = activeDays;
@@ -827,12 +855,13 @@
         const raw = typeof body === 'string' ? body : packMsg(body);
         const nonce = nacl.randomBytes(24);
         const e2e = { v: 1, keyId: conv.current.keyId, nonce: b64e(nonce), ct: b64e(nacl.secretbox(new TextEncoder().encode(raw), nonce, b64d(conv.current.key))) };
-        const r = await api('POST', target.chat ? `/v1/groups/${target.chat}/messages` : `/v1/conversations/${target.to}`, { e2e, attachments });
+        const silent = SILENT_K.includes(body?.k), mentions = target.chat && Array.isArray(body?.mn) ? body.mn : [];
+        const r = await api('POST', target.chat ? `/v1/groups/${target.chat}/messages` : `/v1/conversations/${target.to}`, { e2e, attachments, silent, mentions });
         E2E.cache.set(r.id, raw); if (local) ATT.set(r.id, local);
         const msg = { id: r.id, from: meId(), to: target.to || null, e2e, at: msOf(r.createdAt) || Date.now(), read: true };
         if (target.chat) { msg.chat = target.chat; msg.readBy = [meId()]; }
         DB.messages.push(msg);
-        rawSave(); updateChat(true); updateBadges();
+        rawSave(); updateChat(!silent); updateBadges();
         return msg;
       } catch (e) {
         // Un membre vient de quitter le groupe : nouvelle version de clé, puis nouvel essai (la pièce jointe déjà envoyée est réutilisée)
@@ -867,6 +896,20 @@
       if (S.acct && s && s.userId !== meId() && !S.viewed.has(s.id)) { S.viewed.add(s.id); void api('POST', `/v1/stories/${s.id}/view`, {}).catch(() => undefined); }
     };
     // Recherche d'amis : sur le serveur
+    O.friendSuggestions = friendSuggestions;
+    friendSuggestions = function (u) {
+      if (!S.acct) return O.friendSuggestions(u);
+      return (S.suggest || []).map(x => ({ user: userById(x.id), mutual: x.mutual, groups: x.groups, via: x.via, reason: x.reason }))
+        .filter(x => x.user && !friendship(u.id, x.user.id) && !isBlockedPair(u.id, x.user.id));
+    };
+    // Modération › Serveur : statistiques du serveur, actualisées toutes les 30 secondes pendant l'affichage
+    O.modServer = modServer;
+    modServer = function () {
+      if (!S.acct) return O.modServer();
+      if (!S.stats || Date.now() - (UI.statsAt || 0) > 25e3) void loadStats();
+      return S.stats ? statsHtml(S.stats) : `<section class="glass card"><p class="muted">${S.statsError ? esc(S.statsError) : 'Chargement des statistiques du serveur…'}</p></section>`;
+    };
+    const statsRefresh = ACT['stats-refresh']; ACT['stats-refresh'] = () => (S.acct ? void loadStats(true) : statsRefresh());
     O.friendResults = friendResults;
     friendResults = function () {
       if (!S.acct) return O.friendResults();
@@ -955,8 +998,39 @@
         : S.syncing ? ['cloud', 'Synchronisation…', 'Envoi et réception de tes données en cours.']
         : S.syncError ? ['cloudoff', 'Erreur', S.syncError]
         : ['cloud', 'À jour', S.lastSync ? `Dernière synchronisation ${ago(S.lastSync)}. Tes objectifs sont sauvegardés sur le serveur PepsGoal et disponibles sur tous tes appareils.` : 'Tes objectifs sont sauvegardés sur le serveur PepsGoal.'];
-      return `<section class="glass card"><div class="set-row"><div><b>Synchronisation</b><small>${esc(state[2])}</small></div><span class="chip ${NET.online && !S.syncError ? 't-goal' : 'st-warn'}">${icon(state[0])}${esc(state[1])}</span></div>
-        <div class="quick" style="margin-top:10px"><button class="btn sm" data-act="cloud-sync" ${NET.online ? '' : 'disabled'}>${icon('cloud')}Synchroniser maintenant</button></div></section>`;
+      return `<section class="glass card"><div class="set-row"><div><b>Synchronisation</b><small>${esc(state[2])}</small></div><span class="chip ${NET.online && !S.syncError ? 't-goal' : 'st-warn'}">${icon(state[0])}${esc(S.forceOffline ? 'Hors ligne (choisi)' : state[1])}</span></div>
+        <div class="quick" style="margin-top:10px"><button class="btn sm" data-act="cloud-sync" ${NET.online ? '' : 'disabled'}>${icon('cloud')}Synchroniser maintenant</button></div>
+        <div class="set-row" style="margin-top:10px"><div><b>Mode hors ligne</b><small>Aucun échange avec le serveur : tes objectifs restent utilisables et tes modifications partent quand tu repasses en ligne. Les fonctions sociales sont en pause.</small></div>
+          <span class="switch"><input type="checkbox" data-act="force-offline" ${S.forceOffline ? 'checked' : ''} aria-label="Forcer le mode hors ligne"><span></span></span></div></section>`;
+    };
+    ACT['force-offline'] = () => {
+      S.forceOffline = !S.forceOffline; ls.set(OFF_KEY, S.forceOffline);
+      const e = new Event(S.forceOffline ? 'offline' : 'online'); e.pg = true; window.dispatchEvent(e);
+      if (!S.forceOffline) { S.failures = 0; void ping().then(() => { if (NET.online) onReconnect(); }); }
+      render();   // le message « hors ligne / de retour en ligne » vient de l'événement ci-dessus
+    };
+    O.offlineBanner = offlineBanner;
+    offlineBanner = function () {
+      if (!S.forceOffline || !S.acct) return O.offlineBanner();
+      return `<p class="demo-note net-note">${icon('cloudoff')}<span><b>Mode hors ligne activé.</b> Tes objectifs restent disponibles ; tes modifications partiront quand tu repasseras en ligne. <button class="linkbtn" data-act="force-offline">Repasser en ligne</button></span></p>`;
+    };
+    // Notifications : abonnement push de ce navigateur (sinon notifications locales seulement)
+    O.notifOn = notifOn;
+    notifOn = function () {
+      if (!S.acct) return O.notifOn();
+      if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+      return PUSH_SUPPORTED ? !!S.pushOn : !!me()?.settings.browser;
+    };
+    O.setNotifications = setNotifications;
+    setNotifications = async function (on) {
+      if (!S.acct) return O.setNotifications(on);
+      const u = me();
+      if (!on) { await pushUnsubscribe(); u.settings.browser = false; save(); return false; }
+      const r = await Notification.requestPermission();
+      if (r !== 'granted') { u.settings.browser = false; save(); return false; }
+      u.settings.browser = true; save();
+      if (PUSH_SUPPORTED) await pushSubscribe();
+      return true;
     };
     // Fenêtres propres au mode connecté (suppression du compte avec mot de passe)
     O.renderModal = renderModal;
@@ -1070,6 +1144,7 @@
     function afterConnect(password) {
       void (password ? vaultUnlock(password).catch(e => console.warn('PepsGoal : coffre de clés indisponible', e)) : Promise.resolve())
         .then(() => e2eDevice()).then(() => e2eShareMissing()).then(() => decryptAll()).then(() => { updateChat(); softRender(); }).catch(() => undefined);
+      void pushResume();
       void syncNow().then(() => {
         const u = me(); if (!u) return;
         if (!u.tutorialDone && !UI.modal) { UI.modal = { type: 'tuto', step: 0 }; renderModal(); }
@@ -1229,6 +1304,22 @@
         await refreshSocial();
       } catch (e) { fail(e); }
     });
+    O.likeStory = likeStory;
+    likeStory = async function (st, on) {
+      if (!S.acct) return O.likeStory(st, on);
+      try { await api(on ? 'POST' : 'DELETE', `/v1/stories/${st.id}/like`, on ? {} : undefined); st.liked = on; rawSave(); }
+      catch (e) { fail(e); throw e; }
+    };
+    wrapA('story-seen', async () => {
+      const f = UI.fs, st = f?.groups?.[f.ui]?.list?.[f.si];
+      if (st && !f.showSeen && !st._viewsLoaded && st._views) { await loadStoryViews(st); rawSave(); }
+      A['story-seen']();
+    });
+    // Rappel d'essai : envoyé par le serveur quand ce navigateur est abonné aux notifications push
+    wrapA('test-reminder', () => {
+      if (!S.pushOn) return A['test-reminder']();
+      void api('POST', '/v1/push/test', {}).then(r => toast(r.sent ? 'Notification de test envoyée : elle s’affiche si PepsGoal est en arrière-plan.' : 'Aucun appareil abonné aux notifications.', 'bell')).catch(fail);
+    });
     wrapA('story-del', id => {
       A['story-del'](id);
       void api('DELETE', `/v1/stories/${id}`).catch(fail);
@@ -1305,6 +1396,7 @@
    * Démarrage
    * ========================================================================================= */
   function boot() {
+    S.forceOffline = ls.get(OFF_KEY) === true;
     install();
     S.tokens = ls.get(TOK_KEY);
     const cached = ls.get(ACCT_KEY);
@@ -1313,8 +1405,18 @@
       DB = migrate(cached); dropLocalOfficial(); cloudState();
       if (me() && !me().tutorialDone) UI.modal = { type: 'tuto', step: 0 };
     }
+    // Ouverture depuis une notification : écran demandé (?view=…)
+    const view = new URLSearchParams(location.search).get('view');
+    if (view && ['today', 'goals', 'feed', 'friends', 'profile', 'settings'].includes(view)) { UI.view = view; history.replaceState(null, '', location.pathname); }
     render();
-    void ping().then(() => { if (S.acct) { void e2eDevice().then(() => e2eShareMissing()).catch(() => undefined); void syncNow().then(() => refreshSocial()); } });
+    if ('serviceWorker' in navigator && CFG.platform === 'web') {
+      void swRegister();
+      navigator.serviceWorker.addEventListener('message', e => {
+        if (e.data?.type === 'open' && e.data.view && me()) { UI.view = e.data.view; UI.modal = null; render(); }
+        if (e.data?.type === 'push') scheduleSocial(300);
+      });
+    }
+    void ping().then(() => { if (S.acct) { void e2eDevice().then(() => e2eShareMissing()).catch(() => undefined); void syncNow().then(() => refreshSocial()); void pushResume(); } });
     setInterval(() => { if (S.acct && NET.online) { void syncNow(); void refreshSocial(); void e2eShareMissing().catch(() => undefined); } }, 60000);
     setInterval(() => {
       const m = UI.modal; if (!S.acct || !NET.online || m?.type !== 'chat') return;
@@ -1322,6 +1424,41 @@
       const share = ++S.chatTick % 2 === 0 ? e2eOpenConv(m.group ? { group: m.group } : { peer: m.with }).catch(() => undefined) : null;
       void Promise.resolve(share).then(() => m.group ? loadGroup(m.group, false) : loadConversation(m.with, false)).then(async () => { await decryptAll(); updateChat(); }).catch(() => undefined);
     }, 8000);
+  }
+
+  /* =========================================================================================
+   * Notifications push (version web) : service worker + abonnement du navigateur au serveur
+   * ========================================================================================= */
+  const PUSH_SUPPORTED = CFG.platform === 'web' && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  let swReg = null;
+  async function swRegister() {
+    if (!('serviceWorker' in navigator) || CFG.platform !== 'web') return null;
+    try { swReg = await navigator.serviceWorker.register('/sw.js'); } catch (e) { swReg = null; }
+    return swReg;
+  }
+  const urlB64 = v => { const pad = '='.repeat((4 - v.length % 4) % 4), b = atob((v + pad).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(b, c => c.charCodeAt(0)); };
+  async function pushSubscribe() {
+    const reg = swReg || await swRegister(); if (!reg?.pushManager) throw new Error('Les notifications push ne sont pas prises en charge par ce navigateur.');
+    const { publicKey } = await api('GET', '/v1/push/key'), key = urlB64(publicKey);
+    let sub = await reg.pushManager.getSubscription();
+    // Abonnement fait avec une autre clé du serveur : on le renouvelle
+    const same = sub?.options?.applicationServerKey && new Uint8Array(sub.options.applicationServerKey).every((x, i) => x === key[i]);
+    if (sub && !same) { await sub.unsubscribe().catch(() => undefined); sub = null; }
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+    const j = sub.toJSON();
+    await api('POST', '/v1/push/subscriptions', { endpoint: j.endpoint, keys: j.keys, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris' });
+    S.pushOn = true; ls.set(PUSH_KEY, true);
+  }
+  async function pushUnsubscribe() {
+    S.pushOn = false; ls.set(PUSH_KEY, false);
+    const reg = swReg || await navigator.serviceWorker?.getRegistration?.().catch(() => null);
+    const sub = await reg?.pushManager?.getSubscription().catch(() => null);
+    if (sub) { await api('DELETE', '/v1/push/subscriptions', { endpoint: sub.endpoint }).catch(() => undefined); await sub.unsubscribe().catch(() => undefined); }
+  }
+  // Au démarrage et à la connexion : le serveur doit connaître l'abonnement de ce navigateur pour ce compte
+  async function pushResume() {
+    if (!PUSH_SUPPORTED || !S.acct || ls.get(PUSH_KEY) !== true || Notification.permission !== 'granted') { S.pushOn = false; return; }
+    try { await pushSubscribe(); } catch (e) { console.warn('PepsGoal : notifications push indisponibles', e); }
   }
 
   window.PGCloud = { boot, syncNow, refreshSocial, state: S };

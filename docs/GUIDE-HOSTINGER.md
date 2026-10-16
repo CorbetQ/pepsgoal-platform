@@ -118,6 +118,18 @@ Dans hPanel › Domaines › pepsgoal.fr › DNS, ajoute un enregistrement **A**
 Au plus 30 e-mails par heure (`MAIL_MAX_PER_HOUR`) ; au-delà, les alertes restent visibles dans l'onglet Modération. Sans `SMTP_HOST`, aucun e-mail n'est envoyé.
 Autre fournisseur SMTP (Brevo, OVH…) : remplace les valeurs SMTP et mets à jour la section « Destinataires et services tiers » de la charte de confidentialité.
 
+## 6 quater. Notifications push
+
+Rien à configurer : au premier démarrage, le serveur génère ses clés VAPID et les garde en base (table `app_settings`). Pour fixer les clés toi-même (par exemple pour les réutiliser sur un autre serveur), ajoute dans `.env` :
+
+```
+VAPID_PUBLIC_KEY=...
+VAPID_PRIVATE_KEY=...
+VAPID_SUBJECT=mailto:quentin-corbet@outlook.fr
+```
+
+(clés générées avec `npx web-push generate-vapid-keys`). Changer de clés oblige chaque navigateur à se réabonner, ce que l'application fait seule à l'ouverture suivante. Le fichier `/sw.js` doit être servi sans cache : c'est déjà le cas avec le `Caddyfile` et le `.htaccess` fournis.
+
 ## 7. Sauvegardes
 
 1. Sauvegarde quotidienne de la base et des photos (14 jours conservés dans `/root/pepsgoal-backups`) :

@@ -64,6 +64,12 @@ Un objectif partagé est un simple résumé (titre, type, progression) dans le m
 
 Un sondage est un message chiffré (`{ "k": "poll", "q", "o": [{ "id", "t" }], "multi" }`). Chaque vote est un message chiffré de la même conversation (`{ "k": "vote", "p": id du sondage, "o": [choix] }`), invisible dans le fil ; le dernier vote de chaque participant compte. Le serveur ne voit ni la question, ni les choix, ni les votes.
 
+## Réponses, réactions et mentions
+
+- **Réponse** : le message contient, chiffrée avec lui, la référence du message cité (`{ "k": "text", "t", "r": { "id", "f": expéditeur, "s": extrait de 90 caractères } }`).
+- **Réaction** : un message chiffré de la conversation (`{ "k": "react", "p": id du message, "e": emoji, "on": true|false }`), invisible dans le fil ; la dernière réaction de chaque personne pour chaque emoji fait foi. Il est envoyé avec `silent: true` pour ne pas déclencher de notification push.
+- **Mention** (groupes) : le texte reste chiffré (`"mn": [ids]` dans le contenu) ; seule la liste des membres mentionnés est transmise en clair au serveur (`mentions`) pour qu'il les prévienne. Le serveur ne voit ni le texte, ni la réponse, ni l'emoji.
+
 ## Vérifier qu'aucune clé n'a été substituée
 
 Chaque conversation affiche un **code de sécurité** de 30 chiffres. Il est calculé sur les clés publiques de tous les appareils des deux amis et doit être identique sur les deux téléphones.

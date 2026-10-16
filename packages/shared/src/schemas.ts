@@ -142,7 +142,13 @@ export const NotifyBody = z.object({ to: Id, text: z.string().trim().min(1).max(
 export const CommentBody = z.object({ text: z.string().trim().min(1).max(280) });
 /** Messages privés : uniquement chiffrés de bout en bout (voir e2e.ts). */
 /** Message chiffré ; `attachments` liste les pièces jointes chiffrées (photo, message vocal) qu'il référence. */
-export const MessageBody = z.object({ e2e: E2EPayload, attachments: z.array(Id).max(4).default([]) });
+export const MessageBody = z.object({
+  e2e: E2EPayload, attachments: z.array(Id).max(4).default([]),
+  /** Réaction ou vote (contenu chiffré) : pas de notification push. */
+  silent: z.boolean().default(false),
+  /** Membres mentionnés (@) dans un groupe : notifiés « t'a mentionné » (le texte reste chiffré). */
+  mentions: z.array(Id).max(30).default([])
+});
 /** Groupes de discussion */
 export const GroupCreateBody = z.object({ name: z.string().trim().min(1).max(40), emoji: z.string().trim().min(1).max(16).default('💬'), members: z.array(Id).min(1).max(30) });
 export const GroupPatchBody = z.object({ name: z.string().trim().min(1).max(40).optional(), emoji: z.string().trim().min(1).max(16).optional() });

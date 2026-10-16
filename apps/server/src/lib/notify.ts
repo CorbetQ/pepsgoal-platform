@@ -1,12 +1,15 @@
 import type postgres from 'postgres';
 import { sql as rootSql } from '../db/client.js';
 import { sendModMail, type ModMail } from './mailer.js';
+import { pushLater } from './push.js';
 
 type Q = postgres.Sql | postgres.TransactionSql;
 type Json = postgres.JSONValue;
 
 export async function notify(q: Q, userId: string, type: string, text: string, data: Record<string, Json> = {}): Promise<void> {
   await q`insert into notifications (user_id, type, text, data) values (${userId}, ${type}, ${text.slice(0, 300)}, ${q.json(data)})`;
+  const VIEW: Record<string, string> = { like: 'feed', comment: 'feed', friend: 'friends', group: 'friends', story: 'feed', mod: 'feed', official: 'friends', mention: 'friends' };
+  pushLater(userId, { title: 'PepsGoal', body: text.slice(0, 240), tag: type, view: VIEW[type] ?? 'today' });
 }
 
 let officialIdCache: string | null = null;
@@ -22,6 +25,7 @@ export async function officialMessage(q: Q, toUserId: string, text: string, tag:
   const from = await officialId(q);
   if (!from) return;
   await q`insert into messages (sender_id, recipient_id, text, official, tag, auto) values (${from}, ${toUserId}, ${text.slice(0, 600)}, true, ${tag}, ${auto})`;
+  if (!auto) pushLater(toUserId, { title: 'PepsGoal Officiel', body: text.slice(0, 240), tag: 'official', view: 'friends' });
 }
 
 /** Décision de modération : notification + message officiel automatique. */

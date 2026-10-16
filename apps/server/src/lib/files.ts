@@ -17,6 +17,12 @@ function mediaName(url: unknown): string | null {
   return /^[\w-]+\.(jpg|png|webp)$/.test(name) ? name : null;
 }
 
+/** Efface du disque des images publiques de ce serveur (story supprimée ou archivée depuis plus d'un an). */
+export async function removeMedia(urls: unknown[]): Promise<void> {
+  const names = urls.map(mediaName).filter((n): n is string => !!n);
+  await Promise.all(names.map(n => unlink(path.join(path.resolve(env.MEDIA_DIR), n)).catch(() => undefined)));
+}
+
 /**
  * Suppression d'un compte : efface ses fichiers du disque (photo de profil, photos des publications et des stories,
  * pièces jointes chiffrées). Les lignes de la base disparaissent ensuite en cascade avec le compte.
