@@ -2,6 +2,19 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## 2.1.1 (19 octobre 2026)
+
+### Corrections
+- Changement de page avec le thème Météo : le contenu pouvait rester invisible sur certains téléphones (Chrome Android). Le ciel n'est plus fait de dizaines d'éléments animés et floutés, qui saturaient la mémoire graphique, mais d'un seul canevas.
+- La transition de page ne masque plus jamais le contenu (elle part de 40 % d'opacité) et est désactivée avec le thème Météo.
+
+### Thème Météo
+- Ciel redessiné : nuages en relief sur trois profondeurs, soleil avec halo et rayons, lune avec cratères, étoiles scintillantes et étoiles filantes, pluie selon l'intensité, neige qui virevolte, éclairs, brouillard, ciel plus gris par temps de neige.
+- 30 images par seconde au plus, pause quand l'application est en arrière-plan, image fixe si les animations sont désactivées.
+
+### Apparence
+- Nouveau réglage « Flou du verre givré » : faible, moyen (par défaut) ou fort, synchronisé avec le compte.
+
 ## 2.1.0 (19 octobre 2026)
 
 ### Objectifs

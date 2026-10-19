@@ -192,7 +192,7 @@
   // État d'interface propre au compte, synchronisé avec les réglages
   const USER_KEYS = ['tutorialDone', 'goalGroups', 'goalGroupOf', 'frozenDays', 'milestones', 'badges', 'perfectDays', 'favGoals', 'hiddenSuggest', 'aprilFool', 'badgeFams'];
   // Réglages rangés dans u.settings côté application (noSuggest est lu par le serveur pour les suggestions d'amis)
-  const SETTING_KEYS = ['browser', 'defaultVis', 'bg', 'accentCustom', 'noSuggest', 'weather', 'wxCard'];
+  const SETTING_KEYS = ['browser', 'defaultVis', 'bg', 'accentCustom', 'noSuggest', 'weather', 'wxCard', 'glassBlur'];
   const EXTRA_KEYS = [...USER_KEYS, ...SETTING_KEYS];
   function toServerSettings(u) {
     const s = u.settings || {}, extra = {};
