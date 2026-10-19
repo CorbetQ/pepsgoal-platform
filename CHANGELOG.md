@@ -2,6 +2,15 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## 2.1.6 (19 octobre 2026)
+
+### Corrections
+- Récap J+1 : le reflet lumineux sautait à chaque boucle. Il glisse désormais par une transformation (exécutée par le compositeur) et part comme il arrive hors de la carte : la boucle redémarre sans saut visible.
+
+### Apparence
+- Verre givré : nouveau niveau « Très faible » (flou minimal, panneaux presque opaques), dans tous les thèmes.
+- Accueil : la carte « En cours » peut être masquée, avec un bouton sur la carte ou dans Paramètres › Apparence (réglage synchronisé avec le compte).
+
 ## 2.1.5 (19 octobre 2026)
 
 ### Récaps

@@ -1,6 +1,6 @@
 {
   "name": "@pepsgoal/server",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "license": "MIT",
   "private": true,
   "type": "module",

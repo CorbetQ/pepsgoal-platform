@@ -1344,6 +1344,12 @@ canvas.bg-sky{width:100%;height:100%}
 /* Flou du verre givré : faible, moyen (par défaut) ou fort */
 :root{--gb:14px}
 :root[data-blur="low"]{--gb:6px}
+:root[data-blur="xlow"]{--gb:2px;--glass:rgba(255,255,255,.88);--glass-strong:rgba(255,255,255,.96);--glass-card:rgba(255,255,255,.92)}
+:root[data-theme="dark"][data-blur="xlow"]{--glass:rgba(24,26,66,.9);--glass-strong:rgba(28,30,76,.97);--glass-card:rgba(24,26,66,.93)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"])[data-blur="xlow"]{--glass:rgba(24,26,66,.9);--glass-strong:rgba(28,30,76,.97);--glass-card:rgba(24,26,66,.93)}}
+:root[data-skin="oled"][data-blur="xlow"]{--glass:rgba(12,12,16,.95);--glass-strong:#0B0B0F;--glass-card:#0C0C10}
+:root[data-skin="weather"][data-blur="xlow"]{--glass:rgba(255,255,255,.82);--glass-card:rgba(255,255,255,.86)}
+:root[data-skin="weather"][data-theme="dark"][data-blur="xlow"]{--glass:rgba(18,22,48,.84);--glass-card:rgba(18,22,48,.88)}
 :root[data-blur="high"]{--gb:28px}
 .glass{-webkit-backdrop-filter:blur(var(--gb)) saturate(160%);backdrop-filter:blur(var(--gb)) saturate(160%)}
 .sheet{-webkit-backdrop-filter:blur(calc(var(--gb) + 10px)) saturate(170%);backdrop-filter:blur(calc(var(--gb) + 10px)) saturate(170%)}
@@ -1388,7 +1394,8 @@ canvas.bg-sky{width:100%;height:100%}
 .rb-sub{display:block;margin-top:6px;font-size:11px;font-weight:800;line-height:1.25;opacity:.85}
 /* Bilan J+1 : halo lumineux qui respire */
 .recap-btn.past{box-shadow:0 0 0 2px rgba(255,255,255,.75),0 0 22px 4px color-mix(in srgb,var(--flame) 55%,transparent),0 0 46px 10px color-mix(in srgb,var(--flame-2) 30%,transparent)}
-.recap-btn.past::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);background-size:250% 100%;background-position:120% 0;pointer-events:none;z-index:-1}
+.recap-btn.past{overflow:hidden}
+.recap-btn.past::after{content:"";position:absolute;top:-20%;bottom:-20%;left:0;width:55%;background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.5) 50%,transparent 100%);transform:translateX(-140%) skewX(-12deg);pointer-events:none;z-index:-1;will-change:transform}
 @media (prefers-reduced-motion:no-preference){
   .story{background-size:180% 180%;animation:sbgPan 14s ease-in-out infinite alternate}
   .st-float i{animation:stFloat var(--d) linear var(--dl) infinite}
@@ -1406,11 +1413,12 @@ canvas.bg-sky{width:100%;height:100%}
   .st-joke{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:.55s}
   .st-final .st-card{animation:popIn .6s cubic-bezier(.2,1.4,.4,1) both}
   .recap-btn.past{animation:recapHalo 2.6s ease-in-out infinite}
-  .recap-btn.past::after{animation:recapShine 3.2s ease-in-out infinite}
+  .recap-btn.past::after{animation:recapShine 3.6s cubic-bezier(.45,0,.55,1) infinite}
   .rb-tag{animation:popIn .5s cubic-bezier(.3,1.6,.5,1) both}
 }
 @keyframes recapHalo{50%{box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 30px 8px color-mix(in srgb,var(--flame) 70%,transparent),0 0 64px 16px color-mix(in srgb,var(--flame-2) 40%,transparent)}}
-@keyframes recapShine{0%,55%{background-position:120% 0}100%{background-position:-120% 0}}
+/* Le reflet part et arrive hors de la carte : la boucle redémarre sans saut visible */
+@keyframes recapShine{0%,58%{transform:translateX(-140%) skewX(-12deg)}100%{transform:translateX(300%) skewX(-12deg)}}
 @keyframes sbgPan{0%{background-position:0% 0%}100%{background-position:100% 100%}}
 @keyframes stFloat{0%{transform:translateY(0) rotate(0);opacity:0}12%{opacity:.5}88%{opacity:.35}100%{transform:translateY(-125vh) rotate(var(--r));opacity:0}}
 @keyframes slideInR{from{opacity:.3;transform:translateX(38px)}}
@@ -1419,6 +1427,9 @@ canvas.bg-sky{width:100%;height:100%}
 @keyframes favGlow{50%{box-shadow:0 0 0 4px rgba(255,255,255,.6)}}
 @keyframes emojiSpin{from{transform:rotate(-200deg) scale(.2);opacity:0}}
 @keyframes awardIn{from{opacity:0;transform:translateY(16px) scale(.9)}}
+.ongoing-h{display:flex;align-items:center;gap:4px}
+.sm-ic{width:30px;height:30px}
+.sm-ic svg{width:15px;height:15px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1661,7 +1672,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '2.1.5';
+const APP_VERSION = '2.1.6';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -2921,7 +2932,7 @@ function applyTheme(){
   rs.setProperty('--flame-2', ac[0]); rs.setProperty('--flame', ac[1]); rs.setProperty('--pink', ac[2]);
   const root = document.documentElement;
   root.removeAttribute('data-skin');
-  root.setAttribute('data-blur', ['low', 'high'].includes(s0?.glassBlur) ? s0.glassBlur : 'mid');
+  root.setAttribute('data-blur', ['xlow', 'low', 'high'].includes(s0?.glassBlur) ? s0.glassBlur : 'mid');
   if (t === 'oled') { root.setAttribute('data-theme', 'dark'); root.setAttribute('data-skin', 'oled'); }
   // Thème Météo : clair le jour, sombre la nuit et au crépuscule, selon le ciel de la ville choisie
   else if (t === 'weather') { root.setAttribute('data-skin', 'weather'); root.setAttribute('data-theme', skyDark() ? 'dark' : 'light'); }
@@ -3128,7 +3139,7 @@ function viewToday(){
     ${total ? `<ul class="items">${plan.due.sort((a, b) => a.done - b.done || isFav(b.g) - isFav(a.g)).map(dueRow).join('')}</ul>` : `<div class="empty"><b>Rien de prévu aujourd'hui</b><p>Profite de ta journée, ou ajoute une routine.</p></div>`}
   </section>
   ${verifySection()}
-  ${plan.ongoing.length ? `<section class="glass card"><div class="card-h"><h2>En cours</h2><span class="count">${plan.ongoing.length}</span></div><ul class="items">${plan.ongoing.map(ongoingRow).join('')}</ul></section>` : ''}
+  ${plan.ongoing.length && !u.settings.hideOngoing ? `<section class="glass card"><div class="card-h"><h2>En cours</h2><span class="ongoing-h"><span class="count">${plan.ongoing.length}</span><button class="icon-btn plain sm-ic" data-act="hide-ongoing" aria-label="Masquer la carte « En cours » (réactivable dans Paramètres › Apparence)" title="Masquer cette carte">${icon('x')}</button></span></div><ul class="items">${plan.ongoing.map(ongoingRow).join('')}</ul></section>` : ''}
   ${recapCard()}`}`;
 }
 
@@ -4081,7 +4092,8 @@ document.addEventListener('change', e => {
   const s = me().settings;
   if (k === 'theme') { s.theme = t.value; save(); render(); if (t.value === 'weather' && !s.weather) toast('Choisis ta ville dans Paramètres › Météo pour un ciel en direct.', 'cloud'); return; }
   if (k === 'wxcard') { s.wxCard = t.checked; save(); render(); return; }
-  if (k === 'blur') { s.glassBlur = ['low', 'high'].includes(t.value) ? t.value : 'mid'; save(); applyTheme(); toast(`Flou du verre givré : ${{ low:'faible', mid:'moyen', high:'fort' }[s.glassBlur]}.`, 'palette'); return; }
+  if (k === 'ongoing') { s.hideOngoing = !t.checked; save(); toast(t.checked ? 'Carte « En cours » affichée sur l’accueil.' : 'Carte « En cours » masquée.', 'list'); return; }
+  if (k === 'blur') { s.glassBlur = ['xlow', 'low', 'high'].includes(t.value) ? t.value : 'mid'; save(); applyTheme(); toast(`Verre givré : ${{ xlow:'très faible', low:'faible', mid:'moyen', high:'fort' }[s.glassBlur]}.`, 'palette'); return; }
   if (k === 'accent') { if (t.value === 'custom') return; s.accent = Number(t.value); s.accentCustom = null; save(); render(); return; }
   if (k === 'bg') { if (t.value === 'custom' && !bgImage()) { t.checked = false; document.getElementById('bg-file')?.click(); return; } s.bg = t.value; save(); render(); return; }
   if (k === 'suggest') { s.noSuggest = !t.checked; save(); toast(t.checked ? 'Tu peux apparaître dans les suggestions d’amis.' : 'Tu n’apparais plus dans les suggestions d’amis.', 'users'); return; }
@@ -5909,8 +5921,9 @@ const SET_BODY = {
   appearance(u){ const s = u.settings; return `<section class="glass card"><div class="settings">
     <div class="set-row"><div><b>Thème</b><small>Clair, sombre, OLED (noir pur), Météo (ciel en direct) ou selon ton appareil</small></div>
       <div class="seg wrap">${[['system','Auto'],['light','Clair'],['dark','Sombre'],['oled','OLED'],['weather','Météo']].map(([k, l]) => `<label><input type="radio" name="theme" value="${k}" data-set="theme" ${s.theme === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
-    <div class="set-row"><div><b id="gblur-l">Flou du verre givré</b><small>${A11Y.transp || A11Y.contrast ? 'Sans effet : la transparence est désactivée dans Accessibilité.' : 'Intensité du flou derrière les panneaux transparents'}</small></div>
-      <div class="seg blur-seg" role="radiogroup" aria-labelledby="gblur-l">${[['low','Faible'],['mid','Moyen'],['high','Fort']].map(([k, l]) => `<label><input type="radio" name="gblur" value="${k}" data-set="blur" ${(s.glassBlur || 'mid') === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
+    <div class="set-row"><div><b id="ongoing-l">Carte « En cours » sur l’accueil</b><small>Deadlines, projets, objectifs chiffrés et défis en cours, sous « À valider aujourd’hui »</small></div><span class="switch"><input type="checkbox" data-set="ongoing" ${s.hideOngoing ? '' : 'checked'} aria-labelledby="ongoing-l"><span></span></span></div>
+    <div class="set-row"><div><b id="gblur-l">Flou du verre givré</b><small>${A11Y.transp || A11Y.contrast ? 'Sans effet : la transparence est désactivée dans Accessibilité.' : 'Transparence et flou des panneaux : « Très faible » les rend presque opaques'}</small></div>
+      <div class="seg blur-seg" role="radiogroup" aria-labelledby="gblur-l">${[['xlow','Très faible'],['low','Faible'],['mid','Moyen'],['high','Fort']].map(([k, l]) => `<label><input type="radio" name="gblur" value="${k}" data-set="blur" ${(s.glassBlur || 'mid') === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
     <div class="set-row" role="radiogroup" aria-label="Couleur d'accent"><div><b>Couleur d'accent</b><small>${validAccent(s.accentCustom) ? 'Tirée de ton arrière-plan' : esc((ACCENTS[s.accent] || ACCENTS[0]).n)} · flammes, boutons et anneau de progression</small></div>
       <div class="swatches">${ACCENTS.map((a, i) => `<label title="${esc(a.n)}"><input type="radio" name="accent" value="${i}" data-set="accent" ${s.accent === i && !validAccent(s.accentCustom) ? 'checked' : ''} aria-label="${esc(a.n)}"><span class="sw" style="--sw:${a.c[1]};background:${accentGrad(i)}"></span></label>`).join('')}${validAccent(s.accentCustom) ? `<label title="Couleur de ton arrière-plan"><input type="radio" name="accent" value="custom" data-set="accent" checked aria-label="Couleur tirée de ton arrière-plan"><span class="sw" style="--sw:${s.accentCustom[1]};background:linear-gradient(135deg,${s.accentCustom[0]},${s.accentCustom[1]} 55%,${s.accentCustom[2]})"></span></label>` : ''}</div></div>
     ${bgSettingsHtml(u)}
@@ -6867,6 +6880,11 @@ const e2eInfo = text => `<div class="e2e-info" id="e2e-info" ${UI.e2eOpen ? '' :
 
 /* ---------------- notes de version ---------------- */
 const PATCH_NOTES = [
+  ['2.1.6', '19 octobre 2026', [
+    'Récaps : le reflet lumineux du bilan J+1 ne saute plus.',
+    'Apparence : nouveau niveau de verre « Très faible » (panneaux presque opaques, flou minimal).',
+    'Accueil : la carte « En cours » peut être masquée (bouton sur la carte ou Paramètres › Apparence).'
+  ]],
   ['2.1.5', '19 octobre 2026', [
     'Récaps : la pastille du bilan J+1 ne déborde plus et le titre « Semaine passée » tient dans sa carte.',
     'Le récap disponible le lendemain d’une période brille d’un halo lumineux pour ne pas le manquer.'
@@ -7522,6 +7540,7 @@ checkBadges = function (){
 
 /* ---------------- actions ---------------- */
 Object.assign(ACT, {
+  'hide-ongoing': () => { const u = me(); u.settings.hideOngoing = true; save(); render(); toast('Carte « En cours » masquée. Réaffiche-la dans Paramètres › Apparence.', 'list'); },
   'share-goal': id => { UI.modal = { type:'shareHub', goalId:id }; renderModal(); },
   'fs-share': () => { const f = UI.fs; const m = { type:'shareHub', text:f.text, period:f.type === 'recap' ? f.p : null }; closeFs(); UI.modal = m; renderModal(); },
   'share-back': () => { UI.modal.step = null; renderModal(); },
