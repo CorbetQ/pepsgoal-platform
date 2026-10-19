@@ -2,6 +2,11 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## 2.1.2 (19 octobre 2026)
+
+### Corrections
+- Barre de navigation : le fond de l'onglet sélectionné ne se téléporte plus quand la page se reconstruit après l'arrivée des données de l'API (Feed, Amis). La glissade démarre dès le toucher, tourne sur le compositeur (Web Animations) et reprend exactement là où elle en était après chaque reconstruction.
+
 ## 2.1.1 (19 octobre 2026)
 
 ### Corrections

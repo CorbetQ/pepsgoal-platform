@@ -1266,7 +1266,7 @@ input[type=date],input[type=time],input[type=datetime-local]{min-width:0;color-s
 
 /* ---- navigation : fond de sélection qui glisse d'un onglet à l'autre ---- */
 .tabbar,.side{isolation:isolate}
-.nav-ind{position:absolute;top:0;left:0;width:0;height:0;border-radius:18px;background:var(--ink);z-index:0;pointer-events:none;opacity:0;box-shadow:0 6px 18px -8px rgba(0,0,0,.45);transition:transform .45s cubic-bezier(.3,1.25,.5,1),width .45s cubic-bezier(.3,1.25,.5,1),height .45s,opacity .2s}
+.nav-ind{position:absolute;top:0;left:0;width:0;height:0;border-radius:18px;background:var(--ink);z-index:0;pointer-events:none;opacity:0;box-shadow:0 6px 18px -8px rgba(0,0,0,.45);transition:opacity .2s;will-change:transform}
 .side .nav-ind{border-radius:14px}
 .tab,.nav-a{position:relative;z-index:1;transition:color .3s ease}
 .tab[aria-current="page"],.nav-a[aria-current="page"]{background:transparent!important;color:var(--bg)}
@@ -1601,7 +1601,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '2.1.1';
+const APP_VERSION = '2.1.2';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -2886,6 +2886,7 @@ function render(){
   const navKey = UI.view === 'settings' ? 'profile' : UI.view;
   const title = UI.view === 'settings' ? 'Paramètres' : nav.find(n => n[0] === UI.view)[1];
   const views = { today:viewToday, goals:viewGoals, feed:viewFeed, friends:viewFriends, profile:viewProfile, mod:viewModeration, settings:viewSettings };
+  navIndSnapshot();   // position réelle du fond de l'onglet, même en pleine animation, avant de reconstruire la page
   app.innerHTML = `
   <div class="shell">
     <nav class="side glass" aria-label="Navigation principale">
@@ -3729,7 +3730,13 @@ function enter(u){
 
 /* ================= événements ================= */
 const ACT = {
-  nav: id => { UI.view = id; UI.modal = null; render(); scrollTo({ top:0 }); },
+  // Le fond de l'onglet glisse dès le toucher ; la page (parfois lourde) est construite à l'image suivante
+  nav: id => {
+    slideNavTo(id); UI.view = id; UI.modal = null;
+    // Construite juste après la première image de la glissade, et au plus tard 50 ms après le toucher (images ralenties, onglet en arrière-plan…)
+    let done = false; const go = () => { if (done) return; done = true; if (UI.view !== id) return; render(); scrollTo({ top:0 }); };
+    requestAnimationFrame(() => setTimeout(go, 0)); setTimeout(go, 50);
+  },
   'auth-tab': id => { UI.authTab = id; UI.authError = ''; render(); },
   'demo-login': () => { SANDBOX = true; ksReset(); DB = migrate(seed()); enter(DB.users.find(u => u.username === 'camille')); void encryptLegacy(); toast('Mode démonstration : rien n’est enregistré.', 'star'); },
   logout: () => {
@@ -6682,6 +6689,9 @@ const e2eInfo = text => `<div class="e2e-info" id="e2e-info" ${UI.e2eOpen ? '' :
 
 /* ---------------- notes de version ---------------- */
 const PATCH_NOTES = [
+  ['2.1.2', '19 octobre 2026', [
+    'Correction : le fond de l’onglet sélectionné ne se téléporte plus quand une page recharge ses données (Feed, Amis) ; il glisse dès le toucher et reprend sa course là où il en était.'
+  ]],
   ['2.1.1', '19 octobre 2026', [
     'Correction : en changeant de page avec le thème Météo, le contenu pouvait rester invisible sur certains téléphones.',
     'Ciel du thème Météo redessiné : nuages en relief sur plusieurs profondeurs, soleil et halo, lune et cratères, étoiles scintillantes et étoiles filantes, vraie pluie, neige qui virevolte, éclairs et brouillard ; bien plus léger pour le téléphone.',
@@ -7222,19 +7232,64 @@ const SKY_LAYER = '<canvas class="bg-l bg-sky" aria-hidden="true"></canvas>';
 setInterval(() => { if (me()?.settings.theme === 'weather') { applyTheme(); wxEnsure(); } }, 60e3);
 
 /* ---------------- indicateur glissant de la barre de navigation ---------------- */
+// Avant chaque reconstruction de la page (données reçues de l'API…), on note où se trouve réellement le fond de
+// l'onglet sélectionné : le nouveau fond repart de là au lieu de sauter, et une glissade en cours continue.
+function navIndSnapshot(){
+  const prev = UI.navInd || (UI.navInd = {});
+  for (const sel of ['.tabbar', '.side']) {
+    const nav = document.querySelector(sel), ind = nav?.querySelector(':scope > .nav-ind');
+    if (!ind || ind.style.opacity !== '1') continue;
+    const r = ind.getBoundingClientRect(), n = nav.getBoundingClientRect();
+    if (!r.width) continue;
+    prev[sel] = { x:Math.round(r.left - n.left - nav.clientLeft), y:Math.round(r.top - n.top - nav.clientTop), w:Math.round(r.width), h:Math.round(r.height) };
+  }
+}
+// Glissade du fond de l'onglet : animation Web Animations sur transform (exécutée par le compositeur, elle continue
+// même quand la page se reconstruit). Après chaque reconstruction, elle reprend exactement là où elle en était.
+const NAV_DUR = 450, NAV_EASE = 'cubic-bezier(.3,1.25,.5,1)';
+const navGeom = cur => ({ x:cur.offsetLeft, y:cur.offsetTop, w:cur.offsetWidth, h:cur.offsetHeight });
+const navSame = (a, b) => a && b && Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1 && Math.abs(a.w - b.w) <= 1 && Math.abs(a.h - b.h) <= 1;
+function navIndPlay(ind, from, to, elapsed){
+  const tf = r => `translate(${r.x}px,${r.y}px)`;
+  ind.getAnimations().forEach(x => x.cancel());
+  ind.style.transform = tf(to); ind.style.width = `${to.w}px`; ind.style.height = `${to.h}px`;
+  if (!from || navSame(from, to) || reduced() || !ind.animate) return;
+  const sized = Math.abs(from.w - to.w) > 1 || Math.abs(from.h - to.h) > 1;
+  const kf = [{ transform:tf(from) }, { transform:tf(to) }];
+  if (sized) { Object.assign(kf[0], { width:`${from.w}px`, height:`${from.h}px` }); Object.assign(kf[1], { width:`${to.w}px`, height:`${to.h}px` }); }
+  const anim = ind.animate(kf, { duration:NAV_DUR, easing:NAV_EASE });
+  if (elapsed > 0) anim.currentTime = Math.min(NAV_DUR, elapsed);
+}
+// Au toucher d'un onglet : le fond part tout de suite, avant que la nouvelle page ne soit construite
+function slideNavTo(view){
+  const key = view === 'settings' ? 'profile' : view, now = performance.now();
+  UI.navSlide = UI.navSlide || {};
+  for (const sel of ['.tabbar', '.side']) {
+    const nav = document.querySelector(sel), ind = nav?.querySelector(':scope > .nav-ind'), to = nav?.querySelector(`[data-act="nav"][data-id="${key}"]`);
+    if (!ind || !to || ind.style.opacity !== '1' || !to.offsetWidth) continue;
+    const r = ind.getBoundingClientRect(), n = nav.getBoundingClientRect();
+    const from = { x:Math.round(r.left - n.left - nav.clientLeft), y:Math.round(r.top - n.top - nav.clientTop), w:Math.round(r.width), h:Math.round(r.height) }, g = navGeom(to);
+    nav.querySelectorAll('[aria-current="page"]').forEach(x => x.removeAttribute('aria-current'));
+    to.setAttribute('aria-current', 'page');
+    UI.navSlide[sel] = { from, to:g, start:now };
+    navIndPlay(ind, from, g, 0);
+  }
+}
 function placeNavInd(){
-  const prev = UI.navInd || {};
+  const prev = UI.navInd || {}, now = performance.now();
+  UI.navSlide = UI.navSlide || {};
   for (const sel of ['.tabbar', '.side']) {
     const nav = document.querySelector(sel); if (!nav) continue;
     let ind = nav.querySelector(':scope > .nav-ind');
     if (!ind) { ind = document.createElement('span'); ind.className = 'nav-ind'; ind.setAttribute('aria-hidden', 'true'); nav.prepend(ind); }
     const cur = nav.querySelector('[aria-current="page"]');
     if (!cur || !nav.offsetParent && getComputedStyle(nav).position !== 'fixed' || !cur.offsetWidth) { ind.style.opacity = '0'; continue; }
-    const g = { x:cur.offsetLeft, y:cur.offsetTop, w:cur.offsetWidth, h:cur.offsetHeight }, p = prev[sel];
-    const put = r => { ind.style.transform = `translate(${r.x}px,${r.y}px)`; ind.style.width = `${r.w}px`; ind.style.height = `${r.h}px`; };
+    const g = navGeom(cur), sl = UI.navSlide[sel];
     ind.style.opacity = '1';
-    if (p && (p.x !== g.x || p.y !== g.y || p.w !== g.w) && !reduced()) { ind.style.transition = 'none'; put(p); void ind.offsetWidth; ind.style.transition = ''; put(g); }
-    else put(g);
+    // Glissade en cours vers ce même onglet : on la reprend à l'instant exact où elle en était
+    if (sl && navSame(sl.to, g) && now - sl.start < NAV_DUR) navIndPlay(ind, sl.from, g, now - sl.start);
+    else if (prev[sel] && !navSame(prev[sel], g)) { UI.navSlide[sel] = { from:prev[sel], to:g, start:now }; navIndPlay(ind, prev[sel], g, 0); }
+    else navIndPlay(ind, null, g, 0);
     prev[sel] = g;
   }
   UI.navInd = prev;
