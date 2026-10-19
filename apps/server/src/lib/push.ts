@@ -35,6 +35,10 @@ export interface PushPayload {
   tag?: string;
   /** Écran à ouvrir au toucher (vue de l'application). */
   view?: string;
+  /** « high » : remis tout de suite, même téléphone en veille (messages, mentions, rappels). Sinon le service push peut différer. */
+  urgency?: 'high' | 'normal';
+  /** Durée de validité en secondes : un rappel trop ancien ne sert plus à rien. */
+  ttl?: number;
 }
 
 /** Envoie la notification à tous les navigateurs abonnés du compte ; les abonnements expirés sont supprimés. */
@@ -46,7 +50,7 @@ export async function pushToUser(userId: string, payload: PushPayload): Promise<
   let sent = 0;
   await Promise.all(subs.map(async s => {
     try {
-      await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, body, { TTL: 12 * 3600, urgency: 'normal' });
+      await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, body, { TTL: payload.ttl ?? 12 * 3600, urgency: payload.urgency ?? 'normal', timeout: 10_000 });
       sent++;
       await sql`update push_subscriptions set last_ok_at = now() where id = ${s.id}`;
     } catch (e) {
@@ -73,10 +77,23 @@ export function localNow(tz: string): { day: string; hm: string } {
 }
 const addMinutes = (hm: string, n: number) => { const [h, m] = hm.split(':').map(Number); const t = Math.min(23 * 60 + 59, h! * 60 + m! + n); return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; };
 
+/** Un objectif « Période » est-il prévu ce jour-là (AAAA-MM-JJ dans le fuseau de l'utilisateur) ? */
+export function periodScheduled(d: { freq?: string; days?: number[]; mdays?: number[] }, day: string): boolean {
+  const [y, m, dd] = day.split('-').map(Number);
+  if (d.freq === 'month') {
+    const last = new Date(Date.UTC(y!, m!, 0)).getUTCDate();
+    // Un 31 (ou 29, 30) tombe le dernier jour des mois plus courts
+    return (d.mdays ?? []).some(x => Math.min(x, last) === dd);
+  }
+  const wd = (new Date(Date.UTC(y!, m! - 1, dd!)).getUTCDay() + 6) % 7;   // lundi = 0
+  return (d.days ?? []).includes(wd);
+}
+
 export async function sendReminders(): Promise<void> {
   const users = await sql<Row[]>`
     select u.id, u.settings, (select tz from push_subscriptions p where p.user_id = u.id order by p.created_at desc limit 1) as tz
     from users u where u.deleted_at is null and exists (select 1 from push_subscriptions p where p.user_id = u.id)`;
+  // Appelé chaque minute : on ne garde que les comptes qui ont un rappel ou un objectif Période à envoyer maintenant
   for (const u of users) {
     const s = u.settings ?? {}, { day, hm } = localNow(u.tz || 'Europe/Paris');
     for (const kind of ['morning', 'evening'] as const) {
@@ -93,7 +110,17 @@ export async function sendReminders(): Promise<void> {
         body = 'Tu n’as encore rien validé aujourd’hui : il est encore temps de garder ta série 🔥';
       }
       const fresh = await sql`insert into reminder_pushes (user_id, day, kind) values (${u.id}, ${day}, ${kind}) on conflict do nothing returning kind`;
-      if (fresh.length) await pushToUser(u.id, { title: kind === 'morning' ? 'Rappel du matin' : 'Rappel du soir', body, tag: 'reminder', view: 'today' });
+      if (fresh.length) await pushToUser(u.id, { title: kind === 'morning' ? 'Rappel du matin' : 'Rappel du soir', body, tag: 'reminder', view: 'today', urgency: 'high', ttl: 2 * 3600 });
+    }
+    // Objectifs « Période » : prévenir au début de la tranche horaire (dans les 10 minutes), si rien n'est encore validé
+    const periods = await sql<Row[]>`select id, title, data from goals where owner_id = ${u.id} and type = 'period' and deleted_at is null and not archived and completed_at is null`;
+    for (const g of periods) {
+      const d = g.data ?? {};
+      if (typeof d.start !== 'string' || hm < d.start || hm > addMinutes(d.start, 10) || !periodScheduled(d, day)) continue;
+      const [c] = await sql<{ n: number }[]>`select count(*)::int as n from checkins where goal_id = ${g.id} and date = ${day} and deleted_at is null`;
+      if ((c?.n ?? 0) > 0) continue;
+      const fresh = await sql`insert into reminder_pushes (user_id, day, kind) values (${u.id}, ${day}, ${'p:' + g.id}) on conflict do nothing returning kind`;
+      if (fresh.length) await pushToUser(u.id, { title: '⏰ C’est l’heure', body: `« ${g.title} » : ${d.start}–${d.end}`, tag: `period:${g.id}`, view: 'today', urgency: 'high', ttl: 2 * 3600 });
     }
   }
   await sql`delete from reminder_pushes where created_at < now() - interval '3 days'`;

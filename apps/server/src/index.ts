@@ -11,11 +11,15 @@ await app.listen({ port: env.PORT, host: '0.0.0.0' });
 
 const timer = setInterval(() => { housekeeping().catch(err => app.log.error(err)); }, 3600e3);
 await vapidKeys().catch(err => app.log.error(err));
-// Rappels du matin et du soir (notifications push), selon l'heure locale de chaque compte
+// Rappels du matin et du soir et début des objectifs Période (notifications push), vérifiés chaque minute selon l'heure locale de chaque compte
+let remindersBusy = false;
 const reminders = setInterval(() => {
-  sendReminders().catch(err => app.log.error(err));
-  aprilFools().catch(err => app.log.error(err));
-}, 5 * 60e3);
+  if (remindersBusy) return;   // un passage encore en cours : pas de chevauchement (ni de doublon)
+  remindersBusy = true;
+  Promise.allSettled([sendReminders(), aprilFools()])
+    .then(r => r.forEach(x => { if (x.status === 'rejected') app.log.error(x.reason); }))
+    .finally(() => { remindersBusy = false; });
+}, 60e3);
 void aprilFools().catch(err => app.log.error(err));
 
 async function shutdown(signal: string) {

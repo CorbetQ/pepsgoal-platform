@@ -11,7 +11,7 @@ self.addEventListener('push', e => {
   e.waitUntil((async () => {
     const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     // Les pages ouvertes rafraîchissent leurs données sociales
-    wins.forEach(w => w.postMessage({ type: 'push', tag: d.tag || 'pepsgoal' }));
+    wins.forEach(w => w.postMessage({ type: 'push', tag: d.tag || 'pepsgoal', title: d.title || '', body: d.body || '', view: d.view || '' }));
     // PepsGoal est déjà au premier plan : l'application affiche elle-même l'information
     if (wins.some(w => w.visibilityState === 'visible' && w.focused)) return;
     await self.registration.showNotification(d.title || 'PepsGoal', {

@@ -144,6 +144,15 @@
       case 'challenge': d.length = Math.min(365, Math.max(2, Math.round(num(d.length, 30)))); d.start = dayOk(d.start) ? d.start : today(); break;
       case 'program': d.base = Math.max(0.0001, num(d.base, 1)); d.step = num(d.step, 0); d.weeks = Math.min(52, Math.max(2, Math.round(num(d.weeks, 4)))); d.start = dayOk(d.start) ? d.start : today(); break;
       case 'duel': d.endDate = dayOk(d.endDate) ? d.endDate : today(); break;
+      case 'period': {
+        const hm = v => /^([01]\d|2[0-3]):[0-5]\d$/.test(v || '');
+        d.freq = d.freq === 'month' ? 'month' : 'week'; d.days = (d.days || []).map(Number).filter(n => n >= 0 && n <= 6);
+        d.mdays = [...new Set((d.mdays || []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= 31))];
+        d.start = hm(d.start) ? d.start : '18:00'; d.end = hm(d.end) && d.end > d.start ? d.end : '23:59';
+        if (d.freq === 'week' && !d.days.length) d.days = [0, 1, 2, 3, 4];
+        if (d.freq === 'month' && !d.mdays.length) d.mdays = [1];
+        break;
+      }
     }
     return d;
   }
@@ -181,15 +190,15 @@
     return c;
   }
   // État d'interface propre au compte, synchronisé avec les réglages
-  const USER_KEYS = ['tutorialDone', 'goalGroups', 'goalGroupOf', 'frozenDays', 'milestones', 'badges', 'perfectDays', 'favGoals', 'hiddenSuggest', 'aprilFool'];
+  const USER_KEYS = ['tutorialDone', 'goalGroups', 'goalGroupOf', 'frozenDays', 'milestones', 'badges', 'perfectDays', 'favGoals', 'hiddenSuggest', 'aprilFool', 'badgeFams'];
   // Réglages rangés dans u.settings côté application (noSuggest est lu par le serveur pour les suggestions d'amis)
-  const SETTING_KEYS = ['browser', 'defaultVis', 'bg', 'accentCustom', 'noSuggest'];
+  const SETTING_KEYS = ['browser', 'defaultVis', 'bg', 'accentCustom', 'noSuggest', 'weather', 'wxCard'];
   const EXTRA_KEYS = [...USER_KEYS, ...SETTING_KEYS];
   function toServerSettings(u) {
     const s = u.settings || {}, extra = {};
     for (const k of EXTRA_KEYS) { const v = SETTING_KEYS.includes(k) ? s[k] : u[k]; if (v !== undefined) extra[k] = v; }
     return {
-      theme: ['system', 'light', 'dark'].includes(s.theme) ? s.theme : 'system', accent: Math.min(31, Math.max(0, Number(s.accent) || 0)), social: s.social !== false,
+      theme: ['system', 'light', 'dark', 'oled', 'weather'].includes(s.theme) ? s.theme : 'system', accent: Math.min(31, Math.max(0, Number(s.accent) || 0)), social: s.social !== false,
       defaultVisibility: ['private', 'friends', 'public'].includes(s.defaultVis) ? s.defaultVis : 'friends',
       morning: { on: !!s.morning?.on, time: s.morning?.time || '08:30' }, evening: { on: !!s.evening?.on, time: s.evening?.time || '20:30' }, extra
     };
@@ -390,7 +399,7 @@
   function scheduleSocial(ms = 400) { if (!S.acct) return; clearTimeout(socialTimer); socialTimer = setTimeout(() => void refreshSocial(), ms); }
   async function refreshSocial() {
     if (!S.acct || !NET.online) return;
-    if (S.refreshing) return S.refreshing;
+    if (S.refreshing) { S.refreshAgain = true; return S.refreshing; }
     S.refreshing = (async () => {
       try {
         const [meR, fr, feedF, feedP, stories, notifs, convs, groups, blocks, myStories, sugg] = await Promise.all([
@@ -467,7 +476,7 @@
         await decryptAll();
         softRender(); updateBadges(); updateBell(); queueBadgeCheck();
       } catch (e) { if (e.status !== 0) console.warn('PepsGoal : actualisation sociale impossible', e); }
-      finally { S.refreshing = null; }
+      finally { S.refreshing = null; if (S.refreshAgain) { S.refreshAgain = false; scheduleSocial(150); } }
     })();
     return S.refreshing;
   }
@@ -896,6 +905,10 @@
       if (S.acct && s && s.userId !== meId() && !S.viewed.has(s.id)) { S.viewed.add(s.id); void api('POST', `/v1/stories/${s.id}/view`, {}).catch(() => undefined); }
     };
     // Recherche d'amis : sur le serveur
+    O.weatherFetch = weatherFetch;
+    weatherFetch = function (lat, lon) { return S.acct ? api('GET', `/v1/weather?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`) : O.weatherFetch(lat, lon); };
+    O.weatherSearch = weatherSearch;
+    weatherSearch = function (q) { return S.acct ? api('GET', `/v1/weather/places?q=${encodeURIComponent(q)}`) : O.weatherSearch(q); };
     O.friendSuggestions = friendSuggestions;
     friendSuggestions = function (u) {
       if (!S.acct) return O.friendSuggestions(u);
@@ -1413,7 +1426,13 @@
       void swRegister();
       navigator.serviceWorker.addEventListener('message', e => {
         if (e.data?.type === 'open' && e.data.view && me()) { UI.view = e.data.view; UI.modal = null; render(); }
-        if (e.data?.type === 'push') scheduleSocial(300);
+        if (e.data?.type === 'push') {
+          // Application ouverte : l'information s'affiche tout de suite, et les données sont relues sans attendre
+          const d = e.data, m = UI.modal, inChat = m?.type === 'chat' && ((d.tag === `dm:${m.with}`) || (d.tag === `grp:${m.group}`));
+          if (d.title && !inChat && document.visibilityState === 'visible') toast(d.body ? `${d.title} : ${d.body}` : d.title, 'bell');
+          scheduleSocial(0);
+          if (inChat) void (m.group ? loadGroup(m.group, false) : loadConversation(m.with, false)).then(async () => { await decryptAll(); updateChat(); }).catch(() => undefined);
+        }
       });
     }
     void ping().then(() => { if (S.acct) { void e2eDevice().then(() => e2eShareMissing()).catch(() => undefined); void syncNow().then(() => refreshSocial()); void pushResume(); } });

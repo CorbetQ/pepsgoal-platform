@@ -2,6 +2,44 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## 2.1.0 (19 octobre 2026)
+
+### Objectifs
+- Nouveau type « Période » : hebdomadaire (certains jours de la semaine) ou mensuelle (certains jours du mois ; le 29, 30 ou 31 tombe le dernier jour des mois plus courts), sur une tranche horaire précise. Validation pendant la tranche ou dans l'heure qui suit, rappel au début de chaque période, prochaines périodes dans la fiche.
+
+### Météo
+- Choix de la ville dans Paramètres › Météo (recherche par nom).
+- Carte météo sur l'accueil, sous « Ta journée » : température, ressenti, minimum et maximum, vent, risque de pluie, trois jours de prévisions, lever et coucher du soleil, et un conseil selon le temps.
+- Données Open-Meteo ; avec un compte, les demandes passent par le serveur PepsGoal (cache de 10 minutes, l'adresse IP des utilisateurs n'est pas transmise).
+
+### Apparence
+- Thème OLED (noir pur).
+- Thème Météo : ciel en direct qui suit l'heure (aube, jour, crépuscule, nuit) et le temps de la ville (soleil, lune et étoiles, nuages, pluie, neige, orage, brouillard), panneaux en verre givré ; le choix d'arrière-plan est alors désactivé.
+- 12 nouvelles couleurs d'accent (24 au total).
+- Navigation : le fond de l'onglet sélectionné glisse d'un onglet à l'autre (barre du bas et barre latérale).
+
+### Partage
+- Nouveau panneau de partage : Feed, Story (progression d'un objectif ou récap), Message (ami ou groupe, chiffré de bout en bout) et Externe (applications de l'appareil, ou copie du texte).
+
+### Badges
+- 7 nouvelles familles : Lève-tôt, Oiseau de nuit, Week-end actif, Ponctuel, Bâtisseur, Conteur, Plume. Les paliers déjà mérités sont ajoutés sans célébration à la mise à jour.
+
+### Notifications
+- Rappels vérifiés chaque minute par le serveur (au lieu de cinq).
+- Messages, mentions et rappels envoyés en priorité haute, avec une durée de validité adaptée.
+- Application ouverte : la notification s'affiche aussitôt et les données sont relues sans attendre ; une notification reçue pendant une actualisation en déclenche une nouvelle.
+- Retour sur l'application : rappels et météo vérifiés immédiatement.
+
+### Corrections
+- L'icône des onglets ne saute plus en changeant de page.
+- Alignement de l'icône de profil et de son anneau de niveau.
+- Réactions : un bouton « − » referme les emojis supplémentaires.
+- Déploiement : `update.sh` et `web-build.sh` remettent `package-lock.json` comme sur GitHub (le `git pull` ne bloque plus).
+
+### Technique
+- API : `GET /v1/weather/places`, `GET /v1/weather` ; type d'objectif `period` ; thèmes `oled` et `weather`.
+- Aucune migration de base de données.
+
 ## 2.0.0 (16 octobre 2026)
 
 ### Messagerie

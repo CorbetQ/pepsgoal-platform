@@ -55,7 +55,7 @@ export default async function messageRoutes(app: FastifyInstance) {
       if ((r?.n ?? 0) !== new Set(attachments).size) throw forbidden('Pièce jointe inconnue.');
     }
     const [m] = await sql<Row[]>`insert into messages (sender_id, recipient_id, e2e, attachments) values (${u.id}, ${id}, ${sql.json(e2e)}, ${attachments}) returning id, created_at`;
-    if (!silent) pushLater(id, { title: u.displayName, body: 'Nouveau message', tag: `dm:${u.id}`, view: 'friends' });
+    if (!silent) pushLater(id, { title: u.displayName, body: 'Nouveau message', tag: `dm:${u.id}`, view: 'friends', urgency: 'high', ttl: 24 * 3600 });
     reply.status(201);
     return { id: m!.id, createdAt: iso(m!.created_at) };
   });
