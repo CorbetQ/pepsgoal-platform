@@ -2,6 +2,12 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## 2.1.5 (19 octobre 2026)
+
+### Récaps
+- Correction : la mention du bilan J+1 débordait de sa carte et le titre « Semaine passée » sortait du cadre. La mention devient une petite pastille « J+1 » dans le coin, le titre s'adapte à la largeur de la carte, et le mois ou l'année concernés s'affichent en sous-titre (« Octobre · bilan complet, aujourd'hui »).
+- Le récap disponible le lendemain d'une période s'entoure d'un halo lumineux qui respire, avec un reflet qui passe.
+
 ## 2.1.3 (19 octobre 2026)
 
 ### Récaps

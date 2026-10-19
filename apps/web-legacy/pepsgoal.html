@@ -1380,9 +1380,15 @@ canvas.bg-sky{width:100%;height:100%}
 .st-awards .aw-e{font-size:36px;line-height:1}
 .st-awards span:last-child{display:flex;flex-direction:column}
 .st-awards small{font-size:13px;font-weight:600;color:rgba(16,16,42,.75)}
-.recap-btn{position:relative}
-.recap-btn.past{box-shadow:0 0 0 2px #10102A inset}
-.rb-tag{font-style:normal;font-size:10.5px;font-weight:800;margin-top:4px;padding:2px 7px;border-radius:999px;background:#10102A;color:#fff}
+.recap-btn{position:relative;isolation:isolate;container-type:inline-size}
+/* Titre proportionnel à la largeur de la carte : « Semaine passée » ou « Septembre » tiennent sans couper les mots */
+.recap-btn b{font-size:clamp(11px,12.5cqi,15px);line-height:1.15;overflow-wrap:break-word;hyphens:manual;max-width:100%;letter-spacing:-.01em}
+.rb-tag{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:3px;font-style:normal;font-size:10.5px;font-weight:800;line-height:1;white-space:nowrap;padding:4px 7px;border-radius:999px;background:rgba(16,16,42,.85);color:#fff;box-shadow:0 4px 12px -4px rgba(0,0,0,.45)}
+.rb-tag svg{width:11px;height:11px}
+.rb-sub{display:block;margin-top:6px;font-size:11px;font-weight:800;line-height:1.25;opacity:.85}
+/* Bilan J+1 : halo lumineux qui respire */
+.recap-btn.past{box-shadow:0 0 0 2px rgba(255,255,255,.75),0 0 22px 4px color-mix(in srgb,var(--flame) 55%,transparent),0 0 46px 10px color-mix(in srgb,var(--flame-2) 30%,transparent)}
+.recap-btn.past::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);background-size:250% 100%;background-position:120% 0;pointer-events:none;z-index:-1}
 @media (prefers-reduced-motion:no-preference){
   .story{background-size:180% 180%;animation:sbgPan 14s ease-in-out infinite alternate}
   .st-float i{animation:stFloat var(--d) linear var(--dl) infinite}
@@ -1399,7 +1405,12 @@ canvas.bg-sky{width:100%;height:100%}
   .st-facts li,.st-awards li{animation:awardIn .55s cubic-bezier(.2,1.2,.4,1) both;animation-delay:calc(var(--i,0) * 220ms + 350ms)}
   .st-joke{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:.55s}
   .st-final .st-card{animation:popIn .6s cubic-bezier(.2,1.4,.4,1) both}
+  .recap-btn.past{animation:recapHalo 2.6s ease-in-out infinite}
+  .recap-btn.past::after{animation:recapShine 3.2s ease-in-out infinite}
+  .rb-tag{animation:popIn .5s cubic-bezier(.3,1.6,.5,1) both}
 }
+@keyframes recapHalo{50%{box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 30px 8px color-mix(in srgb,var(--flame) 70%,transparent),0 0 64px 16px color-mix(in srgb,var(--flame-2) 40%,transparent)}}
+@keyframes recapShine{0%,55%{background-position:120% 0}100%{background-position:-120% 0}}
 @keyframes sbgPan{0%{background-position:0% 0%}100%{background-position:100% 100%}}
 @keyframes stFloat{0%{transform:translateY(0) rotate(0);opacity:0}12%{opacity:.5}88%{opacity:.35}100%{transform:translateY(-125vh) rotate(var(--r));opacity:0}}
 @keyframes slideInR{from{opacity:.3;transform:translateX(38px)}}
@@ -1650,7 +1661,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '2.1.3';
+const APP_VERSION = '2.1.5';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -3847,7 +3858,9 @@ function recapCard(){
   const u = me(), P = [['week','Semaine'],['month','Mois'],['year','Année']];
   return `<section class="glass card">
     <div class="card-h"><h2>Tes récaps</h2><span class="muted small">Ton parcours en stats</span></div>
-    <div class="recap-row">${P.map(([k, l], i) => { const R = recapRange(k); return `<button class="recap-btn ${R.past ? 'past' : ''}" style="--rb:${SBG[[0, 4, 1][i]]}" data-act="open-recap" data-id="${k}">${icon('star')}<b>${R.past ? { week:'Semaine passée', month:cap(parseYmd(R.s).toLocaleDateString('fr-FR', { month:'long' })), year:String(parseYmd(R.s).getFullYear()) }[k] : l}</b><span>${pl(countInPeriod(u.id, k), 'validation', 'validations')}</span>${R.past ? '<em class="rb-tag">Bilan · aujourd’hui seulement</em>' : ''}</button>`; }).join('')}</div>
+    <div class="recap-row">${P.map(([k, l], i) => { const R = recapRange(k); const name = R.past ? { week:'Semaine passée', month:'Mois passé', year:'Année passée' }[k] : l;
+      const when = { week:'', month:cap(parseYmd(R.s).toLocaleDateString('fr-FR', { month:'long' })) + ' · ', year:parseYmd(R.s).getFullYear() + ' · ' }[k];
+      return `<button class="recap-btn ${R.past ? 'past' : ''}" style="--rb:${SBG[[0, 4, 1][i]]}" data-act="open-recap" data-id="${k}" aria-label="${esc(name)}${when ? ' (' + when.replace(' · ', '') + ')' : ''} : ${pl(countInPeriod(u.id, k), 'validation', 'validations')}${R.past ? ', bilan complet disponible aujourd’hui seulement' : ''}">${R.past ? `<em class="rb-tag" aria-hidden="true">${icon('clock')}J+1</em>` : ''}${icon('star')}<b>${esc(name)}</b><span>${pl(countInPeriod(u.id, k), 'validation', 'validations')}</span>${R.past ? `<small class="rb-sub">${when}bilan complet, aujourd’hui</small>` : ''}</button>`; }).join('')}</div>
   </section>`;
 }
 
@@ -6854,6 +6867,10 @@ const e2eInfo = text => `<div class="e2e-info" id="e2e-info" ${UI.e2eOpen ? '' :
 
 /* ---------------- notes de version ---------------- */
 const PATCH_NOTES = [
+  ['2.1.5', '19 octobre 2026', [
+    'Récaps : la pastille du bilan J+1 ne déborde plus et le titre « Semaine passée » tient dans sa carte.',
+    'Le récap disponible le lendemain d’une période brille d’un halo lumineux pour ne pas le manquer.'
+  ]],
   ['2.1.3', '19 octobre 2026', [
     'Récaps repensés : comparaison avec la période précédente, jour fétiche en graphique, « Le saviez-vous ? », trophées, nouveaux profils et beaucoup plus d’humour (des phrases différentes à chaque période).',
     'Plus d’animations : diapositives qui glissent, jours qui s’allument un à un, barres qui poussent, emojis flottants, confettis à la fin.',
