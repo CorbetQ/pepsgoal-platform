@@ -10,7 +10,7 @@ export const Password = z.string().min(8, 'Au moins 8 caractères').max(200);
 export const DisplayName = z.string().trim().min(2).max(40);
 export const IsoDate = z.string().datetime();
 
-export const GOAL_TYPES = ['routine', 'objective', 'deadline', 'abstinence', 'monthly', 'limit', 'duration', 'measure', 'timed', 'project', 'challenge', 'program', 'group', 'duel'] as const;
+export const GOAL_TYPES = ['routine', 'objective', 'deadline', 'abstinence', 'monthly', 'limit', 'duration', 'measure', 'timed', 'project', 'challenge', 'program', 'group', 'duel', 'period'] as const;
 export const GoalType = z.enum(GOAL_TYPES);
 export type GoalType = z.infer<typeof GoalType>;
 /** Types qui nécessitent un compte et une connexion (partagés avec d'autres personnes). */
@@ -46,7 +46,13 @@ export const GoalDataByType = {
   challenge: z.object({ length: z.number().int().min(2).max(365), start: DayKeySchema }).passthrough(),
   program: z.object({ unit, base: z.number().positive(), step: z.number(), weeks: z.number().int().min(2).max(52), start: DayKeySchema }).passthrough(),
   group: z.object({ target: z.number().positive(), unit, endDate: optionalDay }).passthrough(),
-  duel: z.object({ unit, endDate: DayKeySchema }).passthrough()
+  duel: z.object({ unit, endDate: DayKeySchema }).passthrough(),
+  /** Période : certains jours de la semaine (freq week, days) ou du mois (freq month, mdays), sur une tranche horaire. */
+  period: z.object({
+    freq: z.enum(['week', 'month']), days, mdays: z.array(z.number().int().min(1).max(31)).max(31),
+    start: TimeOfDay, end: TimeOfDay
+  }).passthrough().refine(d => d.end > d.start, 'La fin de la tranche horaire doit suivre son début.')
+    .refine(d => (d.freq === 'week' ? d.days.length : d.mdays.length) > 0, 'Choisis au moins un jour.')
 } satisfies Record<GoalType, z.ZodTypeAny>;
 
 export function parseGoalData(type: GoalType, data: unknown): Record<string, unknown> {
@@ -101,7 +107,8 @@ export const GoalGroupSchema = z.object({
 export type GoalGroup = z.infer<typeof GoalGroupSchema>;
 
 export const UserSettingsSchema = z.object({
-  theme: z.enum(['system', 'light', 'dark']).default('system'),
+  /** oled : noir pur ; weather : ciel en direct selon l'heure et la météo de la ville choisie. */
+  theme: z.enum(['system', 'light', 'dark', 'oled', 'weather']).default('system'),
   accent: z.number().int().min(0).max(31).default(0),
   social: z.boolean().default(true),
   defaultVisibility: Visibility.default('friends'),
@@ -171,5 +178,5 @@ export const AnnouncementBody = z.object({ text: z.string().trim().min(1).max(60
 /** Points attribués par le serveur selon le type d'objectif (identiques à l'application). */
 export const POINTS: Record<GoalType, number> = {
   routine: 10, objective: 15, deadline: 40, abstinence: 8, monthly: 15, limit: 8, duration: 12, measure: 10,
-  timed: 10, project: 10, challenge: 10, program: 10, group: 10, duel: 10
+  timed: 10, project: 10, challenge: 10, program: 10, group: 10, duel: 10, period: 10
 };

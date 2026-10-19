@@ -25,7 +25,7 @@
   --t-month:#FFD23F; --t-month-ink:#7A4E00;
   --t-limit:#FF8A3D; --t-limit-ink:#A33D00; --t-dur:#2EF2B0; --t-dur-ink:#00704F; --t-proj:#4D9BFF; --t-proj-ink:#0B4FC2;
   --t-meas:#FF7AD9; --t-meas-ink:#A3007A; --t-group:#7CFF6B; --t-group-ink:#1F7A10; --t-duel:#FF5A5A; --t-duel-ink:#B3121F;
-  --t-chal:#FFB000; --t-chal-ink:#8A5300; --t-prog:#7C8CFF; --t-prog-ink:#2F3FBF; --t-timed:#E3B98A; --t-timed-ink:#7A4B12;
+  --t-chal:#FFB000; --t-chal-ink:#8A5300; --t-prog:#7C8CFF; --t-prog-ink:#2F3FBF; --t-timed:#E3B98A; --t-timed-ink:#7A4B12; --t-period:#7DD3FC; --t-period-ink:#035C8A;
   --ok:#1E8E3E; --danger:#C8102E;
   --r-lg:24px; --r-md:16px; --r-sm:12px;
 }
@@ -37,7 +37,7 @@
   --shadow:0 18px 50px -18px rgba(0,0,0,.7);
   --focus:#6FE3FF;
   --t-goal-ink:#5FE0FF; --t-deadline-ink:#FF7DBB; --t-routine-ink:#C6FF5C; --t-abst-ink:#BFA8FF; --t-month-ink:#FFE07A;
-  --t-limit-ink:#FFB07A; --t-dur-ink:#5FF5C4; --t-proj-ink:#8CBDFF; --t-meas-ink:#FF9FE4; --t-group-ink:#9DFF90; --t-duel-ink:#FF8A8A; --t-chal-ink:#FFC94D; --t-prog-ink:#A9B3FF; --t-timed-ink:#F0CFA6;
+  --t-limit-ink:#FFB07A; --t-dur-ink:#5FF5C4; --t-proj-ink:#8CBDFF; --t-meas-ink:#FF9FE4; --t-group-ink:#9DFF90; --t-duel-ink:#FF8A8A; --t-chal-ink:#FFC94D; --t-prog-ink:#A9B3FF; --t-timed-ink:#F0CFA6; --t-period-ink:#9DDCFF;
   --ok:#5BE38A; --danger:#FF6B81;
   color-scheme:dark;
 }}
@@ -49,7 +49,7 @@
   --shadow:0 18px 50px -18px rgba(0,0,0,.7);
   --focus:#6FE3FF;
   --t-goal-ink:#5FE0FF; --t-deadline-ink:#FF7DBB; --t-routine-ink:#C6FF5C; --t-abst-ink:#BFA8FF; --t-month-ink:#FFE07A;
-  --t-limit-ink:#FFB07A; --t-dur-ink:#5FF5C4; --t-proj-ink:#8CBDFF; --t-meas-ink:#FF9FE4; --t-group-ink:#9DFF90; --t-duel-ink:#FF8A8A; --t-chal-ink:#FFC94D; --t-prog-ink:#A9B3FF; --t-timed-ink:#F0CFA6;
+  --t-limit-ink:#FFB07A; --t-dur-ink:#5FF5C4; --t-proj-ink:#8CBDFF; --t-meas-ink:#FF9FE4; --t-group-ink:#9DFF90; --t-duel-ink:#FF8A8A; --t-chal-ink:#FFC94D; --t-prog-ink:#A9B3FF; --t-timed-ink:#F0CFA6; --t-period-ink:#9DDCFF;
   --ok:#5BE38A; --danger:#FF6B81;
   color-scheme:dark;
 }
@@ -955,7 +955,7 @@ input[type=date],input[type=time],input[type=datetime-local]{min-width:0;color-s
   --t-abst:#CC79A7;--t-abst-ink:#8E3F6B;--t-month:#F0E442;--t-month-ink:#6E6400;--t-limit:#F5B94D;--t-limit-ink:#8A5300;
   --t-dur:#009E73;--t-dur-ink:#006B4E;--t-proj:#0072B2;--t-proj-ink:#005080;--t-meas:#E3A6C8;--t-meas-ink:#8E3F6B;
   --t-group:#2BBF95;--t-group-ink:#006B4E;--t-duel:#F08C4A;--t-duel-ink:#9A4A10;--t-chal:#F7EE7F;--t-chal-ink:#6E6400;
-  --t-prog:#9AD0F0;--t-prog-ink:#0B5E8F;--t-timed:#BBBBBB;--t-timed-ink:#4D4D4D;--ok:#0072B2;--danger:#D55E00}
+  --t-prog:#9AD0F0;--t-prog-ink:#0B5E8F;--t-timed:#BBBBBB;--t-timed-ink:#4D4D4D;--t-period:#44AA99;--t-period-ink:#1F5C52;--ok:#0072B2;--danger:#D55E00}
 @media (prefers-color-scheme: dark){:root[data-a11y-cvd]:not([data-theme="light"]){
   --t-goal-ink:#FFC24D;--t-deadline-ink:#FF8A4D;--t-routine-ink:#8FD0F5;--t-abst-ink:#E7A6CB;--t-month-ink:#F5EC6E;--t-limit-ink:#FFD08A;--t-dur-ink:#3FD9AE;
   --t-proj-ink:#6CB6E8;--t-meas-ink:#F0C2DB;--t-group-ink:#5FE0B8;--t-duel-ink:#FFB07A;--t-chal-ink:#FAF29A;--t-prog-ink:#B7E0F7;--t-timed-ink:#DDDDDD;--ok:#56B4E9;--danger:#FF8A4D}}
@@ -1069,7 +1069,7 @@ input[type=date],input[type=time],input[type=datetime-local]{min-width:0;color-s
   --t-abst:#F48FB1;--t-abst-ink:#A23E66;--t-month:#80CBC4;--t-month-ink:#00675E;--t-limit:#FFAB91;--t-limit-ink:#A0461E;
   --t-dur:#4DD0C4;--t-dur-ink:#006B62;--t-proj:#00897B;--t-proj-ink:#005047;--t-meas:#F8BBD0;--t-meas-ink:#9C2F5B;
   --t-group:#B2DFDB;--t-group-ink:#2F6F68;--t-duel:#E53935;--t-duel-ink:#A11512;--t-chal:#FFCDD2;--t-chal-ink:#A3262E;
-  --t-prog:#9E9E9E;--t-prog-ink:#424242;--t-timed:#D7CCC8;--t-timed-ink:#5D4037;--ok:#00897B;--danger:#D81B60}
+  --t-prog:#9E9E9E;--t-prog-ink:#424242;--t-timed:#D7CCC8;--t-timed-ink:#5D4037;--t-period:#B39DDB;--t-period-ink:#5E35B1;--ok:#00897B;--danger:#D81B60}
 @media (prefers-color-scheme: dark){:root[data-a11y-cvd="trit"]:not([data-theme="light"]){--t-goal-ink:#FF9E94;--t-deadline-ink:#FF6FA0;--t-routine-ink:#6FE0D4;--t-abst-ink:#F8B6CC;--t-month-ink:#A6E3DD;--t-limit-ink:#FFC4B0;--t-dur-ink:#7FE8DE;--t-proj-ink:#4FC3B5;--t-meas-ink:#FBD0DF;--t-group-ink:#CDEDEA;--t-duel-ink:#FF8A87;--t-chal-ink:#FFD9DD;--t-prog-ink:#E0E0E0;--t-timed-ink:#EDE4E1;--ok:#4FC3B5;--danger:#FF6FA0}}
 :root[data-theme="dark"][data-a11y-cvd="trit"]{--t-goal-ink:#FF9E94;--t-deadline-ink:#FF6FA0;--t-routine-ink:#6FE0D4;--t-abst-ink:#F8B6CC;--t-month-ink:#A6E3DD;--t-limit-ink:#FFC4B0;--t-dur-ink:#7FE8DE;--t-proj-ink:#4FC3B5;--t-meas-ink:#FBD0DF;--t-group-ink:#CDEDEA;--t-duel-ink:#FF8A87;--t-chal-ink:#FFD9DD;--t-prog-ink:#E0E0E0;--t-timed-ink:#EDE4E1;--ok:#4FC3B5;--danger:#FF6FA0}
 :root[data-a11y-mono="on"]{filter:grayscale(1)}
@@ -1227,7 +1227,6 @@ input[type=date],input[type=time],input[type=datetime-local]{min-width:0;color-s
   }
   .fab svg{transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
   /* Onglet actif : l'icône rebondit */
-  .nav-enter .tab[aria-current="page"] svg,.nav-enter .nav-a[aria-current="page"] svg{animation:tabBounce .5s cubic-bezier(.3,1.6,.5,1)}
   .fchip.pop[aria-pressed="true"]{animation:chipPop .3s cubic-bezier(.3,1.6,.5,1)}
   /* Interrupteurs à ressort */
   .switch span::after{transition:transform .32s cubic-bezier(.3,1.6,.5,1),width .2s}
@@ -1259,6 +1258,178 @@ input[type=date],input[type=time],input[type=datetime-local]{min-width:0;color-s
 @keyframes menuIn{from{opacity:0;transform:translateY(6px) scale(.96)}}
 @keyframes msgIn{from{opacity:0;transform:translateY(10px) scale(.96)}}
 @keyframes toastIn{from{opacity:0;transform:translateY(14px) scale(.94)}}
+
+/* ===================== 2.1.0 ===================== */
+/* ---- icône de profil : anneau centré quel que soit le conteneur ---- */
+.lv-ring{display:inline-grid;place-items:center;flex:none;line-height:0;vertical-align:middle}
+.me-mini>.lv-ring{align-self:center}
+
+/* ---- navigation : fond de sélection qui glisse d'un onglet à l'autre ---- */
+.tabbar,.side{isolation:isolate}
+.nav-ind{position:absolute;top:0;left:0;width:0;height:0;border-radius:18px;background:var(--ink);z-index:0;pointer-events:none;opacity:0;box-shadow:0 6px 18px -8px rgba(0,0,0,.45);transition:opacity .2s;will-change:transform}
+.side .nav-ind{border-radius:14px}
+.tab,.nav-a{position:relative;z-index:1;transition:color .3s ease}
+.tab[aria-current="page"],.nav-a[aria-current="page"]{background:transparent!important;color:var(--bg)}
+.nav-a[aria-current="page"]:hover{background:transparent!important}
+:root[data-a11y-motion="off"] .nav-ind{transition:none}
+@media (prefers-reduced-motion:reduce){.nav-ind{transition:none}}
+
+/* ---- objectif Période ---- */
+.t-period{--c:var(--t-period);--c-ink:var(--t-period-ink)}
+.daychips.mdays{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.daychips.mdays label span{min-width:0;width:100%}
+.pd-times{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pd-times input{width:100%}
+.pd-live{color:var(--ok);font-weight:800}
+.pd-live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:6px;vertical-align:1px;animation:recPulse 1.6s ease-in-out infinite}
+.pd-next{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.pd-next li{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:12px;background:color-mix(in srgb,var(--t-period) 14%,transparent);font-size:14px}
+.pd-next span{font-weight:800;color:var(--t-period-ink);font-variant-numeric:tabular-nums}
+
+/* ---- partage ---- */
+.share-quote{margin:0 0 4px;padding:12px 14px;border-left:3px solid var(--flame);border-radius:12px;background:color-mix(in srgb,var(--ink) 5%,transparent);font-weight:600}
+.share-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.share-opt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--ink) 4%,transparent);color:var(--ink);text-align:left;cursor:pointer;transition:transform .15s,border-color .2s,background-color .2s}
+.share-opt:hover:not(:disabled){border-color:var(--flame);background:color-mix(in srgb,var(--flame) 10%,transparent)}
+.share-opt:disabled{opacity:.5;cursor:not-allowed}
+.share-opt small{color:var(--ink-3);font-size:12px;line-height:1.35}
+.so-ic{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;margin-bottom:4px;color:var(--on-accent);background:linear-gradient(135deg,var(--flame-2),var(--flame) 60%,var(--pink))}
+.so-ic svg{width:20px;height:20px}
+.so-story .so-ic{background:linear-gradient(135deg,#FFB3C7,#FF5C8A)}
+.so-msg .so-ic{background:linear-gradient(135deg,#8AF0FF,#3DB2FF)}
+.so-ext .so-ic{background:linear-gradient(135deg,#E6FFB3,#56C596)}
+.share-targets,.wx-results{list-style:none;display:flex;flex-direction:column;gap:4px;max-height:46vh;overflow-y:auto;margin:0 0 6px}
+.share-tg{display:flex;align-items:center;gap:12px;width:100%;padding:8px 10px;border:0;border-radius:14px;background:none;color:var(--ink);text-align:left;cursor:pointer}
+.share-tg:hover,.share-tg:focus-visible{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.share-tg>span:not(.grp-av):not(.av){flex:1;min-width:0;display:flex;flex-direction:column}
+.share-tg small{color:var(--ink-3)}
+.share-tg>svg{width:18px;height:18px;color:var(--ink-3);flex:none}
+
+/* ---- carte météo ---- */
+.wx-card .card-h h2{display:flex;align-items:center;gap:6px}
+.wx-card .card-h h2 svg{width:18px;height:18px}
+.wx-now{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wx-ico{font-size:52px;line-height:1;filter:drop-shadow(0 6px 12px rgba(0,0,0,.18))}
+.wx-main{display:flex;flex-direction:column;flex:1;min-width:140px}
+.wx-t{font-family:var(--font-display);font-size:40px;line-height:1;letter-spacing:-.03em}
+.wx-main span{color:var(--ink-2);font-weight:600;font-size:14px;margin-top:4px}
+.wx-side{list-style:none;display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.wx-side li{display:flex;align-items:center;gap:6px}
+.wx-side svg{width:15px;height:15px}
+.wx-tip{margin:12px 0;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--flame) 12%,transparent);font-weight:600;font-size:14px}
+.wx-days{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.wx-days li{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:14px;background:color-mix(in srgb,var(--ink) 5%,transparent);font-weight:800;font-size:13px}
+.wx-days small{margin-left:4px;color:var(--ink-3);font-weight:700}
+.wx-di{font-size:24px;line-height:1.2}
+.wx-foot{margin-top:10px}
+
+/* ---- thème OLED : noir pur, panneaux sombres et nets ---- */
+:root[data-skin="oled"]{--bg:#000;--glass:rgba(12,12,16,.78);--glass-strong:#0B0B0F;--glass-card:#0C0C10;--glass-edge:rgba(255,255,255,.1);--line:rgba(255,255,255,.12);--scrim:rgba(0,0,0,.78);--blob-op:.18;--shadow:0 14px 40px -18px rgba(0,0,0,.9)}
+:root[data-skin="oled"] body{background:#000}
+
+/* ---- thème Météo : ciel en direct et verre givré ---- */
+:root[data-bg="sky"] .bg-sky{display:block}
+/* Verre givré : panneaux plus translucides et plus flous, liseré lumineux */
+:root[data-skin="weather"]{--glass:rgba(255,255,255,.4);--glass-strong:rgba(255,255,255,.8);--glass-card:rgba(255,255,255,.5);--glass-edge:rgba(255,255,255,.75)}
+:root[data-skin="weather"][data-theme="dark"]{--glass:rgba(18,22,48,.42);--glass-strong:rgba(22,26,56,.86);--glass-card:rgba(18,22,48,.55);--glass-edge:rgba(255,255,255,.22)}
+:root[data-skin="weather"] .glass{-webkit-backdrop-filter:blur(26px) saturate(185%) brightness(1.04);backdrop-filter:blur(26px) saturate(185%) brightness(1.04);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),var(--shadow)}
+:root[data-skin="weather"][data-theme="dark"] .glass{box-shadow:inset 0 1px 0 rgba(255,255,255,.14),var(--shadow)}
+.bg-tiles.off{opacity:.45;pointer-events:none;filter:grayscale(.6)}
+.seg.wrap{flex-wrap:wrap}
+@media (prefers-reduced-motion:no-preference){
+}
+
+/* ===================== 2.1.1 ===================== */
+canvas.bg-sky{width:100%;height:100%}
+/* Flou du verre givré : faible, moyen (par défaut) ou fort */
+:root{--gb:14px}
+:root[data-blur="low"]{--gb:6px}
+:root[data-blur="xlow"]{--gb:2px;--glass:rgba(255,255,255,.88);--glass-strong:rgba(255,255,255,.96);--glass-card:rgba(255,255,255,.92)}
+:root[data-theme="dark"][data-blur="xlow"]{--glass:rgba(24,26,66,.9);--glass-strong:rgba(28,30,76,.97);--glass-card:rgba(24,26,66,.93)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"])[data-blur="xlow"]{--glass:rgba(24,26,66,.9);--glass-strong:rgba(28,30,76,.97);--glass-card:rgba(24,26,66,.93)}}
+:root[data-skin="oled"][data-blur="xlow"]{--glass:rgba(12,12,16,.95);--glass-strong:#0B0B0F;--glass-card:#0C0C10}
+:root[data-skin="weather"][data-blur="xlow"]{--glass:rgba(255,255,255,.82);--glass-card:rgba(255,255,255,.86)}
+:root[data-skin="weather"][data-theme="dark"][data-blur="xlow"]{--glass:rgba(18,22,48,.84);--glass-card:rgba(18,22,48,.88)}
+:root[data-blur="high"]{--gb:28px}
+.glass{-webkit-backdrop-filter:blur(var(--gb)) saturate(160%);backdrop-filter:blur(var(--gb)) saturate(160%)}
+.sheet{-webkit-backdrop-filter:blur(calc(var(--gb) + 10px)) saturate(170%);backdrop-filter:blur(calc(var(--gb) + 10px)) saturate(170%)}
+:root[data-skin="weather"] .glass{-webkit-backdrop-filter:blur(min(calc(var(--gb) * 1.5), 32px)) saturate(180%) brightness(1.04);backdrop-filter:blur(min(calc(var(--gb) * 1.5), 32px)) saturate(180%) brightness(1.04)}
+/* Flou faible : panneaux un peu plus opaques pour rester lisibles sur le ciel */
+:root[data-skin="weather"][data-blur="low"]{--glass:rgba(255,255,255,.6);--glass-card:rgba(255,255,255,.66)}
+:root[data-skin="weather"][data-theme="dark"][data-blur="low"]{--glass:rgba(18,22,48,.62);--glass-card:rgba(18,22,48,.7)}
+.blur-seg{flex-wrap:wrap}
+@media (prefers-reduced-motion:no-preference){
+  /* Changement de page : apparition courte, qui ne masque jamais le contenu (même si le téléphone saute des images) */
+  .main.enter > *:not(.topbar){animation:pageIn .3s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:min(calc(var(--i,0) * 35ms), 210ms)}
+  /* Thème Météo : pas d'animation d'entrée, le ciel animé occupe déjà la carte graphique */
+  :root[data-skin="weather"] .main.enter > *:not(.topbar),:root[data-skin="weather"] .main.enter .bar>i,:root[data-skin="weather"] .main.enter .ring .arc{animation:none}
+}
+@keyframes pageIn{from{opacity:.4;transform:translateY(6px)}}
+
+/* ===================== 2.1.3 : récaps ===================== */
+.story .fs-inner{position:relative;z-index:1}
+.st-joke{font-weight:700;font-size:15px;max-width:34ch;margin-inline:auto;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.38);color:#10102A!important}
+.st-float{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.st-float i{position:absolute;bottom:-12%;left:var(--x);font-style:normal;font-size:var(--s);opacity:0}
+.st-bars i{position:relative;overflow:hidden}
+.st-bars i.cur::after{content:"";position:absolute;inset:0;background:#10102A;transform-origin:left}
+.st-flame{display:grid;place-items:center;transform:scale(var(--k));margin-bottom:-6px}
+.st-delta{font-size:clamp(56px,16vw,104px)}
+.st-week{display:flex;align-items:flex-end;gap:8px;height:150px;width:100%;max-width:320px;margin:4px auto 0}
+.st-week div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%}
+.st-week i{display:block;width:100%;height:max(6%,calc(var(--h) * 100%));border-radius:10px 10px 4px 4px;background:rgba(16,16,42,.25)}
+.st-week .fav i{background:#10102A}
+.st-week span{font-weight:800;font-size:12px}
+.st-facts,.st-awards{list-style:none;display:flex;flex-direction:column;gap:10px;width:100%;max-width:380px;margin:0 auto;text-align:left}
+.st-facts li{padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.5);font-weight:600;font-size:15px;line-height:1.4}
+.st-awards li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.55)}
+.st-awards .aw-e{font-size:36px;line-height:1}
+.st-awards span:last-child{display:flex;flex-direction:column}
+.st-awards small{font-size:13px;font-weight:600;color:rgba(16,16,42,.75)}
+.recap-btn{position:relative;isolation:isolate;container-type:inline-size}
+/* Titre proportionnel à la largeur de la carte : « Semaine passée » ou « Septembre » tiennent sans couper les mots */
+.recap-btn b{font-size:clamp(11px,12.5cqi,15px);line-height:1.15;overflow-wrap:break-word;hyphens:manual;max-width:100%;letter-spacing:-.01em}
+.rb-tag{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:3px;font-style:normal;font-size:10.5px;font-weight:800;line-height:1;white-space:nowrap;padding:4px 7px;border-radius:999px;background:rgba(16,16,42,.85);color:#fff;box-shadow:0 4px 12px -4px rgba(0,0,0,.45)}
+.rb-tag svg{width:11px;height:11px}
+.rb-sub{display:block;margin-top:6px;font-size:11px;font-weight:800;line-height:1.25;opacity:.85}
+/* Bilan J+1 : halo lumineux qui respire */
+.recap-btn.past{box-shadow:0 0 0 2px rgba(255,255,255,.75),0 0 22px 4px color-mix(in srgb,var(--flame) 55%,transparent),0 0 46px 10px color-mix(in srgb,var(--flame-2) 30%,transparent)}
+.recap-btn.past{overflow:hidden}
+.recap-btn.past::after{content:"";position:absolute;top:-20%;bottom:-20%;left:0;width:55%;background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.5) 50%,transparent 100%);transform:translateX(-140%) skewX(-12deg);pointer-events:none;z-index:-1;will-change:transform}
+@media (prefers-reduced-motion:no-preference){
+  .story{background-size:180% 180%;animation:sbgPan 14s ease-in-out infinite alternate}
+  .st-float i{animation:stFloat var(--d) linear var(--dl) infinite}
+  .st-in.go-next{animation:slideInR .45s cubic-bezier(.2,.8,.2,1)}
+  .st-in.go-prev{animation:slideInL .45s cubic-bezier(.2,.8,.2,1)}
+  .st-bars i.cur::after{animation:grow .7s cubic-bezier(.2,.8,.2,1) both}
+  .st-dots i.on{animation:dotPop .4s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--n,0) * 1ms + 350ms)}
+  .st-week i{transform-origin:bottom;animation:sparkUp .7s cubic-bezier(.2,.9,.3,1.25) both;animation-delay:calc(var(--n) * 90ms + 300ms)}
+  .st-week .fav i{animation:sparkUp .7s cubic-bezier(.2,.9,.3,1.25) both,favGlow 1.6s ease-in-out 1.2s infinite;animation-delay:calc(var(--n) * 90ms + 300ms),1.2s}
+  .st-emoji.bounce{animation:popIn .6s cubic-bezier(.2,1.4,.4,1) both,floaty 2.8s ease-in-out .6s infinite}
+  .st-emoji.spin{animation:emojiSpin .9s cubic-bezier(.2,1.3,.4,1) both}
+  .st-flame{animation:popIn .6s cubic-bezier(.2,1.4,.4,1) both}
+  .st-flame svg{animation:flick 1.4s ease-in-out infinite}
+  .st-facts li,.st-awards li{animation:awardIn .55s cubic-bezier(.2,1.2,.4,1) both;animation-delay:calc(var(--i,0) * 220ms + 350ms)}
+  .st-joke{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:.55s}
+  .st-final .st-card{animation:popIn .6s cubic-bezier(.2,1.4,.4,1) both}
+  .recap-btn.past{animation:recapHalo 2.6s ease-in-out infinite}
+  .recap-btn.past::after{animation:recapShine 3.6s cubic-bezier(.45,0,.55,1) infinite}
+  .rb-tag{animation:popIn .5s cubic-bezier(.3,1.6,.5,1) both}
+}
+@keyframes recapHalo{50%{box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 30px 8px color-mix(in srgb,var(--flame) 70%,transparent),0 0 64px 16px color-mix(in srgb,var(--flame-2) 40%,transparent)}}
+/* Le reflet part et arrive hors de la carte : la boucle redémarre sans saut visible */
+@keyframes recapShine{0%,58%{transform:translateX(-140%) skewX(-12deg)}100%{transform:translateX(300%) skewX(-12deg)}}
+@keyframes sbgPan{0%{background-position:0% 0%}100%{background-position:100% 100%}}
+@keyframes stFloat{0%{transform:translateY(0) rotate(0);opacity:0}12%{opacity:.5}88%{opacity:.35}100%{transform:translateY(-125vh) rotate(var(--r));opacity:0}}
+@keyframes slideInR{from{opacity:.3;transform:translateX(38px)}}
+@keyframes slideInL{from{opacity:.3;transform:translateX(-38px)}}
+@keyframes dotPop{from{transform:scale(0)}}
+@keyframes favGlow{50%{box-shadow:0 0 0 4px rgba(255,255,255,.6)}}
+@keyframes emojiSpin{from{transform:rotate(-200deg) scale(.2);opacity:0}}
+@keyframes awardIn{from{opacity:0;transform:translateY(16px) scale(.9)}}
+.ongoing-h{display:flex;align-items:center;gap:4px}
+.sm-ic{width:30px;height:30px}
+.sm-ic svg{width:15px;height:15px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1501,7 +1672,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.1.6';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -2006,8 +2177,15 @@ function checkReminders(){
     const text = `Il te reste ${pl(pending, 'validation', 'validations')} avant minuit${st.n && !st.lit ? ` pour garder ta série de ${pl(st.n, 'jour', 'jours')}` : ''}.`;
     notify(u.id, text, { type:'reminder', view:'today' }); toast(text, 'bell');
   });
+  for (const [k, lbl] of [['week', 'de la semaine passée'], ['month', 'du mois dernier'], ['year', 'de l’année dernière']]) {
+    const R = recapRange(k);
+    if (R.past && hm >= '08:00') once('recapPast' + k + R.s, () => { notify(u.id, `Ton récap ${lbl} est prêt : il reste consultable aujourd’hui sur l’accueil.`, { type:'badge', view:'today' }); toast(`Ton récap ${lbl} est prêt !`, 'star'); });
+  }
   if (wdIdx(new Date()) === 6 && hm >= '18:00') once('recap' + ymd(weekStart(new Date())), () => {
     notify(u.id, 'Ton récap de la semaine est prêt : retrouve-le sur l\u2019accueil.', { type:'badge' }); toast('Ton récap de la semaine est prêt !', 'star');
+  });
+  for (const x of plan.due) if (x.g.type === 'period' && !x.done && hm >= x.g.start && hm <= addHM(x.g.start, 15)) once('pd' + x.g.id, () => {
+    const text = `C’est l’heure : « ${x.g.title} » (${x.g.start}–${x.g.end}).`; notify(u.id, text, { type:'period', view:'today' }); toast(text, 'clock');
   });
   for (const x of plan.ongoing) if (x.g.type === 'deadline') {
     const n = daysUntil(x.g.due);
@@ -2031,7 +2209,7 @@ function afterValidation(g, pts, wasLit){
   const u = me(), st = globalStreak(u.id);
   if (!wasLit) toast(st.n > 1 ? `Flamme allumée : ${pl(st.n, 'jour', 'jours')} de série !` : 'Flamme allumée ! Ta série commence.', 'flame');
   const n = goalStreak(g);
-  if (MILESTONES.includes(n) && !g.milestones.includes(n) && ['routine','abstinence','limit','duration','timed'].includes(g.type)) {
+  if (MILESTONES.includes(n) && !g.milestones.includes(n) && ['routine','abstinence','limit','duration','timed','period'].includes(g.type)) {
     g.milestones.push(n);
     const unit = statBig(g).l;
     notify(u.id, `Palier débloqué : ${n} ${unit} pour « ${g.title} ».`, { type:'badge', goalId:g.id });
@@ -2752,8 +2930,14 @@ function applyTheme(){
   const t = me()?.settings.theme || 'system';
   const s0 = me()?.settings, ac = validAccent(s0?.accentCustom) ? s0.accentCustom : (ACCENTS[s0?.accent ?? 0] || ACCENTS[0]).c, rs = document.documentElement.style;
   rs.setProperty('--flame-2', ac[0]); rs.setProperty('--flame', ac[1]); rs.setProperty('--pink', ac[2]);
-  if (t === 'system') { if (HOST_THEME) document.documentElement.setAttribute('data-theme', HOST_THEME); else document.documentElement.removeAttribute('data-theme'); }
-  else document.documentElement.setAttribute('data-theme', t);
+  const root = document.documentElement;
+  root.removeAttribute('data-skin');
+  root.setAttribute('data-blur', ['xlow', 'low', 'high'].includes(s0?.glassBlur) ? s0.glassBlur : 'mid');
+  if (t === 'oled') { root.setAttribute('data-theme', 'dark'); root.setAttribute('data-skin', 'oled'); }
+  // Thème Météo : clair le jour, sombre la nuit et au crépuscule, selon le ciel de la ville choisie
+  else if (t === 'weather') { root.setAttribute('data-skin', 'weather'); root.setAttribute('data-theme', skyDark() ? 'dark' : 'light'); }
+  else if (t === 'system') { if (HOST_THEME) root.setAttribute('data-theme', HOST_THEME); else root.removeAttribute('data-theme'); }
+  else root.setAttribute('data-theme', t);
   applyBackdrop();
 }
 // Easter egg : PepsGold avec la couleur Soleil, PepsCold avec Glacier
@@ -2777,6 +2961,7 @@ function render(){
   const navKey = UI.view === 'settings' ? 'profile' : UI.view;
   const title = UI.view === 'settings' ? 'Paramètres' : nav.find(n => n[0] === UI.view)[1];
   const views = { today:viewToday, goals:viewGoals, feed:viewFeed, friends:viewFriends, profile:viewProfile, mod:viewModeration, settings:viewSettings };
+  navIndSnapshot();   // position réelle du fond de l'onglet, même en pleine animation, avant de reconstruire la page
   app.innerHTML = `
   <div class="shell">
     <nav class="side glass" aria-label="Navigation principale">
@@ -2819,6 +3004,7 @@ function render(){
   const sn = globalStreak(u.id).n;
   if (UI.lastStreak != null && sn > UI.lastStreak) document.querySelector('.topbar .streak-pill')?.classList.add('bump');
   UI.lastStreak = sn; UI.justDone = null; UI.justLiked = null;
+  placeNavInd();
   eggAfterRender();
   renderModal();
 }
@@ -2930,7 +3116,7 @@ function viewToday(){
     </div>
     <div class="hero-flame ${st.lit ? 'lit' : 'dim'}">${flame(92)}<div class="streak-num" data-count="${st.n}">${st.n}</div><div class="streak-lbl">${st.n > 1 ? 'jours de série' : 'jour de série'}</div></div>
   </section>
-  ${!hasGoals ? `<section class="glass card"><div class="card-h"><h2>Crée ton premier objectif</h2></div><p class="muted" style="margin-bottom:14px">Choisis ce que tu veux suivre. Tu pourras le valider ici chaque jour.</p>${starters()}</section>` : `
+  ${!hasGoals ? `<section class="glass card"><div class="card-h"><h2>Crée ton premier objectif</h2></div><p class="muted" style="margin-bottom:14px">Choisis ce que tu veux suivre. Tu pourras le valider ici chaque jour.</p>${starters()}</section>${weatherCard(u)}` : `
   <div class="${socialOn(u) ? 'grid-2' : ''}">
     <section class="glass card">
       <div class="card-h"><h2>Ta journée</h2><span class="count">${lv.pts} flammes</span></div>
@@ -2941,6 +3127,7 @@ function viewToday(){
           ${total && done === total ? `<button class="perfect-chip" data-act="show-perfect">${icon('star')}Journée parfaite</button>` : ''}</div>
       </div>
     </section>
+    ${weatherCard(u)}
     ${socialOn(u) ? `<section class="glass card">
       <div class="card-h"><h2>Classement des flammes</h2><button class="btn btn-ghost sm" data-act="nav" data-id="friends">Amis</button></div>
       ${board.length > 1 ? `<ol class="board">${board.map((b, i) => `<li class="${b.u.id === u.id ? 'me-row' : ''}"><span class="rank">${i + 1}</span>${avatar(b.u, 30)}<button class="nm" data-act="open-user" data-id="${b.u.id}">${b.u.id === u.id ? 'Toi' : esc(b.u.name)}</button><span class="fc">${flame(18)}${b.n}</span></li>`).join('')}</ol>`
@@ -2952,7 +3139,7 @@ function viewToday(){
     ${total ? `<ul class="items">${plan.due.sort((a, b) => a.done - b.done || isFav(b.g) - isFav(a.g)).map(dueRow).join('')}</ul>` : `<div class="empty"><b>Rien de prévu aujourd'hui</b><p>Profite de ta journée, ou ajoute une routine.</p></div>`}
   </section>
   ${verifySection()}
-  ${plan.ongoing.length ? `<section class="glass card"><div class="card-h"><h2>En cours</h2><span class="count">${plan.ongoing.length}</span></div><ul class="items">${plan.ongoing.map(ongoingRow).join('')}</ul></section>` : ''}
+  ${plan.ongoing.length && !u.settings.hideOngoing ? `<section class="glass card"><div class="card-h"><h2>En cours</h2><span class="ongoing-h"><span class="count">${plan.ongoing.length}</span><button class="icon-btn plain sm-ic" data-act="hide-ongoing" aria-label="Masquer la carte « En cours » (réactivable dans Paramètres › Apparence)" title="Masquer cette carte">${icon('x')}</button></span></div><ul class="items">${plan.ongoing.map(ongoingRow).join('')}</ul></section>` : ''}
   ${recapCard()}`}`;
 }
 
@@ -2974,7 +3161,7 @@ function goalCard(g){
     ${g.type === 'objective' || g.type === 'monthly' ? `<span class="bar"><i style="width:${Math.min(100, (g.type === 'monthly' ? monthProgress(g) : objProgress(g)) / g.target * 100)}%"></i></span>` : ''}
     ${g.type === 'monthly' && g.cumulate ? `<small class="muted">Cumul : <b style="color:var(--c-ink)">${fmtNum(objProgress(g))} ${esc(g.unit || '')}</b> · ${pl(goalStreak(g), 'mois réussi d’affilée', 'mois réussis d’affilée')}</small>` : ''}
     ${EXT[g.type]?.card ? EXT[g.type].card(g) : ''}
-    <div class="gcard-f"><small class="muted">${esc(metaLine(g))}</small>${['routine','abstinence','limit','duration','timed','challenge'].includes(g.type) ? last7(g) : ''}</div>
+    <div class="gcard-f"><small class="muted">${esc(metaLine(g))}</small>${['routine','abstinence','limit','duration','timed','period','challenge'].includes(g.type) ? last7(g) : ''}</div>
   </button>`;
 }
 function viewGoals(){
@@ -3095,7 +3282,7 @@ function gelProgress(u, compact){
 function renderModal(){
   const m = UI.modal;
   if (!m || (!me() && !['importPreview','legal','a11y'].includes(m.type))) { modalRoot.innerHTML = ''; UI.modalKey = null; lockScroll(); return; }
-  const body = { groupNew:mGroupNew, groupInfo:mGroupInfo, goalForm:mGoalForm, goal:mGoal, progress:mProgress, user:mUser, notifs:mNotifs, confirm:mConfirm, share:mShare, avatar:mAvatar, tuto:mTuto, importPreview:mImport, legal:mLegal, a11y:mA11y, shareText:mShareText, groups:mGroups, modUser:mModUser, appeal:mAppeal, report:mReport, chat:mChat, compose:mCompose, storyNew:mStoryNew, exportData:mExport, notes:mNotes }[m.type]();
+  const body = { groupNew:mGroupNew, groupInfo:mGroupInfo, goalForm:mGoalForm, goal:mGoal, progress:mProgress, user:mUser, notifs:mNotifs, confirm:mConfirm, share:mShare, avatar:mAvatar, tuto:mTuto, importPreview:mImport, legal:mLegal, a11y:mA11y, shareText:mShareText, groups:mGroups, modUser:mModUser, appeal:mAppeal, report:mReport, chat:mChat, compose:mCompose, storyNew:mStoryNew, exportData:mExport, notes:mNotes, shareHub:mShareHub }[m.type]();
   // Même fenêtre redessinée (actualisation automatique, validation, favori…) : on garde la position de lecture et le focus
   const key = `${m.type}|${m.id || m.with || m.group || m.doc || ''}`, old = modalRoot.querySelector('.sheet'), same = !!old && UI.modalKey === key;
   const top = same ? old.scrollTop : 0, act = same && old.contains(document.activeElement) ? document.activeElement : null;
@@ -3279,7 +3466,7 @@ function mUser(){
 }
 function mNotifs(){
   const list = DB.notifs.filter(n => n.userId === me().id).sort((a, b) => b.at - a.at).slice(0, 40);
-  const ic = { mention:'comment', story:'image', group:'group', friend:'userplus', like:'feed', comment:'comment', reminder:'bell', deadline:'cal', badge:'medal', freeze:'snow', mod:'shield', official:'flameo' };
+  const ic = { period:'clock', mention:'comment', story:'image', group:'group', friend:'userplus', like:'feed', comment:'comment', reminder:'bell', deadline:'cal', badge:'medal', freeze:'snow', mod:'shield', official:'flameo' };
   return `${sheetHead('Notifications')}
   ${list.length ? `<div class="gform" style="gap:4px">${list.map(n => `<div class="notif ${n.read ? '' : 'unread'}"><span class="nic">${n.type === 'like' ? flame(19) : icon(ic[n.type] || 'bell')}</span><div><p>${esc(n.text)}</p><small>${ago(n.at)}</small></div></div>`).join('')}</div>` : `<div class="empty"><b>Tout est calme</b><p>Tes rappels et l'activité de tes amis apparaîtront ici.</p></div>`}`;
 }
@@ -3462,115 +3649,229 @@ const SBG = [
   'linear-gradient(160deg,#8AF0FF,#22D3FF 50%,#8C7DFF)',
   'linear-gradient(160deg,#FFC2A8,#FF4FA3 60%,#FFB000)'
 ];
+SBG.push(
+  'linear-gradient(160deg,#FFD1A1,#FF8FB1 55%,#B98CFF)',
+  'linear-gradient(160deg,#A8FFE4,#5AC8FA 55%,#6D8BFF)',
+  'linear-gradient(160deg,#F4FF5C,#FFD23F 50%,#FF8C42)',
+  'linear-gradient(160deg,#FFE0EC,#FFA8C8 50%,#C9C2FF)'
+);
 const PERIOD_WORD = { week:'de la semaine', month:'du mois', year:"de l'année" };
-function periodRange(p){
-  const now = new Date();
-  const s = p === 'week' ? weekStart(now) : p === 'month' ? new Date(now.getFullYear(), now.getMonth(), 1) : new Date(now.getFullYear(), 0, 1);
-  return { s:ymd(s), e:today(), days:Math.round((parseYmd(today()) - parseYmd(ymd(s))) / DAY) + 1 };
+const PERIOD_NOUN = { week:'semaine', month:'mois', year:'année' };
+// Période d'un récap : celle en cours, sauf le lendemain de sa fin (J+1), où le bilan complet de la période écoulée
+// reste affiché ; le récap suivant prend le relais le surlendemain.
+function recapRange(p, ref = new Date()){
+  const t = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate());
+  let s, e, past = false;
+  if (p === 'week') { s = weekStart(t); if (ymd(s) === ymd(t)) { past = true; s = addDays(s, -7); } e = past ? addDays(s, 6) : t; }
+  else if (p === 'month') { s = new Date(t.getFullYear(), t.getMonth(), 1); if (t.getDate() === 1) { past = true; s = new Date(t.getFullYear(), t.getMonth() - 1, 1); } e = past ? new Date(s.getFullYear(), s.getMonth() + 1, 0) : t; }
+  else { s = new Date(t.getFullYear(), 0, 1); if (ymd(s) === ymd(t)) { past = true; s = new Date(t.getFullYear() - 1, 0, 1); } e = past ? new Date(s.getFullYear(), 11, 31) : t; }
+  return { s:ymd(s), e:ymd(e), days:Math.round((parseYmd(ymd(e)) - parseYmd(ymd(s))) / DAY) + 1, past };
 }
-function periodTitle(p){
-  const now = new Date();
-  if (p === 'week') return { t:'Ta semaine', sub:`Du ${fmtDate(periodRange('week').s)} au ${fmtDate(today())}` };
-  if (p === 'month') { const m = now.toLocaleDateString('fr-FR', { month:'long' }); return { t:`Ton mois ${/^[aeiouy]/.test(m) ? "d'" : 'de '}${m}`, sub:`Du 1er au ${now.getDate()} ${m}` }; }
-  return { t:`Ton année ${now.getFullYear()}`, sub:`Du 1er janvier au ${fmtDate(today())}` };
+// Période complète qui précède (pour la comparaison)
+function prevRange(p, R){
+  const s0 = parseYmd(R.s), s = p === 'week' ? addDays(s0, -7) : p === 'month' ? new Date(s0.getFullYear(), s0.getMonth() - 1, 1) : new Date(s0.getFullYear() - 1, 0, 1), e = addDays(s0, -1);
+  return { s:ymd(s), e:ymd(e), days:Math.round((parseYmd(ymd(e)) - parseYmd(ymd(s))) / DAY) + 1 };
 }
-const countInPeriod = (id, p) => { const R = periodRange(p); return DB.checkins.filter(c => c.userId === id && isWin(c) && c.date >= R.s && c.date <= R.e).length; };
-function recapStats(id, p){
-  const R = periodRange(p), inR = d => d >= R.s && d <= R.e;
+const periodRange = p => recapRange(p);
+function periodTitle(p, R = recapRange(p)){
+  const s = parseYmd(R.s), e = parseYmd(R.e);
+  if (p === 'week') return { t:R.past ? 'Ta semaine passée' : 'Ta semaine', sub:`Du ${fmtDate(R.s)} au ${fmtDate(R.e)}` };
+  if (p === 'month') { const m = s.toLocaleDateString('fr-FR', { month:'long' }); return { t:`Ton mois ${/^[aeiouy]/.test(m) ? "d'" : 'de '}${m}`, sub:`Du 1er au ${e.getDate()} ${m}${R.past ? ' · bilan complet' : ''}` }; }
+  return { t:`Ton année ${s.getFullYear()}`, sub:`Du 1er janvier au ${fmtDate(R.e)}${R.past ? ' · bilan complet' : ''}` };
+}
+const countInPeriod = (id, p) => { const R = recapRange(p); return DB.checkins.filter(c => c.userId === id && isWin(c) && c.date >= R.s && c.date <= R.e).length; };
+// Hasard reproductible : les mêmes phrases pour une même période (le récap ne change pas à chaque ouverture)
+function seeded(str){
+  let h = 1779033703 ^ str.length;
+  for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+  return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
+}
+const hm2 = ts => { const d = new Date(ts); return `${d.getHours()} h ${pad(d.getMinutes())}`; };
+function recapStats(id, p, R = recapRange(p)){
+  const inR = d => d >= R.s && d <= R.e;
   const cs = DB.checkins.filter(c => c.userId === id && inR(c.date));
   const ok = cs.filter(c => isWin(c));
   const st = { p, R, n:ok.length, relapses:cs.filter(c => c.kind === 'relapse').length, pts:ok.reduce((s, c) => s + (c.pts || 0), 0) };
   st.days = new Set(ok.map(c => c.date));
+  // Période en cours : la régularité porte sur les jours déjà écoulés
   st.reg = Math.round(st.days.size / R.days * 100);
   const sd = streakDays(id), frozen = new Set(userById(id).frozenDays || []);
-  let run = 0; st.best = 0; st.frozenUsed = 0; st.dots = [];
+  let run = 0, gap = 0; st.best = 0; st.frozenUsed = 0; st.dots = []; st.gap = 0;
   for (let d = parseYmd(R.s); ymd(d) <= R.e; d = addDays(d, 1)) {
     const k = ymd(d);
     if (sd.has(k)) { run++; st.best = Math.max(st.best, run); } else run = 0;
     if (frozen.has(k) && !st.days.has(k)) st.frozenUsed++;
+    if (st.days.has(k)) gap = 0; else { gap++; st.gap = Math.max(st.gap, gap); }
     st.dots.push(st.days.has(k));
   }
   const wdc = Array(7).fill(0); ok.forEach(c => wdc[wdIdx(parseYmd(c.date))]++);
-  st.favWd = wdc.indexOf(Math.max(...wdc)); st.favWdN = wdc[st.favWd];
+  st.wdc = wdc; st.favWd = wdc.indexOf(Math.max(...wdc)); st.favWdN = wdc[st.favWd];
+  st.weekend = (wdc[5] + wdc[6]) / Math.max(1, st.n);
   const B = { matin:0, midi:0, aprem:0, soir:0, nuit:0 };
   ok.forEach(c => { const h = new Date(c.at).getHours(); B[h >= 5 && h < 11 ? 'matin' : h < 14 && h >= 11 ? 'midi' : h >= 14 && h < 18 ? 'aprem' : h >= 18 && h < 22 ? 'soir' : 'nuit']++; });
   st.slot = Object.keys(B).sort((a, b) => B[b] - B[a])[0];
+  // Heures extrêmes (minutes depuis minuit ; avant 4 h, c'est « la veille au soir »)
+  const mins = c => { const d = new Date(c.at), m = d.getHours() * 60 + d.getMinutes(); return m < 240 ? m + 1440 : m; };
+  const timed = ok.filter(c => c.at);
+  if (timed.length) { st.early = timed.reduce((a, c) => mins(c) < mins(a) ? c : a); st.late = timed.reduce((a, c) => mins(c) > mins(a) ? c : a); }
+  const perDay = {}; ok.forEach(c => perDay[c.date] = (perDay[c.date] || 0) + 1);
+  const bestDay = Object.keys(perDay).sort((a, b) => perDay[b] - perDay[a])[0];
+  st.bestDay = bestDay ? { d:bestDay, n:perDay[bestDay] } : null;
   const byG = {}; ok.forEach(c => byG[c.goalId] = (byG[c.goalId] || 0) + 1);
   const topId = Object.keys(byG).filter(goalById).sort((a, b) => byG[b] - byG[a])[0];
   st.top = topId ? { g:goalById(topId), n:byG[topId] } : null;
   st.types = {}; ok.forEach(c => { const g = goalById(c.goalId); if (g) st.types[g.type] = (st.types[g.type] || 0) + 1; });
-  const units = {}; ok.filter(c => c.kind === 'progress').forEach(c => units[c.goalId] = (units[c.goalId] || 0) + Number(c.value || 0));
+  const units = {}; ok.filter(c => c.kind === 'progress' && goalById(c.goalId)?.type !== 'duration').forEach(c => units[c.goalId] = (units[c.goalId] || 0) + Number(c.value || 0));
   const uId = Object.keys(units).filter(goalById).sort((a, b) => units[b] - units[a])[0];
   st.units = uId ? { g:goalById(uId), v:units[uId] } : null;
+  st.minutes = Math.round(cs.filter(c => c.kind === 'progress' && goalById(c.goalId)?.type === 'duration').reduce((s, c) => s + Number(c.value || 0), 0));
   st.resist = ok.filter(c => goalById(c.goalId)?.type === 'abstinence').length;
+  st.tasks = ok.filter(c => c.taskId).length;
   const gs = DB.goals.filter(g => g.userId === id);
   st.deadlines = gs.filter(g => g.type === 'deadline' && g.completedAt && inR(ymd(g.completedAt))).length;
   st.created = gs.filter(g => inR(ymd(g.createdAt))).length;
+  st.perfect = (userById(id).perfectDays || []).filter(inR).length;
   const posts = DB.posts.filter(q => q.userId === id && inR(ymd(q.at)));
   st.posts = posts.length; st.cheers = posts.reduce((s, q) => s + q.likes.filter(l => l !== id).length, 0);
+  // Comparaison avec la période précédente, en validations par jour
+  const PR = prevRange(p, R), prevN = DB.checkins.filter(c => c.userId === id && isWin(c) && c.date >= PR.s && c.date <= PR.e).length;
+  st.prev = { n:prevN, rate:prevN / PR.days, rate0:st.n / R.days };
   const share = t => (st.types[t] || 0) / Math.max(1, st.n);
   st.persona =
-    st.reg >= 85 && R.days >= 3 ? { n:'Métronome', e:'⏱️', d:"Réglé comme une horloge : tu n'as presque rien laissé passer." }
-    : share('abstinence') >= .4 ? { n:'Roc', e:'🪨', d:'Rien ne te fait plier. Tes « non » construisent tes plus beaux « oui ».' }
-    : st.slot === 'matin' ? { n:'Lève-tôt', e:'🌅', d:'Tu attaques ta journée avant tout le monde, et ça se voit.' }
-    : st.slot === 'soir' || st.slot === 'nuit' ? { n:'Oiseau de nuit', e:'🦉', d:"Tes meilleures victoires arrivent quand la ville s'endort." }
+    st.reg >= 95 && R.days >= 5 ? { n:'Machine suisse', e:'⌚', d:"Précision horlogère : pas une journée de ratée. À Genève, les horlogers prennent des notes." }
+    : st.reg >= 80 && R.days >= 3 ? { n:'Métronome', e:'⏱️', d:"Réglé comme une horloge : tu n'as presque rien laissé passer." }
+    : share('abstinence') >= .4 ? { n:'Roc', e:'🪨', d:'Rien ne te fait plier. Les tentations ont déposé une réclamation.' }
+    : st.relapses && st.n >= st.relapses * 3 ? { n:'Phénix', e:'🦅', d:'Un écart ? Le rebond a été immédiat. Les cendres, très peu pour toi.' }
+    : st.slot === 'nuit' ? { n:'Ninja de minuit', e:'🥷', d:'Tu valides quand tout le monde dort. Discret, efficace, légèrement inquiétant.' }
+    : st.slot === 'matin' ? { n:'Lève-tôt', e:'🌅', d:'Tu attaques ta journée avant tout le monde. Le soleil se lève, toi tu as déjà fini.' }
+    : st.slot === 'soir' ? { n:'Oiseau de nuit', e:'🦉', d:"Tes meilleures victoires arrivent quand la ville s'endort." }
+    : st.weekend >= .5 && st.n >= 4 ? { n:'Guerrier du week-end', e:'🏖️', d:'En semaine tu recharges, le week-end tu dévores tout.' }
     : share('objective') + share('monthly') >= .4 ? { n:'Architecte', e:'🧱', d:'Pierre après pierre, tu fais grimper les compteurs.' }
-    : st.best >= 7 ? { n:'Flamme éternelle', e:'🔥', d:'Ta série ne connaît pas la fatigue.' }
+    : st.best >= 7 ? { n:'Flamme éternelle', e:'🔥', d:'Ta série ne connaît pas la fatigue. Les pompiers sont prévenus.' }
+    : st.created >= 3 ? { n:'Collectionneur', e:'🗂️', d:"De nouveaux objectifs à la pelle : ton musée des ambitions s'agrandit." }
     : { n:'Étincelle', e:'✨', d:'Le feu est lancé. La suite promet.' };
   return st;
 }
 const SLOT_LABEL = { matin:'le matin', midi:'à midi', aprem:"l'après-midi", soir:'le soir', nuit:'la nuit' };
 function buildSlides(id, p){
-  const st = recapStats(id, p), T = periodTitle(p), out = [];
-  const add = html => out.push({ bg:SBG[out.length % SBG.length], html });
-  add(`<p class="eyebrow">Récap PepsGoal</p><div class="st-badge">${flame(96)}</div><h2 class="st-mid">${esc(T.t)}</h2><p>${esc(T.sub)}. On retrace ton parcours ?</p>`);
+  const R = recapRange(p), st = recapStats(id, p, R), T = periodTitle(p, R), out = [];
+  const rnd = seeded(`${id}|${p}|${R.s}`), pick = a => a[Math.floor(rnd() * a.length)];
+  const add = (html, fx, cls = '') => out.push({ bg:SBG[out.length % SBG.length], html, fx, cls });
+  const noun = PERIOD_NOUN[p], prevCmp = { week:'à la semaine précédente', month:'au mois précédent', year:"à l'année précédente" }[p];
+  add(`<p class="eyebrow">Récap PepsGoal${R.past ? ' · bilan complet' : ''}</p><div class="st-badge">${flame(96)}</div><h2 class="st-mid">${esc(T.t)}</h2><p>${esc(T.sub)}.</p>
+    <p class="st-joke">${pick(['Attache ta ceinture, on rembobine.', 'Prépare le pop-corn 🍿, c’est l’heure du bilan.', 'Roulement de tambour… 🥁', 'On a compté pour toi. Promis, sans tricher.', 'Installe-toi, ce récap est garanti sans pub.'])}</p>`, '✨', 'intro');
   if (!st.n) {
-    add(`<div class="st-emoji">🌱</div><h2 class="st-mid">Tout reste à écrire</h2><p>Aucune validation sur cette période pour l'instant. Ton récap se remplira dès ta première action validée.</p><div class="fs-actions"><button class="btn btn-primary" data-act="fs-close">Fermer</button></div>`);
+    add(`<div class="st-emoji bounce">🌱</div><h2 class="st-mid">Tout reste à écrire</h2><p>Aucune validation sur cette période${R.past ? '' : ' pour l’instant'}.</p>
+      <p class="st-joke">${pick(['Même les plantes vertes ont fait mieux : elles, au moins, ont fait leur photosynthèse.', 'Le calme avant la tempête, on le sent.', 'Une page blanche, c’est surtout beaucoup de place pour la suite.'])}</p>
+      <div class="fs-actions"><button class="btn btn-primary" data-act="fs-close">Fermer</button></div>`, '🌱');
     return { slides:out, st };
   }
-  const cakes = Math.max(1, Math.round(st.pts / 30));
-  add(`<p class="eyebrow">Validations</p><div class="st-big" data-count="${st.n}">${st.n}</div><p>actions validées, soit ${fmtNum(Math.round(st.n / Math.max(1, st.days.size) * 10) / 10)} par jour actif.</p><p><b>${st.pts} flammes</b> gagnées : de quoi allumer ${pl(cakes, "gâteau d'anniversaire", "gâteaux d'anniversaire")} de 30 bougies.</p>`);
-  const big = st.dots.length > 40, dd = big ? (st.dots.length > 200 ? 8 : 12) : st.dots.length > 7 ? 18 : 34;
-  add(`<p class="eyebrow">Régularité</p><div class="st-big" data-count="${st.reg}" data-suf="%">${st.reg}%</div><p>des jours avec au moins une validation : ${st.days.size} sur ${st.R.days}.</p><div class="st-dots" style="--d:${dd}px;--g:${big ? 3 : 6}px" aria-hidden="true">${st.dots.map(o => `<i class="${o ? 'on' : ''}"></i>`).join('')}</div>`);
-  add(`<p class="eyebrow">Meilleure série</p><div class="st-big" data-count="${st.best}">${st.best}</div><p>${st.best > 1 ? "jours d'affilée" : 'jour'} sans éteindre ta flamme${st.frozenUsed ? `, avec ${pl(st.frozenUsed, 'gel', 'gels')} en renfort` : ''}.</p>`);
-  if (st.top) add(`<p class="eyebrow">Ton objectif star</p><div class="st-emoji">${esc(st.top.g.icon)}</div><h2 class="st-mid">${esc(st.top.g.title)}</h2><p>Validé <b>${pl(st.top.n, 'fois', 'fois')}</b>, soit ${Math.round(st.top.n / st.n * 100)} % de toutes tes validations.</p>`);
-  add(`<p class="eyebrow">Tes habitudes</p><div class="st-emoji">${{ matin:'🌅', midi:'🥪', aprem:'☀️', soir:'🌆', nuit:'🌙' }[st.slot]}</div><h2 class="st-mid">Ton jour fétiche : le ${WD_LONG[st.favWd]}</h2><p>${pl(st.favWdN, 'validation', 'validations')} ce jour-là. Et tu valides surtout <b>${SLOT_LABEL[st.slot]}</b>.</p>`);
+  // Validations, avec une équivalence absurde
+  const perDay = Math.round(st.n / Math.max(1, st.days.size) * 10) / 10;
+  const equiv = pick([
+    `<b>${st.pts} flammes</b> : de quoi allumer ${pl(Math.max(1, Math.round(st.pts / 30)), "gâteau d'anniversaire", "gâteaux d'anniversaire")} de 30 bougies 🎂.`,
+    `<b>${st.pts} flammes</b> : assez pour faire griller ${pl(Math.max(1, Math.round(st.pts / 12)), 'chamallow', 'chamallows')} 🔥.`,
+    `Ça mérite au moins ${pl(st.n * 2, 'high five', 'high fives')} ✋. On te les doit.`,
+    `<b>${st.pts} flammes</b> : si c’était des degrés, ton four serait jaloux.`
+  ]);
+  add(`<p class="eyebrow">Validations</p><div class="st-big" data-count="${st.n}">${st.n}</div><p>actions validées, soit ${fmtNum(perDay)} par jour actif.</p><p class="st-joke">${equiv}</p>`, '✅');
+  // Régularité : les jours s'allument un à un
+  const big = st.dots.length > 40, dd = big ? (st.dots.length > 200 ? 8 : 12) : st.dots.length > 7 ? 18 : 34, step = Math.min(60, 1400 / st.dots.length);
+  const regLine = st.reg >= 100 ? pick(['Tous les jours. TOUS. Ton réveil demande des vacances.', 'Sans-faute. On a vérifié deux fois.'])
+    : st.reg >= 80 ? pick(['Presque parfait : les jours manqués se comptent sur les doigts d’une main (de dessin animé).', 'Une régularité de métronome, à un ou deux tic-tac près.'])
+    : st.reg >= 50 ? pick(['Plus d’un jour sur deux : la constance est en route.', 'Un jour oui, un jour… oui aussi, souvent.'])
+    : pick(['Pas tous les jours, mais chaque retour compte double (dans notre cœur).', 'La régularité, c’est comme le sport : ça s’entraîne.']);
+  add(`<p class="eyebrow">Régularité</p><div class="st-big" data-count="${st.reg}" data-suf="%">${st.reg}%</div><p>des jours avec au moins une validation : ${st.days.size} sur ${R.days}.</p>
+    <div class="st-dots" style="--d:${dd}px;--g:${big ? 3 : 6}px" aria-hidden="true">${st.dots.map((o, k) => `<i class="${o ? 'on' : ''}" style="--n:${Math.round(k * step)}"></i>`).join('')}</div><p class="st-joke">${regLine}</p>`, '📅');
+  // Série
+  const k = Math.min(1.5, .75 + st.best / 25);
+  const streakLine = st.best >= 30 ? 'Un mois sans flancher. Ta flamme a sa propre météo.' : st.best >= 7 ? pick(['Une semaine entière sans éteindre la flamme. Respect.', 'Sept jours d’affilée : même la flemme a abandonné.'])
+    : st.best >= 3 ? pick(['Un joli feu de camp 🏕️ : manque plus que les guimauves.', 'Trois jours et plus : la machine est lancée.']) : 'Une étincelle, c’est comme ça que commencent les grands feux.';
+  add(`<p class="eyebrow">Meilleure série</p><div class="st-flame" style="--k:${k}">${flame(84)}</div><div class="st-big" data-count="${st.best}">${st.best}</div><p>${st.best > 1 ? "jours d'affilée" : 'jour'} sans éteindre ta flamme${st.frozenUsed ? `, avec ${pl(st.frozenUsed, 'gel', 'gels')} en renfort` : ''}.</p><p class="st-joke">${streakLine}</p>`, '🔥');
+  // Comparaison avec la période précédente
+  if (st.prev.n) {
+    const d = Math.round((st.prev.rate0 - st.prev.rate) / Math.max(.0001, st.prev.rate) * 100), up = d > 5, down = d < -5;
+    add(`<p class="eyebrow">Face ${prevCmp}</p><div class="st-emoji bounce">${up ? '📈' : down ? '📉' : '⚖️'}</div><div class="st-big st-delta">${up ? '+' : ''}${d}%</div><p>de validations par jour par rapport ${prevCmp}.</p>
+      <p class="st-joke">${up ? pick(['En progrès comme un cookie au four : ça monte et ça sent bon.', 'Toi d’avant appelle, il demande tes secrets.', 'La courbe grimpe. Les alpinistes sont inquiets.']) : down ? pick(['Petit coup de mou ? Même les fusées ont des étages.', 'On recule pour mieux sauter. C’est scientifique (à peu près).', 'Une pause, pas un abandon. La suite te tend les bras.']) : pick(['Stable comme un chat sur un radiateur.', 'Même niveau : la constance, c’est un talent.'])}</p>`, up ? '🚀' : down ? '🐢' : '⚖️');
+  }
+  // Jours de la semaine
+  if (p !== 'week' || st.n >= 3) {
+    const mx = Math.max(1, ...st.wdc);
+    const dayJoke = ['Le lundi ne te fait pas peur. Le lundi a peur de toi.', 'Mardi, le héros discret de ta semaine.', 'Mercredi : le milieu de semaine, ton terrain de jeu.', 'Jeudi, presque vendredi, déjà au taquet.', 'Vendredi motivé : espèce rare, à protéger.', 'Samedi studieux : le canapé est vexé.', 'Dimanche productif : le brunch peut attendre.'][st.favWd];
+    add(`<p class="eyebrow">Ton jour fétiche</p><h2 class="st-mid">Le ${WD_LONG[st.favWd]}</h2>
+      <div class="st-week" aria-hidden="true">${st.wdc.map((v, i) => `<div class="${i === st.favWd ? 'fav' : ''}"><i style="--h:${v / mx};--n:${i}"></i><span>${WD[i]}</span></div>`).join('')}</div>
+      <p>${pl(st.favWdN, 'validation', 'validations')} ce jour-là.</p><p class="st-joke">${dayJoke}</p>`, '📊');
+  }
+  // Moment de la journée
+  const slotEmoji = { matin:'🌅', midi:'🥪', aprem:'☀️', soir:'🌆', nuit:'🌙' }[st.slot];
+  const slotJoke = { matin:'Pendant que d’autres appuient sur « snooze », toi tu valides.', midi:'La pause déjeuner, ton moment de gloire. Le sandwich attendra.', aprem:"L'après-midi, quand la sieste appelle… et que tu ne réponds pas.", soir:'Le soir, tu bosses pendant que ta série télé patiente.', nuit:'La nuit porte conseil… et validations.' }[st.slot];
+  add(`<p class="eyebrow">Ton créneau</p><div class="st-emoji spin">${slotEmoji}</div><h2 class="st-mid">Tu valides surtout ${SLOT_LABEL[st.slot]}</h2><p class="st-joke">${slotJoke}</p>`, slotEmoji);
+  if (st.top) add(`<p class="eyebrow">Ton objectif chouchou</p><div class="st-emoji bounce">${esc(st.top.g.icon)}</div><h2 class="st-mid">${esc(st.top.g.title)}</h2><p>Validé <b>${pl(st.top.n, 'fois', 'fois')}</b>, soit ${Math.round(st.top.n / st.n * 100)} % de tes validations.</p>
+    <p class="st-joke">${pick(['Les autres objectifs commencent à être jaloux.', 'Une vraie relation sérieuse.', 'Si c’était un plat, ce serait ta spécialité.'])}</p>`, st.top.g.icon);
+  // Le saviez-vous ?
+  const facts = [];
+  if (st.minutes >= 30) { const h = Math.round(st.minutes / 6) / 10; facts.push(`⏳ <b>${fmtNum(h)} h</b> cumulées sur tes objectifs de durée : ${pick([`de quoi regarder ${pl(Math.max(1, Math.round(st.minutes / 195)), 'fois', 'fois')} Titanic (et pleurer à la fin)`, `l’équivalent de ${pl(Math.max(1, Math.round(st.minutes / 25)), 'pizza cuite', 'pizzas cuites')} au four`, `${pl(Math.max(1, Math.round(st.minutes / 3)), 'chanson', 'chansons')} de 3 minutes à la suite`])}.`); }
+  if (st.units && /^km$/i.test(st.units.g.unit || '')) facts.push(`🗼 <b>${fmtNum(st.units.v)} km</b> : ${fmtNum(Math.round(st.units.v * 1000 / 330 * 10) / 10)} tours Eiffel couchées bout à bout.`);
+  else if (st.units) facts.push(`📏 <b>${fmtNum(st.units.v)} ${esc(st.units.g.unit || '')}</b> pour « ${esc(st.units.g.title)} ». Les compteurs chauffent.`);
+  if (st.early && (new Date(st.early.at).getHours() < 8)) facts.push(`🐓 Ta validation la plus matinale : <b>${hm2(st.early.at)}</b>. Le coq n’était pas encore levé.`);
+  if (st.late && (new Date(st.late.at).getHours() >= 22 || new Date(st.late.at).getHours() < 4)) facts.push(`🦇 La plus tardive : <b>${hm2(st.late.at)}</b>. Sur le fil, comme au cinéma.`);
+  if (st.tasks) facts.push(`🧱 ${pl(st.tasks, 'étape de projet franchie', 'étapes de projet franchies')}. Les architectes approuvent.`);
+  if (facts.length) add(`<p class="eyebrow">Le saviez-vous ?</p><div class="st-emoji bounce">🧠</div><ul class="st-facts">${facts.slice(0, 3).map((f, i) => `<li style="--i:${i}">${f}</li>`).join('')}</ul>`, '💡');
   const cells = [];
-  if (st.units) { const km = /^km$/i.test(st.units.g.unit || ''); cells.push(`<div><b>${fmtNum(st.units.v)} ${esc(st.units.g.unit || '')}</b><span>${esc(st.units.g.title)}${km ? ` · ${fmtNum(Math.round(st.units.v * 1000 / 330 * 10) / 10)} tours Eiffel couchées` : ''}</span></div>`); }
   if (st.resist) cells.push(`<div><b>${st.resist}</b><span>${st.resist > 1 ? 'jours de résistance' : 'jour de résistance'}</span></div>`);
   if (st.deadlines) cells.push(`<div><b>${st.deadlines}</b><span>${st.deadlines > 1 ? 'deadlines bouclées' : 'deadline bouclée'}</span></div>`);
   if (st.created) cells.push(`<div><b>${st.created}</b><span>${st.created > 1 ? 'nouveaux objectifs' : 'nouvel objectif'}</span></div>`);
   if (st.relapses) cells.push(`<div><b>${st.relapses}</b><span>${st.relapses > 1 ? 'rebonds après un écart' : 'rebond après un écart'}</span></div>`);
-  if (cells.length) { if (cells.length % 2) cells.push(`<div><b>${st.days.size}</b><span>${st.days.size > 1 ? 'jours actifs' : 'jour actif'}</span></div>`); add(`<p class="eyebrow">En chiffres</p><h2 class="st-mid">Ce que tu as construit</h2><div class="st-card">${cells.join('')}</div>`); }
-  if (socialOn() && (st.posts || st.cheers)) add(`<p class="eyebrow">Côté tribu</p><div class="st-big" data-count="${st.cheers}">${st.cheers}</div><p>${st.cheers > 1 ? 'encouragements reçus' : 'encouragement reçu'} sur ${pl(st.posts, 'publication', 'publications')}. Ta tribu croit en toi.</p>`);
-  add(`<p class="eyebrow">Ton profil ${PERIOD_WORD[p]}</p><div class="st-emoji">${st.persona.e}</div><h2 class="fs-title">${st.persona.n}</h2><p>${st.persona.d}</p>`);
+  if (st.perfect) cells.push(`<div><b>${st.perfect}</b><span>${st.perfect > 1 ? 'journées parfaites' : 'journée parfaite'}</span></div>`);
+  if (cells.length) { if (cells.length % 2) cells.push(`<div><b>${st.days.size}</b><span>${st.days.size > 1 ? 'jours actifs' : 'jour actif'}</span></div>`); add(`<p class="eyebrow">En chiffres</p><h2 class="st-mid">Ce que tu as construit</h2><div class="st-card">${cells.join('')}</div>`, '🧮'); }
+  if (socialOn() && (st.posts || st.cheers)) add(`<p class="eyebrow">Côté tribu</p><div class="st-big" data-count="${st.cheers}">${st.cheers}</div><p>${st.cheers > 1 ? 'encouragements reçus' : 'encouragement reçu'} sur ${pl(st.posts, 'publication', 'publications')}.</p><p class="st-joke">${pick(['Ta tribu croit en toi. Et elle a raison.', 'Ton fan-club s’agrandit.', 'Les applaudissements sont de bon cœur, on a vérifié.'])}</p>`, '💖');
+  // Trophées
+  const aw = [];
+  if (st.bestDay && st.bestDay.n >= 2) aw.push(['🏋️', 'Jour de gloire', `${cap(parseYmd(st.bestDay.d).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }))} : ${st.bestDay.n} validations`]);
+  if (st.early && new Date(st.early.at).getHours() < 7) aw.push(['🐓', 'Prix du coq', `Validation à ${hm2(st.early.at)}`]);
+  if (st.late && (new Date(st.late.at).getHours() >= 23 || new Date(st.late.at).getHours() < 4)) aw.push(['🦇', 'Prix de la chauve-souris', `Validation à ${hm2(st.late.at)}`]);
+  if (st.perfect) aw.push(['🌟', 'Sans fausse note', pl(st.perfect, 'journée parfaite', 'journées parfaites')]);
+  if (st.relapses) aw.push(['🩹', 'Prix du rebond', `Rebond après ${pl(st.relapses, 'écart', 'écarts')}`]);
+  if (st.gap >= 3 && st.n) aw.push(['🦥', 'Prix de la sieste', `${st.gap} jours de pause d’affilée (on ne juge pas)`]);
+  if (st.best >= 7) aw.push(['🔥', 'Pyromane certifié', `${st.best} jours de série`]);
+  if (st.created >= 2) aw.push(['🗂️', 'Prix de l’ambition', `${st.created} nouveaux objectifs`]);
+  if (aw.length) add(`<p class="eyebrow">Les trophées ${PERIOD_WORD[p]}</p><h2 class="st-mid">Et le prix est décerné à… toi</h2><ul class="st-awards">${aw.slice(0, 3).map(([e, n, d], i) => `<li style="--i:${i}"><span class="aw-e">${e}</span><span><b>${n}</b><small>${esc(d)}</small></span></li>`).join('')}</ul>`, '🏆');
+  add(`<p class="eyebrow">Ton profil ${PERIOD_WORD[p]}</p><div class="st-emoji spin">${st.persona.e}</div><h2 class="fs-title">${st.persona.n}</h2><p>${st.persona.d}</p>`, st.persona.e);
   add(`<p class="eyebrow">En résumé</p><h2 class="st-mid">${esc(T.t)}</h2>
     <div class="st-card"><div><b>${st.n}</b><span>validations</span></div><div><b>${st.pts}</b><span>flammes</span></div><div><b>${st.best}</b><span>meilleure série</span></div><div><b>${st.reg}%</b><span>régularité</span></div></div>
     <p>Profil : <b>${st.persona.n} ${st.persona.e}</b></p>
-    <div class="fs-actions"><button class="btn btn-primary" data-act="fs-share">${icon('share')}${socialOn() ? 'Partager mon récap' : 'Copier mon récap'}</button><button class="btn" data-act="recap-restart">Revoir</button><button class="btn" data-act="fs-close">Fermer</button></div>`);
+    <p class="st-joke">${pick([`Rendez-vous ${R.past ? 'pour la prochaine' : 'à la fin de la'} ${noun} pour la suite ✌️`, 'Même heure, même endroit, encore plus de flammes ?', 'Garde ce récap au chaud, tu l’as mérité.'])}</p>
+    <div class="fs-actions"><button class="btn btn-primary" data-act="fs-share">${icon('share')}${socialOn() ? 'Partager mon récap' : 'Copier mon récap'}</button><button class="btn" data-act="recap-restart">Revoir</button><button class="btn" data-act="fs-close">Fermer</button></div>`, '🎉', 'final');
   return { slides:out, st };
 }
 function showRecap(p){
   const { slides, st } = buildSlides(me().id, p);
-  UI.fs = { type:'recap', p, i:0, slides, text:`Mon récap ${PERIOD_WORD[p]} sur PepsGoal : ${pl(st.n, 'validation', 'validations')}, ${st.pts} flammes, meilleure série de ${pl(st.best, 'jour', 'jours')}, ${st.reg} % de régularité. Profil : ${st.persona.n} ${st.persona.e}` };
+  UI.fs = { type:'recap', p, i:0, dir:0, slides, text:`Mon récap ${PERIOD_WORD[p]} sur PepsGoal : ${pl(st.n, 'validation', 'validations')}, ${st.pts} flammes, meilleure série de ${pl(st.best, 'jour', 'jours')}, ${st.reg} % de régularité. Profil : ${st.persona.n} ${st.persona.e}` };
   renderStory();
 }
+// Emojis qui flottent derrière chaque diapositive
+const floaters = e => Array.from({ length:9 }, (_, i) => `<i style="--x:${(i * 11 + 4) % 96}%;--s:${18 + (i * 7) % 20}px;--d:${7 + (i * 3) % 6}s;--dl:-${(i * 1.7).toFixed(1)}s;--r:${i % 2 ? 40 : -40}deg">${esc(e)}</i>`).join('');
 function renderStory(){
+  stopConfetti();
   const f = UI.fs, s = f.slides[f.i], last = f.i === f.slides.length - 1;
-  fsRoot.innerHTML = `<div class="fs story" style="--sbg:${s.bg}" data-act="story-tap" role="dialog" aria-modal="true" aria-label="Récap ${PERIOD_WORD[f.p]}">
-    <div class="st-bars" aria-hidden="true">${f.slides.map((_, k) => `<i class="${k <= f.i ? 'done' : ''}"></i>`).join('')}</div>
+  fsRoot.innerHTML = `<div class="fs story ${s.cls ? 'st-' + s.cls : ''}" style="--sbg:${s.bg}" data-act="story-tap" role="dialog" aria-modal="true" aria-label="Récap ${PERIOD_WORD[f.p]}">
+    ${s.fx ? `<div class="st-float" aria-hidden="true">${floaters(s.fx)}</div>` : ''}${last ? '<canvas id="confetti" aria-hidden="true"></canvas>' : ''}
+    <div class="st-bars" aria-hidden="true">${f.slides.map((_, k) => `<i class="${k < f.i ? 'done' : k === f.i ? 'cur' : ''}"></i>`).join('')}</div>
     <button class="icon-btn fs-close" data-act="fs-close" aria-label="Fermer le récap">${icon('x')}</button>
-    <div class="fs-inner st-in" aria-live="polite">${s.html}</div>
+    <div class="fs-inner st-in ${f.dir > 0 ? 'go-next' : f.dir < 0 ? 'go-prev' : ''}" aria-live="polite">${s.html}</div>
     ${last ? '' : `<p class="st-hint">Touche l'écran ou utilise les flèches · ${f.i + 1}/${f.slides.length}</p>`}
   </div>`;
   const inner = fsRoot.querySelector('.fs-inner'); stagger(inner); countUps(inner); lockScroll();
+  if (last && !reduced()) { const cv = document.getElementById('confetti'); if (cv) startConfetti(cv); }
 }
-function storyStep(d){ const f = UI.fs; const n = Math.max(0, Math.min(f.slides.length - 1, f.i + d)); if (n !== f.i) { f.i = n; renderStory(); } }
+function storyStep(d){ const f = UI.fs; const n = Math.max(0, Math.min(f.slides.length - 1, f.i + d)); if (n !== f.i) { f.i = n; f.dir = d; renderStory(); } }
 function recapCard(){
   const u = me(), P = [['week','Semaine'],['month','Mois'],['year','Année']];
   return `<section class="glass card">
     <div class="card-h"><h2>Tes récaps</h2><span class="muted small">Ton parcours en stats</span></div>
-    <div class="recap-row">${P.map(([k, l], i) => `<button class="recap-btn" style="--rb:${SBG[[0, 4, 1][i]]}" data-act="open-recap" data-id="${k}">${icon('star')}<b>${l}</b><span>${pl(countInPeriod(u.id, k), 'validation', 'validations')}</span></button>`).join('')}</div>
+    <div class="recap-row">${P.map(([k, l], i) => { const R = recapRange(k); const name = R.past ? { week:'Semaine passée', month:'Mois passé', year:'Année passée' }[k] : l;
+      const when = { week:'', month:cap(parseYmd(R.s).toLocaleDateString('fr-FR', { month:'long' })) + ' · ', year:parseYmd(R.s).getFullYear() + ' · ' }[k];
+      return `<button class="recap-btn ${R.past ? 'past' : ''}" style="--rb:${SBG[[0, 4, 1][i]]}" data-act="open-recap" data-id="${k}" aria-label="${esc(name)}${when ? ' (' + when.replace(' · ', '') + ')' : ''} : ${pl(countInPeriod(u.id, k), 'validation', 'validations')}${R.past ? ', bilan complet disponible aujourd’hui seulement' : ''}">${R.past ? `<em class="rb-tag" aria-hidden="true">${icon('clock')}J+1</em>` : ''}${icon('star')}<b>${esc(name)}</b><span>${pl(countInPeriod(u.id, k), 'validation', 'validations')}</span>${R.past ? `<small class="rb-sub">${when}bilan complet, aujourd’hui</small>` : ''}</button>`; }).join('')}</div>
   </section>`;
 }
 
@@ -3618,7 +3919,13 @@ function enter(u){
 
 /* ================= événements ================= */
 const ACT = {
-  nav: id => { UI.view = id; UI.modal = null; render(); scrollTo({ top:0 }); },
+  // Le fond de l'onglet glisse dès le toucher ; la page (parfois lourde) est construite à l'image suivante
+  nav: id => {
+    slideNavTo(id); UI.view = id; UI.modal = null;
+    // Construite juste après la première image de la glissade, et au plus tard 50 ms après le toucher (images ralenties, onglet en arrière-plan…)
+    let done = false; const go = () => { if (done) return; done = true; if (UI.view !== id) return; render(); scrollTo({ top:0 }); };
+    requestAnimationFrame(() => setTimeout(go, 0)); setTimeout(go, 50);
+  },
   'auth-tab': id => { UI.authTab = id; UI.authError = ''; render(); },
   'demo-login': () => { SANDBOX = true; ksReset(); DB = migrate(seed()); enter(DB.users.find(u => u.username === 'camille')); void encryptLegacy(); toast('Mode démonstration : rien n’est enregistré.', 'star'); },
   logout: () => {
@@ -3783,7 +4090,10 @@ document.addEventListener('change', e => {
   }
   const k = t.dataset.set; if (!k) return;
   const s = me().settings;
-  if (k === 'theme') { s.theme = t.value; applyTheme(); }
+  if (k === 'theme') { s.theme = t.value; save(); render(); if (t.value === 'weather' && !s.weather) toast('Choisis ta ville dans Paramètres › Météo pour un ciel en direct.', 'cloud'); return; }
+  if (k === 'wxcard') { s.wxCard = t.checked; save(); render(); return; }
+  if (k === 'ongoing') { s.hideOngoing = !t.checked; save(); toast(t.checked ? 'Carte « En cours » affichée sur l’accueil.' : 'Carte « En cours » masquée.', 'list'); return; }
+  if (k === 'blur') { s.glassBlur = ['xlow', 'low', 'high'].includes(t.value) ? t.value : 'mid'; save(); applyTheme(); toast(`Verre givré : ${{ xlow:'très faible', low:'faible', mid:'moyen', high:'fort' }[s.glassBlur]}.`, 'palette'); return; }
   if (k === 'accent') { if (t.value === 'custom') return; s.accent = Number(t.value); s.accentCustom = null; save(); render(); return; }
   if (k === 'bg') { if (t.value === 'custom' && !bgImage()) { t.checked = false; document.getElementById('bg-file')?.click(); return; } s.bg = t.value; save(); render(); return; }
   if (k === 'suggest') { s.noSuggest = !t.checked; save(); toast(t.checked ? 'Tu peux apparaître dans les suggestions d’amis.' : 'Tu n’apparais plus dans les suggestions d’amis.', 'users'); return; }
@@ -5587,6 +5897,7 @@ const SET_CATS = [
   ['appearance', 'Apparence', 'Thème, couleur d’accent, arrière-plan, icône de profil', 'palette'],
   ['reminders', 'Rappels et notifications', 'Rappels du matin et du soir, notifications', 'bell'],
   ['account', 'Compte', 'Profil, mot de passe, déconnexion', 'user'],
+  ['weather', 'Météo', 'Ville, carte du jour et thème Météo', 'cloud'],
   ['privacy', 'Social et confidentialité', 'Fonctions sociales, visibilité, stories', 'lock'],
   ['data', 'Données', 'Export, stockage, réinitialisation', 'archive'],
   ['a11y', 'Accessibilité', 'Contraste élevé, daltonisme, monochrome, animations, transparence', 'eye'],
@@ -5605,10 +5916,14 @@ const a11yRows = () => A11Y_OPTS.map(([k, l, d]) => k === 'cvd'
   ? `<div class="set-row"><div><b id="a11y-${k}-l">${l}</b><small>${d}</small></div><select class="a11y-sel" data-a11y="${k}" aria-labelledby="a11y-${k}-l">${CVD_TYPES.map(([v, t]) => `<option value="${v}" ${(A11Y.cvd || '') === v ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`
   : `<div class="set-row"><div><b id="a11y-${k}-l">${l}</b><small>${d}</small></div><span class="switch"><input type="checkbox" data-a11y="${k}" ${A11Y[k] ? 'checked' : ''} aria-labelledby="a11y-${k}-l"><span></span></span></div>`).join('');
 const SET_BODY = {
+  weather(u){ return weatherSettings(u); },
   a11y(){ return `<section class="glass card"><div class="settings">${a11yRows()}</div><p class="muted small" style="margin-top:10px">Ces réglages s’appliquent à cet appareil, pour tous les comptes, dès l’écran de connexion.</p></section>`; },
   appearance(u){ const s = u.settings; return `<section class="glass card"><div class="settings">
-    <div class="set-row"><div><b>Thème</b><small>Clair, sombre ou selon ton appareil</small></div>
-      <div class="seg">${[['system','Auto'],['light','Clair'],['dark','Sombre']].map(([k, l]) => `<label><input type="radio" name="theme" value="${k}" data-set="theme" ${s.theme === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
+    <div class="set-row"><div><b>Thème</b><small>Clair, sombre, OLED (noir pur), Météo (ciel en direct) ou selon ton appareil</small></div>
+      <div class="seg wrap">${[['system','Auto'],['light','Clair'],['dark','Sombre'],['oled','OLED'],['weather','Météo']].map(([k, l]) => `<label><input type="radio" name="theme" value="${k}" data-set="theme" ${s.theme === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
+    <div class="set-row"><div><b id="ongoing-l">Carte « En cours » sur l’accueil</b><small>Deadlines, projets, objectifs chiffrés et défis en cours, sous « À valider aujourd’hui »</small></div><span class="switch"><input type="checkbox" data-set="ongoing" ${s.hideOngoing ? '' : 'checked'} aria-labelledby="ongoing-l"><span></span></span></div>
+    <div class="set-row"><div><b id="gblur-l">Flou du verre givré</b><small>${A11Y.transp || A11Y.contrast ? 'Sans effet : la transparence est désactivée dans Accessibilité.' : 'Transparence et flou des panneaux : « Très faible » les rend presque opaques'}</small></div>
+      <div class="seg blur-seg" role="radiogroup" aria-labelledby="gblur-l">${[['xlow','Très faible'],['low','Faible'],['mid','Moyen'],['high','Fort']].map(([k, l]) => `<label><input type="radio" name="gblur" value="${k}" data-set="blur" ${(s.glassBlur || 'mid') === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
     <div class="set-row" role="radiogroup" aria-label="Couleur d'accent"><div><b>Couleur d'accent</b><small>${validAccent(s.accentCustom) ? 'Tirée de ton arrière-plan' : esc((ACCENTS[s.accent] || ACCENTS[0]).n)} · flammes, boutons et anneau de progression</small></div>
       <div class="swatches">${ACCENTS.map((a, i) => `<label title="${esc(a.n)}"><input type="radio" name="accent" value="${i}" data-set="accent" ${s.accent === i && !validAccent(s.accentCustom) ? 'checked' : ''} aria-label="${esc(a.n)}"><span class="sw" style="--sw:${a.c[1]};background:${accentGrad(i)}"></span></label>`).join('')}${validAccent(s.accentCustom) ? `<label title="Couleur de ton arrière-plan"><input type="radio" name="accent" value="custom" data-set="accent" checked aria-label="Couleur tirée de ton arrière-plan"><span class="sw" style="--sw:${s.accentCustom[1]};background:linear-gradient(135deg,${s.accentCustom[0]},${s.accentCustom[1]} 55%,${s.accentCustom[2]})"></span></label>` : ''}</div></div>
     ${bgSettingsHtml(u)}
@@ -5814,6 +6129,7 @@ function cleanGoal(g){
   if (T === 'limit') { o.max = Math.max(0, snum(g.max, 1)); o.unit = sstr(g.unit, 20) || 'unités'; o.period = oneOf(g.period, ['day','week'], 'day'); }
   if (T === 'duration') o.minutes = Math.max(1, snum(g.minutes, 30));
   if (T === 'measure') { o.unit = sstr(g.unit, 20); o.dir = oneOf(g.dir, ['up','down'], 'down'); o.timeFmt = !!g.timeFmt; o.target = snumOpt(g.target); o.targetHit = sdate(g.targetHit, null); }
+  if (T === 'period') { o.freq = oneOf(g.freq, ['week','month'], 'week'); o.mdays = [...new Set(sarr(g.mdays).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= 31))]; o.start = typeof g.start === 'string' && TIME_RE.test(g.start) ? g.start : '18:00'; o.end = typeof g.end === 'string' && TIME_RE.test(g.end) && g.end > o.start ? g.end : (o.start < '23:00' ? (o.start < '19:00' ? '19:00' : '23:59') : '23:59'); if (o.freq === 'week' && !o.days.length) o.days = [0,1,2,3,4]; if (o.freq === 'month' && !o.mdays.length) o.mdays = [1]; }
   if (T === 'timed') { o.mode = oneOf(g.mode, ['before','after','notafter'], 'before'); o.time = typeof g.time === 'string' && TIME_RE.test(g.time) ? g.time : '07:00'; if (!o.days.length) o.days = [0,1,2,3,4,5,6]; }
   if (T === 'project') { o.due = sdate(g.due, ''); o.tasks = keep(sarr(g.tasks).slice(0, 200), t => ({ id:sid(sobj(t).id), t:sstr(t.t, 120) || 'Étape', done:!!t.done })); }
   if (T === 'challenge') { o.length = Math.min(365, Math.max(2, Math.round(snum(g.length, 30)))); o.start = sdate(g.start, today()); }
@@ -6042,7 +6358,7 @@ document.addEventListener('change', e => { const t = e.target; if (t.id === 'zip
 const LEGAL_MAIL = '<a href="mailto:quentin-corbet@outlook.fr">quentin-corbet@outlook.fr</a>';
 // Liens publics du projet
 const LINKS = { site:'https://site.pepsgoal.fr', repo:'https://github.com/CorbetQ/pepsgoal-platform', issue:'https://github.com/CorbetQ/pepsgoal-platform/issues/new' };
-const LEGAL_UPDATED = '16 octobre 2026';
+const LEGAL_UPDATED = '19 octobre 2026';
 const LEGAL = {
   cgu:{ title:'Conditions générales d’utilisation', short:'CGU', sections:[
     ['1. Objet', `<p>Les présentes conditions générales d’utilisation (CGU) encadrent l’accès à l’application PepsGoal et son utilisation, sur le web (app.pepsgoal.fr) et sur mobile (iOS et Android). PepsGoal permet de planifier des objectifs, de valider sa progression, de suivre des séries (« flammes ») et, si tu le souhaites, de partager ta progression avec d’autres personnes.</p><p>En créant un compte ou en utilisant l’application, tu acceptes les présentes CGU. Si tu ne les acceptes pas, n’utilise pas PepsGoal.</p>`],
@@ -6068,13 +6384,13 @@ const LEGAL = {
   privacy:{ title:'Charte de confidentialité', short:'Confidentialité', sections:[
     ['En résumé', `<ul><li><b>Avec un compte</b>, tes données sont enregistrées sur le serveur de PepsGoal (hébergé par Hostinger) pour être sauvegardées, synchronisées entre tes appareils et partagées avec les personnes que tu choisis.</li><li><b>Sans compte</b>, rien n’est envoyé au serveur : tout reste sur ton appareil.</li><li>Tes messages privés et groupes de discussion, y compris les photos et messages vocaux qui y sont échangés, sont chiffrés de bout en bout : seuls les participants peuvent les lire, pas même l’éditeur.</li><li>Aucune publicité, aucun cookie de suivi, aucune revente de données.</li><li>Tu peux exporter ou supprimer tes données à tout moment depuis les Paramètres.</li></ul>`],
     ['Responsable du traitement', `<p>Le responsable du traitement est Quentin CORBET, particulier domicilié à Angers (France), éditeur de PepsGoal. Contact pour toute question relative à tes données : ${LEGAL_MAIL}. Aucun délégué à la protection des données n’a été désigné, cette désignation n’étant pas obligatoire.</p>`],
-    ['Données traitées', `<ul><li><b>Compte :</b> nom affiché, nom d’utilisateur, bio, icône ou photo de profil, mot de passe (enregistré uniquement sous forme d’empreinte bcrypt, jamais en clair), date d’inscription. Aucune adresse e-mail ni numéro de téléphone n’est demandé.</li><li><b>Progression :</b> objectifs, validations, mesures, séries, flammes, gels, badges, groupes d’objectifs, réglages (thème, couleur, arrière-plan, rappels, visibilité, apparition dans les suggestions d’amis). Une image d’arrière-plan personnalisée reste sur ton appareil et n’est jamais envoyée au serveur.</li><li><b>Fonctions sociales :</b> amis, comptes bloqués, publications et leurs photos, commentaires, encouragements, stories, défis partagés, binômes, notifications.</li><li><b>Messagerie :</b> messages privés et de groupe, photos, messages vocaux et objectifs partagés, tous chiffrés de bout en bout ; le serveur ne conserve que leur version chiffrée, ainsi que l’expéditeur, les destinataires, la date et la taille. Les réponses et réactions aux messages sont chiffrées de la même façon ; dans un groupe, la liste des membres que tu mentionnes avec @ est transmise au serveur pour les prévenir. Clés publiques de chiffrement de tes appareils, et copie chiffrée de tes clés de conversation (illisible sans ton mot de passe).</li><li><b>Modération :</b> signalements, avertissements, suspensions, contestations et journal des décisions.</li><li><b>Données techniques :</b> adresse IP et requêtes reçues par le serveur (journaux de sécurité), identifiants de session, et, si tu actives les notifications, l’adresse d’abonnement fournie par ton navigateur et ton fuseau horaire (pour l’heure des rappels).</li></ul><p>PepsGoal ne collecte pas ta localisation, tes contacts ni de données publicitaires. Le micro n’est utilisé que pendant l’enregistrement d’un message vocal, et l’appareil photo ou la galerie uniquement quand tu choisis une photo.</p>`],
+    ['Données traitées', `<ul><li><b>Compte :</b> nom affiché, nom d’utilisateur, bio, icône ou photo de profil, mot de passe (enregistré uniquement sous forme d’empreinte bcrypt, jamais en clair), date d’inscription. Aucune adresse e-mail ni numéro de téléphone n’est demandé.</li><li><b>Progression :</b> objectifs, validations, mesures, séries, flammes, gels, badges, groupes d’objectifs, réglages (thème, couleur, arrière-plan, ville choisie pour la météo, rappels, visibilité, apparition dans les suggestions d’amis). Une image d’arrière-plan personnalisée reste sur ton appareil et n’est jamais envoyée au serveur.</li><li><b>Fonctions sociales :</b> amis, comptes bloqués, publications et leurs photos, commentaires, encouragements, stories, défis partagés, binômes, notifications.</li><li><b>Messagerie :</b> messages privés et de groupe, photos, messages vocaux et objectifs partagés, tous chiffrés de bout en bout ; le serveur ne conserve que leur version chiffrée, ainsi que l’expéditeur, les destinataires, la date et la taille. Les réponses et réactions aux messages sont chiffrées de la même façon ; dans un groupe, la liste des membres que tu mentionnes avec @ est transmise au serveur pour les prévenir. Clés publiques de chiffrement de tes appareils, et copie chiffrée de tes clés de conversation (illisible sans ton mot de passe).</li><li><b>Modération :</b> signalements, avertissements, suspensions, contestations et journal des décisions.</li><li><b>Données techniques :</b> adresse IP et requêtes reçues par le serveur (journaux de sécurité), identifiants de session, et, si tu actives les notifications, l’adresse d’abonnement fournie par ton navigateur et ton fuseau horaire (pour l’heure des rappels).</li></ul><p>PepsGoal ne collecte pas ta localisation, tes contacts ni de données publicitaires. Le micro n’est utilisé que pendant l’enregistrement d’un message vocal, et l’appareil photo ou la galerie uniquement quand tu choisis une photo.</p>`],
     ['Pourquoi et sur quelle base', `<ul><li>Faire fonctionner ton compte, sauvegarder et synchroniser tes objectifs : exécution des CGU.</li><li>Afficher tes contenus et acheminer tes messages aux personnes que tu as choisies : exécution des CGU.</li><li>Assurer la sécurité du service, prévenir les abus et modérer l’espace social : intérêt légitime.</li><li>Afficher des notifications sur ton appareil : ton consentement, que tu peux retirer à tout moment dans les réglages de ton appareil ou de ton navigateur.</li></ul>`],
     ['Où sont tes données', `<p><b>Avec un compte :</b> sur le serveur de PepsGoal, un serveur privé virtuel loué auprès de Hostinger dans un centre de données situé dans l’Union européenne, accessible uniquement par l’éditeur. Les échanges avec le serveur sont chiffrés (HTTPS). Une copie de tes données est aussi conservée sur tes appareils pour le fonctionnement hors connexion.</p><p><b>Sans compte :</b> uniquement dans le stockage de ton appareil (application mobile ou navigateur).</p><p>Les clés de chiffrement de tes conversations ne quittent jamais tes appareils en clair. Pour que tes autres appareils retrouvent tes conversations, une copie de ces clés est gardée sur le serveur, chiffrée sur ton appareil avec une clé dérivée de ton mot de passe : le serveur ne peut pas l’ouvrir. Si tu oublies ton mot de passe, cette copie ne peut pas être récupérée.</p>`],
     ['Qui peut voir quoi', `<ul><li><b>Privé :</b> toi seul.</li><li><b>Amis :</b> tes amis acceptés.</li><li><b>Public :</b> toute personne disposant d’un compte PepsGoal.</li><li><b>Stories :</b> tes amis uniquement, pendant 24 heures, avec leurs encouragements ; ensuite toi seul, dans ton archive.</li><li><b>Messages privés et groupes :</b> les participants de la conversation uniquement. Le contenu (texte, photos, messages vocaux) est chiffré de bout en bout : ni l’éditeur, ni l’hébergeur, ni la modération ne peuvent le lire. Seuls les messages du compte PepsGoal Officiel sont en clair.</li><li><b>Suggestions d’amis :</b> ton nom, ton nom d’utilisateur et ton icône peuvent être proposés aux amis de tes amis, aux membres de tes groupes et aux nouveaux inscrits, avec le nombre et le prénom d’amis en commun. Tu peux ne plus y apparaître dans Paramètres › Social et confidentialité.</li><li><b>Comptes bloqués :</b> ne voient plus tes contenus et ne peuvent plus t’écrire.</li><li><b>Modération :</b> l’équipe de modération peut consulter les contenus publiés et signalés afin de faire respecter les CGU.</li></ul>`],
     ['Notifications de modération par e-mail', `<p>Lorsqu’une publication est signalée, qu’une publication attend une validation ou qu’une contestation est envoyée, le serveur prévient l’éditeur par e-mail (envoyé depuis la messagerie de Hostinger vers l’adresse ${LEGAL_MAIL}, hébergée par Microsoft). Cet e-mail contient le type d’événement, les noms d’utilisateur concernés, le motif et un extrait du contenu concerné. Il ne contient jamais de message privé.</p>`],
     ['Durées de conservation', `<ul><li>Compte, progression et contenus : jusqu’à la suppression de ton compte. La suppression efface immédiatement tes données du serveur ; elles disparaissent des sauvegardes au plus tard 14 jours après.</li><li>Stories : visibles 24 heures par tes amis, puis gardées un an dans ton archive personnelle (visible par toi seul), sauf si tu les supprimes.</li><li>Notifications : les 150 plus récentes.</li><li>Journaux techniques du serveur : rotation automatique, au plus 30 jours.</li><li>Données de modération : le temps nécessaire au traitement et au suivi des décisions, et au plus jusqu’à la suppression du compte concerné.</li><li>Mode sans compte : jusqu’à ce que tu effaces les données de l’application ou du navigateur.</li></ul>`],
-    ['Destinataires et services tiers', `<ul><li><b>Hostinger</b> (hébergeur) : héberge le serveur et ses sauvegardes, et achemine les e-mails de modération. Il agit comme sous-traitant et n’exploite pas les données.</li><li><b>Microsoft</b> (Outlook) : héberge la boîte de réception de l’éditeur qui reçoit les e-mails de modération.</li><li><b>Apple et Google</b> : distribuent les applications mobiles ; ils ne reçoivent aucune donnée de ton compte PepsGoal.</li><li><b>Services de notification des navigateurs</b> (Google, Mozilla, Microsoft ou Apple selon ton navigateur) : acheminent les notifications si tu les actives. Leur contenu se limite au titre et à un court texte (rappel, nom de l’expéditeur d’un message, encouragement) ; jamais le contenu d’un message privé.</li></ul><p>Dans l’application publiée, les polices et bibliothèques sont intégrées : aucun autre service tiers n’est contacté.</p>`],
+    ['Destinataires et services tiers', `<ul><li><b>Hostinger</b> (hébergeur) : héberge le serveur et ses sauvegardes, et achemine les e-mails de modération. Il agit comme sous-traitant et n’exploite pas les données.</li><li><b>Microsoft</b> (Outlook) : héberge la boîte de réception de l’éditeur qui reçoit les e-mails de modération.</li><li><b>Apple et Google</b> : distribuent les applications mobiles ; ils ne reçoivent aucune donnée de ton compte PepsGoal.</li><li><b>Open-Meteo</b> (service météo, Suisse) : si tu choisis une ville, sa position (latitude et longitude arrondies) sert à obtenir la météo. Avec un compte, la demande passe par le serveur de PepsGoal : Open-Meteo ne reçoit ni ton adresse IP ni ton identité ; sans compte, ton appareil l’interroge directement.</li><li><b>Services de notification des navigateurs</b> (Google, Mozilla, Microsoft ou Apple selon ton navigateur) : acheminent les notifications si tu les actives. Leur contenu se limite au titre et à un court texte (rappel, nom de l’expéditeur d’un message, encouragement) ; jamais le contenu d’un message privé.</li></ul><p>Dans l’application publiée, les polices et bibliothèques sont intégrées : aucun autre service tiers n’est contacté.</p>`],
     ['Cookies et traceurs', `<p>PepsGoal n’utilise aucun cookie publicitaire ni outil de mesure d’audience. Le stockage local de l’appareil sert uniquement à faire fonctionner l’application (session, copie hors connexion, préférences, clés de chiffrement) : il est strictement nécessaire et ne requiert donc pas de consentement.</p>`],
     ['Tes droits', `<p>Conformément au RGPD et à la loi Informatique et Libertés, tu disposes des droits d’accès, de rectification, d’effacement, de limitation, d’opposition et de portabilité de tes données. Dans l’application :</p><ul><li><b>Accès et portabilité :</b> Paramètres › Données › Exporter mon compte (.zip) ou Copier mes données (JSON).</li><li><b>Rectification :</b> Paramètres › Compte.</li><li><b>Effacement :</b> Paramètres › Compte › Supprimer mon compte.</li></ul><p>Pour toute autre demande, contacte ${LEGAL_MAIL} : une réponse t’est apportée dans un délai d’un mois. Tu peux également introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>`],
     ['Mineurs', `<p>PepsGoal est accessible dès 15 ans. Avant 15 ans, l’accord d’un parent ou d’un tuteur légal est nécessaire pour créer un compte.</p>`],
@@ -6205,7 +6521,7 @@ window.addEventListener('online', () => { NET.online = true; if (me()) { toast('
 window.addEventListener('offline', () => {
   NET.online = false; if (!me()) return render();
   if (UI.view === 'feed' || UI.view === 'friends') UI.view = 'today';
-  if (UI.modal && ['chat','compose','storyNew','user','report','share','shareText'].includes(UI.modal.type)) UI.modal = null;
+  if (UI.modal && ['chat','compose','storyNew','user','report','share','shareText','shareHub'].includes(UI.modal.type)) UI.modal = null;
   if (UI.fs?.type === 'storyview') closeFs();
   toast('Hors ligne : fonctions sociales masquées. Tes objectifs restent disponibles.', 'cloudoff'); render();
 });
@@ -6302,6 +6618,12 @@ function applyBackdrop(){
   const bd = document.querySelector('.backdrop'); if (!bd) return;
   if (!bd.dataset.ready) { bd.insertAdjacentHTML('beforeend', BG_LAYERS); bd.dataset.ready = '1'; }
   const s = me()?.settings || {}, root = document.documentElement;
+  if (!bd.querySelector('.bg-sky')) bd.insertAdjacentHTML('beforeend', SKY_LAYER);
+  if (s.theme === 'weather') {
+    root.dataset.bg = 'sky'; root.removeAttribute('data-egg-snow'); applySky(bd);   // la neige est dessinée avec le ciel
+    return;
+  }
+  delete root.dataset.sky; delete root.dataset.wx; Sky.stop();
   let kind = BGS.some(b => b[0] === s.bg) ? s.bg : 'blob';
   const img = kind === 'custom' ? bgImage() : null;
   if (kind === 'custom' && !img) kind = 'blob';
@@ -6376,7 +6698,8 @@ function bgSettingsHtml(u){
   const s = u.settings, img = bgImage(), cur = s.bg === 'custom' && !img ? 'blob' : (BGS.some(b => b[0] === s.bg) ? s.bg : 'blob');
   const ac = validAccent(s.accentCustom) ? s.accentCustom[1] : null;
   return `<div class="set-row" style="border:0;padding-bottom:4px"><div><b>Arrière-plan</b><small>${esc(BGS.find(b => b[0] === cur)[1])} · derrière toute l’application</small></div></div>
-    <div class="bg-tiles" role="radiogroup" aria-label="Arrière-plan">${BGS.map(([k, l]) => `<label class="bg-tile bt-${k}"><input type="radio" name="bg" value="${k}" data-set="bg" ${cur === k ? 'checked' : ''}><span class="bt-prev" ${k === 'custom' && img ? `style="background-image:url('${img.img}')"` : ''}>${k === 'custom' && !img ? icon('image') : ''}</span><span>${l}</span></label>`).join('')}</div>
+    ${s.theme === 'weather' ? `<p class="muted small" style="margin:-2px 0 8px">${icon('cloud')} Le thème Météo affiche le ciel en direct : change de thème pour choisir un arrière-plan.</p>` : ''}
+    <div class="bg-tiles ${s.theme === 'weather' ? 'off' : ''}" role="radiogroup" aria-label="Arrière-plan" ${s.theme === 'weather' ? 'aria-disabled="true"' : ''}>${BGS.map(([k, l]) => `<label class="bg-tile bt-${k}"><input type="radio" name="bg" value="${k}" data-set="bg" ${cur === k ? 'checked' : ''}><span class="bt-prev" ${k === 'custom' && img ? `style="background-image:url('${img.img}')"` : ''}>${k === 'custom' && !img ? icon('image') : ''}</span><span>${l}</span></label>`).join('')}</div>
     <div class="set-row"><div><b>Image personnalisée</b><small>Une photo à toi en fond d’écran (JPG, PNG, WebP), gardée sur cet appareil.</small></div>
       <div class="quick" style="margin:0"><button class="btn sm" data-act="bg-pick">${icon('image')}${img ? 'Changer' : 'Choisir'}</button>${img ? `<button class="btn btn-ghost sm" data-act="bg-clear">Retirer</button>` : ''}</div></div>
     ${img?.palette?.length ? `<div class="set-row"><div><b>${icon('wand')} Couleurs de ton arrière-plan</b><small>Extraites de ton image : touche-en une pour en faire ta couleur d’accent.</small></div>
@@ -6506,7 +6829,7 @@ function reactChips(m, reacts, mine){
 function msgMenuHtml(m, reacts, mine){
   const per = reacts.get(m.id), uid0 = me().id, on = e => per?.get(e)?.has(uid0);
   return `<div class="msg-menu ${mine ? 'me' : 'them'}" role="group" aria-label="Réagir ou répondre">${QUICK_REACTS.map((e, i) => `<button class="rx-btn ${on(e) ? 'on' : ''}" style="--i:${i}" data-act="msg-react" data-id="${m.id}|${e}" aria-label="Réagir ${e}" aria-pressed="${!!on(e)}">${e}</button>`).join('')}
-    <button class="rx-btn" data-act="msg-react-more" data-id="${m.id}" aria-label="Plus d’emojis" aria-expanded="${!!UI.msgMore}">${icon('plus')}</button>
+    <button class="rx-btn" data-act="msg-react-more" data-id="${m.id}" aria-label="${UI.msgMore ? 'Revenir aux emojis de base' : 'Plus d’emojis'}" aria-expanded="${!!UI.msgMore}">${icon(UI.msgMore ? 'minus' : 'plus')}</button>
     <button class="btn btn-ghost sm" data-act="msg-reply" data-id="${m.id}">${icon('reply')}Répondre</button>
     ${UI.msgMore ? `<div class="rx-more">${MORE_REACTS.map(e => `<button class="rx-btn ${on(e) ? 'on' : ''}" data-act="msg-react" data-id="${m.id}|${e}" aria-label="Réagir ${e}">${e}</button>`).join('')}</div>` : ''}</div>`;
 }
@@ -6557,6 +6880,41 @@ const e2eInfo = text => `<div class="e2e-info" id="e2e-info" ${UI.e2eOpen ? '' :
 
 /* ---------------- notes de version ---------------- */
 const PATCH_NOTES = [
+  ['2.1.6', '19 octobre 2026', [
+    'Récaps : le reflet lumineux du bilan J+1 ne saute plus.',
+    'Apparence : nouveau niveau de verre « Très faible » (panneaux presque opaques, flou minimal).',
+    'Accueil : la carte « En cours » peut être masquée (bouton sur la carte ou Paramètres › Apparence).'
+  ]],
+  ['2.1.5', '19 octobre 2026', [
+    'Récaps : la pastille du bilan J+1 ne déborde plus et le titre « Semaine passée » tient dans sa carte.',
+    'Le récap disponible le lendemain d’une période brille d’un halo lumineux pour ne pas le manquer.'
+  ]],
+  ['2.1.3', '19 octobre 2026', [
+    'Récaps repensés : comparaison avec la période précédente, jour fétiche en graphique, « Le saviez-vous ? », trophées, nouveaux profils et beaucoup plus d’humour (des phrases différentes à chaque période).',
+    'Plus d’animations : diapositives qui glissent, jours qui s’allument un à un, barres qui poussent, emojis flottants, confettis à la fin.',
+    'Le récap d’une semaine, d’un mois ou d’une année terminés reste consultable le lendemain (J+1), avec une notification, avant de laisser place au suivant.'
+  ]],
+  ['2.1.2', '19 octobre 2026', [
+    'Correction : le fond de l’onglet sélectionné ne se téléporte plus quand une page recharge ses données (Feed, Amis) ; il glisse dès le toucher et reprend sa course là où il en était.'
+  ]],
+  ['2.1.1', '19 octobre 2026', [
+    'Correction : en changeant de page avec le thème Météo, le contenu pouvait rester invisible sur certains téléphones.',
+    'Ciel du thème Météo redessiné : nuages en relief sur plusieurs profondeurs, soleil et halo, lune et cratères, étoiles scintillantes et étoiles filantes, vraie pluie, neige qui virevolte, éclairs et brouillard ; bien plus léger pour le téléphone.',
+    'Apparence : choix du flou du verre givré (faible, moyen ou fort).',
+    'Transition de page plus courte et plus fluide.'
+  ]],
+  ['2.1.0', '19 octobre 2026', [
+    'Nouvel objectif « Période » : certains jours de la semaine ou du mois, sur une tranche horaire précise, avec un rappel au début de chaque période.',
+    'Météo : choisis ta ville dans les paramètres, et retrouve la météo du jour sous « Ta journée », avec un conseil selon le temps.',
+    'Thème Météo : un ciel en direct selon l’heure et le temps (soleil, lune, nuages, pluie, neige, orage, brouillard) et des panneaux en verre givré.',
+    'Thème OLED : noir pur, idéal pour les écrans OLED et la batterie.',
+    'Partage étendu : Feed, Story, Message (ami ou groupe) et Externe (autres applications ou copie).',
+    'Navigation : le fond de l’onglet sélectionné glisse d’un onglet à l’autre ; l’icône ne saute plus en changeant de page.',
+    'Réactions : un bouton « − » referme les emojis supplémentaires.',
+    '12 nouvelles couleurs d’accent et 7 nouvelles familles de badges (Lève-tôt, Oiseau de nuit, Week-end actif, Ponctuel, Bâtisseur, Conteur, Plume).',
+    'Notifications plus rapides : rappels vérifiés chaque minute, messages et rappels envoyés en priorité haute, affichage immédiat dans l’application ouverte.',
+    'Corrections : alignement de l’icône de profil et de l’anneau de niveau.'
+  ]],
   ['2.0.0', '16 octobre 2026', [
     'Messagerie : réponds à un message précis et réagis avec des emojis ; mentionne les membres d’un groupe avec @ (ils sont notifiés).',
     'Le texte sur le chiffrement s’affiche maintenant avec le bouton cadenas de la conversation.',
@@ -6651,6 +7009,571 @@ setTimeout(() => {
     if (u && u.tutorialDone) toast(`PepsGoal ${APP_VERSION} est là ! Les nouveautés sont dans Paramètres › Aide › Notes de version.`, 'sparkle');
   } catch(e){}
 }, 2500);
+
+
+/* ======================================================================================
+ * PepsGoal 2.1.0 : objectif Période, partage étendu, météo et thème Météo, thème OLED,
+ * nouvelles couleurs et badges, indicateur glissant de la navigation
+ * ====================================================================================== */
+Object.assign(P, {
+  minus:'<path d="M5 12h14"/>',
+  period:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="15.5" cy="16" r="3"/><path d="M15.5 14.6V16l1 .8"/>',
+  ext:'<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  wind:'<path d="M3 8h10a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7"/>',
+  drop:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  pin:'<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>'
+});
+
+/* ---------------- 12 nouvelles couleurs d'accent (toutes lisibles avec du texte foncé) ---------------- */
+ACCENTS.push(
+  { n:'Pêche', c:['#FFD9B8','#FFA270','#FF6F91'] }, { n:'Pistache', c:['#E6FFB3','#A8E063','#56C596'] },
+  { n:'Turquoise', c:['#B8FFF5','#3DE0D0','#1FA2FF'] }, { n:'Myrtille', c:['#D2CCFF','#8C7DFF','#5B8CFF'] },
+  { n:'Framboise', c:['#FFB3C7','#FF5C8A','#D25DD0'] }, { n:'Ambre', c:['#FFE29A','#FFC53D','#FF8C42'] },
+  { n:'Jade', c:['#B5F5D8','#3DD6A0','#2BB3C8'] }, { n:'Lilas', c:['#F1D4FF','#D59BFF','#9B8CFF'] },
+  { n:'Sakura', c:['#FFE0EC','#FFA8C8','#FF7EB3'] }, { n:'Mangue', c:['#FFF0A8','#FFD23F','#FF9F1C'] },
+  { n:'Azur', c:['#BDE8FF','#5AC8FA','#6D8BFF'] }, { n:'Argile', c:['#FFD8C2','#E8A87C','#D9776B'] }
+);
+
+/* ---------------- objectif « Période » ---------------- */
+TYPES.period = { label:'Période', desc:'Certains jours de la semaine ou du mois, sur une tranche horaire', pts:10 };
+TYPE_ICON.period = 'period';
+TYPE_GROUPS[0][1].splice(1, 0, 'period');
+const PERIOD_GRACE = 60;   // minutes de rattrapage après la fin de la tranche
+const addHM = (hm, n) => { const [h, m] = hm.split(':').map(Number), t = Math.max(0, Math.min(23 * 60 + 59, h * 60 + m + n)); return `${pad(Math.floor(t / 60))}:${pad(t % 60)}`; };
+const lastDom = d => new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+// Un 31 (ou 29, 30) tombe le dernier jour des mois plus courts
+function periodOn(g, d){
+  if (g.freq === 'month') { const dom = d.getDate(), last = lastDom(d); return (g.mdays || []).some(x => Math.min(x, last) === dom); }
+  return (g.days || []).includes(wdIdx(d));
+}
+function periodDays(g){
+  if (g.freq === 'month') { const m = (g.mdays || []).slice().sort((a, b) => a - b); return m.length === 1 ? `le ${m[0] === 1 ? '1er' : m[0]} du mois` : `les ${m.map(x => x === 1 ? '1er' : x).join(', ')} du mois`; }
+  return daysLabel(g.days || []);
+}
+function nextPeriods(g, n = 4){
+  const out = [], now = nowHM(); let d = new Date();
+  for (let i = 0; i < 400 && out.length < n; i++, d = addDays(d, 1)) {
+    if (!periodOn(g, d)) continue;
+    if (i === 0 && (hasCheck(g.id, today()) || now > g.end)) continue;
+    out.push(new Date(d));
+  }
+  return out;
+}
+EXT.period = {
+  FREQ:{ week:'Hebdomadaire', month:'Mensuelle' },
+  meta(g){ return `${cap(periodDays(g))} · ${g.start}–${g.end}`; },
+  scheduled: (g, d) => periodOn(g, d), calendar:true, daily:true,
+  streak(g){ return dayStreak(g, k => hasCheck(g.id, k), d => periodOn(g, d)); },
+  stat(g){ const n = this.streak(g); return { v:n, l: n > 1 ? 'périodes tenues' : 'période tenue' }; },
+  plan(g){ if (!periodOn(g, new Date()) || today() < ymd(g.createdAt)) return null; return { done:hasCheck(g.id, today()) }; },
+  window(g){
+    const hm = nowHM(), late = addHM(g.end, PERIOD_GRACE);
+    if (hm < g.start) return { open:false, txt:`${g.start}–${g.end} · commence dans ${untilTxt(g.start)}` };
+    if (hm <= g.end) return { open:true, live:true, txt:`En cours jusqu’à ${g.end}` };
+    if (hm <= late) return { open:true, txt:`Terminée : validation possible jusqu’à ${late}` };
+    return { open:false, txt:`Période terminée à ${g.end}` };
+  },
+  row(x){ const w = this.window(x.g); return rowShell(x, `<span class="${w.live && !x.done ? 'pd-live' : !w.open && !x.done ? 'urgent' : ''}">${esc(w.txt)}</span>`, checkBtn(x, 'Valider', !w.open && !x.done)); },
+  validate(g){
+    const k = today(), ex = todayDone(g, k); if (ex) return undoDone(g, ex);
+    if (!periodOn(g, new Date())) { toast('Cette période n’est pas prévue aujourd’hui.', 'cal'); return; }
+    const w = this.window(g);
+    if (!w.open) { toast(nowHM() < g.start ? `Patience : la période commence à ${g.start}.` : `Trop tard : la période s’est terminée à ${g.end}. Rendez-vous à la prochaine.`, 'clock'); return; }
+    winDone(g, TYPES.period.pts, k);
+  },
+  actions(g){ return periodOn(g, new Date()) ? validateBtn(g, hasCheck(g.id, today()), 'Valider cette période') : ''; },
+  detail(g){
+    const next = nextPeriods(g);
+    return next.length ? `${h3('Prochaines périodes')}<ul class="pd-next">${next.map(d => `<li><b>${cap(d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }))}</b><span>${g.start}–${g.end}</span></li>`).join('')}</ul>` : '';
+  },
+  form: (v, g) => {
+    const freq = g?.freq || 'week', days = g ? g.days || [] : [0, 2, 4], md = g ? g.mdays || [] : [1];
+    return `<div class="seg" role="radiogroup" aria-label="Fréquence">${[['week','Hebdomadaire · certains jours'],['month','Mensuelle · certains jours du mois']].map(([k, l]) => `<label><input type="radio" name="pfreq" value="${k}" ${freq === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
+      <fieldset class="field" data-pfreq="week" ${freq === 'week' ? '' : 'hidden'}><legend>Jours de la semaine</legend><div class="daychips">${WD.map((d, i) => `<label><input type="checkbox" name="pdays" value="${i}" ${days.includes(i) ? 'checked' : ''} aria-label="${WD_SHORT[i]}"><span>${d}</span></label>`).join('')}</div></fieldset>
+      <fieldset class="field" data-pfreq="month" ${freq === 'month' ? '' : 'hidden'}><legend>Jours du mois</legend><div class="daychips mdays">${Array.from({ length:31 }, (_, i) => `<label><input type="checkbox" name="pmdays" value="${i + 1}" ${md.includes(i + 1) ? 'checked' : ''} aria-label="Le ${i + 1}"><span>${i + 1}</span></label>`).join('')}</div><small class="muted">Le 29, 30 ou 31 tombe le dernier jour des mois plus courts.</small></fieldset>
+      <div class="pd-times"><div class="field"><label for="p-start">De</label><input type="time" id="p-start" name="pstart" value="${v('start', '18:00')}"></div><div class="field"><label for="p-end">À</label><input type="time" id="p-end" name="pend" value="${v('end', '19:00')}"></div></div>
+      <small class="muted">Valide pendant la tranche horaire (ou jusqu’à une heure après) ; un rappel arrive au début de chaque période.</small>`;
+  },
+  parse(fd, g){
+    g.freq = fd.get('pfreq') === 'month' ? 'month' : 'week';
+    g.days = fd.getAll('pdays').map(Number); g.mdays = fd.getAll('pmdays').map(Number);
+    g.start = fd.get('pstart') || '18:00'; g.end = fd.get('pend') || '19:00';
+    if (g.freq === 'week' ? !g.days.length : !g.mdays.length) return g.freq === 'week' ? 'Choisis au moins un jour de la semaine.' : 'Choisis au moins un jour du mois.';
+    if (g.end <= g.start) return 'L’heure de fin doit être après l’heure de début.';
+  }
+};
+document.addEventListener('change', e => {
+  const t = e.target; if (t.name !== 'pfreq') return;
+  t.closest('form')?.querySelectorAll('[data-pfreq]').forEach(el => { el.hidden = el.dataset.pfreq !== t.value; });
+});
+
+/* ---------------- partage : Feed, Story, Message, Externe ---------------- */
+function shareCtx(m){
+  const g = m.goalId ? goalById(m.goalId) : null, s = g ? statBig(g) : null;
+  return { g, text:m.text || (g ? `${s.v} ${s.l} pour « ${g.title} » sur PepsGoal.` : 'Je suis sur PepsGoal !') };
+}
+function mShareHub(){
+  const m = UI.modal, { g, text } = shareCtx(m), u = me(), social = socialOn() && !isGuest(u) && !isBanned(u);
+  const preview = g ? goalAttach(g) : `<blockquote class="share-quote">${esc(text)}</blockquote>`;
+  if (m.step === 'msg') {
+    const friends = friendsOf(u.id).map(userById).filter(x => x && !isBlockedPair(u.id, x.id)), groups = myChats(u.id);
+    return `${sheetHead('Envoyer en message')}${preview}
+      <p class="muted small" style="margin:12px 0 8px">Choisis une conversation : le partage est chiffré de bout en bout, comme tes messages.</p>
+      ${friends.length || groups.length ? `<ul class="share-targets">${groups.map(c => `<li><button class="share-tg" data-act="share-send" data-id="g:${c.id}"><span class="grp-av">${esc(c.emoji)}</span><span><b>${esc(c.name)}</b><small>${pl(c.members.length, 'membre', 'membres')}</small></span>${icon('send')}</button></li>`).join('')}${friends.map(x => `<li><button class="share-tg" data-act="share-send" data-id="u:${x.id}">${avatar(x, 36)}<span><b>${esc(x.name)}</b><small>@${esc(x.username)}</small></span>${icon('send')}</button></li>`).join('')}</ul>` : `<p class="muted">Ajoute des amis pour leur envoyer tes réussites.</p>`}
+      <div class="sheet-f"><button class="btn btn-ghost" data-act="share-back">Retour</button></div>`;
+  }
+  const canStory = social && (!!g || !!m.period);
+  const opt = (k, ic, l, d, ok, why) => `<button class="share-opt so-${k}" data-act="share-to" data-id="${k}" ${ok ? '' : 'disabled'}><span class="so-ic">${icon(ic)}</span><b>${l}</b><small>${ok ? d : why}</small></button>`;
+  return `${sheetHead('Partager')}${preview}
+    <div class="share-grid">
+      ${opt('feed', 'feed', 'Feed', 'Une publication pour tes amis ou tout le monde', social, 'Fonctions sociales désactivées')}
+      ${opt('story', 'image', 'Story', g ? 'Ta progression, 24 h pour tes amis' : 'Ton récap, 24 h pour tes amis', canStory, social ? 'Pas de story pour ce partage' : 'Fonctions sociales désactivées')}
+      ${opt('msg', 'comment', 'Message', 'À un ami ou à un groupe, chiffré', social, 'Fonctions sociales désactivées')}
+      ${opt('ext', 'ext', 'Externe', navigator.share ? 'Autres applications de ton appareil' : 'Copier le texte à coller où tu veux', true, '')}
+    </div>`;
+}
+async function shareExternal(text){
+  const data = { title:'PepsGoal', text, url:'https://app.pepsgoal.fr' };
+  if (navigator.share) { try { await navigator.share(data); return; } catch(e){ if (e?.name === 'AbortError') return; } }
+  try { await navigator.clipboard.writeText(`${text} ${data.url}`); toast('Texte copié : colle-le où tu veux.', 'share'); }
+  catch(e){ UI.modal = { type:'shareText', text }; renderModal(); }
+}
+
+/* ---------------- météo (Open-Meteo ; avec un compte, via le serveur PepsGoal) ---------------- */
+const WX_KEY = 'pepsgoal.wx.v1';
+const WMO = [
+  [[0], 'clear', 'Ciel dégagé', '☀️', '🌙'], [[1], 'clear', 'Plutôt dégagé', '🌤️', '🌙'], [[2], 'clouds', 'Partiellement nuageux', '⛅', '☁️'], [[3], 'clouds', 'Couvert', '☁️', '☁️'],
+  [[45, 48], 'fog', 'Brouillard', '🌫️', '🌫️'], [[51, 53, 55], 'rain', 'Bruine', '🌦️', '🌧️'], [[56, 57], 'rain', 'Bruine verglaçante', '🌧️', '🌧️'],
+  [[61], 'rain', 'Pluie faible', '🌦️', '🌧️'], [[63], 'rain', 'Pluie', '🌧️', '🌧️'], [[65], 'rain', 'Forte pluie', '🌧️', '🌧️'], [[66, 67], 'rain', 'Pluie verglaçante', '🌧️', '🌧️'],
+  [[71, 73, 75, 77], 'snow', 'Neige', '🌨️', '🌨️'], [[80, 81], 'rain', 'Averses', '🌦️', '🌧️'], [[82], 'rain', 'Fortes averses', '⛈️', '⛈️'],
+  [[85, 86], 'snow', 'Averses de neige', '🌨️', '🌨️'], [[95], 'storm', 'Orage', '⛈️', '⛈️'], [[96, 99], 'storm', 'Orage et grêle', '⛈️', '⛈️']
+];
+const wmo = (code, day = true) => { const r = WMO.find(w => w[0].includes(Number(code))) || WMO[2]; return { cond:r[1], label:r[2], emoji:day ? r[3] : r[4] }; };
+function normWeather(j){
+  const c = j.current || {}, d = j.daily || {};
+  return { tz:j.timezone || '', current:{ time:c.time, temp:c.temperature_2m, feels:c.apparent_temperature, humidity:c.relative_humidity_2m, isDay:!!c.is_day, precip:c.precipitation, code:c.weather_code, wind:c.wind_speed_10m, clouds:c.cloud_cover },
+    daily:(d.time || []).map((day, i) => ({ day, code:d.weather_code?.[i], max:d.temperature_2m_max?.[i], min:d.temperature_2m_min?.[i], pop:d.precipitation_probability_max?.[i] ?? null, sunrise:d.sunrise?.[i], sunset:d.sunset?.[i] })),
+    fetchedAt:new Date().toISOString() };
+}
+// Version sans compte : appel direct à Open-Meteo (remplacé par le relais du serveur dans la version connectée)
+async function weatherFetch(lat, lon){
+  const q = new URLSearchParams({ latitude:lat, longitude:lon, timezone:'auto', forecast_days:4, wind_speed_unit:'kmh',
+    current:'temperature_2m,apparent_temperature,relative_humidity_2m,is_day,precipitation,weather_code,wind_speed_10m,cloud_cover',
+    daily:'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset' });
+  const r = await fetch('https://api.open-meteo.com/v1/forecast?' + q); if (!r.ok) throw new Error('Météo indisponible');
+  return normWeather(await r.json());
+}
+async function weatherSearch(q){
+  const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=fr&format=json`);
+  if (!r.ok) throw new Error('Recherche indisponible');
+  return ((await r.json()).results || []).map(x => ({ name:x.name, admin1:x.admin1 || '', country:x.country || '', cc:x.country_code || '', lat:x.latitude, lon:x.longitude, tz:x.timezone || '' }));
+}
+const wxPlace = () => { const p = me()?.settings.weather; return p && Number.isFinite(p.lat) && Number.isFinite(p.lon) ? p : null; };
+function wxCached(){
+  const p = wxPlace(); if (!p) return null;
+  if (UI.wx?.key === `${p.lat},${p.lon}`) return UI.wx;
+  try { const o = JSON.parse(localStorage.getItem(WX_KEY) || 'null'); if (o?.key === `${p.lat},${p.lon}`) { UI.wx = o; return o; } } catch(e){}
+  return null;
+}
+let wxLoading = null;
+function wxEnsure(force){
+  const p = wxPlace(); if (!p || wxLoading) return;
+  const c = wxCached(); if (!force && c && Date.now() - c.at < 15 * 60e3) return;
+  if (!NET.online || (!force && UI.wxFailAt && Date.now() - UI.wxFailAt < 60e3)) return;
+  wxLoading = weatherFetch(p.lat, p.lon).then(data => {
+    UI.wx = { key:`${p.lat},${p.lon}`, data, at:Date.now() }; UI.wxError = null; UI.wxFailAt = 0;
+    try { localStorage.setItem(WX_KEY, JSON.stringify(UI.wx)); } catch(e){}
+  }).catch(e => { UI.wxError = e?.message || 'Météo indisponible'; UI.wxFailAt = Date.now(); })
+    .finally(() => { wxLoading = null; applyTheme(); if (UI.view === 'today' || (UI.view === 'settings' && UI.setCat === 'weather')) softRender(); });
+}
+const wxTemp = v => Number.isFinite(Number(v)) ? `${Math.round(v)}°` : '—';
+function wxTip(w){
+  const c = w.current, k = wmo(c.code, c.isDay).cond, t = Number(c.temp);
+  if (k === 'storm') return 'Orage : reste à l’abri, ta flamme aussi 🔥';
+  if (k === 'snow') return 'Neige : couvre-toi bien, ou garde ta série au chaud ❄️';
+  if (k === 'rain') return 'Pluie au programme : idéal pour tes objectifs à l’intérieur 📚';
+  if (k === 'fog') return 'Brouillard : prudence si tu sors courir 🌫️';
+  if ((w.daily[0]?.pop ?? 0) >= 60) return 'Pluie probable aujourd’hui : prévois un plan B à l’intérieur ☔';
+  if (t >= 30) return 'Grosse chaleur : hydrate-toi et profite de la fraîcheur du matin 💧';
+  if (t <= 3) return 'Il fait froid : un échauffement de plus avant de sortir 🧣';
+  if (k === 'clear' && c.isDay) return 'Grand beau : parfait pour une routine en plein air ☀️';
+  return 'Temps calme, motivation au beau fixe 💪';
+}
+function weatherCard(u){
+  if (u.settings.wxCard === false) return '';
+  const p = wxPlace();
+  if (!p) return `<section class="glass card wx-card wx-empty"><div class="card-h"><h2>Météo</h2></div><p class="muted" style="margin-bottom:12px">Ajoute ta ville pour voir la météo du jour, et un conseil pour tes objectifs.</p><button class="btn sm" data-act="set-cat-go" data-id="weather">${icon('pin')}Choisir ma ville</button></section>`;
+  wxEnsure();
+  const c = wxCached();
+  if (!c) return `<section class="glass card wx-card"><div class="card-h"><h2>Météo · ${esc(p.name)}</h2></div><p class="muted">${UI.wxError ? esc(UI.wxError) : 'Chargement de la météo…'}</p></section>`;
+  const w = c.data, cur = w.current, info = wmo(cur.code, cur.isDay), d0 = w.daily[0] || {};
+  const time = s => s ? s.slice(11, 16) : '—';
+  return `<section class="glass card wx-card wx-${info.cond} ${cur.isDay ? 'wx-day' : 'wx-night'}">
+    <div class="card-h"><h2>${icon('pin')}${esc(p.name)}</h2><button class="btn btn-ghost sm" data-act="set-cat-go" data-id="weather" aria-label="Réglages de la météo">${icon('gear')}</button></div>
+    <div class="wx-now"><span class="wx-ico" aria-hidden="true">${info.emoji}</span>
+      <div class="wx-main"><b class="wx-t">${wxTemp(cur.temp)}</b><span>${esc(info.label)} · ressenti ${wxTemp(cur.feels)}</span></div>
+      <ul class="wx-side"><li title="Minimum et maximum du jour">${wxTemp(d0.min)} / ${wxTemp(d0.max)}</li><li>${icon('wind')}${Math.round(cur.wind || 0)} km/h</li><li>${icon('drop')}${d0.pop != null ? `${d0.pop} %` : `${cur.humidity ?? '—'} %`}</li></ul></div>
+    <p class="wx-tip">${esc(wxTip(w))}</p>
+    <ul class="wx-days">${w.daily.slice(1, 4).map(d => { const x = wmo(d.code); return `<li><span>${cap(parseYmd(d.day).toLocaleDateString('fr-FR', { weekday:'short' }).replace('.', ''))}</span><span class="wx-di" aria-label="${esc(x.label)}">${x.emoji}</span><span>${wxTemp(d.max)}<small>${wxTemp(d.min)}</small></span></li>`; }).join('')}</ul>
+    <p class="muted small wx-foot">Lever ${time(d0.sunrise)} · coucher ${time(d0.sunset)} · mis à jour à ${new Date(c.at).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })} · Open-Meteo</p>
+  </section>`;
+}
+function weatherSettings(u){
+  const p = wxPlace(), res = UI.wxResults;
+  return `<section class="glass card"><div class="settings">
+    <div class="set-row"><div><b>Ville</b><small>${p ? `${esc(p.name)}${p.admin1 ? ', ' + esc(p.admin1) : ''} · ${esc(p.country)}` : 'Aucune ville choisie'}</small></div>${p ? `<button class="btn btn-ghost sm" data-act="wx-clear">Retirer</button>` : ''}</div>
+    <form class="c-form" data-form="wx-search" style="margin:4px 0 8px"><label class="sr" for="wx-q">Rechercher une ville</label><input type="search" id="wx-q" name="q" placeholder="Angers, Lyon, Bruxelles…" minlength="2" maxlength="60" autocomplete="off" value="${esc(UI.wxQuery || '')}"><button class="btn sm" type="submit">${icon('pin')}Chercher</button></form>
+    ${res ? (res.length ? `<ul class="wx-results">${res.map((r, i) => `<li><button class="share-tg" data-act="wx-pick" data-id="${i}">${icon('pin')}<span><b>${esc(r.name)}</b><small>${esc([r.admin1, r.country].filter(Boolean).join(' · '))}</small></span></button></li>`).join('')}</ul>` : `<p class="muted small">Aucune ville trouvée.</p>`) : ''}
+    <div class="set-row"><div><b>Carte météo sur l’accueil</b><small>Sous « Ta journée », avec un conseil selon le temps</small></div><span class="switch"><input type="checkbox" data-set="wxcard" ${u.settings.wxCard !== false ? 'checked' : ''} aria-label="Afficher la carte météo"><span></span></span></div>
+    <div class="set-row"><div><b>Thème Météo</b><small>Un ciel en direct derrière l’application, selon l’heure et le temps de ta ville, avec des panneaux en verre givré.</small></div><button class="btn sm" data-act="theme-weather" ${u.settings.theme === 'weather' ? 'disabled' : ''}>${u.settings.theme === 'weather' ? 'Activé' : 'Activer'}</button></div>
+  </div><p class="muted small" style="margin-top:10px">Données météo : Open-Meteo (licence CC BY 4.0).${window.PGCloud?.state?.acct ? ' Les demandes passent par le serveur PepsGoal : ta ville n’est pas reliée à ton adresse IP chez Open-Meteo.' : ''}</p></section>`;
+}
+
+/* ---------------- thème Météo : ciel en direct ---------------- */
+const SKY = {
+  night:['#0B1026', '#1F2A5A'], dawn:['#3B4A8A', '#F6A27A'], day:['#4FA3F0', '#BFE3FF'], dusk:['#3A2D6E', '#F07E6E'],
+  gray:{ night:['#151A2A', '#2E3548'], dawn:['#58607A', '#B9A49A'], day:['#8BA0B4', '#D3DEE8'], dusk:['#4A4560', '#A88A88'] },
+  storm:{ night:['#0A0C14', '#1E2230'], dawn:['#2E3242', '#5E5A66'], day:['#4C5868', '#8E9AA8'], dusk:['#2A2638', '#5C4E5A'] }
+};
+function skyState(){
+  const c = wxCached(), w = c?.data, now = new Date();
+  let nowStr = `${today()}T${nowHM()}`, rise = `${today()}T07:15`, set = `${today()}T19:30`, cond = 'clear';
+  if (w) { nowStr = w.current.time || nowStr; rise = w.daily[0]?.sunrise || rise; set = w.daily[0]?.sunset || set; cond = wmo(w.current.code).cond; }
+  const m = s => { const [h, mi] = s.slice(11, 16).split(':').map(Number); return h * 60 + mi; };
+  const t = m(nowStr), r = m(rise), s = m(set);
+  const phase = t < r - 40 || t > s + 40 ? 'night' : Math.abs(t - r) <= 40 ? 'dawn' : Math.abs(t - s) <= 40 ? 'dusk' : 'day';
+  const prog = Math.max(0, Math.min(1, (t - r) / Math.max(1, s - r)));
+  return { phase, cond, prog, clouds:w ? Number(w.current.clouds) || 0 : 10, code:w ? Number(w.current.code) || 0 : 0, now };
+}
+const skyDark = () => ['night', 'dusk'].includes(skyState().phase);
+// Ciel du thème Météo, dessiné sur un seul canevas (30 images/s, en pause quand l'application est cachée) :
+// un seul calque pour le navigateur, là où des dizaines d'éléments animés et floutés saturaient la mémoire graphique des téléphones.
+const Sky = (() => {
+  let cv = null, ctx = null, W = 0, H = 0, st = null, key = '', raf = 0, last = 0, visCheck = 0, visible = true;
+  let stars = [], drops = [], flakes = [], clouds = [], grad = null, flash = { next:0, start:0, bolt:null }, shoot = null;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const mix = (a, b, k) => { const x = hex(a), y = hex(b); return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * k)).join(',')})`; };
+  const PAL = { day:['#2C7BD4', '#5AA8EF', '#AFD9FF'], dawn:['#28367A', '#B66B92', '#FFC08A'], dusk:['#211F4E', '#874579', '#F48E5C'], night:['#050A1D', '#0D1636', '#1C2A5A'] };
+  const GRAY = { day:'#9AA6B4', dawn:'#6E6976', dusk:'#5E5868', night:'#1E222E' }, STORM = { day:'#3E4552', dawn:'#2F313B', dusk:'#2A2933', night:'#0B0D14' };
+  // Intensité des précipitations selon le code météo (WMO)
+  const precip = c => [51, 56, 61, 80].includes(c) ? .55 : [53, 57, 63, 66, 71, 73, 81, 85].includes(c) ? 1 : [55, 65, 67, 75, 82, 86, 95, 96, 99].includes(c) ? 1.6 : 1;
+  function cover(s){ return s.cond === 'storm' ? .86 : s.cond === 'rain' ? .66 : s.cond === 'fog' ? .62 : s.cond === 'snow' ? .66 : s.cond === 'clouds' ? .22 + .45 * Math.min(1, s.clouds / 100) : .2 * Math.min(1, s.clouds / 100); }
+  function cloudSprite(w, h, color, alpha, shade){
+    const c = document.createElement('canvas'), k = 1.25; c.width = Math.ceil(w * k); c.height = Math.ceil(h * k * 1.6);
+    const x = c.getContext('2d'), n = 7 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < n; i++) {
+      const px = c.width * (.18 + .64 * i / (n - 1)) + rnd(-12, 12), r = h * rnd(.45, .85) * (1 - Math.abs(i / (n - 1) - .5) * .6), py = c.height * .58 - r * rnd(.1, .45);
+      const g = x.createRadialGradient(px, py - r * .2, r * .1, px, py, r);
+      g.addColorStop(0, `rgba(${color},${alpha})`); g.addColorStop(.62, `rgba(${color},${alpha * .7})`); g.addColorStop(1, `rgba(${color},0)`);
+      x.fillStyle = g; x.beginPath(); x.arc(px, py, r, 0, 6.283); x.fill();
+    }
+    // Base plus sombre : du volume
+    const sh = x.createLinearGradient(0, c.height * .45, 0, c.height * .85);
+    sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, `rgba(${shade},${alpha * .35})`);
+    x.globalCompositeOperation = 'source-atop'; x.fillStyle = sh; x.fillRect(0, 0, c.width, c.height);
+    return c;
+  }
+  function build(){
+    if (!st || !W) return;
+    const cov = cover(st), sky = PAL[st.phase], tint = st.cond === 'storm' ? STORM[st.phase] : st.cond === 'snow' ? (st.phase === 'night' ? '#2A3142' : '#AEB9C7') : GRAY[st.phase];
+    const k = st.cond === 'storm' ? .85 : st.cond === 'snow' ? .82 : cov;
+    grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, mix(sky[0], tint, k)); grad.addColorStop(.55, mix(sky[1], tint, k)); grad.addColorStop(1, mix(sky[2], st.cond === 'snow' ? '#D5DCE4' : tint, k * .9));
+    stars = Array.from({ length:Math.round(W * H / 2300) }, () => ({ x:Math.random() * W, y:Math.random() * H * .78, r:rnd(.35, 1.45), p:Math.random() * 6.28, s:rnd(.5, 1.7) }));
+    const night = st.phase === 'night', warm = st.phase === 'dawn' || st.phase === 'dusk';
+    const color = st.cond === 'storm' ? '84,92,106' : st.cond === 'rain' ? (night ? '70,78,96' : '138,148,164') : night ? '92,104,140' : warm ? '255,214,206' : '255,255,255';
+    const alpha = night ? .55 : st.cond === 'clear' ? .75 : .92, shade = st.cond === 'storm' || st.cond === 'rain' ? '20,24,34' : night ? '10,14,30' : '90,110,140';
+    const n = st.cond === 'clear' ? (st.clouds > 30 ? 3 : 1) : st.cond === 'fog' ? 3 : st.cond === 'clouds' ? 4 + Math.round(st.clouds / 22) : 9;
+    clouds = Array.from({ length:n }, (_, i) => {
+      const depth = i % 3, w = Math.min(W * .9, rnd(200, 380) * (1 + depth * .35)), h = w * rnd(.28, .38);
+      return { img:cloudSprite(w, h, color, alpha * (.7 + depth * .15), shade), x:rnd(-w, W), y:rnd(-.05, .42) * H + depth * 18, v:(5 + depth * 6) * rnd(.8, 1.3) };
+    });
+    const rainy = st.cond === 'rain' || st.cond === 'storm';
+    drops = rainy ? Array.from({ length:Math.round(W * H / 3200 * precip(st.code)) }, () => ({ x:Math.random() * W * 1.2, y:Math.random() * H, l:rnd(10, 22), v:rnd(650, 950) })) : [];
+    flakes = st.cond === 'snow' ? Array.from({ length:Math.round(W * H / 4200 * precip(st.code)) }, () => ({ x:Math.random() * W, y:Math.random() * H, r:rnd(1, 3.3), v:rnd(16, 42), a:Math.random() * 6.28, sw:rnd(.4, 1.3) })) : [];
+    flash.next = performance.now() + rnd(2500, 6000);
+  }
+  function resize(){
+    if (!cv) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = innerWidth; H = innerHeight; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); build(); draw(performance.now(), 0);
+  }
+  function bolt(){
+    let x = rnd(W * .15, W * .85), y = 0; const p = [[x, y]];
+    while (y < H * rnd(.45, .7)) { x += rnd(-28, 28); y += rnd(18, 42); p.push([x, y]); }
+    return p;
+  }
+  function draw(now, dt){
+    if (!st || !grad) return;
+    const t = now / 1000, cov = cover(st), night = st.phase === 'night';
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+    // Étoiles et étoile filante (nuit ou crépuscule, ciel assez dégagé)
+    if ((night || st.phase === 'dusk') && cov < .7) {
+      const base = (night ? .95 : .4) * (1 - cov);
+      ctx.fillStyle = '#fff';
+      for (const s of stars) { ctx.globalAlpha = base * (.55 + .45 * Math.sin(t * s.s + s.p)); ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      if (night && cov < .3 && dt) {
+        if (!shoot && Math.random() < dt / 14) shoot = { x:rnd(W * .2, W), y:rnd(0, H * .3), start:now };
+        if (shoot) {
+          const k = (now - shoot.start) / 700; if (k > 1) shoot = null;
+          else { const x = shoot.x - k * 260, y = shoot.y + k * 120, g = ctx.createLinearGradient(x, y, x + 90, y - 42);
+            g.addColorStop(0, `rgba(255,255,255,${.9 * (1 - k)})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.strokeStyle = g; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 90, y - 42); ctx.stroke(); }
+        }
+      }
+    }
+    // Soleil (halo, rayons doux) ou lune (halo, cratères)
+    const R = Math.min(W, H) * .085;
+    if (!night) {
+      const a = Math.max(0, 1 - cov * 1.15);
+      if (a > .02) {
+        const sx = W * (.08 + st.prog * .84), sy = H * (.6 - Math.sin(Math.PI * st.prog) * .46), warm = st.phase !== 'day';
+        let g = ctx.createRadialGradient(sx, sy, R * .2, sx, sy, R * 5);
+        g.addColorStop(0, warm ? `rgba(255,190,120,${.55 * a})` : `rgba(255,236,170,${.5 * a})`); g.addColorStop(1, 'rgba(255,220,150,0)');
+        ctx.fillStyle = g; ctx.fillRect(sx - R * 5, sy - R * 5, R * 10, R * 10);
+        if (st.cond === 'clear' && !warm) {
+          ctx.save(); ctx.translate(sx, sy); ctx.rotate(t * .03); ctx.globalAlpha = .07 * a; ctx.fillStyle = '#FFF4C8';
+          for (let i = 0; i < 12; i++) { ctx.rotate(Math.PI / 6); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(R * 6, -R * .35); ctx.lineTo(R * 6, R * .35); ctx.fill(); }
+          ctx.restore(); ctx.globalAlpha = 1;
+        }
+        g = ctx.createRadialGradient(sx - R * .25, sy - R * .25, R * .1, sx, sy, R);
+        g.addColorStop(0, `rgba(255,252,235,${a})`); g.addColorStop(.7, warm ? `rgba(255,186,96,${a})` : `rgba(255,222,120,${a})`); g.addColorStop(1, `rgba(255,200,90,${.0})`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, R, 0, 6.283); ctx.fill();
+      }
+    } else {
+      const a = Math.max(0, 1 - cov), mx = W * .78, my = H * .15, r = R * .62;
+      if (a > .02) {
+        let g = ctx.createRadialGradient(mx, my, r, mx, my, r * 5);
+        g.addColorStop(0, `rgba(200,215,255,${.28 * a})`); g.addColorStop(1, 'rgba(200,215,255,0)');
+        ctx.fillStyle = g; ctx.fillRect(mx - r * 5, my - r * 5, r * 10, r * 10);
+        g = ctx.createRadialGradient(mx - r * .35, my - r * .35, r * .1, mx, my, r);
+        g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(1, `rgba(196,206,230,${a})`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, r, 0, 6.283); ctx.fill();
+        ctx.fillStyle = `rgba(120,132,170,${.22 * a})`;
+        for (const [dx, dy, cr] of [[-.3, -.1, .22], [.25, .2, .16], [.05, -.38, .1], [-.05, .35, .12]]) { ctx.beginPath(); ctx.arc(mx + dx * r, my + dy * r, cr * r, 0, 6.283); ctx.fill(); }
+      }
+    }
+    // Nuages en trois profondeurs (les plus proches vont plus vite)
+    for (const c of clouds) {
+      c.x += c.v * dt; if (c.x > W + 40) c.x = -c.img.width - rnd(0, W * .3);
+      ctx.drawImage(c.img, c.x, c.y);
+    }
+    // Brouillard
+    if (st.cond === 'fog') {
+      for (let i = 0; i < 3; i++) {
+        const y = H * (.3 + i * .22), off = Math.sin(t * .05 + i) * W * .08, g = ctx.createLinearGradient(0, y - H * .12, 0, y + H * .12);
+        g.addColorStop(0, 'rgba(230,236,242,0)'); g.addColorStop(.5, `rgba(230,236,242,${night ? .16 : .32})`); g.addColorStop(1, 'rgba(230,236,242,0)');
+        ctx.fillStyle = g; ctx.fillRect(off - W * .1, y - H * .12, W * 1.2, H * .24);
+      }
+    }
+    // Pluie
+    if (drops.length) {
+      ctx.strokeStyle = night ? 'rgba(170,190,230,.32)' : 'rgba(225,235,250,.5)'; ctx.lineWidth = 1.1; ctx.beginPath();
+      for (const d of drops) {
+        d.y += d.v * dt; d.x -= d.v * .26 * dt;
+        if (d.y > H) { d.y = -d.l; d.x = Math.random() * W * 1.2; }
+        ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + d.l * .26, d.y - d.l);
+      }
+      ctx.stroke();
+    }
+    // Neige
+    if (flakes.length) {
+      ctx.fillStyle = night ? 'rgba(235,240,255,.75)' : 'rgba(255,255,255,.92)'; ctx.beginPath();
+      for (const f of flakes) {
+        f.y += f.v * dt; f.a += dt * f.sw; const x = f.x + Math.sin(f.a) * 14;
+        if (f.y > H + 4) { f.y = -4; f.x = Math.random() * W; }
+        ctx.moveTo(x + f.r, f.y); ctx.arc(x, f.y, f.r, 0, 6.283);
+      }
+      ctx.fill();
+    }
+    // Orage : éclair et lueur
+    if (st.cond === 'storm' && dt) {
+      if (now > flash.next) { flash.start = now; flash.bolt = bolt(); flash.next = now + rnd(5000, 13000); }
+      const e = now - flash.start;
+      if (e < 420) {
+        const a = e < 80 ? .38 : e < 140 ? .08 : e < 200 ? .26 : .26 * (1 - (e - 200) / 220);
+        ctx.fillStyle = `rgba(235,240,255,${Math.max(0, a)})`; ctx.fillRect(0, 0, W, H);
+        if (e < 200 && flash.bolt) {
+          ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.lineWidth = 2; ctx.shadowColor = '#BFD4FF'; ctx.shadowBlur = 14;
+          ctx.beginPath(); flash.bolt.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.restore();
+        }
+      }
+    }
+  }
+  function loop(now){
+    raf = requestAnimationFrame(loop);
+    if (document.hidden) return;
+    if (now - visCheck > 1000) { visCheck = now; visible = !!cv?.getClientRects().length; }
+    if (!visible || now - last < 33) return;   // 30 images par seconde suffisent pour un fond
+    const dt = last ? Math.min(.1, (now - last) / 1000) : 0; last = now;
+    draw(now, dt);
+  }
+  window.addEventListener('resize', () => { if (cv) resize(); });
+  return {
+    set(canvas, state){
+      if (canvas !== cv) { cv = canvas; ctx = cv.getContext('2d'); W = 0; }
+      const k = `${state.phase}|${state.cond}|${state.code}|${Math.round(state.clouds / 20)}`;
+      const moved = !st || Math.abs(st.prog - state.prog) > .001;
+      st = state;
+      if (!W) resize(); else if (k !== key) build();
+      if (k !== key || moved) draw(performance.now(), 0);
+      key = k;
+      if (reduced()) { cancelAnimationFrame(raf); raf = 0; return; }   // animations désactivées : une image fixe
+      if (!raf) { last = 0; raf = requestAnimationFrame(loop); }
+    },
+    stop(){ if (raf) cancelAnimationFrame(raf); raf = 0; }
+  };
+})();
+function applySky(bd){
+  const st = skyState(), root = document.documentElement, cv = bd.querySelector('.bg-sky'); if (!cv) return;
+  root.dataset.sky = st.phase; root.dataset.wx = st.cond;
+  Sky.set(cv, st);
+}
+const SKY_LAYER = '<canvas class="bg-l bg-sky" aria-hidden="true"></canvas>';
+// Le ciel avance avec l'heure même sans nouvelle donnée météo
+setInterval(() => { if (me()?.settings.theme === 'weather') { applyTheme(); wxEnsure(); } }, 60e3);
+
+/* ---------------- indicateur glissant de la barre de navigation ---------------- */
+// Avant chaque reconstruction de la page (données reçues de l'API…), on note où se trouve réellement le fond de
+// l'onglet sélectionné : le nouveau fond repart de là au lieu de sauter, et une glissade en cours continue.
+function navIndSnapshot(){
+  const prev = UI.navInd || (UI.navInd = {});
+  for (const sel of ['.tabbar', '.side']) {
+    const nav = document.querySelector(sel), ind = nav?.querySelector(':scope > .nav-ind');
+    if (!ind || ind.style.opacity !== '1') continue;
+    const r = ind.getBoundingClientRect(), n = nav.getBoundingClientRect();
+    if (!r.width) continue;
+    prev[sel] = { x:Math.round(r.left - n.left - nav.clientLeft), y:Math.round(r.top - n.top - nav.clientTop), w:Math.round(r.width), h:Math.round(r.height) };
+  }
+}
+// Glissade du fond de l'onglet : animation Web Animations sur transform (exécutée par le compositeur, elle continue
+// même quand la page se reconstruit). Après chaque reconstruction, elle reprend exactement là où elle en était.
+const NAV_DUR = 450, NAV_EASE = 'cubic-bezier(.3,1.25,.5,1)';
+const navGeom = cur => ({ x:cur.offsetLeft, y:cur.offsetTop, w:cur.offsetWidth, h:cur.offsetHeight });
+const navSame = (a, b) => a && b && Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1 && Math.abs(a.w - b.w) <= 1 && Math.abs(a.h - b.h) <= 1;
+function navIndPlay(ind, from, to, elapsed){
+  const tf = r => `translate(${r.x}px,${r.y}px)`;
+  ind.getAnimations().forEach(x => x.cancel());
+  ind.style.transform = tf(to); ind.style.width = `${to.w}px`; ind.style.height = `${to.h}px`;
+  if (!from || navSame(from, to) || reduced() || !ind.animate) return;
+  const sized = Math.abs(from.w - to.w) > 1 || Math.abs(from.h - to.h) > 1;
+  const kf = [{ transform:tf(from) }, { transform:tf(to) }];
+  if (sized) { Object.assign(kf[0], { width:`${from.w}px`, height:`${from.h}px` }); Object.assign(kf[1], { width:`${to.w}px`, height:`${to.h}px` }); }
+  const anim = ind.animate(kf, { duration:NAV_DUR, easing:NAV_EASE });
+  if (elapsed > 0) anim.currentTime = Math.min(NAV_DUR, elapsed);
+}
+// Au toucher d'un onglet : le fond part tout de suite, avant que la nouvelle page ne soit construite
+function slideNavTo(view){
+  const key = view === 'settings' ? 'profile' : view, now = performance.now();
+  UI.navSlide = UI.navSlide || {};
+  for (const sel of ['.tabbar', '.side']) {
+    const nav = document.querySelector(sel), ind = nav?.querySelector(':scope > .nav-ind'), to = nav?.querySelector(`[data-act="nav"][data-id="${key}"]`);
+    if (!ind || !to || ind.style.opacity !== '1' || !to.offsetWidth) continue;
+    const r = ind.getBoundingClientRect(), n = nav.getBoundingClientRect();
+    const from = { x:Math.round(r.left - n.left - nav.clientLeft), y:Math.round(r.top - n.top - nav.clientTop), w:Math.round(r.width), h:Math.round(r.height) }, g = navGeom(to);
+    nav.querySelectorAll('[aria-current="page"]').forEach(x => x.removeAttribute('aria-current'));
+    to.setAttribute('aria-current', 'page');
+    UI.navSlide[sel] = { from, to:g, start:now };
+    navIndPlay(ind, from, g, 0);
+  }
+}
+function placeNavInd(){
+  const prev = UI.navInd || {}, now = performance.now();
+  UI.navSlide = UI.navSlide || {};
+  for (const sel of ['.tabbar', '.side']) {
+    const nav = document.querySelector(sel); if (!nav) continue;
+    let ind = nav.querySelector(':scope > .nav-ind');
+    if (!ind) { ind = document.createElement('span'); ind.className = 'nav-ind'; ind.setAttribute('aria-hidden', 'true'); nav.prepend(ind); }
+    const cur = nav.querySelector('[aria-current="page"]');
+    if (!cur || !nav.offsetParent && getComputedStyle(nav).position !== 'fixed' || !cur.offsetWidth) { ind.style.opacity = '0'; continue; }
+    const g = navGeom(cur), sl = UI.navSlide[sel];
+    ind.style.opacity = '1';
+    // Glissade en cours vers ce même onglet : on la reprend à l'instant exact où elle en était
+    if (sl && navSame(sl.to, g) && now - sl.start < NAV_DUR) navIndPlay(ind, sl.from, g, now - sl.start);
+    else if (prev[sel] && !navSame(prev[sel], g)) { UI.navSlide[sel] = { from:prev[sel], to:g, start:now }; navIndPlay(ind, prev[sel], g, 0); }
+    else navIndPlay(ind, null, g, 0);
+    prev[sel] = g;
+  }
+  UI.navInd = prev;
+}
+let navResize = 0;
+window.addEventListener('resize', () => { cancelAnimationFrame(navResize); navResize = requestAnimationFrame(() => { UI.navInd = {}; placeNavInd(); }); });
+
+/* ---------------- nouveaux badges ---------------- */
+BADGE_FAMILIES.push(
+  { k:'early', n:'Lève-tôt', e:'🌅', d:n => `${pl(n, 'validation', 'validations')} avant 8 h`, t:[5, 25, 100, 250], v:x => x.early },
+  { k:'night', n:'Oiseau de nuit', e:'🦉', d:n => `${pl(n, 'validation', 'validations')} après 22 h`, t:[5, 25, 100, 250], v:x => x.night },
+  { k:'weekend', n:'Week-end actif', e:'🎉', d:n => `${pl(n, 'validation', 'validations')} le week-end`, t:[10, 50, 150, 400], v:x => x.weekend },
+  { k:'period', n:'Ponctuel', e:'🕰️', d:n => `${pl(n, 'période tenue', 'périodes tenues')}`, t:[3, 15, 50, 150], v:x => x.period },
+  { k:'builder', n:'Bâtisseur', e:'🧱', d:n => `${pl(n, 'étape de projet franchie', 'étapes de projet franchies')}`, t:[5, 25, 100, 300], v:x => x.builder },
+  { k:'stories', n:'Conteur', e:'📸', d:n => `${pl(n, 'story publiée', 'stories publiées')}`, t:[1, 10, 30, 100], v:x => x.stories },
+  { k:'writer', n:'Plume', e:'✍️', d:n => `${pl(n, 'publication', 'publications')} dans le feed`, t:[1, 10, 50, 150], v:x => x.writer }
+);
+const BADGE_FAMS_V20 = ['streak', 'checks', 'days', 'perfect', 'finish', 'ontime', 'team', 'friends', 'cheers', 'shield', 'variety', 'level'];
+// Statistiques des nouveaux badges, ajoutées à celles de la 2.0
+const badgeStatsV20 = badgeStats;
+badgeStats = function (id){
+  const x = badgeStatsV20(id), cs = userCheckins(id).filter(c => isWin(c)), hour = c => c.at ? new Date(c.at).getHours() : 12;
+  const periodIds = new Set(DB.goals.filter(g => g.userId === id && g.type === 'period').map(g => g.id));
+  return Object.assign(x, {
+    early:cs.filter(c => hour(c) < 8).length, night:cs.filter(c => hour(c) >= 22).length,
+    weekend:cs.filter(c => wdIdx(parseYmd(c.date)) >= 5).length, period:cs.filter(c => periodIds.has(c.goalId)).length,
+    builder:cs.filter(c => c.taskId).length, stories:(DB.stories || []).filter(s => s.userId === id).length,
+    writer:DB.posts.filter(p => p.userId === id && p.kind !== 'milestone').length
+  });
+};
+// Badges des nouvelles familles déjà mérités : ajoutés sans célébration (pas de pluie d'animations après la mise à jour)
+const checkBadgesV20 = checkBadges;
+checkBadges = function (){
+  const u = me(); if (!u) return;
+  const fams = BADGE_FAMILIES.map(f => f.k);
+  if (Array.isArray(u.badges) && (u.badgeFams || BADGE_FAMS_V20).length < fams.length) {
+    const known = new Set(u.badgeFams || BADGE_FAMS_V20), st = badgeState(u.id);
+    u.badges = [...new Set([...u.badges, ...badgeKeys(st.filter(b => !known.has(b.f.k)))])];
+    u.badgeFams = fams; save();
+  }
+  return checkBadgesV20();
+};
+
+/* ---------------- actions ---------------- */
+Object.assign(ACT, {
+  'hide-ongoing': () => { const u = me(); u.settings.hideOngoing = true; save(); render(); toast('Carte « En cours » masquée. Réaffiche-la dans Paramètres › Apparence.', 'list'); },
+  'share-goal': id => { UI.modal = { type:'shareHub', goalId:id }; renderModal(); },
+  'fs-share': () => { const f = UI.fs; const m = { type:'shareHub', text:f.text, period:f.type === 'recap' ? f.p : null }; closeFs(); UI.modal = m; renderModal(); },
+  'share-back': () => { UI.modal.step = null; renderModal(); },
+  'share-to': k => {
+    const m = UI.modal, { g, text } = shareCtx(m);
+    if (k === 'feed') { UI.modal = g ? { type:'share', id:g.id } : { type:'shareText', text }; renderModal(); }
+    if (k === 'story') { if (socialBlocked('de publier une story')) return; UI.modal = { type:'storyNew', kind:g ? 'progress' : 'recap', period:m.period || 'week', goalId:g?.id || null, photo:null, text:'' }; renderModal(); }
+    if (k === 'msg') { m.step = 'msg'; renderModal(); }
+    if (k === 'ext') void shareExternal(text);
+  },
+  'share-send': async ref => {
+    const m = UI.modal, { g, text } = shareCtx(m), u = me(), [kind, id] = [ref.slice(0, 1), ref.slice(2)];
+    const target = kind === 'g' ? { chat:id } : { to:id };
+    if (kind === 'u' && (!areFriends(u.id, id) || isBlockedPair(u.id, id))) { toast('Ce compte ne reçoit pas de messages.', 'comment'); return; }
+    const s = g ? statBig(g) : null;
+    const body = g ? { k:'goal', g:{ id:g.id, owner:g.userId, title:g.title, icon:g.icon, type:g.type, v:String(s.v), l:s.l } } : text;
+    UI.modal = null; renderModal();
+    const msg = await deliverMessage(target, body);
+    if (msg) toast(`Partagé avec ${kind === 'g' ? chatById(id)?.name : first(userById(id)?.name || '')}.`, 'send');
+  },
+  'wx-pick': i => { const r = UI.wxResults?.[Number(i)]; if (!r) return; const u = me(); u.settings.weather = { name:r.name, admin1:r.admin1, country:r.country, lat:r.lat, lon:r.lon, tz:r.tz }; UI.wxResults = null; UI.wxQuery = ''; UI.wx = null; save(); wxEnsure(true); render(); toast(`Météo de ${r.name} affichée sur l’accueil.`, 'pin'); },
+  'wx-clear': () => { const u = me(); u.settings.weather = null; UI.wx = null; try { localStorage.removeItem(WX_KEY); } catch(e){} save(); render(); },
+  'theme-weather': () => { const u = me(); u.settings.theme = 'weather'; save(); render(); toast('Thème Météo : le ciel suit l’heure et le temps de ta ville.', 'cloud'); }
+});
+FORMS['wx-search'] = async f => {
+  const q = String(new FormData(f).get('q') || '').trim(); UI.wxQuery = q;
+  if (q.length < 2) { toast('Tape au moins deux lettres.', 'pin'); return; }
+  if (!NET.online) { toast('Hors ligne : la recherche de ville reviendra avec la connexion.', 'cloudoff'); return; }
+  try { UI.wxResults = await weatherSearch(q); } catch(e){ UI.wxResults = null; toast(e?.message || 'Recherche impossible pour le moment.', 'x'); }
+  render(); document.getElementById('wx-q')?.focus({ preventScroll:true });
+};
+// Retour sur l'application : on vérifie tout de suite rappels et données (pas d'attente du prochain passage)
+document.addEventListener('visibilitychange', () => { if (!document.hidden && me()) { checkReminders(); wxEnsure(); } });
 
 /* ================= démarrage ================= */
 if (me() && !me().tutorialDone) UI.modal = { type:'tuto', step:0 };

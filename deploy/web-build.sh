@@ -8,6 +8,8 @@ cd "$(dirname "$0")/.."
 API_URL="${API_URL:-https://api.pepsgoal.fr}"
 docker run --rm -v "$PWD":/work -w /work -e PEPSGOAL_API="$API_URL" node:20-bookworm sh -c \
   "npm install --no-audit --no-fund --ignore-scripts -w apps/web && node apps/web/build.mjs"
+# npm install a pu réécrire package-lock.json : on remet la version du dépôt (sinon le prochain « git pull » échoue)
+git checkout -- package-lock.json 2>/dev/null || true
 test -f apps/web/dist/index.html || { echo "Échec : apps/web/dist/index.html absent."; exit 1; }
 # On remplace le contenu sans supprimer le dossier : Caddy le lit en direct (montage Docker)
 find deploy/app -mindepth 1 ! -name .gitkeep -delete

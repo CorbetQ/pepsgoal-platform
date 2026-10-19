@@ -9,7 +9,7 @@ type Json = postgres.JSONValue;
 export async function notify(q: Q, userId: string, type: string, text: string, data: Record<string, Json> = {}): Promise<void> {
   await q`insert into notifications (user_id, type, text, data) values (${userId}, ${type}, ${text.slice(0, 300)}, ${q.json(data)})`;
   const VIEW: Record<string, string> = { like: 'feed', comment: 'feed', friend: 'friends', group: 'friends', story: 'feed', mod: 'feed', official: 'friends', mention: 'friends' };
-  pushLater(userId, { title: 'PepsGoal', body: text.slice(0, 240), tag: type, view: VIEW[type] ?? 'today' });
+  pushLater(userId, { title: 'PepsGoal', body: text.slice(0, 240), tag: type, view: VIEW[type] ?? 'today', urgency: ['mention', 'friend', 'mod'].includes(type) ? 'high' : 'normal' });
 }
 
 let officialIdCache: string | null = null;

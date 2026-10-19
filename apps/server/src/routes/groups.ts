@@ -200,7 +200,7 @@ export default async function groupRoutes(app: FastifyInstance) {
     for (const o of others) {
       // Mention : notification gardée dans la cloche (le contenu du message reste chiffré)
       if (tagged.has(o.user_id)) await notify(sql, o.user_id, 'mention', `${u.displayName} t’a mentionné dans ${g.emoji} ${g.name}`, { groupId: id });
-      else if (!silent) pushLater(o.user_id, { title: `${g.emoji} ${g.name}`, body: `Nouveau message de ${u.displayName}`, tag: `grp:${id}`, view: 'friends' });
+      else if (!silent) pushLater(o.user_id, { title: `${g.emoji} ${g.name}`, body: `Nouveau message de ${u.displayName}`, tag: `grp:${id}`, view: 'friends', urgency: 'high', ttl: 24 * 3600 });
     }
     reply.status(201);
     return { id: m!.id, createdAt: iso(m!.created_at) };

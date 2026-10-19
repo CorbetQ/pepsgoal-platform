@@ -65,6 +65,15 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 
 Envoyées : rappels du matin et du soir (heure choisie, fuseau du navigateur, dans les deux heures ; pas de rappel du soir si une validation a déjà eu lieu), nouveaux messages privés et de groupe (sans leur contenu, chiffré), notifications (encouragements, commentaires, amis, modération, PepsGoal Officiel). Les abonnements expirés (404/410) sont supprimés.
 
+## Météo (compte requis)
+
+| Méthode | Route | Rôle |
+|---|---|---|
+| GET | `/weather/places?q=` | Recherche de ville (2 à 60 caractères) : `[{ name, admin1, country, cc, lat, lon, tz }]` |
+| GET | `/weather?lat=&lon=` | Météo actuelle (`current` : temp, feels, humidity, isDay, precip, code WMO, wind, clouds) et 4 jours (`daily` : code, max, min, pop, sunrise, sunset) dans le fuseau de la ville |
+
+Relais vers Open-Meteo (sans clé, CC BY 4.0) : coordonnées arrondies à 0,01°, réponses en cache 10 minutes (24 heures pour les villes), 502 `weather_unavailable` si Open-Meteo ne répond pas.
+
 ## Groupes de discussion et pièces jointes (chiffrés de bout en bout, voir E2E.md)
 
 | Méthode | Route | Rôle |

@@ -4,6 +4,8 @@
 #         /opt/pepsgoal/deploy/update.sh --web    (API + version web app.pepsgoal.fr, une minute de plus)
 set -eu
 cd "$(dirname "$0")"
+# package-lock.json est réécrit par la construction de la version web (npm install dans Docker) : on rend la version du dépôt
+git -C .. checkout -- package-lock.json 2>/dev/null || true
 git -C .. pull --ff-only
 [ "${1:-}" = "--web" ] && sh ./web-build.sh
 docker compose up -d --build

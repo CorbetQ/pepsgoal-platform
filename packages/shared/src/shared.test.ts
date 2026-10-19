@@ -35,6 +35,9 @@ describe('conflits', () => {
 describe('validation des objectifs', () => {
   it('accepte une routine valide et refuse une heure invalide', () => {
     expect(parseGoalData('routine', { mode: 'days', days: [0, 2, 4], perWeek: 3 })).toBeTruthy();
+    expect(parseGoalData('period', { freq: 'week', days: [1, 3], mdays: [], start: '18:00', end: '19:30' }).start).toBe('18:00');
+    expect(() => parseGoalData('period', { freq: 'week', days: [1], mdays: [], start: '19:30', end: '18:00' })).toThrow();
+    expect(() => parseGoalData('period', { freq: 'month', days: [], mdays: [], start: '08:00', end: '09:00' })).toThrow();
     expect(() => parseGoalData('timed', { mode: 'before', time: '25:00', days: [0] })).toThrow();
   });
 });

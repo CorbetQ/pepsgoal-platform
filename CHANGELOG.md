@@ -2,6 +2,85 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## 2.1.6 (19 octobre 2026)
+
+### Corrections
+- Récap J+1 : le reflet lumineux sautait à chaque boucle. Il glisse désormais par une transformation (exécutée par le compositeur) et part comme il arrive hors de la carte : la boucle redémarre sans saut visible.
+
+### Apparence
+- Verre givré : nouveau niveau « Très faible » (flou minimal, panneaux presque opaques), dans tous les thèmes.
+- Accueil : la carte « En cours » peut être masquée, avec un bouton sur la carte ou dans Paramètres › Apparence (réglage synchronisé avec le compte).
+
+## 2.1.5 (19 octobre 2026)
+
+### Récaps
+- Correction : la mention du bilan J+1 débordait de sa carte et le titre « Semaine passée » sortait du cadre. La mention devient une petite pastille « J+1 » dans le coin, le titre s'adapte à la largeur de la carte, et le mois ou l'année concernés s'affichent en sous-titre (« Octobre · bilan complet, aujourd'hui »).
+- Le récap disponible le lendemain d'une période s'entoure d'un halo lumineux qui respire, avec un reflet qui passe.
+
+## 2.1.3 (19 octobre 2026)
+
+### Récaps
+- Nouvelles diapositives : comparaison avec la période précédente, jour fétiche en graphique, créneau préféré, « Le saviez-vous ? » (heures cumulées, kilomètres, validation la plus matinale ou la plus tardive, étapes de projet), trophées humoristiques (Jour de gloire, Prix du coq, Prix de la chauve-souris, Prix de la sieste…).
+- Plus d'humour et de diversité : plusieurs phrases possibles pour chaque statistique, tirées au sort de façon stable pour une même période ; nouveaux profils (Machine suisse, Phénix, Ninja de minuit, Guerrier du week-end, Collectionneur…).
+- Plus d'animations : glissement entre les diapositives, fond animé, emojis flottants, jours qui s'allument un à un, barres qui poussent, trophées qui apparaissent, confettis sur la dernière diapositive (tout est désactivé avec « Désactiver les animations »).
+- Le récap d'une semaine, d'un mois ou d'une année terminés reste affiché le lendemain (J+1), avec une notification « récap prêt », avant de laisser place au récap suivant.
+
+## 2.1.2 (19 octobre 2026)
+
+### Corrections
+- Barre de navigation : le fond de l'onglet sélectionné ne se téléporte plus quand la page se reconstruit après l'arrivée des données de l'API (Feed, Amis). La glissade démarre dès le toucher, tourne sur le compositeur (Web Animations) et reprend exactement là où elle en était après chaque reconstruction.
+
+## 2.1.1 (19 octobre 2026)
+
+### Corrections
+- Changement de page avec le thème Météo : le contenu pouvait rester invisible sur certains téléphones (Chrome Android). Le ciel n'est plus fait de dizaines d'éléments animés et floutés, qui saturaient la mémoire graphique, mais d'un seul canevas.
+- La transition de page ne masque plus jamais le contenu (elle part de 40 % d'opacité) et est désactivée avec le thème Météo.
+
+### Thème Météo
+- Ciel redessiné : nuages en relief sur trois profondeurs, soleil avec halo et rayons, lune avec cratères, étoiles scintillantes et étoiles filantes, pluie selon l'intensité, neige qui virevolte, éclairs, brouillard, ciel plus gris par temps de neige.
+- 30 images par seconde au plus, pause quand l'application est en arrière-plan, image fixe si les animations sont désactivées.
+
+### Apparence
+- Nouveau réglage « Flou du verre givré » : faible, moyen (par défaut) ou fort, synchronisé avec le compte.
+
+## 2.1.0 (19 octobre 2026)
+
+### Objectifs
+- Nouveau type « Période » : hebdomadaire (certains jours de la semaine) ou mensuelle (certains jours du mois ; le 29, 30 ou 31 tombe le dernier jour des mois plus courts), sur une tranche horaire précise. Validation pendant la tranche ou dans l'heure qui suit, rappel au début de chaque période, prochaines périodes dans la fiche.
+
+### Météo
+- Choix de la ville dans Paramètres › Météo (recherche par nom).
+- Carte météo sur l'accueil, sous « Ta journée » : température, ressenti, minimum et maximum, vent, risque de pluie, trois jours de prévisions, lever et coucher du soleil, et un conseil selon le temps.
+- Données Open-Meteo ; avec un compte, les demandes passent par le serveur PepsGoal (cache de 10 minutes, l'adresse IP des utilisateurs n'est pas transmise).
+
+### Apparence
+- Thème OLED (noir pur).
+- Thème Météo : ciel en direct qui suit l'heure (aube, jour, crépuscule, nuit) et le temps de la ville (soleil, lune et étoiles, nuages, pluie, neige, orage, brouillard), panneaux en verre givré ; le choix d'arrière-plan est alors désactivé.
+- 12 nouvelles couleurs d'accent (24 au total).
+- Navigation : le fond de l'onglet sélectionné glisse d'un onglet à l'autre (barre du bas et barre latérale).
+
+### Partage
+- Nouveau panneau de partage : Feed, Story (progression d'un objectif ou récap), Message (ami ou groupe, chiffré de bout en bout) et Externe (applications de l'appareil, ou copie du texte).
+
+### Badges
+- 7 nouvelles familles : Lève-tôt, Oiseau de nuit, Week-end actif, Ponctuel, Bâtisseur, Conteur, Plume. Les paliers déjà mérités sont ajoutés sans célébration à la mise à jour.
+
+### Notifications
+- Rappels vérifiés chaque minute par le serveur (au lieu de cinq).
+- Messages, mentions et rappels envoyés en priorité haute, avec une durée de validité adaptée.
+- Application ouverte : la notification s'affiche aussitôt et les données sont relues sans attendre ; une notification reçue pendant une actualisation en déclenche une nouvelle.
+- Retour sur l'application : rappels et météo vérifiés immédiatement.
+
+### Corrections
+- L'icône des onglets ne saute plus en changeant de page.
+- Alignement de l'icône de profil et de son anneau de niveau.
+- Réactions : un bouton « − » referme les emojis supplémentaires.
+- Déploiement : `update.sh` et `web-build.sh` remettent `package-lock.json` comme sur GitHub (le `git pull` ne bloque plus).
+
+### Technique
+- API : `GET /v1/weather/places`, `GET /v1/weather` ; type d'objectif `period` ; thèmes `oled` et `weather`.
+- Aucune migration de base de données.
+
 ## 2.0.0 (16 octobre 2026)
 
 ### Messagerie
