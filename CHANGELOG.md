@@ -2,6 +2,14 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## 2.1.3 (19 octobre 2026)
+
+### Récaps
+- Nouvelles diapositives : comparaison avec la période précédente, jour fétiche en graphique, créneau préféré, « Le saviez-vous ? » (heures cumulées, kilomètres, validation la plus matinale ou la plus tardive, étapes de projet), trophées humoristiques (Jour de gloire, Prix du coq, Prix de la chauve-souris, Prix de la sieste…).
+- Plus d'humour et de diversité : plusieurs phrases possibles pour chaque statistique, tirées au sort de façon stable pour une même période ; nouveaux profils (Machine suisse, Phénix, Ninja de minuit, Guerrier du week-end, Collectionneur…).
+- Plus d'animations : glissement entre les diapositives, fond animé, emojis flottants, jours qui s'allument un à un, barres qui poussent, trophées qui apparaissent, confettis sur la dernière diapositive (tout est désactivé avec « Désactiver les animations »).
+- Le récap d'une semaine, d'un mois ou d'une année terminés reste affiché le lendemain (J+1), avec une notification « récap prêt », avant de laisser place au récap suivant.
+
 ## 2.1.2 (19 octobre 2026)
 
 ### Corrections

@@ -1359,6 +1359,55 @@ canvas.bg-sky{width:100%;height:100%}
   :root[data-skin="weather"] .main.enter > *:not(.topbar),:root[data-skin="weather"] .main.enter .bar>i,:root[data-skin="weather"] .main.enter .ring .arc{animation:none}
 }
 @keyframes pageIn{from{opacity:.4;transform:translateY(6px)}}
+
+/* ===================== 2.1.3 : récaps ===================== */
+.story .fs-inner{position:relative;z-index:1}
+.st-joke{font-weight:700;font-size:15px;max-width:34ch;margin-inline:auto;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.38);color:#10102A!important}
+.st-float{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.st-float i{position:absolute;bottom:-12%;left:var(--x);font-style:normal;font-size:var(--s);opacity:0}
+.st-bars i{position:relative;overflow:hidden}
+.st-bars i.cur::after{content:"";position:absolute;inset:0;background:#10102A;transform-origin:left}
+.st-flame{display:grid;place-items:center;transform:scale(var(--k));margin-bottom:-6px}
+.st-delta{font-size:clamp(56px,16vw,104px)}
+.st-week{display:flex;align-items:flex-end;gap:8px;height:150px;width:100%;max-width:320px;margin:4px auto 0}
+.st-week div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%}
+.st-week i{display:block;width:100%;height:max(6%,calc(var(--h) * 100%));border-radius:10px 10px 4px 4px;background:rgba(16,16,42,.25)}
+.st-week .fav i{background:#10102A}
+.st-week span{font-weight:800;font-size:12px}
+.st-facts,.st-awards{list-style:none;display:flex;flex-direction:column;gap:10px;width:100%;max-width:380px;margin:0 auto;text-align:left}
+.st-facts li{padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.5);font-weight:600;font-size:15px;line-height:1.4}
+.st-awards li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.55)}
+.st-awards .aw-e{font-size:36px;line-height:1}
+.st-awards span:last-child{display:flex;flex-direction:column}
+.st-awards small{font-size:13px;font-weight:600;color:rgba(16,16,42,.75)}
+.recap-btn{position:relative}
+.recap-btn.past{box-shadow:0 0 0 2px #10102A inset}
+.rb-tag{font-style:normal;font-size:10.5px;font-weight:800;margin-top:4px;padding:2px 7px;border-radius:999px;background:#10102A;color:#fff}
+@media (prefers-reduced-motion:no-preference){
+  .story{background-size:180% 180%;animation:sbgPan 14s ease-in-out infinite alternate}
+  .st-float i{animation:stFloat var(--d) linear var(--dl) infinite}
+  .st-in.go-next{animation:slideInR .45s cubic-bezier(.2,.8,.2,1)}
+  .st-in.go-prev{animation:slideInL .45s cubic-bezier(.2,.8,.2,1)}
+  .st-bars i.cur::after{animation:grow .7s cubic-bezier(.2,.8,.2,1) both}
+  .st-dots i.on{animation:dotPop .4s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--n,0) * 1ms + 350ms)}
+  .st-week i{transform-origin:bottom;animation:sparkUp .7s cubic-bezier(.2,.9,.3,1.25) both;animation-delay:calc(var(--n) * 90ms + 300ms)}
+  .st-week .fav i{animation:sparkUp .7s cubic-bezier(.2,.9,.3,1.25) both,favGlow 1.6s ease-in-out 1.2s infinite;animation-delay:calc(var(--n) * 90ms + 300ms),1.2s}
+  .st-emoji.bounce{animation:popIn .6s cubic-bezier(.2,1.4,.4,1) both,floaty 2.8s ease-in-out .6s infinite}
+  .st-emoji.spin{animation:emojiSpin .9s cubic-bezier(.2,1.3,.4,1) both}
+  .st-flame{animation:popIn .6s cubic-bezier(.2,1.4,.4,1) both}
+  .st-flame svg{animation:flick 1.4s ease-in-out infinite}
+  .st-facts li,.st-awards li{animation:awardIn .55s cubic-bezier(.2,1.2,.4,1) both;animation-delay:calc(var(--i,0) * 220ms + 350ms)}
+  .st-joke{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:.55s}
+  .st-final .st-card{animation:popIn .6s cubic-bezier(.2,1.4,.4,1) both}
+}
+@keyframes sbgPan{0%{background-position:0% 0%}100%{background-position:100% 100%}}
+@keyframes stFloat{0%{transform:translateY(0) rotate(0);opacity:0}12%{opacity:.5}88%{opacity:.35}100%{transform:translateY(-125vh) rotate(var(--r));opacity:0}}
+@keyframes slideInR{from{opacity:.3;transform:translateX(38px)}}
+@keyframes slideInL{from{opacity:.3;transform:translateX(-38px)}}
+@keyframes dotPop{from{transform:scale(0)}}
+@keyframes favGlow{50%{box-shadow:0 0 0 4px rgba(255,255,255,.6)}}
+@keyframes emojiSpin{from{transform:rotate(-200deg) scale(.2);opacity:0}}
+@keyframes awardIn{from{opacity:0;transform:translateY(16px) scale(.9)}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1601,7 +1650,7 @@ const newUserFields = hue => ({ avatar:{ kind:'initials', color:hue, emoji:'😎
 const socialOn = (u = me()) => !!u && !u.guest && u.settings.social !== false && NET.online;
 
 const KEY = 'pepsgoal.v1';
-const APP_VERSION = '2.1.2';
+const APP_VERSION = '2.1.3';
 // Mode démonstration (bouton de l'écran de connexion) : base d'exemple en mémoire, jamais enregistrée ni mélangée aux vrais comptes
 let SANDBOX = false;
 let BOOT_WARN = '', saveWarned = false;
@@ -2106,6 +2155,10 @@ function checkReminders(){
     const text = `Il te reste ${pl(pending, 'validation', 'validations')} avant minuit${st.n && !st.lit ? ` pour garder ta série de ${pl(st.n, 'jour', 'jours')}` : ''}.`;
     notify(u.id, text, { type:'reminder', view:'today' }); toast(text, 'bell');
   });
+  for (const [k, lbl] of [['week', 'de la semaine passée'], ['month', 'du mois dernier'], ['year', 'de l’année dernière']]) {
+    const R = recapRange(k);
+    if (R.past && hm >= '08:00') once('recapPast' + k + R.s, () => { notify(u.id, `Ton récap ${lbl} est prêt : il reste consultable aujourd’hui sur l’accueil.`, { type:'badge', view:'today' }); toast(`Ton récap ${lbl} est prêt !`, 'star'); });
+  }
   if (wdIdx(new Date()) === 6 && hm >= '18:00') once('recap' + ymd(weekStart(new Date())), () => {
     notify(u.id, 'Ton récap de la semaine est prêt : retrouve-le sur l\u2019accueil.', { type:'badge' }); toast('Ton récap de la semaine est prêt !', 'star');
   });
@@ -3574,115 +3627,227 @@ const SBG = [
   'linear-gradient(160deg,#8AF0FF,#22D3FF 50%,#8C7DFF)',
   'linear-gradient(160deg,#FFC2A8,#FF4FA3 60%,#FFB000)'
 ];
+SBG.push(
+  'linear-gradient(160deg,#FFD1A1,#FF8FB1 55%,#B98CFF)',
+  'linear-gradient(160deg,#A8FFE4,#5AC8FA 55%,#6D8BFF)',
+  'linear-gradient(160deg,#F4FF5C,#FFD23F 50%,#FF8C42)',
+  'linear-gradient(160deg,#FFE0EC,#FFA8C8 50%,#C9C2FF)'
+);
 const PERIOD_WORD = { week:'de la semaine', month:'du mois', year:"de l'année" };
-function periodRange(p){
-  const now = new Date();
-  const s = p === 'week' ? weekStart(now) : p === 'month' ? new Date(now.getFullYear(), now.getMonth(), 1) : new Date(now.getFullYear(), 0, 1);
-  return { s:ymd(s), e:today(), days:Math.round((parseYmd(today()) - parseYmd(ymd(s))) / DAY) + 1 };
+const PERIOD_NOUN = { week:'semaine', month:'mois', year:'année' };
+// Période d'un récap : celle en cours, sauf le lendemain de sa fin (J+1), où le bilan complet de la période écoulée
+// reste affiché ; le récap suivant prend le relais le surlendemain.
+function recapRange(p, ref = new Date()){
+  const t = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate());
+  let s, e, past = false;
+  if (p === 'week') { s = weekStart(t); if (ymd(s) === ymd(t)) { past = true; s = addDays(s, -7); } e = past ? addDays(s, 6) : t; }
+  else if (p === 'month') { s = new Date(t.getFullYear(), t.getMonth(), 1); if (t.getDate() === 1) { past = true; s = new Date(t.getFullYear(), t.getMonth() - 1, 1); } e = past ? new Date(s.getFullYear(), s.getMonth() + 1, 0) : t; }
+  else { s = new Date(t.getFullYear(), 0, 1); if (ymd(s) === ymd(t)) { past = true; s = new Date(t.getFullYear() - 1, 0, 1); } e = past ? new Date(s.getFullYear(), 11, 31) : t; }
+  return { s:ymd(s), e:ymd(e), days:Math.round((parseYmd(ymd(e)) - parseYmd(ymd(s))) / DAY) + 1, past };
 }
-function periodTitle(p){
-  const now = new Date();
-  if (p === 'week') return { t:'Ta semaine', sub:`Du ${fmtDate(periodRange('week').s)} au ${fmtDate(today())}` };
-  if (p === 'month') { const m = now.toLocaleDateString('fr-FR', { month:'long' }); return { t:`Ton mois ${/^[aeiouy]/.test(m) ? "d'" : 'de '}${m}`, sub:`Du 1er au ${now.getDate()} ${m}` }; }
-  return { t:`Ton année ${now.getFullYear()}`, sub:`Du 1er janvier au ${fmtDate(today())}` };
+// Période complète qui précède (pour la comparaison)
+function prevRange(p, R){
+  const s0 = parseYmd(R.s), s = p === 'week' ? addDays(s0, -7) : p === 'month' ? new Date(s0.getFullYear(), s0.getMonth() - 1, 1) : new Date(s0.getFullYear() - 1, 0, 1), e = addDays(s0, -1);
+  return { s:ymd(s), e:ymd(e), days:Math.round((parseYmd(ymd(e)) - parseYmd(ymd(s))) / DAY) + 1 };
 }
-const countInPeriod = (id, p) => { const R = periodRange(p); return DB.checkins.filter(c => c.userId === id && isWin(c) && c.date >= R.s && c.date <= R.e).length; };
-function recapStats(id, p){
-  const R = periodRange(p), inR = d => d >= R.s && d <= R.e;
+const periodRange = p => recapRange(p);
+function periodTitle(p, R = recapRange(p)){
+  const s = parseYmd(R.s), e = parseYmd(R.e);
+  if (p === 'week') return { t:R.past ? 'Ta semaine passée' : 'Ta semaine', sub:`Du ${fmtDate(R.s)} au ${fmtDate(R.e)}` };
+  if (p === 'month') { const m = s.toLocaleDateString('fr-FR', { month:'long' }); return { t:`Ton mois ${/^[aeiouy]/.test(m) ? "d'" : 'de '}${m}`, sub:`Du 1er au ${e.getDate()} ${m}${R.past ? ' · bilan complet' : ''}` }; }
+  return { t:`Ton année ${s.getFullYear()}`, sub:`Du 1er janvier au ${fmtDate(R.e)}${R.past ? ' · bilan complet' : ''}` };
+}
+const countInPeriod = (id, p) => { const R = recapRange(p); return DB.checkins.filter(c => c.userId === id && isWin(c) && c.date >= R.s && c.date <= R.e).length; };
+// Hasard reproductible : les mêmes phrases pour une même période (le récap ne change pas à chaque ouverture)
+function seeded(str){
+  let h = 1779033703 ^ str.length;
+  for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+  return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
+}
+const hm2 = ts => { const d = new Date(ts); return `${d.getHours()} h ${pad(d.getMinutes())}`; };
+function recapStats(id, p, R = recapRange(p)){
+  const inR = d => d >= R.s && d <= R.e;
   const cs = DB.checkins.filter(c => c.userId === id && inR(c.date));
   const ok = cs.filter(c => isWin(c));
   const st = { p, R, n:ok.length, relapses:cs.filter(c => c.kind === 'relapse').length, pts:ok.reduce((s, c) => s + (c.pts || 0), 0) };
   st.days = new Set(ok.map(c => c.date));
+  // Période en cours : la régularité porte sur les jours déjà écoulés
   st.reg = Math.round(st.days.size / R.days * 100);
   const sd = streakDays(id), frozen = new Set(userById(id).frozenDays || []);
-  let run = 0; st.best = 0; st.frozenUsed = 0; st.dots = [];
+  let run = 0, gap = 0; st.best = 0; st.frozenUsed = 0; st.dots = []; st.gap = 0;
   for (let d = parseYmd(R.s); ymd(d) <= R.e; d = addDays(d, 1)) {
     const k = ymd(d);
     if (sd.has(k)) { run++; st.best = Math.max(st.best, run); } else run = 0;
     if (frozen.has(k) && !st.days.has(k)) st.frozenUsed++;
+    if (st.days.has(k)) gap = 0; else { gap++; st.gap = Math.max(st.gap, gap); }
     st.dots.push(st.days.has(k));
   }
   const wdc = Array(7).fill(0); ok.forEach(c => wdc[wdIdx(parseYmd(c.date))]++);
-  st.favWd = wdc.indexOf(Math.max(...wdc)); st.favWdN = wdc[st.favWd];
+  st.wdc = wdc; st.favWd = wdc.indexOf(Math.max(...wdc)); st.favWdN = wdc[st.favWd];
+  st.weekend = (wdc[5] + wdc[6]) / Math.max(1, st.n);
   const B = { matin:0, midi:0, aprem:0, soir:0, nuit:0 };
   ok.forEach(c => { const h = new Date(c.at).getHours(); B[h >= 5 && h < 11 ? 'matin' : h < 14 && h >= 11 ? 'midi' : h >= 14 && h < 18 ? 'aprem' : h >= 18 && h < 22 ? 'soir' : 'nuit']++; });
   st.slot = Object.keys(B).sort((a, b) => B[b] - B[a])[0];
+  // Heures extrêmes (minutes depuis minuit ; avant 4 h, c'est « la veille au soir »)
+  const mins = c => { const d = new Date(c.at), m = d.getHours() * 60 + d.getMinutes(); return m < 240 ? m + 1440 : m; };
+  const timed = ok.filter(c => c.at);
+  if (timed.length) { st.early = timed.reduce((a, c) => mins(c) < mins(a) ? c : a); st.late = timed.reduce((a, c) => mins(c) > mins(a) ? c : a); }
+  const perDay = {}; ok.forEach(c => perDay[c.date] = (perDay[c.date] || 0) + 1);
+  const bestDay = Object.keys(perDay).sort((a, b) => perDay[b] - perDay[a])[0];
+  st.bestDay = bestDay ? { d:bestDay, n:perDay[bestDay] } : null;
   const byG = {}; ok.forEach(c => byG[c.goalId] = (byG[c.goalId] || 0) + 1);
   const topId = Object.keys(byG).filter(goalById).sort((a, b) => byG[b] - byG[a])[0];
   st.top = topId ? { g:goalById(topId), n:byG[topId] } : null;
   st.types = {}; ok.forEach(c => { const g = goalById(c.goalId); if (g) st.types[g.type] = (st.types[g.type] || 0) + 1; });
-  const units = {}; ok.filter(c => c.kind === 'progress').forEach(c => units[c.goalId] = (units[c.goalId] || 0) + Number(c.value || 0));
+  const units = {}; ok.filter(c => c.kind === 'progress' && goalById(c.goalId)?.type !== 'duration').forEach(c => units[c.goalId] = (units[c.goalId] || 0) + Number(c.value || 0));
   const uId = Object.keys(units).filter(goalById).sort((a, b) => units[b] - units[a])[0];
   st.units = uId ? { g:goalById(uId), v:units[uId] } : null;
+  st.minutes = Math.round(cs.filter(c => c.kind === 'progress' && goalById(c.goalId)?.type === 'duration').reduce((s, c) => s + Number(c.value || 0), 0));
   st.resist = ok.filter(c => goalById(c.goalId)?.type === 'abstinence').length;
+  st.tasks = ok.filter(c => c.taskId).length;
   const gs = DB.goals.filter(g => g.userId === id);
   st.deadlines = gs.filter(g => g.type === 'deadline' && g.completedAt && inR(ymd(g.completedAt))).length;
   st.created = gs.filter(g => inR(ymd(g.createdAt))).length;
+  st.perfect = (userById(id).perfectDays || []).filter(inR).length;
   const posts = DB.posts.filter(q => q.userId === id && inR(ymd(q.at)));
   st.posts = posts.length; st.cheers = posts.reduce((s, q) => s + q.likes.filter(l => l !== id).length, 0);
+  // Comparaison avec la période précédente, en validations par jour
+  const PR = prevRange(p, R), prevN = DB.checkins.filter(c => c.userId === id && isWin(c) && c.date >= PR.s && c.date <= PR.e).length;
+  st.prev = { n:prevN, rate:prevN / PR.days, rate0:st.n / R.days };
   const share = t => (st.types[t] || 0) / Math.max(1, st.n);
   st.persona =
-    st.reg >= 85 && R.days >= 3 ? { n:'Métronome', e:'⏱️', d:"Réglé comme une horloge : tu n'as presque rien laissé passer." }
-    : share('abstinence') >= .4 ? { n:'Roc', e:'🪨', d:'Rien ne te fait plier. Tes « non » construisent tes plus beaux « oui ».' }
-    : st.slot === 'matin' ? { n:'Lève-tôt', e:'🌅', d:'Tu attaques ta journée avant tout le monde, et ça se voit.' }
-    : st.slot === 'soir' || st.slot === 'nuit' ? { n:'Oiseau de nuit', e:'🦉', d:"Tes meilleures victoires arrivent quand la ville s'endort." }
+    st.reg >= 95 && R.days >= 5 ? { n:'Machine suisse', e:'⌚', d:"Précision horlogère : pas une journée de ratée. À Genève, les horlogers prennent des notes." }
+    : st.reg >= 80 && R.days >= 3 ? { n:'Métronome', e:'⏱️', d:"Réglé comme une horloge : tu n'as presque rien laissé passer." }
+    : share('abstinence') >= .4 ? { n:'Roc', e:'🪨', d:'Rien ne te fait plier. Les tentations ont déposé une réclamation.' }
+    : st.relapses && st.n >= st.relapses * 3 ? { n:'Phénix', e:'🦅', d:'Un écart ? Le rebond a été immédiat. Les cendres, très peu pour toi.' }
+    : st.slot === 'nuit' ? { n:'Ninja de minuit', e:'🥷', d:'Tu valides quand tout le monde dort. Discret, efficace, légèrement inquiétant.' }
+    : st.slot === 'matin' ? { n:'Lève-tôt', e:'🌅', d:'Tu attaques ta journée avant tout le monde. Le soleil se lève, toi tu as déjà fini.' }
+    : st.slot === 'soir' ? { n:'Oiseau de nuit', e:'🦉', d:"Tes meilleures victoires arrivent quand la ville s'endort." }
+    : st.weekend >= .5 && st.n >= 4 ? { n:'Guerrier du week-end', e:'🏖️', d:'En semaine tu recharges, le week-end tu dévores tout.' }
     : share('objective') + share('monthly') >= .4 ? { n:'Architecte', e:'🧱', d:'Pierre après pierre, tu fais grimper les compteurs.' }
-    : st.best >= 7 ? { n:'Flamme éternelle', e:'🔥', d:'Ta série ne connaît pas la fatigue.' }
+    : st.best >= 7 ? { n:'Flamme éternelle', e:'🔥', d:'Ta série ne connaît pas la fatigue. Les pompiers sont prévenus.' }
+    : st.created >= 3 ? { n:'Collectionneur', e:'🗂️', d:"De nouveaux objectifs à la pelle : ton musée des ambitions s'agrandit." }
     : { n:'Étincelle', e:'✨', d:'Le feu est lancé. La suite promet.' };
   return st;
 }
 const SLOT_LABEL = { matin:'le matin', midi:'à midi', aprem:"l'après-midi", soir:'le soir', nuit:'la nuit' };
 function buildSlides(id, p){
-  const st = recapStats(id, p), T = periodTitle(p), out = [];
-  const add = html => out.push({ bg:SBG[out.length % SBG.length], html });
-  add(`<p class="eyebrow">Récap PepsGoal</p><div class="st-badge">${flame(96)}</div><h2 class="st-mid">${esc(T.t)}</h2><p>${esc(T.sub)}. On retrace ton parcours ?</p>`);
+  const R = recapRange(p), st = recapStats(id, p, R), T = periodTitle(p, R), out = [];
+  const rnd = seeded(`${id}|${p}|${R.s}`), pick = a => a[Math.floor(rnd() * a.length)];
+  const add = (html, fx, cls = '') => out.push({ bg:SBG[out.length % SBG.length], html, fx, cls });
+  const noun = PERIOD_NOUN[p], prevCmp = { week:'à la semaine précédente', month:'au mois précédent', year:"à l'année précédente" }[p];
+  add(`<p class="eyebrow">Récap PepsGoal${R.past ? ' · bilan complet' : ''}</p><div class="st-badge">${flame(96)}</div><h2 class="st-mid">${esc(T.t)}</h2><p>${esc(T.sub)}.</p>
+    <p class="st-joke">${pick(['Attache ta ceinture, on rembobine.', 'Prépare le pop-corn 🍿, c’est l’heure du bilan.', 'Roulement de tambour… 🥁', 'On a compté pour toi. Promis, sans tricher.', 'Installe-toi, ce récap est garanti sans pub.'])}</p>`, '✨', 'intro');
   if (!st.n) {
-    add(`<div class="st-emoji">🌱</div><h2 class="st-mid">Tout reste à écrire</h2><p>Aucune validation sur cette période pour l'instant. Ton récap se remplira dès ta première action validée.</p><div class="fs-actions"><button class="btn btn-primary" data-act="fs-close">Fermer</button></div>`);
+    add(`<div class="st-emoji bounce">🌱</div><h2 class="st-mid">Tout reste à écrire</h2><p>Aucune validation sur cette période${R.past ? '' : ' pour l’instant'}.</p>
+      <p class="st-joke">${pick(['Même les plantes vertes ont fait mieux : elles, au moins, ont fait leur photosynthèse.', 'Le calme avant la tempête, on le sent.', 'Une page blanche, c’est surtout beaucoup de place pour la suite.'])}</p>
+      <div class="fs-actions"><button class="btn btn-primary" data-act="fs-close">Fermer</button></div>`, '🌱');
     return { slides:out, st };
   }
-  const cakes = Math.max(1, Math.round(st.pts / 30));
-  add(`<p class="eyebrow">Validations</p><div class="st-big" data-count="${st.n}">${st.n}</div><p>actions validées, soit ${fmtNum(Math.round(st.n / Math.max(1, st.days.size) * 10) / 10)} par jour actif.</p><p><b>${st.pts} flammes</b> gagnées : de quoi allumer ${pl(cakes, "gâteau d'anniversaire", "gâteaux d'anniversaire")} de 30 bougies.</p>`);
-  const big = st.dots.length > 40, dd = big ? (st.dots.length > 200 ? 8 : 12) : st.dots.length > 7 ? 18 : 34;
-  add(`<p class="eyebrow">Régularité</p><div class="st-big" data-count="${st.reg}" data-suf="%">${st.reg}%</div><p>des jours avec au moins une validation : ${st.days.size} sur ${st.R.days}.</p><div class="st-dots" style="--d:${dd}px;--g:${big ? 3 : 6}px" aria-hidden="true">${st.dots.map(o => `<i class="${o ? 'on' : ''}"></i>`).join('')}</div>`);
-  add(`<p class="eyebrow">Meilleure série</p><div class="st-big" data-count="${st.best}">${st.best}</div><p>${st.best > 1 ? "jours d'affilée" : 'jour'} sans éteindre ta flamme${st.frozenUsed ? `, avec ${pl(st.frozenUsed, 'gel', 'gels')} en renfort` : ''}.</p>`);
-  if (st.top) add(`<p class="eyebrow">Ton objectif star</p><div class="st-emoji">${esc(st.top.g.icon)}</div><h2 class="st-mid">${esc(st.top.g.title)}</h2><p>Validé <b>${pl(st.top.n, 'fois', 'fois')}</b>, soit ${Math.round(st.top.n / st.n * 100)} % de toutes tes validations.</p>`);
-  add(`<p class="eyebrow">Tes habitudes</p><div class="st-emoji">${{ matin:'🌅', midi:'🥪', aprem:'☀️', soir:'🌆', nuit:'🌙' }[st.slot]}</div><h2 class="st-mid">Ton jour fétiche : le ${WD_LONG[st.favWd]}</h2><p>${pl(st.favWdN, 'validation', 'validations')} ce jour-là. Et tu valides surtout <b>${SLOT_LABEL[st.slot]}</b>.</p>`);
+  // Validations, avec une équivalence absurde
+  const perDay = Math.round(st.n / Math.max(1, st.days.size) * 10) / 10;
+  const equiv = pick([
+    `<b>${st.pts} flammes</b> : de quoi allumer ${pl(Math.max(1, Math.round(st.pts / 30)), "gâteau d'anniversaire", "gâteaux d'anniversaire")} de 30 bougies 🎂.`,
+    `<b>${st.pts} flammes</b> : assez pour faire griller ${pl(Math.max(1, Math.round(st.pts / 12)), 'chamallow', 'chamallows')} 🔥.`,
+    `Ça mérite au moins ${pl(st.n * 2, 'high five', 'high fives')} ✋. On te les doit.`,
+    `<b>${st.pts} flammes</b> : si c’était des degrés, ton four serait jaloux.`
+  ]);
+  add(`<p class="eyebrow">Validations</p><div class="st-big" data-count="${st.n}">${st.n}</div><p>actions validées, soit ${fmtNum(perDay)} par jour actif.</p><p class="st-joke">${equiv}</p>`, '✅');
+  // Régularité : les jours s'allument un à un
+  const big = st.dots.length > 40, dd = big ? (st.dots.length > 200 ? 8 : 12) : st.dots.length > 7 ? 18 : 34, step = Math.min(60, 1400 / st.dots.length);
+  const regLine = st.reg >= 100 ? pick(['Tous les jours. TOUS. Ton réveil demande des vacances.', 'Sans-faute. On a vérifié deux fois.'])
+    : st.reg >= 80 ? pick(['Presque parfait : les jours manqués se comptent sur les doigts d’une main (de dessin animé).', 'Une régularité de métronome, à un ou deux tic-tac près.'])
+    : st.reg >= 50 ? pick(['Plus d’un jour sur deux : la constance est en route.', 'Un jour oui, un jour… oui aussi, souvent.'])
+    : pick(['Pas tous les jours, mais chaque retour compte double (dans notre cœur).', 'La régularité, c’est comme le sport : ça s’entraîne.']);
+  add(`<p class="eyebrow">Régularité</p><div class="st-big" data-count="${st.reg}" data-suf="%">${st.reg}%</div><p>des jours avec au moins une validation : ${st.days.size} sur ${R.days}.</p>
+    <div class="st-dots" style="--d:${dd}px;--g:${big ? 3 : 6}px" aria-hidden="true">${st.dots.map((o, k) => `<i class="${o ? 'on' : ''}" style="--n:${Math.round(k * step)}"></i>`).join('')}</div><p class="st-joke">${regLine}</p>`, '📅');
+  // Série
+  const k = Math.min(1.5, .75 + st.best / 25);
+  const streakLine = st.best >= 30 ? 'Un mois sans flancher. Ta flamme a sa propre météo.' : st.best >= 7 ? pick(['Une semaine entière sans éteindre la flamme. Respect.', 'Sept jours d’affilée : même la flemme a abandonné.'])
+    : st.best >= 3 ? pick(['Un joli feu de camp 🏕️ : manque plus que les guimauves.', 'Trois jours et plus : la machine est lancée.']) : 'Une étincelle, c’est comme ça que commencent les grands feux.';
+  add(`<p class="eyebrow">Meilleure série</p><div class="st-flame" style="--k:${k}">${flame(84)}</div><div class="st-big" data-count="${st.best}">${st.best}</div><p>${st.best > 1 ? "jours d'affilée" : 'jour'} sans éteindre ta flamme${st.frozenUsed ? `, avec ${pl(st.frozenUsed, 'gel', 'gels')} en renfort` : ''}.</p><p class="st-joke">${streakLine}</p>`, '🔥');
+  // Comparaison avec la période précédente
+  if (st.prev.n) {
+    const d = Math.round((st.prev.rate0 - st.prev.rate) / Math.max(.0001, st.prev.rate) * 100), up = d > 5, down = d < -5;
+    add(`<p class="eyebrow">Face ${prevCmp}</p><div class="st-emoji bounce">${up ? '📈' : down ? '📉' : '⚖️'}</div><div class="st-big st-delta">${up ? '+' : ''}${d}%</div><p>de validations par jour par rapport ${prevCmp}.</p>
+      <p class="st-joke">${up ? pick(['En progrès comme un cookie au four : ça monte et ça sent bon.', 'Toi d’avant appelle, il demande tes secrets.', 'La courbe grimpe. Les alpinistes sont inquiets.']) : down ? pick(['Petit coup de mou ? Même les fusées ont des étages.', 'On recule pour mieux sauter. C’est scientifique (à peu près).', 'Une pause, pas un abandon. La suite te tend les bras.']) : pick(['Stable comme un chat sur un radiateur.', 'Même niveau : la constance, c’est un talent.'])}</p>`, up ? '🚀' : down ? '🐢' : '⚖️');
+  }
+  // Jours de la semaine
+  if (p !== 'week' || st.n >= 3) {
+    const mx = Math.max(1, ...st.wdc);
+    const dayJoke = ['Le lundi ne te fait pas peur. Le lundi a peur de toi.', 'Mardi, le héros discret de ta semaine.', 'Mercredi : le milieu de semaine, ton terrain de jeu.', 'Jeudi, presque vendredi, déjà au taquet.', 'Vendredi motivé : espèce rare, à protéger.', 'Samedi studieux : le canapé est vexé.', 'Dimanche productif : le brunch peut attendre.'][st.favWd];
+    add(`<p class="eyebrow">Ton jour fétiche</p><h2 class="st-mid">Le ${WD_LONG[st.favWd]}</h2>
+      <div class="st-week" aria-hidden="true">${st.wdc.map((v, i) => `<div class="${i === st.favWd ? 'fav' : ''}"><i style="--h:${v / mx};--n:${i}"></i><span>${WD[i]}</span></div>`).join('')}</div>
+      <p>${pl(st.favWdN, 'validation', 'validations')} ce jour-là.</p><p class="st-joke">${dayJoke}</p>`, '📊');
+  }
+  // Moment de la journée
+  const slotEmoji = { matin:'🌅', midi:'🥪', aprem:'☀️', soir:'🌆', nuit:'🌙' }[st.slot];
+  const slotJoke = { matin:'Pendant que d’autres appuient sur « snooze », toi tu valides.', midi:'La pause déjeuner, ton moment de gloire. Le sandwich attendra.', aprem:"L'après-midi, quand la sieste appelle… et que tu ne réponds pas.", soir:'Le soir, tu bosses pendant que ta série télé patiente.', nuit:'La nuit porte conseil… et validations.' }[st.slot];
+  add(`<p class="eyebrow">Ton créneau</p><div class="st-emoji spin">${slotEmoji}</div><h2 class="st-mid">Tu valides surtout ${SLOT_LABEL[st.slot]}</h2><p class="st-joke">${slotJoke}</p>`, slotEmoji);
+  if (st.top) add(`<p class="eyebrow">Ton objectif chouchou</p><div class="st-emoji bounce">${esc(st.top.g.icon)}</div><h2 class="st-mid">${esc(st.top.g.title)}</h2><p>Validé <b>${pl(st.top.n, 'fois', 'fois')}</b>, soit ${Math.round(st.top.n / st.n * 100)} % de tes validations.</p>
+    <p class="st-joke">${pick(['Les autres objectifs commencent à être jaloux.', 'Une vraie relation sérieuse.', 'Si c’était un plat, ce serait ta spécialité.'])}</p>`, st.top.g.icon);
+  // Le saviez-vous ?
+  const facts = [];
+  if (st.minutes >= 30) { const h = Math.round(st.minutes / 6) / 10; facts.push(`⏳ <b>${fmtNum(h)} h</b> cumulées sur tes objectifs de durée : ${pick([`de quoi regarder ${pl(Math.max(1, Math.round(st.minutes / 195)), 'fois', 'fois')} Titanic (et pleurer à la fin)`, `l’équivalent de ${pl(Math.max(1, Math.round(st.minutes / 25)), 'pizza cuite', 'pizzas cuites')} au four`, `${pl(Math.max(1, Math.round(st.minutes / 3)), 'chanson', 'chansons')} de 3 minutes à la suite`])}.`); }
+  if (st.units && /^km$/i.test(st.units.g.unit || '')) facts.push(`🗼 <b>${fmtNum(st.units.v)} km</b> : ${fmtNum(Math.round(st.units.v * 1000 / 330 * 10) / 10)} tours Eiffel couchées bout à bout.`);
+  else if (st.units) facts.push(`📏 <b>${fmtNum(st.units.v)} ${esc(st.units.g.unit || '')}</b> pour « ${esc(st.units.g.title)} ». Les compteurs chauffent.`);
+  if (st.early && (new Date(st.early.at).getHours() < 8)) facts.push(`🐓 Ta validation la plus matinale : <b>${hm2(st.early.at)}</b>. Le coq n’était pas encore levé.`);
+  if (st.late && (new Date(st.late.at).getHours() >= 22 || new Date(st.late.at).getHours() < 4)) facts.push(`🦇 La plus tardive : <b>${hm2(st.late.at)}</b>. Sur le fil, comme au cinéma.`);
+  if (st.tasks) facts.push(`🧱 ${pl(st.tasks, 'étape de projet franchie', 'étapes de projet franchies')}. Les architectes approuvent.`);
+  if (facts.length) add(`<p class="eyebrow">Le saviez-vous ?</p><div class="st-emoji bounce">🧠</div><ul class="st-facts">${facts.slice(0, 3).map((f, i) => `<li style="--i:${i}">${f}</li>`).join('')}</ul>`, '💡');
   const cells = [];
-  if (st.units) { const km = /^km$/i.test(st.units.g.unit || ''); cells.push(`<div><b>${fmtNum(st.units.v)} ${esc(st.units.g.unit || '')}</b><span>${esc(st.units.g.title)}${km ? ` · ${fmtNum(Math.round(st.units.v * 1000 / 330 * 10) / 10)} tours Eiffel couchées` : ''}</span></div>`); }
   if (st.resist) cells.push(`<div><b>${st.resist}</b><span>${st.resist > 1 ? 'jours de résistance' : 'jour de résistance'}</span></div>`);
   if (st.deadlines) cells.push(`<div><b>${st.deadlines}</b><span>${st.deadlines > 1 ? 'deadlines bouclées' : 'deadline bouclée'}</span></div>`);
   if (st.created) cells.push(`<div><b>${st.created}</b><span>${st.created > 1 ? 'nouveaux objectifs' : 'nouvel objectif'}</span></div>`);
   if (st.relapses) cells.push(`<div><b>${st.relapses}</b><span>${st.relapses > 1 ? 'rebonds après un écart' : 'rebond après un écart'}</span></div>`);
-  if (cells.length) { if (cells.length % 2) cells.push(`<div><b>${st.days.size}</b><span>${st.days.size > 1 ? 'jours actifs' : 'jour actif'}</span></div>`); add(`<p class="eyebrow">En chiffres</p><h2 class="st-mid">Ce que tu as construit</h2><div class="st-card">${cells.join('')}</div>`); }
-  if (socialOn() && (st.posts || st.cheers)) add(`<p class="eyebrow">Côté tribu</p><div class="st-big" data-count="${st.cheers}">${st.cheers}</div><p>${st.cheers > 1 ? 'encouragements reçus' : 'encouragement reçu'} sur ${pl(st.posts, 'publication', 'publications')}. Ta tribu croit en toi.</p>`);
-  add(`<p class="eyebrow">Ton profil ${PERIOD_WORD[p]}</p><div class="st-emoji">${st.persona.e}</div><h2 class="fs-title">${st.persona.n}</h2><p>${st.persona.d}</p>`);
+  if (st.perfect) cells.push(`<div><b>${st.perfect}</b><span>${st.perfect > 1 ? 'journées parfaites' : 'journée parfaite'}</span></div>`);
+  if (cells.length) { if (cells.length % 2) cells.push(`<div><b>${st.days.size}</b><span>${st.days.size > 1 ? 'jours actifs' : 'jour actif'}</span></div>`); add(`<p class="eyebrow">En chiffres</p><h2 class="st-mid">Ce que tu as construit</h2><div class="st-card">${cells.join('')}</div>`, '🧮'); }
+  if (socialOn() && (st.posts || st.cheers)) add(`<p class="eyebrow">Côté tribu</p><div class="st-big" data-count="${st.cheers}">${st.cheers}</div><p>${st.cheers > 1 ? 'encouragements reçus' : 'encouragement reçu'} sur ${pl(st.posts, 'publication', 'publications')}.</p><p class="st-joke">${pick(['Ta tribu croit en toi. Et elle a raison.', 'Ton fan-club s’agrandit.', 'Les applaudissements sont de bon cœur, on a vérifié.'])}</p>`, '💖');
+  // Trophées
+  const aw = [];
+  if (st.bestDay && st.bestDay.n >= 2) aw.push(['🏋️', 'Jour de gloire', `${cap(parseYmd(st.bestDay.d).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }))} : ${st.bestDay.n} validations`]);
+  if (st.early && new Date(st.early.at).getHours() < 7) aw.push(['🐓', 'Prix du coq', `Validation à ${hm2(st.early.at)}`]);
+  if (st.late && (new Date(st.late.at).getHours() >= 23 || new Date(st.late.at).getHours() < 4)) aw.push(['🦇', 'Prix de la chauve-souris', `Validation à ${hm2(st.late.at)}`]);
+  if (st.perfect) aw.push(['🌟', 'Sans fausse note', pl(st.perfect, 'journée parfaite', 'journées parfaites')]);
+  if (st.relapses) aw.push(['🩹', 'Prix du rebond', `Rebond après ${pl(st.relapses, 'écart', 'écarts')}`]);
+  if (st.gap >= 3 && st.n) aw.push(['🦥', 'Prix de la sieste', `${st.gap} jours de pause d’affilée (on ne juge pas)`]);
+  if (st.best >= 7) aw.push(['🔥', 'Pyromane certifié', `${st.best} jours de série`]);
+  if (st.created >= 2) aw.push(['🗂️', 'Prix de l’ambition', `${st.created} nouveaux objectifs`]);
+  if (aw.length) add(`<p class="eyebrow">Les trophées ${PERIOD_WORD[p]}</p><h2 class="st-mid">Et le prix est décerné à… toi</h2><ul class="st-awards">${aw.slice(0, 3).map(([e, n, d], i) => `<li style="--i:${i}"><span class="aw-e">${e}</span><span><b>${n}</b><small>${esc(d)}</small></span></li>`).join('')}</ul>`, '🏆');
+  add(`<p class="eyebrow">Ton profil ${PERIOD_WORD[p]}</p><div class="st-emoji spin">${st.persona.e}</div><h2 class="fs-title">${st.persona.n}</h2><p>${st.persona.d}</p>`, st.persona.e);
   add(`<p class="eyebrow">En résumé</p><h2 class="st-mid">${esc(T.t)}</h2>
     <div class="st-card"><div><b>${st.n}</b><span>validations</span></div><div><b>${st.pts}</b><span>flammes</span></div><div><b>${st.best}</b><span>meilleure série</span></div><div><b>${st.reg}%</b><span>régularité</span></div></div>
     <p>Profil : <b>${st.persona.n} ${st.persona.e}</b></p>
-    <div class="fs-actions"><button class="btn btn-primary" data-act="fs-share">${icon('share')}${socialOn() ? 'Partager mon récap' : 'Copier mon récap'}</button><button class="btn" data-act="recap-restart">Revoir</button><button class="btn" data-act="fs-close">Fermer</button></div>`);
+    <p class="st-joke">${pick([`Rendez-vous ${R.past ? 'pour la prochaine' : 'à la fin de la'} ${noun} pour la suite ✌️`, 'Même heure, même endroit, encore plus de flammes ?', 'Garde ce récap au chaud, tu l’as mérité.'])}</p>
+    <div class="fs-actions"><button class="btn btn-primary" data-act="fs-share">${icon('share')}${socialOn() ? 'Partager mon récap' : 'Copier mon récap'}</button><button class="btn" data-act="recap-restart">Revoir</button><button class="btn" data-act="fs-close">Fermer</button></div>`, '🎉', 'final');
   return { slides:out, st };
 }
 function showRecap(p){
   const { slides, st } = buildSlides(me().id, p);
-  UI.fs = { type:'recap', p, i:0, slides, text:`Mon récap ${PERIOD_WORD[p]} sur PepsGoal : ${pl(st.n, 'validation', 'validations')}, ${st.pts} flammes, meilleure série de ${pl(st.best, 'jour', 'jours')}, ${st.reg} % de régularité. Profil : ${st.persona.n} ${st.persona.e}` };
+  UI.fs = { type:'recap', p, i:0, dir:0, slides, text:`Mon récap ${PERIOD_WORD[p]} sur PepsGoal : ${pl(st.n, 'validation', 'validations')}, ${st.pts} flammes, meilleure série de ${pl(st.best, 'jour', 'jours')}, ${st.reg} % de régularité. Profil : ${st.persona.n} ${st.persona.e}` };
   renderStory();
 }
+// Emojis qui flottent derrière chaque diapositive
+const floaters = e => Array.from({ length:9 }, (_, i) => `<i style="--x:${(i * 11 + 4) % 96}%;--s:${18 + (i * 7) % 20}px;--d:${7 + (i * 3) % 6}s;--dl:-${(i * 1.7).toFixed(1)}s;--r:${i % 2 ? 40 : -40}deg">${esc(e)}</i>`).join('');
 function renderStory(){
+  stopConfetti();
   const f = UI.fs, s = f.slides[f.i], last = f.i === f.slides.length - 1;
-  fsRoot.innerHTML = `<div class="fs story" style="--sbg:${s.bg}" data-act="story-tap" role="dialog" aria-modal="true" aria-label="Récap ${PERIOD_WORD[f.p]}">
-    <div class="st-bars" aria-hidden="true">${f.slides.map((_, k) => `<i class="${k <= f.i ? 'done' : ''}"></i>`).join('')}</div>
+  fsRoot.innerHTML = `<div class="fs story ${s.cls ? 'st-' + s.cls : ''}" style="--sbg:${s.bg}" data-act="story-tap" role="dialog" aria-modal="true" aria-label="Récap ${PERIOD_WORD[f.p]}">
+    ${s.fx ? `<div class="st-float" aria-hidden="true">${floaters(s.fx)}</div>` : ''}${last ? '<canvas id="confetti" aria-hidden="true"></canvas>' : ''}
+    <div class="st-bars" aria-hidden="true">${f.slides.map((_, k) => `<i class="${k < f.i ? 'done' : k === f.i ? 'cur' : ''}"></i>`).join('')}</div>
     <button class="icon-btn fs-close" data-act="fs-close" aria-label="Fermer le récap">${icon('x')}</button>
-    <div class="fs-inner st-in" aria-live="polite">${s.html}</div>
+    <div class="fs-inner st-in ${f.dir > 0 ? 'go-next' : f.dir < 0 ? 'go-prev' : ''}" aria-live="polite">${s.html}</div>
     ${last ? '' : `<p class="st-hint">Touche l'écran ou utilise les flèches · ${f.i + 1}/${f.slides.length}</p>`}
   </div>`;
   const inner = fsRoot.querySelector('.fs-inner'); stagger(inner); countUps(inner); lockScroll();
+  if (last && !reduced()) { const cv = document.getElementById('confetti'); if (cv) startConfetti(cv); }
 }
-function storyStep(d){ const f = UI.fs; const n = Math.max(0, Math.min(f.slides.length - 1, f.i + d)); if (n !== f.i) { f.i = n; renderStory(); } }
+function storyStep(d){ const f = UI.fs; const n = Math.max(0, Math.min(f.slides.length - 1, f.i + d)); if (n !== f.i) { f.i = n; f.dir = d; renderStory(); } }
 function recapCard(){
   const u = me(), P = [['week','Semaine'],['month','Mois'],['year','Année']];
   return `<section class="glass card">
     <div class="card-h"><h2>Tes récaps</h2><span class="muted small">Ton parcours en stats</span></div>
-    <div class="recap-row">${P.map(([k, l], i) => `<button class="recap-btn" style="--rb:${SBG[[0, 4, 1][i]]}" data-act="open-recap" data-id="${k}">${icon('star')}<b>${l}</b><span>${pl(countInPeriod(u.id, k), 'validation', 'validations')}</span></button>`).join('')}</div>
+    <div class="recap-row">${P.map(([k, l], i) => { const R = recapRange(k); return `<button class="recap-btn ${R.past ? 'past' : ''}" style="--rb:${SBG[[0, 4, 1][i]]}" data-act="open-recap" data-id="${k}">${icon('star')}<b>${R.past ? { week:'Semaine passée', month:cap(parseYmd(R.s).toLocaleDateString('fr-FR', { month:'long' })), year:String(parseYmd(R.s).getFullYear()) }[k] : l}</b><span>${pl(countInPeriod(u.id, k), 'validation', 'validations')}</span>${R.past ? '<em class="rb-tag">Bilan · aujourd’hui seulement</em>' : ''}</button>`; }).join('')}</div>
   </section>`;
 }
 
@@ -6689,6 +6854,11 @@ const e2eInfo = text => `<div class="e2e-info" id="e2e-info" ${UI.e2eOpen ? '' :
 
 /* ---------------- notes de version ---------------- */
 const PATCH_NOTES = [
+  ['2.1.3', '19 octobre 2026', [
+    'Récaps repensés : comparaison avec la période précédente, jour fétiche en graphique, « Le saviez-vous ? », trophées, nouveaux profils et beaucoup plus d’humour (des phrases différentes à chaque période).',
+    'Plus d’animations : diapositives qui glissent, jours qui s’allument un à un, barres qui poussent, emojis flottants, confettis à la fin.',
+    'Le récap d’une semaine, d’un mois ou d’une année terminés reste consultable le lendemain (J+1), avec une notification, avant de laisser place au suivant.'
+  ]],
   ['2.1.2', '19 octobre 2026', [
     'Correction : le fond de l’onglet sélectionné ne se téléporte plus quand une page recharge ses données (Feed, Amis) ; il glisse dès le toucher et reprend sa course là où il en était.'
   ]],
