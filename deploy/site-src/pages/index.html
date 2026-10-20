@@ -1,4 +1,4 @@
-<!--meta title="PepsGoal · Fixe le cap. Garde la flamme." description="PepsGoal : fixe tes objectifs, valide chaque jour et garde ta flamme allumée. 14 formats d’objectifs, séries, gels, amis, sondages, notifications et messagerie chiffrée. Gratuit, sans publicité, hors ligne." nav="index"-->
+<!--meta title="PepsGoal · Fixe le cap. Garde la flamme." description="PepsGoal : fixe tes objectifs, valide chaque jour et garde ta flamme allumée. 15 formats d’objectifs, séries, gels, amis, sondages, notifications et messagerie chiffrée. Gratuit, sans publicité, hors ligne." nav="index"-->
 <style>
   /* Accueil : un héros typographique autour d'une démo vivante, puis trois raisons et un appel final */
   .home-hero{position:relative;padding:56px 0 24px;overflow:hidden}
@@ -97,13 +97,16 @@
   .fav-star{width:15px;height:15px;vertical-align:-2px;fill:var(--t-chal);stroke:var(--t-chal-ink)}
   .lvl-ring{position:relative;z-index:1}
   .lvl-ring::after{content:"";position:absolute;inset:-5px;border-radius:50%;padding:3px;background:conic-gradient(from var(--a,0deg),var(--flame-2),var(--flame),var(--pink),var(--flame-2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin-a 4s linear infinite;z-index:-1}
+  .hero-date{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .wx-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 6px;border-radius:var(--r-pill);background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--ink-2);letter-spacing:0;text-transform:none;font-size:12px}
+  .wx-chip::before{display:none}
 </style>
 
 <section class="home-hero">
   <div class="wrap">
     <span class="ghost" aria-hidden="true" data-count="27">27</span>
     <div class="hh-txt">
-      <a class="new-pill rv" href="fonctionnalites.html#nouveautes"><b>Nouveau</b>Version {{VERSION}} : réponses, réactions et suggestions d’amis<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
+      <a class="new-pill rv" href="fonctionnalites.html#nouveautes"><b>Nouveau</b>Version {{VERSION}} : météo, thème Météo et objectif Période<svg class="i"><use href="assets/icons.svg#arrow"/></svg></a>
       <span class="eyebrow rv">Suivi d’objectifs · web, iOS et Android</span>
       <h1 data-split>Fixe le cap. <span class="grad-text">Garde la flamme.</span></h1>
       <p class="lead rv" style="--d:2">Routines, objectifs chiffrés, deadlines, abstinences : valide chaque jour, entretiens ta série et avance avec tes amis.</p>
@@ -126,7 +129,7 @@
         <div class="device-h"><b>Aujourd’hui</b><span class="chip" style="--c:var(--flame);--c-ink:var(--ink)"><span><span data-done>1</span>/4 validés</span></span></div>
         <section class="hero-card glass" style="box-shadow:none">
           <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
-            <p class="eyebrow">Lundi 12 octobre</p>
+            <p class="eyebrow hero-date">Lundi 12 octobre <span class="wx-chip"><img src="emoji/26c5.webp" alt="" width="16" height="16">17° · Angers</span></p>
             <h2 class="hello">Salut Camille <img src="emoji/1f44b.webp" alt="" width="24" height="24" style="display:inline;vertical-align:-3px"></h2>
             <div class="week" aria-label="Cette semaine">
               <div class="wd on"><svg class="fl"><use href="#flame"/></svg><span>M</span></div>
@@ -153,9 +156,10 @@
   </div>
 </section>
 
-<section class="section tight" aria-label="Les 14 formats d’objectifs">
+<section class="section tight" aria-label="Les 15 formats d’objectifs">
   <div class="marquee"><div class="marquee-track" data-dup>
     <span class="tpill t-routine"><svg class="i"><use href="assets/icons.svg#repeat"/></svg>Routine</span>
+    <span class="tpill t-period"><svg class="i"><use href="assets/icons.svg#period"/></svg>Période</span>
     <span class="tpill t-objective"><svg class="i"><use href="assets/icons.svg#target"/></svg>Objectif</span>
     <span class="tpill t-deadline"><svg class="i"><use href="assets/icons.svg#cal"/></svg>Deadline</span>
     <span class="tpill t-abstinence"><svg class="i"><use href="assets/icons.svg#ban"/></svg>Abstinence</span>
@@ -228,7 +232,7 @@
         <a class="btn btn-primary lg" href="https://app.pepsgoal.fr" data-magnet><svg class="i"><use href="assets/icons.svg#bolt"/></svg>Ouvrir app.pepsgoal.fr<svg class="i arrow"><use href="assets/icons.svg#arrow"/></svg></a>
       </div>
       <nav class="explore" aria-label="Explorer le site">
-        <a href="fonctionnalites.html" class="t-routine"><span class="ei"><svg class="i"><use href="assets/icons.svg#sparkle"/></svg></span><span><b>Fonctionnalités</b><small>14 formats, social, messagerie</small></span><svg class="i go"><use href="assets/icons.svg#arrow"/></svg></a>
+        <a href="fonctionnalites.html" class="t-routine"><span class="ei"><svg class="i"><use href="assets/icons.svg#sparkle"/></svg></span><span><b>Fonctionnalités</b><small>15 formats, social, messagerie</small></span><svg class="i go"><use href="assets/icons.svg#arrow"/></svg></a>
         <a href="design-system.html" class="t-abstinence"><span class="ei"><svg class="i"><use href="assets/icons.svg#palette"/></svg></span><span><b>Design system</b><small>Couleurs, thèmes, composants</small></span><svg class="i go"><use href="assets/icons.svg#arrow"/></svg></a>
         <a href="technique.html" class="t-project"><span class="ei"><svg class="i"><use href="assets/icons.svg#code"/></svg></span><span><b>Technique</b><small>Hors ligne, synchro, chiffrement</small></span><svg class="i go"><use href="assets/icons.svg#arrow"/></svg></a>
       </nav>

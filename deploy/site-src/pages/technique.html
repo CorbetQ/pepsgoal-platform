@@ -107,7 +107,7 @@
     <span class="eyebrow rv">Détails techniques</span>
     <h1 data-split>Hors ligne d’abord, <span class="grad-text">chiffré de bout en bout.</span></h1>
     <p class="lead rv" style="--d:2">Une seule interface pour le web, iOS et Android, qui lit et écrit toujours sur l’appareil. Un serveur qui synchronise, sauvegarde et fait vivre le social, sans jamais pouvoir lire tes messages.</p>
-    <div class="crumbs rv" style="--d:3"><a href="#architecture">Architecture</a><a href="#synchro">Synchronisation</a><a href="#e2e">Chiffrement</a><a href="#securite">Sécurité</a><a href="#source">Code source</a><a href="#versions">Nouveautés {{VERSION}}</a></div>
+    <div class="crumbs rv" style="--d:3"><a href="#architecture">Architecture</a><a href="#synchro">Synchronisation</a><a href="#meteo">Météo</a><a href="#e2e">Chiffrement</a><a href="#securite">Sécurité</a><a href="#source">Code source</a><a href="#versions">Nouveautés {{VERSION}}</a></div>
   </div>
 </section>
 
@@ -133,7 +133,8 @@
         <div class="block t-measure"><span class="bi"><svg class="i"><use href="assets/icons.svg#bolt"/></svg></span><span><b>API Fastify 4 + zod</b><small>Près de 90 routes, chaque entrée validée par un schéma partagé</small></span></div>
         <div class="block t-abstinence"><span class="bi"><svg class="i"><use href="assets/icons.svg#db"/></svg></span><span><b>PostgreSQL 16</b><small>Schéma et migrations Drizzle, révisions de synchro, cascades RGPD</small></span></div>
         <div class="block t-monthly"><span class="bi"><svg class="i"><use href="assets/icons.svg#image"/></svg></span><span><b>Médias</b><small>Photos et pièces jointes chiffrées, sur disque ou S3</small></span></div>
-        <div class="block t-deadline"><span class="bi"><svg class="i"><use href="assets/icons.svg#bell"/></svg></span><span><b>Notifications push</b><small>Web Push (VAPID) : rappels vérifiés toutes les 5 minutes, messages sans leur contenu, notifications</small></span></div>
+        <div class="block t-period"><span class="bi"><svg class="i"><use href="assets/icons.svg#sun"/></svg></span><span><b>Relais météo</b><small>Open-Meteo interrogé par le serveur, réponses en cache 10 minutes, sans transmettre l’adresse IP</small></span></div>
+        <div class="block t-deadline"><span class="bi"><svg class="i"><use href="assets/icons.svg#bell"/></svg></span><span><b>Notifications push</b><small>Web Push (VAPID) : rappels vérifiés chaque minute, priorité haute pour les messages, mentions et rappels, sans leur contenu, notifications</small></span></div>
       </div>
     </div>
     <div class="tbl-wrap rv" style="margin-top:28px"><table>
@@ -165,6 +166,7 @@
       <article class="card tech tilt rv t-timed" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#test"/></svg></span><div><span class="role">Qualité</span><br><b>Vitest + TypeScript</b></div></div><p>Tests du protocole et du chiffrement, scénario de bout en bout d’une quarantaine de vérifications contre un serveur vierge.</p></article>
       <article class="card tech tilt rv t-deadline"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#bell"/></svg></span><div><span class="role">Notifications</span><br><b>Web Push</b></div></div><p>Bibliothèque web-push et clés VAPID côté serveur, service worker <code>sw.js</code> côté navigateur. Rappels du matin et du soir à l’heure choisie, dans le fuseau du navigateur.</p></article>
       <article class="card tech tilt rv t-measure" style="--d:1"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#gauge"/></svg></span><div><span class="role">Exploitation</span><br><b>Onglet Serveur</b></div></div><p>Pour la modération : version, durée de fonctionnement, mémoire, charge, trafic, volumes et activité des 14 derniers jours, actualisés toutes les 30 secondes.</p></article>
+      <article class="card tech tilt rv t-period" style="--d:2"><div class="top"><span class="bi"><svg class="i"><use href="assets/icons.svg#sun"/></svg></span><div><span class="role">Météo</span><br><b>Open-Meteo</b></div></div><p>Prévisions et recherche de villes, sans clé ni compte, données sous licence CC BY 4.0. Relayé et mis en cache par le serveur.</p></article>
     </div>
   </div>
 </section>
@@ -191,6 +193,21 @@
         <h3 style="font-size:19px">Conflits et refus</h3>
         <ul class="prose" style="gap:8px"><li>Le serveur refuse une opération plus ancienne que sa version (<code>stale</code>).</li><li>L’app n’écrase pas une modification locale plus récente encore dans la file.</li><li>Une horloge d’appareil en avance est ramenée à « maintenant + 5 minutes ».</li><li>Autres refus : <code>forbidden</code>, <code>invalid</code>, <code>not_found</code> ; la version du serveur est alors récupérée.</li><li>La déconnexion est bloquée tant que des modifications attendent : rien ne se perd.</li></ul>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="meteo">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Météo · 2.1</span><h2 class="rv" style="--d:1">Le temps qu’il fait, <span class="grad-text">sans te pister.</span></h2><p class="rv" style="--d:2">La carte météo et le thème Météo s’appuient sur Open-Meteo, un service suisse sans clé dont les données sont sous licence CC BY 4.0. Avec un compte, c’est le serveur PepsGoal qui l’interroge.</p></div>
+    <div class="flow">
+      <article class="card tilt rv"><h3>La ville, pas ta position</h3><p>Tu cherches une ville par son nom (<code>GET /v1/weather/places</code>) ; aucune géolocalisation de l’appareil. Seules la latitude et la longitude de la ville, arrondies au centième de degré, sont gardées dans tes réglages.</p></article>
+      <article class="card tilt rv" style="--d:1"><h3>Le serveur fait relais</h3><p><code>GET /v1/weather</code> appelle Open-Meteo à la place de l’application (<code>lib/weather.ts</code>) : ni ton adresse IP ni ton identité ne lui sont transmises. Prévisions en cache 10 minutes, villes 24 heures, 2 000 entrées au plus. Sans compte, l’appareil l’interroge directement.</p></article>
+      <article class="card tilt rv" style="--d:2"><h3>Un ciel en un seul canevas</h3><p>Le thème Météo dessine le ciel (heure, nuages sur trois profondeurs, pluie, neige, éclairs, brouillard) dans un seul <code>&lt;canvas&gt;</code> : 30 images par seconde au plus, pause en arrière-plan, image fixe si les animations sont désactivées. Plus de dizaines d’éléments floutés qui saturaient la mémoire graphique.</p></article>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card rv"><p class="eyebrow" style="margin-bottom:10px">Notifications plus réactives</p><p class="muted">Les rappels sont vérifiés chaque minute par le serveur (au lieu de cinq). Messages, mentions et rappels partent en priorité haute, avec une durée de validité adaptée. Application ouverte, la notification s’affiche aussitôt et les données sont relues sans attendre ; au retour sur l’application, rappels et météo sont vérifiés immédiatement.</p></div>
+      <div class="card rv" style="--d:1"><p class="eyebrow" style="margin-bottom:10px">Sans migration</p><p class="muted">Le nouveau type d’objectif <code>period</code> et les thèmes <code>oled</code> et <code>weather</code> tiennent dans les colonnes existantes : aucune migration de base de données. Le fond de l’onglet sélectionné glisse avec les Web Animations, sur le compositeur, et reprend là où il en était après chaque reconstruction de la page.</p></div>
     </div>
   </div>
 </section>
@@ -250,7 +267,7 @@
 
 <section class="section" id="code">
   <div class="wrap">
-    <div class="sec-h"><span class="eyebrow rv">Le code</span><h2 class="rv" style="--d:1">Un monorepo, <span class="grad-text">une source de vérité.</span></h2><p class="rv" style="--d:2">Les 14 types d’objectifs et leurs réglages sont définis une seule fois dans <code>packages/shared</code> et validés à l’identique par le serveur et l’app.</p></div>
+    <div class="sec-h"><span class="eyebrow rv">Le code</span><h2 class="rv" style="--d:1">Un monorepo, <span class="grad-text">une source de vérité.</span></h2><p class="rv" style="--d:2">Les 15 types d’objectifs et leurs réglages sont définis une seule fois dans <code>packages/shared</code> et validés à l’identique par le serveur et l’app.</p></div>
     <div class="grid g2">
       <div class="card rv left"><div class="tree"><span class="d">pepsgoal-platform/</span>
 ├── <span class="d">packages/shared/</span>  <span class="c">modèle, zod, synchro, séries, E2E</span>
@@ -258,7 +275,7 @@
 ├── <span class="d">apps/web-legacy/</span>  <span class="c">l’interface : tous les écrans</span>
 ├── <span class="d">apps/web/</span>         <span class="c">cloud.js, service worker, emojis, build</span>
 ├── <span class="d">apps/app/</span>         <span class="c">coque iOS / Android (Expo)</span>
-├── <span class="d">deploy/</span>           <span class="c">Caddy, Docker, ce site</span>
+├── <span class="d">deploy/</span>           <span class="c">Caddy, Docker, scripts update.sh et web-build.sh, ce site</span>
 ├── <span class="d">docs/</span>             <span class="c">architecture, API, E2E, stores</span>
 └── <span class="d">archive/</span>          <span class="c">anciens écrans React Native</span></div></div>
       <div class="card rv right"><div class="models">

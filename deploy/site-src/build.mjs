@@ -9,6 +9,7 @@ import { dsBlocks } from './ds-gen.mjs';
 import { buildIcons } from './icons.mjs';
 import { emojiPicker } from './emoji-gen.mjs';
 import { changelogBlocks } from './changelog-gen.mjs';
+import { appBlocks } from './app-gen.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const out = path.join(here, '..', 'site');
@@ -18,11 +19,13 @@ const appPath = path.join(here, '..', '..', 'apps', 'web-legacy', 'pepsgoal.html
 const app = readFileSync(appPath, 'utf8');
 // Icônes : celles de l'application, plus celles propres au site
 const icons = buildIcons(app, path.join(here, 'icons-extra.svg'), path.join(out, 'assets', 'icons.svg'));
-// Blocs générés : tokens du design system (page design-system.html), échantillon du sélecteur d'emojis
+// Blocs générés : tokens du design system (page design-system.html), échantillon du sélecteur d'emojis,
+// notes de version, couleurs d'accent et familles de badges de l'application
 const gen = {
   ...dsBlocks(path.join(here, 'tokens.json'), icons.app),
   ...emojiPicker(app, path.join(here, '..', '..', 'apps', 'web', 'emoji'), path.join(out, 'emoji')),
-  ...changelogBlocks(path.join(here, '..', '..', 'CHANGELOG.md'))
+  ...changelogBlocks(path.join(here, '..', '..', 'CHANGELOG.md')),
+  ...appBlocks(app)
 };
 // Emojis Fluent cités par les pages (emoji/<code>.webp) : copiés depuis l'application s'ils manquent
 const emojiSrc = path.join(here, '..', '..', 'apps', 'web', 'emoji');

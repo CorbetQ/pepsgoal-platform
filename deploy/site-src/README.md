@@ -7,10 +7,11 @@ Il reprend le design system PepsGoal (verre givré sur halos vifs) avec plus de 
 | --- | --- |
 | `pages/*.html` | Contenu de chaque page ; la première ligne `<!--meta title="…" description="…" nav="…"-->` donne le titre, la description et l'onglet actif |
 | `partials/head.html`, `partials/foot.html` | En-tête (navigation, thème, menu mobile, bouton « Ouvrir l'app ») et pied de page communs |
-| `icons.mjs`, `icons-extra.svg` | Sprite `assets/icons.svg` : toutes les icônes de l'application (constante `P` de `apps/web-legacy/pepsgoal.html`) plus celles propres au site |
+| `icons.mjs`, `icons-extra.svg` | Sprite `assets/icons.svg` : toutes les icônes de l'application (constante `P` de `apps/web-legacy/pepsgoal.html` et ses ajouts `Object.assign(P, …)`) plus celles propres au site |
 | `emoji-gen.mjs` | Échantillon du sélecteur d'emojis de l'application (constante `EMOJI_CATS`) : 12 emojis par catégorie, images Fluent copiées depuis `apps/web/emoji` |
 | `changelog-gen.mjs` | Notes de version lues dans `CHANGELOG.md` : frise de la page Technique et page `notes-de-version.html` |
-| `tokens.json` | Copie des tokens du design system PepsGoal ; `ds-gen.mjs` en tire les nuanciers, contrastes, échelles typographiques, rayons et les huit thèmes de la page Design system |
+| `app-gen.mjs` | Couleurs d'accent (`ACCENTS`) et familles de badges (`BADGE_FAMILIES`) de l'application, ajouts `.push(…)` compris : nuancier et sélecteur d'accent, grille des badges et leurs nombres |
+| `tokens.json` | Copie des tokens du design system PepsGoal ; `ds-gen.mjs` en tire les nuanciers, contrastes, échelles typographiques, rayons et les huit thèmes (plus OLED) de la page Design system |
 | `build.mjs` | Assemble les pages dans `deploy/site/` et applique la typographie française (espaces insécables, apostrophes) au texte affiché ; génère aussi `cgu.html`, `mentions-legales.html` et `confidentialite.html` à partir des textes légaux de l'application (`apps/web-legacy/pepsgoal.html`) |
 | `hostinger/.htaccess` | Réglages pour un hébergement mutualisé (LiteSpeed / Apache) : HTTPS, adresses courtes, page 404, cache, en-têtes de sécurité |
 | `zip-hostinger.sh` | Construit le site et l'emballe avec le `.htaccess` dans un zip à extraire dans `public_html` |

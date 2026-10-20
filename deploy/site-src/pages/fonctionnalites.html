@@ -1,4 +1,4 @@
-<!--meta title="Fonctionnalités · PepsGoal" description="Toutes les fonctionnalités de PepsGoal : 14 formats d’objectifs, flammes, séries, gels, badges, récaps, amis, défis, messagerie chiffrée, personnalisation, accessibilité et données." nav="fonctionnalites"-->
+<!--meta title="Fonctionnalités · PepsGoal" description="Toutes les fonctionnalités de PepsGoal : 15 formats d’objectifs, flammes, séries, gels, badges, récaps, amis, défis, messagerie chiffrée, personnalisation, accessibilité et données." nav="fonctionnalites"-->
 <style>
   .subnav{position:sticky;top:86px;z-index:20;display:flex;gap:6px;overflow-x:auto;padding:6px;border-radius:var(--r-pill);width:max-content;max-width:100%;margin:0 auto 8px;scrollbar-width:none}
   .subnav::-webkit-scrollbar{display:none}
@@ -16,6 +16,7 @@
   .tcard p{color:var(--ink-2);font-size:14.5px;position:relative}
   .tcard .ex{font-size:13px;font-weight:700;color:var(--c-ink);position:relative}
   .tcard .pts{margin-left:auto}
+  .new-mini{display:inline-block;margin-left:6px;padding:0 7px;border-radius:var(--r-pill);background:var(--brand);color:var(--on-accent);font-size:11px;font-weight:800;vertical-align:1px}
   .tgroup{grid-column:1/-1;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
   .feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
   .feat.flip .feat-txt{order:2}
@@ -28,6 +29,7 @@
   .ticks svg{width:20px;height:20px;flex:none;margin-top:2px;padding:3px;border-radius:50%;background:var(--brand);color:var(--on-accent);stroke-width:3}
   @media (max-width:860px){.feat{grid-template-columns:minmax(0,1fr)}.feat.flip .feat-txt{order:0}}
   .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  @media (max-width:520px){.badges{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.badges .bdg{padding:10px}}
   .badges .bdg{background:var(--glass-strong);transition:transform .3s var(--ease-bounce)}
   .badges .bdg:hover{transform:translateY(-4px) rotate(-1deg)}
   .miles{display:flex;flex-wrap:wrap;gap:8px}
@@ -160,24 +162,166 @@
   @media (max-width:1000px){.v14{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media (max-width:900px){.v2{grid-template-columns:minmax(0,1fr)}.v2>*{grid-column:auto!important}}
   @media (max-width:520px){.v14{grid-template-columns:minmax(0,1fr)}}
+  /* Nouveautés 2.1 */
+  .v21{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px}
+  .v21 .card{display:flex;flex-direction:column;gap:14px;overflow:hidden}
+  .v21 h3{font-size:clamp(20px,2.4vw,26px);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .v21-wx,.v21-sky,.v21-look{grid-column:span 3}
+  .v21-period,.v21-share,.v21-recap{grid-column:span 2}
+  .v21-notif{grid-column:span 3}
+  .v21-period h3,.v21-share h3,.v21-recap h3,.v21-notif h3{font-size:20px}
+  .sky{position:relative;min-height:230px;border-radius:var(--r-md);overflow:hidden;background:#7EC8F5;isolation:isolate}
+  .sky canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .sky-panel{position:absolute;left:14px;right:14px;bottom:14px;padding:12px 14px;border-radius:16px;display:flex;flex-direction:column;gap:2px;background:rgba(255,255,255,.4);border-color:rgba(255,255,255,.7);color:#10102A;-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%)}
+  .sky[data-sky="night"] .sky-panel,.sky[data-sky="storm"] .sky-panel,.sky[data-sky="dusk"] .sky-panel{background:rgba(18,22,48,.45);border-color:rgba(255,255,255,.22);color:#fff}
+  .sky-panel small{font-size:12px;font-weight:700;opacity:.8}
+  .days{display:flex;gap:6px;flex-wrap:wrap}
+  .days button{width:38px;height:38px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--c) 60%,transparent);background:transparent;color:var(--ink);font-weight:800;cursor:pointer;transition:background .2s,transform .2s var(--ease-bounce)}
+  .days button[aria-pressed="true"]{background:var(--c);color:#10102A;border-color:var(--c);transform:scale(1.06)}
+  .slot{display:flex;flex-direction:column;gap:6px;margin:0}.slot .chip{align-self:flex-start}
+  .recap-demo{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  .recap-b{position:relative;isolation:isolate;overflow:hidden;width:132px;aspect-ratio:1;flex:none;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:12px;border-radius:20px;background:var(--brand);color:#10102A;box-shadow:0 0 0 2px rgba(255,255,255,.75),0 0 22px 4px color-mix(in srgb,var(--flame) 55%,transparent),0 0 46px 10px color-mix(in srgb,var(--flame-2) 30%,transparent)}
+  .recap-b b{font-family:var(--font-display);font-size:15px;line-height:1.1}.recap-b small{font-size:11px;font-weight:800;opacity:.85}
+  .recap-b::after{content:"";position:absolute;top:-20%;bottom:-20%;left:0;width:55%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.55) 50%,transparent);transform:translateX(-140%) skewX(-12deg);pointer-events:none;z-index:-1}
+  .rb-j1{position:absolute;top:10px;right:10px;padding:4px 7px;border-radius:999px;background:rgba(16,16,42,.85);color:#fff;font-size:10.5px;font-weight:800;line-height:1}
+  .awards{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;flex:1;min-width:150px}
+  .awards li{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:color-mix(in srgb,var(--c) 14%,transparent);font-weight:800;font-size:13px}
+  @media (prefers-reduced-motion:no-preference){
+    .recap-b{animation:recapHalo 2.6s ease-in-out infinite}
+    .recap-b::after{animation:recapShine 3.6s cubic-bezier(.45,0,.55,1) infinite}
+  }
+  @keyframes recapHalo{50%{box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 30px 8px color-mix(in srgb,var(--flame) 70%,transparent),0 0 64px 16px color-mix(in srgb,var(--flame-2) 40%,transparent)}}
+  @keyframes recapShine{0%,30%{transform:translateX(-140%) skewX(-12deg)}75%,100%{transform:translateX(260%) skewX(-12deg)}}
+  .look-row{display:flex;gap:16px;align-items:stretch;flex-wrap:wrap}
+  .oled{position:relative;width:118px;min-height:190px;flex:none;border-radius:22px;padding:22px 10px 10px;background:#000;border:2px solid #22232b;display:flex;flex-direction:column;gap:8px;color:#fff}
+  .oled-bar{position:absolute;top:8px;left:50%;width:36px;height:5px;margin-left:-18px;border-radius:9px;background:#1b1c22}
+  .oled-card{display:flex;align-items:center;gap:6px;padding:10px 8px;border-radius:12px;background:#0C0C10;border:1px solid rgba(255,255,255,.1);font-size:12px}
+  .oled-card .fl{width:22px;height:22px}.oled-card.dim{min-height:40px}
+  .oled small{margin-top:auto;text-align:center;font-weight:800;font-size:11px;letter-spacing:.1em;color:rgba(255,255,255,.6)}
+  .look-ctl{flex:1;min-width:220px;display:flex;flex-direction:column;gap:10px}
+  .glide{position:relative;display:inline-flex;align-self:flex-start;flex-wrap:wrap;padding:4px;gap:4px;border-radius:var(--r-pill);background:color-mix(in srgb,var(--ink) 8%,transparent)}
+  .glide button{position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:0;border-radius:var(--r-pill);background:transparent;color:var(--ink-2);font-weight:800;font-size:13px;cursor:pointer;transition:color .2s}
+  .glide button svg{width:15px;height:15px}.glide button[aria-pressed="true"]{color:var(--ink)}
+  .glide-ind{position:absolute;top:0;left:0;border-radius:var(--r-pill);background:var(--glass-strong);box-shadow:0 2px 10px -4px rgba(0,0,0,.35);transition:transform .45s var(--ease-bounce),width .45s var(--ease-bounce)}
+  .push-stack{display:flex;flex-direction:column;gap:8px}
+  .push{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px}
+  .push .fl{width:26px;height:26px;flex:none}.push>div{flex:1;min-width:0;display:flex;flex-direction:column}.push b{font-size:14px}.push small{color:var(--ink-2);font-size:12.5px}
+  .push .now{align-self:flex-start;font-size:11px;font-weight:700;color:var(--ink-3)}
+  @media (prefers-reduced-motion:no-preference){.v21-notif.in .push{animation:pushIn .6s var(--ease-bounce) both}.v21-notif.in .push+.push{animation-delay:.25s}}
+  @keyframes pushIn{from{opacity:0;transform:translateY(-14px) scale(.96)}}
+  .sky-seg button{padding:6px 10px;font-size:12.5px}
+  .new-badges{display:flex;flex-wrap:wrap;gap:8px}
+  .new-badges span{display:inline-flex;align-items:center;gap:6px;padding:6px 11px 6px 7px;border-radius:var(--r-pill);background:color-mix(in srgb,var(--ink) 6%,transparent);font-weight:800;font-size:13px}
+  @media (max-width:1000px){.v21-period,.v21-share,.v21-recap{grid-column:span 3}.v21-recap{grid-column:span 6}}
+  @media (max-width:900px){.v21{grid-template-columns:minmax(0,1fr)}.v21>*{grid-column:auto!important}}
 </style>
 
 <section class="page-hero">
   <div class="wrap">
     <span class="eyebrow rv">Fonctionnalités</span>
     <h1 data-split>Tout ce qu’il faut pour <span class="grad-text">tenir le cap.</span></h1>
-    <p class="lead rv" style="--d:2">Quatorze formats d’objectifs, une flamme qui récompense la régularité, des amis pour se motiver, des sondages et une messagerie chiffrée avec réponses et réactions. Le tout utilisable hors ligne, avec ou sans compte.</p>
+    <p class="lead rv" style="--d:2">Quinze formats d’objectifs, la météo de ta ville, une flamme qui récompense la régularité, des amis pour se motiver, des sondages et une messagerie chiffrée avec réponses et réactions. Le tout utilisable hors ligne, avec ou sans compte.</p>
     <div class="crumbs rv" style="--d:3"><a href="https://app.pepsgoal.fr">Essayer maintenant</a><a href="#nouveautes">Nouveautés {{VERSION}}</a><a href="#formats">Les formats</a><a href="#faq">Questions fréquentes</a></div>
   </div>
 </section>
 
 <nav class="subnav glass" aria-label="Sections de la page">
-  <a href="#nouveautes">Nouveautés</a><a href="#sondages">Sondages</a><a href="#formats">Formats</a><a href="#motivation">Motivation</a><a href="#social">Social</a><a href="#messagerie">Messagerie</a><a href="#perso">Personnalisation</a><a href="#a11y">Accessibilité</a><a href="#donnees">Données</a><a href="#faq">FAQ</a>
+  <a href="#nouveautes">Nouveautés 2.1</a><a href="#v20">Version 2.0</a><a href="#sondages">Sondages</a><a href="#formats">Formats</a><a href="#motivation">Motivation</a><a href="#social">Social</a><a href="#messagerie">Messagerie</a><a href="#perso">Personnalisation</a><a href="#a11y">Accessibilité</a><a href="#donnees">Données</a><a href="#faq">FAQ</a>
 </nav>
 
 <section class="section" id="nouveautes">
   <div class="wrap">
-    <div class="sec-h"><span class="eyebrow rv">Nouveau · version {{VERSION}}</span><h2 class="rv" style="--d:1">Plus expressif, <span class="grad-text">plus personnel.</span></h2><p class="rv" style="--d:2">La version 2.0.0 apporte les réponses et réactions dans la messagerie, les suggestions d’amis, les objectifs favoris, sept arrière-plans et de nouveaux réglages d’accessibilité. Elle inclut la 1.4.0 : notifications push, badges à paliers et archive des stories.</p></div>
+    <div class="sec-h"><span class="eyebrow rv">Nouveau · version {{VERSION}}</span><h2 class="rv" style="--d:1">La météo, le ciel <span class="grad-text">et ton rythme.</span></h2><p class="rv" style="--d:2">Les versions 2.1 apportent la météo de ta ville sur l’accueil, un thème qui affiche le ciel en direct, l’objectif « Période », le thème OLED, 24 couleurs d’accent, un panneau de partage et des récaps bien plus vivants.</p></div>
+    <div class="v21">
+      <article class="card v21-wx tilt rv" data-tilt="3">
+        <span class="tag t-timed"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Météo</span>
+        <h3>Le temps de ta ville, sur l’accueil.</h3>
+        <p class="muted">Choisis ta ville dans Paramètres › Météo : la carte s’affiche sous « Ta journée », avec un conseil selon le temps.</p>
+        <div class="wx glass">
+          <div class="wx-h"><b><svg class="i"><use href="assets/icons.svg#pin"/></svg>Angers</b><small>Mis à jour à 9 h 40</small></div>
+          <div class="wx-now"><img src="emoji/26c5.webp" alt="" width="54" height="54"><div class="wx-main"><span class="wx-t"><span data-count="17">17</span>°</span><span>Partiellement nuageux · ressenti 15°</span></div>
+            <ul class="wx-side"><li><svg class="i"><use href="assets/icons.svg#up"/></svg>19° <svg class="i"><use href="assets/icons.svg#down"/></svg>9°</li><li><svg class="i"><use href="assets/icons.svg#wind"/></svg>14 km/h</li><li><svg class="i"><use href="assets/icons.svg#drop"/></svg>20 %</li></ul></div>
+          <p class="wx-tip">Belle fenêtre pour courir avant midi : la pluie arrive en fin de journée.</p>
+          <ul class="wx-days"><li>Mar.<img src="emoji/1f326.webp" alt="Averses" width="26" height="26"><span>18°<small>10°</small></span></li><li>Mer.<img src="emoji/1f327.webp" alt="Pluie" width="26" height="26"><span>14°<small>9°</small></span></li><li>Jeu.<img src="emoji/2600.webp" alt="Ensoleillé" width="26" height="26"><span>20°<small>8°</small></span></li></ul>
+          <p class="wx-sun"><span><img src="emoji/1f305.webp" alt="" width="18" height="18">Lever 8 h 21</span><span><img src="emoji/1f307.webp" alt="" width="18" height="18">Coucher 19 h 04</span></p>
+        </div>
+        <p class="muted" style="font-size:12.5px">Données météo : Open-Meteo (licence CC BY 4.0). Exemple d’affichage.</p>
+      </article>
+
+      <article class="card v21-sky tilt rv" style="--d:1" data-tilt="3">
+        <span class="tag t-project"><svg class="i"><use href="assets/icons.svg#cloud"/></svg>Thème Météo</span>
+        <h3>Le ciel en direct, derrière tes panneaux.</h3>
+        <p class="muted">L’heure (aube, jour, crépuscule, nuit) et le temps de ta ville dessinent le fond : nuages en relief, soleil et halo, lune et étoiles filantes, pluie, neige, orage ou brouillard, sous des panneaux en verre givré.</p>
+        <div class="sky" data-sky="day">
+          <canvas aria-hidden="true"></canvas>
+          <div class="sky-panel glass"><b data-sky-label>Jour · Ensoleillé</b><small>Un seul canevas, 30 images par seconde au plus</small></div>
+        </div>
+        <div class="seg sky-seg" role="group" aria-label="Ciel de démonstration">
+          <button type="button" aria-pressed="false" data-sky-set="dawn">Aube</button><button type="button" aria-pressed="true" data-sky-set="day">Jour</button><button type="button" aria-pressed="false" data-sky-set="dusk">Crépuscule</button><button type="button" aria-pressed="false" data-sky-set="night">Nuit</button><button type="button" aria-pressed="false" data-sky-set="rain">Pluie</button><button type="button" aria-pressed="false" data-sky-set="snow">Neige</button><button type="button" aria-pressed="false" data-sky-set="storm">Orage</button><button type="button" aria-pressed="false" data-sky-set="fog">Brouillard</button>
+        </div>
+      </article>
+
+      <article class="card v21-period tilt rv t-period" data-tilt="4">
+        <span class="tag"><svg class="i"><use href="assets/icons.svg#period"/></svg>Objectif Période</span>
+        <h3>Certains jours, sur une tranche horaire.</h3>
+        <p class="muted">Hebdomadaire ou mensuelle (un 31 tombe le dernier jour des mois plus courts). Validation pendant la tranche ou dans l’heure qui suit, rappel au début de chaque période.</p>
+        <div class="days" role="group" aria-label="Jours de la période">
+          <button type="button" aria-pressed="false" aria-label="Lundi">L</button><button type="button" aria-pressed="true" aria-label="Mardi">M</button><button type="button" aria-pressed="false" aria-label="Mercredi">M</button><button type="button" aria-pressed="true" aria-label="Jeudi">J</button><button type="button" aria-pressed="false" aria-label="Vendredi">V</button><button type="button" aria-pressed="false" aria-label="Samedi">S</button><button type="button" aria-pressed="false" aria-label="Dimanche">D</button>
+        </div>
+        <p class="slot"><span class="chip t-period"><svg class="i"><use href="assets/icons.svg#clock"/></svg>18 h – 19 h</span><small class="muted" data-days-sum>Mardi et jeudi · validation jusqu’à 20 h</small></p>
+      </article>
+
+      <article class="card v21-share tilt rv" style="--d:1" data-tilt="4">
+        <span class="tag t-group"><svg class="i"><use href="assets/icons.svg#share"/></svg>Partage</span>
+        <h3>Un panneau, quatre destinations.</h3>
+        <p class="muted">Partage une progression ou un récap dans le Feed, en Story, en message chiffré à un ami ou un groupe, ou vers les applications de l’appareil.</p>
+        <ul class="share-list" data-share>
+          <li><button type="button" class="so so-feed"><span class="so-ic"><svg class="i"><use href="assets/icons.svg#feed"/></svg></span><span><b>Feed</b><small>Publier pour tes amis</small></span></button></li>
+          <li><button type="button" class="so so-story"><span class="so-ic"><svg class="i"><use href="assets/icons.svg#image"/></svg></span><span><b>Story</b><small>Progression ou récap, 24 h</small></span></button></li>
+          <li><button type="button" class="so so-msg"><span class="so-ic"><svg class="i"><use href="assets/icons.svg#comment"/></svg></span><span><b>Message</b><small>Ami ou groupe, chiffré</small></span></button></li>
+          <li><button type="button" class="so so-ext"><span class="so-ic"><svg class="i"><use href="assets/icons.svg#ext"/></svg></span><span><b>Externe</b><small>Applications ou copie du texte</small></span></button></li>
+        </ul>
+        <p class="muted share-out" aria-live="polite" style="font-size:13px">Essaie : choisis une destination.</p>
+      </article>
+
+      <article class="card v21-recap tilt rv t-challenge" style="--d:2" data-tilt="4">
+        <span class="tag"><svg class="i"><use href="assets/icons.svg#trophy"/></svg>Récaps</span>
+        <h3>Des bilans qui ont de l’humour.</h3>
+        <p class="muted">Comparaison avec la période précédente, jour fétiche, créneau préféré, « Le saviez-vous ? » et trophées humoristiques. Le bilan reste affiché le lendemain, avec un halo qui respire.</p>
+        <div class="recap-demo"><span class="recap-b"><span class="rb-j1">J+1</span><b>Semaine passée</b><small>bilan complet, aujourd’hui</small></span>
+          <ul class="awards"><li><img src="emoji/1f413.webp" alt="" width="22" height="22">Prix du coq</li><li><img src="emoji/1f987.webp" alt="" width="22" height="22">Prix de la chauve-souris</li><li><img src="emoji/1f634.webp" alt="" width="22" height="22">Prix de la sieste</li></ul></div>
+      </article>
+
+      <article class="card v21-look tilt rv" data-tilt="3">
+        <span class="tag t-abstinence"><svg class="i"><use href="assets/icons.svg#palette"/></svg>Apparence</span>
+        <h3>OLED, 24 accents et verre givré.</h3>
+        <p class="muted">Le thème OLED passe en noir pur. Le flou du verre givré se règle en quatre niveaux, de « Très faible » (panneaux presque opaques) à « Fort ». La carte « En cours » de l’accueil peut être masquée, et le fond de l’onglet sélectionné glisse d’un onglet à l’autre.</p>
+        <div class="look-row">
+          <div class="oled" aria-hidden="true"><span class="oled-bar"></span><span class="oled-card"><svg class="fl"><use href="#flame"/></svg><b>12 jours</b></span><span class="oled-card dim"></span><small>OLED</small></div>
+          <div class="look-ctl">
+            <p class="eyebrow">Flou du verre givré</p>
+            <div class="seg blur-seg" role="group" aria-label="Flou du verre de cette page"><button type="button" aria-pressed="false" data-blur="xlow">Très faible</button><button type="button" aria-pressed="false" data-blur="low">Faible</button><button type="button" aria-pressed="true" data-blur="mid">Moyen</button><button type="button" aria-pressed="false" data-blur="high">Fort</button></div>
+            <p class="eyebrow">Onglets</p>
+            <div class="glide" role="group" aria-label="Onglets de démonstration"><span class="glide-ind" aria-hidden="true"></span><button type="button" aria-pressed="true"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Accueil</button><button type="button" aria-pressed="false"><svg class="i"><use href="assets/icons.svg#feed"/></svg>Feed</button><button type="button" aria-pressed="false"><svg class="i"><use href="assets/icons.svg#users"/></svg>Amis</button></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card v21-notif tilt rv" style="--d:1" data-tilt="4">
+        <span class="tag t-routine"><svg class="i"><use href="assets/icons.svg#bell"/></svg>Notifications et badges</span>
+        <h3>Rappels à la minute, 7 nouveaux badges.</h3>
+        <p class="muted">Le serveur vérifie les rappels chaque minute. Messages, mentions et rappels partent en priorité haute ; application ouverte, la notification s’affiche aussitôt.</p>
+        <div class="push-stack" aria-hidden="true"><div class="push glass"><svg class="fl"><use href="#flame"/></svg><div><b>Piscine · 18 h – 19 h</b><small>C’est l’heure de ta période. Valide avant 20 h.</small></div><span class="now">maintenant</span></div><div class="push glass"><img src="emoji/1f4ac.webp" alt="" width="26" height="26"><div><b>Léo t’a mentionné</b><small>Message chiffré · priorité haute</small></div><span class="now">1 min</span></div></div>
+        <p class="eyebrow">7 nouvelles familles de badges</p>
+        <div class="new-badges"><span><img src="emoji/1f305.webp" alt="" width="22" height="22">Lève-tôt</span><span><img src="emoji/1f989.webp" alt="" width="22" height="22">Oiseau de nuit</span><span><img src="emoji/1f389.webp" alt="" width="22" height="22">Week-end actif</span><span><img src="emoji/1f570.webp" alt="" width="22" height="22">Ponctuel</span><span><img src="emoji/1f9f1.webp" alt="" width="22" height="22">Bâtisseur</span><span><img src="emoji/1f4f8.webp" alt="" width="22" height="22">Conteur</span><span><img src="emoji/270d.webp" alt="" width="22" height="22">Plume</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="v20">
+  <div class="wrap">
+    <div class="sec-h"><span class="eyebrow rv">Version 2.0.0</span><h2 class="rv" style="--d:1">Plus expressif, <span class="grad-text">plus personnel.</span></h2><p class="rv" style="--d:2">La version 2.0.0 apporte les réponses et réactions dans la messagerie, les suggestions d’amis, les objectifs favoris, sept arrière-plans et de nouveaux réglages d’accessibilité. Elle inclut la 1.4.0 : notifications push, badges à paliers et archive des stories.</p></div>
     <div class="v2">
       <article class="card v2-chat tilt rv" data-tilt="3">
         <span class="tag t-project"><svg class="i"><use href="assets/icons.svg#comment"/></svg>Messagerie</span>
@@ -238,7 +382,7 @@
     <h3 class="v14-h rv">Arrivé avec la 1.4.0</h3>
     <div class="v14">
       <article class="card v14-c tilt rv t-deadline"><span class="ic-b"><svg class="i"><use href="assets/icons.svg#bell"/></svg></span><h4>Notifications push</h4><p class="muted">Rappels du matin et du soir, messages et encouragements, même application fermée (version web).</p><div class="push-demo" aria-hidden="true"><svg class="fl"><use href="#flame"/></svg><span><b>PepsGoal</b><small>Il te reste 2 objectifs pour garder ta série.</small></span></div></article>
-      <article class="card v14-c tilt rv t-challenge" style="--d:1"><span class="ic-b"><svg class="i"><use href="assets/icons.svg#medal"/></svg></span><h4>Badges à paliers</h4><p class="muted">12 familles de badges, de Bronze à Diamant, avec une animation à chaque déblocage.</p><div class="tiers" aria-label="Paliers : Bronze, Argent, Or, Platine, Diamant"><i style="--t:#D08A4F">Bronze</i><i style="--t:#B9C3D6">Argent</i><i style="--t:#FFC83D">Or</i><i style="--t:#7FE3D9">Platine</i><i style="--t:#B48CFF">Diamant</i></div></article>
+      <article class="card v14-c tilt rv t-challenge" style="--d:1"><span class="ic-b"><svg class="i"><use href="assets/icons.svg#medal"/></svg></span><h4>Badges à paliers</h4><p class="muted"><!--GEN:badgecount--> familles de badges, de Bronze à Diamant, avec une animation à chaque déblocage.</p><div class="tiers" aria-label="Paliers : Bronze, Argent, Or, Platine, Diamant"><i style="--t:#D08A4F">Bronze</i><i style="--t:#B9C3D6">Argent</i><i style="--t:#FFC83D">Or</i><i style="--t:#7FE3D9">Platine</i><i style="--t:#B48CFF">Diamant</i></div></article>
       <article class="card v14-c tilt rv t-measure" style="--d:2"><span class="ic-b"><svg class="i"><use href="assets/icons.svg#heart"/></svg></span><h4>Stories encouragées</h4><p class="muted">Encourage les stories de tes amis ; les tiennes restent un an dans ton archive personnelle, visible par toi seul.</p></article>
       <article class="card v14-c tilt rv t-duration" style="--d:3"><span class="ic-b"><svg class="i"><use href="assets/icons.svg#cloudoff"/></svg></span><h4>Hors ligne à la demande</h4><p class="muted">Un interrupteur coupe tout échange avec le serveur ; tes objectifs restent disponibles.</p></article>
     </div>
@@ -276,10 +420,11 @@
 
 <section class="section" id="formats">
   <div class="wrap">
-    <div class="sec-h"><span class="eyebrow rv">14 formats d’objectifs</span><h2 class="rv" style="--d:1">Une couleur, une icône, <span class="grad-text">une façon d’avancer.</span></h2><p class="rv" style="--d:2">Chaque format a ses réglages et rapporte ses propres flammes à chaque validation. Choisis-en un ou combine-les.</p></div>
+    <div class="sec-h"><span class="eyebrow rv">15 formats d’objectifs</span><h2 class="rv" style="--d:1">Une couleur, une icône, <span class="grad-text">une façon d’avancer.</span></h2><p class="rv" style="--d:2">Chaque format a ses réglages et rapporte ses propres flammes à chaque validation. Choisis-en un ou combine-les.</p></div>
     <div class="types">
       <p class="tgroup rv">Essentiels</p>
       <article class="tcard t-routine tilt rv"><div class="tcard-h"><span class="ti"><svg class="i"><use href="assets/icons.svg#repeat"/></svg></span><h3>Routine</h3><span class="chip t-routine pts">+10</span></div><p>Certains jours de la semaine, ou X fois par semaine.</p><span class="ex">Courir lundi, mercredi et vendredi</span></article>
+      <article class="tcard t-period tilt rv" style="--d:1"><div class="tcard-h"><span class="ti"><svg class="i"><use href="assets/icons.svg#period"/></svg></span><h3>Période</h3><span class="chip t-period pts">+10</span></div><p>Certains jours de la semaine ou du mois, sur une tranche horaire. Validation pendant la tranche ou dans l’heure qui suit, rappel au début de chaque période.</p><span class="ex">Piscine mardi et jeudi, 18 h – 19 h <span class="new-mini">2.1.0</span></span></article>
       <article class="tcard t-objective tilt rv" style="--d:1"><div class="tcard-h"><span class="ti"><svg class="i"><use href="assets/icons.svg#target"/></svg></span><h3>Objectif</h3><span class="chip t-objective pts">+15</span></div><p>Un cap chiffré à atteindre, avec ses progrès.</p><span class="ex">Lire 12 livres · 8/12</span></article>
       <article class="tcard t-deadline tilt rv" style="--d:2"><div class="tcard-h"><span class="ti"><svg class="i"><use href="assets/icons.svg#cal"/></svg></span><h3>Deadline</h3><span class="chip t-deadline pts">+40</span></div><p>Une tâche à boucler avant une date, avec compte à rebours.</p><span class="ex">Déclaration d’impôts · encore 9 h</span></article>
       <article class="tcard t-abstinence tilt rv"><div class="tcard-h"><span class="ti"><svg class="i"><use href="assets/icons.svg#ban"/></svg></span><h3>Abstinence</h3><span class="chip t-abstinence pts">+8</span></div><p>Tenir sans une habitude, jour après jour. Une rechute se note sobrement.</p><span class="ex">Sans cigarette · 41 jours</span></article>
@@ -314,8 +459,8 @@
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Paliers de série</b> célébrés à 7, 14, 21, 30, 50, 100, 200 et 365 jours.</span></li>
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Journée parfaite</b> : tout est validé, place à l’écran plein et aux confettis.</span></li>
           <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Récaps</b> de la semaine, du mois et de l’année, à partager.</span></li>
-          <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Badges à paliers</b> : 12 familles, de Bronze à Diamant, fêtées à chaque déblocage.</span></li>
-          <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Rappels</b> du matin et du soir, à l’heure que tu choisis, en notification push sur la version web.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Badges à paliers</b> : <!--GEN:badgecount--> familles, de Bronze à Diamant, fêtées à chaque déblocage.</span></li>
+          <li><svg class="i"><use href="assets/icons.svg#check"/></svg><span><b>Rappels</b> du matin et du soir, à l’heure que tu choisis, et au début de chaque période, vérifiés chaque minute, en notification push sur la version web.</span></li>
         </ul>
       </div>
       <div class="demo-stack rv right" style="--d:1">
@@ -327,8 +472,8 @@
           <span><svg class="fl"><use href="#flame"/></svg>7</span><span><svg class="fl"><use href="#flame"/></svg>14</span><span><svg class="fl"><use href="#flame"/></svg>21</span><span><svg class="fl"><use href="#flame"/></svg>30</span><span><svg class="fl"><use href="#flame"/></svg>50</span><span><svg class="fl"><use href="#flame"/></svg>100</span><span><svg class="fl"><use href="#flame"/></svg>200</span><span><svg class="fl flame-anim"><use href="#flame"/></svg>365</span>
         </div></div>
         <div class="card">
-          <p class="eyebrow" style="margin-bottom:12px">12 familles de badges</p>
-          <div class="badges"><div class="bdg tier" style="--t:#FFC83D"><img src="emoji/1f525.webp" alt="" width="28" height="28"><b>Série</b><small>Série de 30 jours</small><span class="tier-pill">Or</span></div><div class="bdg tier" style="--t:#FFC83D"><img src="emoji/2705.webp" alt="" width="28" height="28"><b>Validations</b><small>100 validations</small><span class="tier-pill">Or</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f4c5.webp" alt="" width="28" height="28"><b>Assiduité</b><small>30 jours actifs</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f31f.webp" alt="" width="28" height="28"><b>Journées parfaites</b><small>5 journées parfaites</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f3c1.webp" alt="" width="28" height="28"><b>Accomplissements</b><small>5 objectifs accomplis</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#D08A4F"><img src="emoji/23f0.webp" alt="" width="28" height="28"><b>Dans les temps</b><small>1 deadline à temps</small><span class="tier-pill">Bronze</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f91d.webp" alt="" width="28" height="28"><b>Esprit d’équipe</b><small>3 défis à plusieurs</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#FFC83D"><img src="emoji/1f465.webp" alt="" width="28" height="28"><b>Tribu</b><small>10 amis</small><span class="tier-pill">Or</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f496.webp" alt="" width="28" height="28"><b>Encouragé</b><small>50 encouragements</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#D08A4F"><img src="emoji/1f9ca.webp" alt="" width="28" height="28"><b>Bouclier</b><small>1 gel utilisé</small><span class="tier-pill">Bronze</span></div><div class="bdg tier" style="--t:#B9C3D6"><img src="emoji/1f9ed.webp" alt="" width="28" height="28"><b>Explorateur</b><small>6 types d’objectifs</small><span class="tier-pill">Argent</span></div><div class="bdg tier" style="--t:#FFC83D"><img src="emoji/1f3c6.webp" alt="" width="28" height="28"><b>Flammes</b><small>1 500 flammes</small><span class="tier-pill">Or</span></div></div>
+          <p class="eyebrow" style="margin-bottom:12px"><!--GEN:badgecount--> familles de badges</p>
+          <!--GEN:badgefams-->
         </div>
       </div>
     </div>
@@ -413,7 +558,7 @@
 
 <section class="section" id="perso">
   <div class="wrap">
-    <div class="sec-h"><span class="eyebrow rv">Personnalisation</span><h2 class="rv" style="--d:1">Ta flamme, <span class="grad-text">tes couleurs.</span></h2><p class="rv" style="--d:2">Douze couleurs d’accent recolorent les boutons, la flamme et les bulles. Essaie : ce site change de couleur avec toi.</p></div>
+    <div class="sec-h"><span class="eyebrow rv">Personnalisation</span><h2 class="rv" style="--d:1">Ta flamme, <span class="grad-text">tes couleurs.</span></h2><p class="rv" style="--d:2"><!--GEN:accentcount--> couleurs d’accent recolorent les boutons, la flamme et les bulles. Essaie : ce site change de couleur avec toi.</p></div>
     <div class="grid g2">
       <div class="card rv">
         <p class="eyebrow" style="margin-bottom:14px">Couleur d’accent</p>
@@ -429,8 +574,8 @@
           <span class="av" style="--g:linear-gradient(135deg,#A8FFE4,#2EF2B0 55%,#22D3FF)"><svg class="i" style="width:56%;height:56%;stroke:#10102A;stroke-width:2.2"><use href="assets/icons.svg#mountain"/></svg></span>
           <span class="av" style="--g:linear-gradient(135deg,#FFE45C,#FFB000 55%,#FF7A3D)"><img src="emoji/1f3b8.webp" alt=""></span>
         </div>
-        <p class="muted">Initiales, emoji (parmi plus de 700, rangés par catégorie), pictogramme ou photo. Thème clair, sombre ou celui du système, sept arrière-plans ou ta propre image. Groupes d’objectifs avec leur icône pour ranger ta liste.</p>
-        <div class="seg" data-press-group role="group" aria-label="Thème"><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Clair</button><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg#moon"/></svg>Sombre</button><button aria-pressed="true" type="button"><svg class="i"><use href="assets/icons.svg#phone"/></svg>Système</button></div>
+        <p class="muted">Initiales, emoji (parmi plus de 700, rangés par catégorie), pictogramme ou photo. Thème clair, sombre, OLED (noir pur), Météo (le ciel en direct de ta ville) ou celui du système, verre givré plus ou moins flou, sept arrière-plans ou ta propre image. Groupes d’objectifs avec leur icône pour ranger ta liste.</p>
+        <div class="seg" data-press-group role="group" aria-label="Thème"><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg#sun"/></svg>Clair</button><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg#moon"/></svg>Sombre</button><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg#moon2"/></svg>OLED</button><button aria-pressed="false" type="button"><svg class="i"><use href="assets/icons.svg#cloud"/></svg>Météo</button><button aria-pressed="true" type="button"><svg class="i"><use href="assets/icons.svg#phone"/></svg>Système</button></div>
       </div>
     </div>
   </div>
@@ -481,6 +626,7 @@
       <details class="rv"><summary>Que se passe-t-il si je rate un jour ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Si tu as un gel, il protège ta série automatiquement. Sinon, la série repart de zéro, mais tes flammes, ton niveau et tes badges restent acquis.</p></details>
       <details class="rv"><summary>Qui peut lire mes messages ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Seuls les participants à la conversation. Le contenu est chiffré sur ton appareil avant l’envoi ; le serveur ne stocke qu’une version illisible.</p></details>
       <details class="rv"><summary>Puis-je recevoir des rappels ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Oui. Sur la version web, active les notifications dans les Paramètres : rappels du matin et du soir à l’heure choisie, nouveaux messages et encouragements, même quand l’application est fermée. Le contenu des messages n’apparaît jamais dans la notification.</p></details>
+      <details class="rv"><summary>La météo connaît-elle ma position ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Non. Tu choisis une ville par son nom dans Paramètres › Météo : la géolocalisation de l’appareil n’est jamais utilisée. Avec un compte, c’est le serveur PepsGoal qui interroge Open-Meteo, sans lui transmettre ton adresse IP ni ton identité.</p></details>
       <details class="rv"><summary>Puis-je réutiliser le code de PepsGoal ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Oui. PepsGoal est un logiciel libre sous <a href="licence.html">licence MIT</a> : tu peux l’utiliser, le modifier et le redistribuer en conservant la mention de copyright. Le nom PepsGoal et son logo ne sont pas concédés par la licence. Le code est sur <a href="https://github.com/CorbetQ/pepsgoal-platform">GitHub</a>.</p></details>
       <details class="rv"><summary>À partir de quel âge ?<svg class="i"><use href="assets/icons.svg#plus"/></svg></summary><p>Dès 15 ans, ou avant avec l’accord d’un parent ou d’un tuteur légal.</p></details>
     </div>
@@ -500,7 +646,7 @@
 <script>
   // Couleurs d'accent de l'app : en choisir une recolore tout le site (comme dans l'app)
   (() => {
-    const ACCENTS = [['Braise','#FFB000','#FF4A12','#FF3D96'],['Lagon','#6FF7FF','#22D3FF','#4D9BFF'],['Citron néon','#F4FF5C','#B6FF2E','#3DFF8A'],['Fuchsia','#FFA6D9','#FF4FA3','#E85BFF'],['Lavande','#DCCBFF','#A98BFF','#FF7AD9'],['Menthe','#A8FFE4','#2EF2B0','#22D3FF'],['Soleil','#FFE45C','#FFB000','#FF7A3D'],['Corail','#FFC2A8','#FF7B6B','#FF4F8B'],['Océan','#8AF0FF','#3DB2FF','#8C7DFF'],['Cerise','#FF9A9A','#FF3B5C','#FF5ACD'],['Aurore','#FFD1A1','#FF8FB1','#B98CFF'],['Glacier','#E4F4FF','#9FD8FF','#B6B4FF']];
+    const ACCENTS = /*GEN:accents*/;
     const box = document.getElementById('accents');
     box.innerHTML = ACCENTS.map(([n, a, b, c], i) => `<button type="button" class="acc" aria-pressed="${i === 0}" data-i="${i}"><i style="background:linear-gradient(135deg,${a},${b} 55%,${c})"></i>${n}</button>`).join('');
     box.addEventListener('click', e => {
