@@ -2,6 +2,17 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## 3.0.0 (21 octobre 2026) — application Android native
+
+L'application Android est réécrite en natif (Kotlin, Jetpack Compose) dans le dépôt [pepsgoal-android](https://github.com/CorbetQ/pepsgoal-android) : elle n'embarque plus l'interface web.
+
+### Nouveautés Android
+- Interface entièrement native : accueil, 15 types d'objectifs, feed, stories, amis, messagerie chiffrée de bout en bout (photos, vocaux, sondages, réactions, mentions), profil, récaps, badges, réglages et modération.
+- Material You : Paramètres › Apparence › « Couleurs Material You » applique les couleurs du fond d'écran à toute l'interface.
+- Activités en cours (Live Updates d'Android 16) : minuteur, période en cours et fin de journée quand la série est en jeu, dans la barre d'état, l'écran de verrouillage et la Now Bar.
+- Notifications enrichies : valider depuis un rappel, confirmer la validation d'un ami, répondre à un message ou le marquer comme lu sans ouvrir l'application.
+- Rappels à l'heure exacte, synchronisation en arrière-plan, widget « Ta journée », raccourcis d'application et icône thématique.
+
 ## 2.1.6 (19 octobre 2026)
 
 ### Corrections

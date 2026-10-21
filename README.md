@@ -9,9 +9,13 @@ pepsgoal-platform/
 ├── apps/server/       API Node.js (Fastify + PostgreSQL)
 ├── apps/web-legacy/   Interface PepsGoal (celle de l'artefact) : tous les écrans, web et mobile
 ├── apps/web/          Couche connectée (cloud.js) et construction : version web + interface embarquée de l'app
-├── apps/app/          App iOS / Android (Expo) : coque native qui embarque l'interface, hors ligne d'abord
+├── apps/app/          App iOS (Expo) : coque native qui embarque l'interface, hors ligne d'abord
 └── docs/              Architecture, API, synchronisation, publication sur les stores, déploiement
 ```
+
+L'application **Android** est désormais 100 % native (Kotlin, Jetpack Compose, Material You, Live Updates, notifications
+enrichies, widget) et vit dans son propre dépôt : [pepsgoal-android](https://github.com/CorbetQ/pepsgoal-android).
+Elle utilise la même API, la même synchronisation et le même chiffrement de bout en bout que la version web.
 
 ## Démarrer en local
 

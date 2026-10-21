@@ -2,6 +2,8 @@
 
 La compilation se fait dans le cloud avec **EAS** (Expo) : pas besoin de Mac ni d'Android Studio. Prérequis : le serveur est en ligne (`https://api.pepsgoal.fr`, voir GUIDE-HOSTINGER.md) et les pages légales sont publiées sur pepsgoal.fr.
 
+> **Android** : l'application Android est maintenant native et se construit depuis le dépôt [pepsgoal-android](https://github.com/CorbetQ/pepsgoal-android) (`./gradlew :app:bundleRelease`, puis envoi du fichier `.aab` dans la Play Console, même identifiant `fr.pepsgoal.app`). Les étapes EAS ci-dessous concernent l'app iOS.
+
 L'app mobile est une coque native (`apps/app/App.tsx`) qui embarque l'interface PepsGoal, la même que l'artefact et que `app.pepsgoal.fr`.
 L'interface est intégrée à l'app (et non chargée depuis internet) : elle s'ouvre instantanément et fonctionne hors ligne.
 EAS la reconstruit automatiquement à chaque compilation (script `eas-build-post-install`, qui lance `apps/web/build.mjs`).
