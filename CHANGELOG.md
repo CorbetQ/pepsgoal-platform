@@ -2,6 +2,12 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## Serveur — mise à jour pour Android 4.0.0 (22 octobre 2026)
+
+Regroupe les défis de la communauté (migration `0007_challenges`) et les ligues de la semaine ci-dessous.
+- Aucune autre modification nécessaire pour Android 4.0.0 : la version mini d'une habitude envoie une validation de valeur 0,5 avec la moitié des points (entiers), déjà acceptée par la synchronisation ; les nouvelles options d'objectif (`mini`…) passent par les données libres de l'objectif.
+- Mise en ligne sur le VPS : `/opt/pepsgoal/deploy/update.sh` (reconstruit l'API, applique la migration au démarrage, redémarre).
+
 ## Serveur — ligues de la semaine (22 octobre 2026)
 
 Utilisé par l'application Android 3.9.0.
