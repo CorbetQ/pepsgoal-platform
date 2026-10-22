@@ -50,6 +50,13 @@
       "when": 1792156312699,
       "tag": "0006_stories_push",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792651377671,
+      "tag": "0007_challenges",
+      "breakpoints": true
     }
   ]
 }

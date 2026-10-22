@@ -2,6 +2,16 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## Serveur — défis de la communauté (22 octobre 2026)
+
+Utilisé par l'application Android 3.5.0.
+- Nouvelles tables `challenges`, `challenge_members` et `challenge_days` (migration `0007_challenges`, appliquée automatiquement au démarrage du conteneur).
+- `GET /v1/challenges` : défis en cours, à venir et terminés depuis moins de 7 jours (participants, défi rejoint, jours validés).
+- `GET /v1/challenges/:id` : détail et classement (50 premiers, comptes bannis exclus).
+- `POST` / `DELETE /v1/challenges/:id/join` : rejoindre ou quitter un défi.
+- `PUT` / `DELETE /v1/challenges/:id/days/:day` : valider ou annuler un jour (dans la période du défi, au plus tard le lendemain).
+- Modération : `POST /v1/admin/challenges` (création) et `DELETE /v1/admin/challenges/:id`.
+
 ## 3.0.0 (21 octobre 2026) — application Android native
 
 L'application Android est réécrite en natif (Kotlin, Jetpack Compose) dans le dépôt [pepsgoal-android](https://github.com/CorbetQ/pepsgoal-android) : elle n'embarque plus l'interface web.
