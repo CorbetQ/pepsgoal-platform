@@ -2,6 +2,11 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## Serveur — ligues de la semaine (22 octobre 2026)
+
+Utilisé par l'application Android 3.9.0.
+- `GET /v1/leagues/week?from=AAAA-MM-JJ` : flammes gagnées et jours actifs de la semaine (du lundi `from` au dimanche) pour soi et ses amis, du premier au dernier (comptes bannis exclus). Aucune migration.
+
 ## Serveur — défis de la communauté (22 octobre 2026)
 
 Utilisé par l'application Android 3.5.0.

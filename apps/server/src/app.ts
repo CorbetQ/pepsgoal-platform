@@ -23,6 +23,7 @@ import groupRoutes from './routes/groups.js';
 import pushRoutes from './routes/push.js';
 import weatherRoutes from './routes/weather.js';
 import challengeRoutes from './routes/challenges.js';
+import leagueRoutes from './routes/leagues.js';
 import { ATT_SUBDIR } from './lib/files.js';
 import { recordResponse } from './lib/metrics.js';
 
@@ -54,7 +55,7 @@ export async function buildApp() {
     return reply.status(500).send({ error: 'server', message: 'Erreur interne, réessaie plus tard.' });
   });
 
-  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, groupRoutes, pushRoutes, weatherRoutes, challengeRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
+  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, groupRoutes, pushRoutes, weatherRoutes, challengeRoutes, leagueRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
     await app.register(routes);
   }
   return app;
