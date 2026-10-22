@@ -12,6 +12,9 @@ const FREEZE_EVERY = 10;
 /** Comptes bloqués dans un sens ou dans l'autre : leurs commentaires et encouragements sont masqués. */
 const notBlocked = (meId: string, col: string) => sql`not exists (select 1 from blocks b where (b.blocker_id = ${meId} and b.blocked_id = ${sql(col)}) or (b.blocker_id = ${sql(col)} and b.blocked_id = ${meId}))`;
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
+/** Réactions possibles sur une publication (encouragement par défaut : la flamme). */
+const REACTIONS = ['fire', 'muscle', 'clap', 'party'] as const;
+const LikeBody = z.object({ reaction: z.enum(REACTIONS).default('fire') }).default({ reaction: 'fire' });
 
 /** Une publication est visible si elle n'est ni supprimée ni bloquée, et selon sa visibilité. */
 async function visiblePost(u: AuthUser, postId: string): Promise<Row> {
@@ -43,7 +46,8 @@ export default async function feedRoutes(app: FastifyInstance) {
       )
       select p.*, a.username, a.display_name, a.avatar, a.role,
         (select count(*)::int from post_likes l where l.post_id = p.id) as like_count,
-        exists (select 1 from post_likes l where l.post_id = p.id and l.user_id = ${u.id}) as liked
+        exists (select 1 from post_likes l where l.post_id = p.id and l.user_id = ${u.id}) as liked,
+        (select l.reaction from post_likes l where l.post_id = p.id and l.user_id = ${u.id}) as my_reaction
       from posts p join users a on a.id = p.author_id
       where p.deleted_at is null and a.deleted_at is null and p.created_at < ${cursor}
         and (p.status = 'visible' or p.author_id = ${u.id})
@@ -74,13 +78,15 @@ export default async function feedRoutes(app: FastifyInstance) {
     };
     // Qui a encouragé chaque publication (affiché sous la publication, comme dans l'application)
     const likers = ids.length ? await sql<Row[]>`
-      select l.post_id, a.id, a.username, a.display_name, a.avatar, a.role from post_likes l join users a on a.id = l.user_id
+      select l.post_id, l.reaction, a.id, a.username, a.display_name, a.avatar, a.role from post_likes l join users a on a.id = l.user_id
       where l.post_id = any(${ids}) and a.deleted_at is null and ${notBlocked(u.id, 'l.user_id')} order by l.created_at` : [];
     return {
       posts: posts.map(p => ({
         id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: p.photo_url, poll: pollOf(p), visibility: p.visibility, goalId: p.goal_id, kind: p.kind,
         status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), likeCount: p.like_count, liked: p.liked,
-        likers: likers.filter(l => l.post_id === p.id).slice(0, 100).map(toPublicUser),
+        likers: likers.filter(l => l.post_id === p.id).slice(0, 100).map(l => ({ ...toPublicUser(l), reaction: l.reaction })),
+        myReaction: p.my_reaction ?? null,
+        reactions: Object.fromEntries(REACTIONS.map(r => [r, likers.filter(l => l.post_id === p.id && l.reaction === r).length])),
         comments: comments.filter(c => c.post_id === p.id).slice(-20).map(c => ({ id: c.id, author: toPublicUser({ ...c, id: c.author_id }), text: c.text, createdAt: iso(c.created_at) }))
       })),
       nextBefore: posts.length === 20 ? iso(posts[posts.length - 1]!.created_at) : null
@@ -119,9 +125,15 @@ export default async function feedRoutes(app: FastifyInstance) {
   app.post('/v1/posts/:id/like', { preHandler: requireSocial }, async req => {
     const { id } = params(req.params);
     const u = me(req);
+    const { reaction } = LikeBody.parse(req.body ?? undefined);
     const p = await visiblePost(u, id);
     await sql.begin(async tx => {
-      const fresh = await tx`insert into post_likes (post_id, user_id) values (${id}, ${u.id}) on conflict do nothing returning post_id`;
+      // Déjà encouragée : seule la réaction change (pas de nouvelle notification ni de crédit)
+      const fresh = await tx`
+        insert into post_likes (post_id, user_id, reaction) values (${id}, ${u.id}, ${reaction})
+        on conflict (post_id, user_id) do update set reaction = excluded.reaction
+        returning (xmax = 0) as inserted`;
+      if (!fresh[0]?.inserted || p.author_id === u.id) return;
       if (!fresh.length || p.author_id === u.id) return;
       await notify(tx, p.author_id, 'like', `${u.displayName} a encouragé ta publication.`, { postId: id });
       // Gel de série tous les 10 encouragements reçus (un seul crédit par personne et par publication)

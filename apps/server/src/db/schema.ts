@@ -149,6 +149,8 @@ export const pollVotes = pgTable('poll_votes', {
 export const postLikes = pgTable('post_likes', {
   postId: uuid('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  /** Réaction : fire (défaut), muscle, clap ou party. */
+  reaction: text('reaction').notNull().default('fire'),
   createdAt: ts('created_at').notNull().defaultNow()
 }, t => ({ pk: primaryKey({ columns: [t.postId, t.userId] }) }));
 

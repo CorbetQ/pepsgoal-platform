@@ -57,6 +57,13 @@
       "when": 1792651377671,
       "tag": "0007_challenges",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793000000000,
+      "tag": "0008_post_reactions",
+      "breakpoints": true
     }
   ]
 }

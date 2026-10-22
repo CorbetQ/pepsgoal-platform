@@ -2,6 +2,13 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## Serveur — réactions sur les publications (22 octobre 2026)
+
+Utilisé par l'application Android 4.1.0.
+- Migration `0008_post_reactions` (appliquée au démarrage du conteneur) : colonne `reaction` sur `post_likes` (`fire` par défaut).
+- `POST /v1/posts/:id/like` accepte un corps facultatif `{ "reaction": "fire" | "muscle" | "clap" | "party" }` (par défaut `fire`). Sur une publication déjà encouragée, seule la réaction change : pas de nouvelle notification ni de crédit de gel.
+- Feed : chaque entrée de `likers` porte sa `reaction` ; chaque publication porte `myReaction` (ou `null`) et `reactions` (nombre par réaction).
+
 ## Serveur — mise à jour pour Android 4.0.0 (22 octobre 2026)
 
 Regroupe les défis de la communauté (migration `0007_challenges`) et les ligues de la semaine ci-dessous.
