@@ -2,7 +2,7 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
-## Serveur — mise à jour depuis Modération › Serveur (24 octobre 2026)
+## Serveur — mise à jour depuis Modération › Serveur (23 octobre 2026)
 
 Utilisé par l'application Android 4.9.0 et la version web.
 - `deploy/update.sh` annonce ses étapes (`::step n/total libellé`, `::done`) pour la barre de progression.
