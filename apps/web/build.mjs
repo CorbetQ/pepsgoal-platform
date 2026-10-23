@@ -153,6 +153,8 @@ for (const [key, slug] of LEGAL_PAGES) writeFileSync(path.join(dist, 'legal', `$
 
 // ---------- version mobile : un seul fichier, polices intégrées ----------
 const embedded = page({ platform: 'app', fonts, fontUrl: f => `data:font/woff2;base64,${readFileSync(f.file).toString('base64')}` });
+// Le dossier apps/app/src n'est plus versionné : on le recrée (sinon la construction échoue sur le VPS)
+mkdirSync(path.join(root, 'apps/app/src'), { recursive: true });
 writeFileSync(path.join(root, 'apps/app/src/webapp.generated.ts'),
   `// Fichier généré par apps/web/build.mjs à partir de apps/web-legacy/pepsgoal.html : ne pas modifier à la main.\n` +
   `export const WEBAPP_VERSION = ${JSON.stringify(VERSION)};\nexport const WEBAPP_API = ${JSON.stringify(API)};\n` +
