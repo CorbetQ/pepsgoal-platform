@@ -440,11 +440,11 @@
         DB.stories = [];
         for (const grp of stories) {
           upsertUser(grp.author);
-          for (const s of grp.stories) DB.stories.push({ id: s.id, userId: grp.author.id, kind: s.kind, data: s.data || undefined, photo: s.mediaUrl || undefined, text: s.text || '', at: msOf(s.createdAt), seenBy: s.seen ? [mine] : [], _views: s.viewCount, liked: !!s.liked, ...(s.likeCount !== undefined ? { likeCount: s.likeCount } : {}) });
+          for (const s of grp.stories) if (s.kind !== 'status') DB.stories.push({ id: s.id, userId: grp.author.id, kind: s.kind, data: s.data || undefined, photo: s.mediaUrl || undefined, text: s.text || '', at: msOf(s.createdAt), seenBy: s.seen ? [mine] : [], _views: s.viewCount, liked: !!s.liked, ...(s.likeCount !== undefined ? { likeCount: s.likeCount } : {}) });
         }
         await Promise.all(DB.stories.filter(s => s.userId === mine && s._views).map(s => loadStoryViews(s)));
         // Archive : mes stories expirées (visibles par moi seul), nombre de vues connu sans charger la liste
-        for (const s of myStories) if (!DB.stories.some(x => x.id === s.id)) {
+        for (const s of myStories) if (s.kind !== 'status' && !DB.stories.some(x => x.id === s.id)) {
           DB.stories.push({ id: s.id, userId: mine, kind: s.kind, data: s.data || undefined, photo: s.mediaUrl || undefined, text: s.text || '', at: msOf(s.createdAt), seenBy: Array.from({ length: s.viewCount || 0 }, () => ''), _views: s.viewCount, likeCount: s.likeCount || 0, liked: false });
         }
         // Notifications du serveur + rappels locaux

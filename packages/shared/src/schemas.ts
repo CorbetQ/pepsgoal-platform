@@ -164,7 +164,9 @@ export const ReportBody = z.object({ reason: z.enum(['spam', 'hate', 'harass', '
 export const StoryBody = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('photo'), mediaUrl: z.string().url().max(500), text: z.string().max(140).default('') }),
   z.object({ kind: z.literal('recap'), data: z.object({ title: z.string().max(30), n: z.number(), pts: z.number(), best: z.number(), reg: z.number(), persona: z.string().max(30), e: z.string().max(8) }), text: z.string().max(140).default('') }),
-  z.object({ kind: z.literal('progress'), data: z.object({ type: GoalType, icon: z.string().max(16), title: z.string().max(80), v: z.string().max(24), l: z.string().max(60), label: z.string().max(30), meta: z.string().max(140), pct: z.number().min(0).max(1).nullable() }), text: z.string().max(140).default('') })
+  z.object({ kind: z.literal('progress'), data: z.object({ type: GoalType, icon: z.string().max(16), title: z.string().max(80), v: z.string().max(24), l: z.string().max(60), label: z.string().max(30), meta: z.string().max(140), pct: z.number().min(0).max(1).nullable() }), text: z.string().max(140).default('') }),
+  /** Statut du jour : un emoji d'humeur et quelques mots, montrés sur l'avatar par les amis pendant 24 h (pas dans les stories). */
+  z.object({ kind: z.literal('status'), data: z.object({ e: z.string().min(1).max(16), l: z.string().max(40).default('') }), text: z.string().max(140).default('') })
 ]);
 
 /* ---------- modération ---------- */
