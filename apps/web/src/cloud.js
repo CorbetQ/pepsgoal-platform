@@ -920,7 +920,55 @@
     modServer = function () {
       if (!S.acct) return O.modServer();
       if (!S.stats || Date.now() - (UI.statsAt || 0) > 25e3) void loadStats();
-      return S.stats ? statsHtml(S.stats) : `<section class="glass card"><p class="muted">${S.statsError ? esc(S.statsError) : 'Chargement des statistiques du serveur…'}</p></section>`;
+      if (!S.updLoaded) { S.updLoaded = true; updPoll(); }
+      return `<section class="glass card" id="srv-update">${updInner()}</section>` +
+        (S.stats ? statsHtml(S.stats) : `<section class="glass card"><p class="muted">${S.statsError ? esc(S.statsError) : 'Chargement des statistiques du serveur…'}</p></section>`);
+    };
+    // Mise à jour du serveur : le serveur se connecte en SSH (root, mot de passe demandé à chaque fois, jamais gardé),
+    // lance deploy/update.sh en arrière-plan, puis on suit son journal (lisible même pendant le redémarrage de l'API)
+    let updTimer = null;
+    const updPoll = () => {
+      clearTimeout(updTimer);
+      api('GET', '/v1/admin/update')
+        .then(d => { S.upd = d && !d.none ? d : null; S.updErr = null; if (S.upd?.running) S.updWatch = true; })
+        .catch(e => { S.updErr = e.status === 0 || e.status >= 500 ? 'L’API redémarre, la progression revient dans quelques secondes…' : e.message; })
+        .finally(() => {
+          paintUpd();
+          if (S.updWatch && (S.updErr || !S.upd?.done)) updTimer = setTimeout(updPoll, 1500);
+          else if (S.updWatch) { S.updWatch = false; toast(S.upd?.ok ? 'Serveur mis à jour.' : 'La mise à jour a échoué : voir le journal.', S.upd?.ok ? 'check' : 'x'); if (S.upd?.ok) void loadStats(true); }
+        });
+    };
+    const paintUpd = () => { const el = document.getElementById('srv-update'); if (el && !el.contains(document.activeElement)) el.innerHTML = updInner(); };
+    const updInner = () => {
+      const u = S.upd, busy = S.updWatch || u?.running;
+      const chip = busy ? `<span class="chip st-warn">${icon('clock')}En cours</span>` : u?.done ? `<span class="chip ${u.ok ? 't-goal' : 'st-warn'}">${icon(u.ok ? 'check' : 'x')}${u.ok ? 'À jour' : 'Échec'}</span>` : '';
+      const log = u?.lines?.length ? `<pre style="margin:10px 0 0;max-height:170px;overflow:auto;font-size:12px;line-height:1.45;white-space:pre-wrap;word-break:break-word;opacity:.75">${esc(u.lines.slice(-12).join('\n'))}</pre>` : '';
+      const progress = u ? `<div style="margin-top:4px"><div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:6px"><b>${u.total ? `Étape ${u.step}/${u.total} · ${esc(u.label)}` : 'Démarrage…'}</b><span class="muted small">${u.pct || 0} %</span></div>
+          <div class="bar"><i style="width:${Math.max(2, u.pct || 0)}%;transition:width .6s"></i></div>
+          ${S.updErr ? `<p class="muted small" style="margin-top:8px">${esc(S.updErr)}</p>` : ''}
+          ${u.done ? `<p class="small" style="margin-top:8px">${u.ok ? 'Mise à jour terminée' : `Échec (code ${u.exit})`}${u.at ? ` · ${esc(new Date(u.at).toLocaleString('fr-FR'))}` : ''}</p>` : ''}${log}</div>` : '';
+      const form = busy ? '' : `<form class="gform" data-form="srv-update" style="margin-top:${u ? 14 : 0}px">
+          <div class="field"><label for="upd-pw">Mot de passe root du serveur</label><input type="password" id="upd-pw" name="password" autocomplete="off" required></div>
+          <label class="check-row" for="upd-web"><span>Mettre aussi à jour la version web<br><small class="muted" style="font-weight:500">app.pepsgoal.fr, environ une minute de plus.</small></span><span class="switch"><input type="checkbox" id="upd-web" name="web"><span></span></span></label>
+          <p class="form-err" role="alert" hidden></p>
+          <div class="sheet-f"><button class="btn btn-primary" type="submit">${icon('rocket')}Mettre à jour le serveur</button></div>
+        </form>`;
+      return `<div class="card-h"><h2>${icon('rocket')}Mise à jour du serveur</h2>${chip}</div>
+        <p class="muted small" style="margin-bottom:10px">Récupère la dernière version depuis GitHub, reconstruit l’API et la redémarre (deploy/update.sh). Le mot de passe root sert à la connexion SSH, une seule fois : il n’est jamais enregistré.</p>${progress}${form}`;
+    };
+    FORMS['srv-update'] = async function (f) {
+      const fd = new FormData(f), pw = String(fd.get('password') || ''), err = f.querySelector('.form-err');
+      if (!pw) return;
+      const btn = f.querySelector('[type=submit]'); if (btn) btn.disabled = true;
+      try {
+        const r = await api('POST', '/v1/admin/update', { password: pw, web: fd.get('web') === 'on' });
+        toast(r.status === 'busy' ? 'Une mise à jour est déjà en cours : suivi en direct.' : 'Mise à jour lancée.', 'rocket');
+        S.updWatch = true; S.upd = { running: true, step: 0, total: 0, label: '', pct: 0, lines: [] };
+        f.reset(); document.activeElement?.blur?.(); paintUpd(); updTimer = setTimeout(updPoll, 1200);
+      } catch (e) {
+        if (err) { err.textContent = e.message || 'Mise à jour impossible.'; err.hidden = false; }
+        if (btn) btn.disabled = false;
+      }
     };
     const statsRefresh = ACT['stats-refresh']; ACT['stats-refresh'] = () => (S.acct ? void loadStats(true) : statsRefresh());
     O.friendResults = friendResults;

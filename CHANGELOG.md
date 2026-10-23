@@ -2,6 +2,16 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## Serveur — mise à jour depuis Modération › Serveur (24 octobre 2026)
+
+Utilisé par l'application Android 4.9.0 et la version web.
+- `deploy/update.sh` annonce ses étapes (`::step n/total libellé`, `::done`) pour la barre de progression.
+- `POST /v1/admin/update` `{ password, web }` (admin, 5 essais par 10 minutes) : l'API se connecte en SSH en root à la machine hôte avec ce mot de passe (jamais gardé ni journalisé), lance `update.sh` détaché (il survit au redémarrage de l'API) et renvoie `{ status: "started" | "busy" }`.
+- `GET /v1/admin/update` : progression lue dans `deploy/logs/update.log` (monté en lecture seule dans le conteneur) : étape, pourcentage, dernières lignes, fin et code de sortie.
+- `docker-compose.yml` : montage `./logs` et `host.docker.internal` pour le service `server`. Variables facultatives : `UPDATE_SSH_HOST`, `UPDATE_SSH_PORT`, `UPDATE_SSH_FINGERPRINT`, `UPDATE_SCRIPT`, `UPDATE_LOG`.
+- Version web : carte « Mise à jour du serveur » dans Modération › Serveur.
+- Mise en ligne : lancer une fois `/opt/pepsgoal/deploy/update.sh --web` à la main.
+
 ## Serveur — réactions sur les publications (22 octobre 2026)
 
 Utilisé par l'application Android 4.1.0.

@@ -155,6 +155,14 @@ Sur ton PC : `git push`. Puis sur le VPS :
 ```
 Le script récupère le code, reconstruit l'API, applique les migrations et redémarre (quelques secondes d'interruption). Les données sont conservées dans les volumes Docker.
 
+### Depuis l'application (Modération › Serveur)
+
+L'application Android et la version web proposent **Mettre à jour le serveur** : elles demandent le mot de passe root, se connectent en SSH, lancent `update.sh` en arrière-plan et affichent une barre de progression (le journal est dans `deploy/logs/update.log`). Le mot de passe n'est jamais enregistré.
+- La connexion root par mot de passe doit être autorisée : `PermitRootLogin yes` et `PasswordAuthentication yes` dans `/etc/ssh/sshd_config` (c'est le cas des VPS Hostinger livrés avec un mot de passe root).
+- Android se connecte à `api.pepsgoal.fr` (port 22, modifiable) et demande de confirmer l'empreinte de la clé d'hôte à la première connexion ; compare-la avec `ssh-keygen -lf /etc/ssh/ssh_host_ecdsa_key.pub` (ou `_ed25519_`, `_rsa_`).
+- La version web passe par l'API, qui se connecte à la machine hôte (`host.docker.internal`). Pour vérifier la clé d'hôte, ajoute son empreinte dans `.env` : `UPDATE_SSH_FINGERPRINT=SHA256:…`.
+- La toute première fois, lance `update.sh` à la main : c'est lui qui installe ce dispositif (montage du journal dans le conteneur).
+
 ## Dépannage
 
 | Symptôme | Vérification |

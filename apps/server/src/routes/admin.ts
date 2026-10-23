@@ -9,6 +9,7 @@ import { me, requireAdmin } from '../lib/guards.js';
 import { invalidateMaintenanceCache } from '../lib/maintenance.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
 import { serverStats } from '../lib/metrics.js';
+import { readUpdateProgress, startUpdate } from '../lib/update.js';
 import { logMod, modNotify, notify, officialMessage } from '../lib/notify.js';
 
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
@@ -36,6 +37,18 @@ export default async function adminRoutes(app: FastifyInstance) {
 
   /** Onglet « Serveur » : santé du processus, trafic, volumes et activité récente (compteurs uniquement). */
   app.get('/v1/admin/stats', pre, async () => serverStats());
+
+  /* ---------- mise à jour du serveur (SSH root, mot de passe demandé à chaque fois et jamais gardé) ---------- */
+  app.post('/v1/admin/update', { ...pre, config: { rateLimit: { max: 5, timeWindow: '10 minutes' } } }, async (req, reply) => {
+    const b = z.object({ password: z.string().min(1).max(256), web: z.boolean().default(false) }).parse(req.body);
+    const r = await startUpdate(b.password, b.web);
+    await logMod(sql, me(req).id, r === 'busy' ? 'Mise à jour du serveur (déjà en cours)' : 'Mise à jour du serveur lancée', null, b.web ? 'API + web' : 'API');
+    reply.status(202);
+    return { status: r };
+  });
+
+  /** Progression de la dernière mise à jour (journal deploy/logs/update.log), lisible même après le redémarrage de l'API. */
+  app.get('/v1/admin/update', pre, async () => (await readUpdateProgress()) ?? { none: true });
 
   /* ---------- comptes ---------- */
   app.get('/v1/admin/users', pre, async req => {
