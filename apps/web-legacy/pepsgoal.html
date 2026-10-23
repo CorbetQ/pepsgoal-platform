@@ -4500,7 +4500,7 @@ const GROUP_EMOJIS = ['💬', '🔥', '🏃', '💪', '📚', '🎯', '🧘', '�
 function msgBody(m){
   const raw = m.e2e ? E2E.cache.get(m.id) : m.text;
   if (raw == null) return null;
-  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote','react','edit','del','pin','duoj','duod','duox','bg','bgs'].includes(o.k)) return o; } catch(e){} }
+  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote','react','edit','del','pin','duoj','duod','duox','bg','bgs','stk','shot'].includes(o.k)) return o; } catch(e){} }
   return { pg:1, k:'text', t:String(raw) };
 }
 const fmtDur = s => `${Math.floor((s || 0) / 60)}:${String(Math.round((s || 0) % 60)).padStart(2, '0')}`;
@@ -4521,6 +4521,8 @@ function msgPreview(m){
   if (b.k === 'duoj' || b.k === 'duod' || b.k === 'duox') return '🤝 Duo';
   if (b.k === 'bg') return b.b ? '🖼️ A changé le fond de la conversation' : '🖼️ A retiré le fond de la conversation';
   if (b.k === 'bgs') return '🖼️ Fonds partagés';
+  if (b.k === 'stk') return `${b.t || '🔥'} Sticker`;
+  if (b.k === 'shot') return '📸 A pris une capture d’écran';
   return b.t || '';
 }
 
@@ -4656,6 +4658,8 @@ function msgInner(m){
     return `<button class="msg-photo" data-act="view-photo" data-id="${m.id}" aria-label="Agrandir la photo" style="aspect-ratio:${ratio}">${src ? `<img src="${esc(src)}" alt="Photo envoyée">` : `<span class="att-wait">${icon('image')}</span>`}</button>${b.t ? `<span class="msg-cap">${esc(b.t)}</span>` : ''}`;
   }
   if (b.k === 'voice') return voicePlayer(m, b);
+  // Sticker de l'application Android : son emoji en grand
+  if (b.k === 'stk') return `<span style="font-size:48px;line-height:1.1" aria-label="Sticker">${esc(b.t || '🔥')}</span>`;
   if (b.k === 'poll') return chatPollHtml(m, b);
   if (b.k === 'goal') {
     const g = b.g || {}, type = TYPES[g.type] ? g.type : 'routine';
