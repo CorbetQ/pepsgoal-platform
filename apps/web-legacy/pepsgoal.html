@@ -4500,7 +4500,7 @@ const GROUP_EMOJIS = ['💬', '🔥', '🏃', '💪', '📚', '🎯', '🧘', '�
 function msgBody(m){
   const raw = m.e2e ? E2E.cache.get(m.id) : m.text;
   if (raw == null) return null;
-  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote','react'].includes(o.k)) return o; } catch(e){} }
+  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote','react','edit','del','pin','duoj','duod','duox','bg','bgs'].includes(o.k)) return o; } catch(e){} }
   return { pg:1, k:'text', t:String(raw) };
 }
 const fmtDur = s => `${Math.floor((s || 0) / 60)}:${String(Math.round((s || 0) % 60)).padStart(2, '0')}`;
@@ -4514,7 +4514,14 @@ function msgPreview(m){
   if (b.k === 'poll') return `📊 ${b.q || 'Sondage'}`;
   if (b.k === 'vote') return '📊 A voté au sondage';
   if (b.k === 'react') return `A réagi ${b.e || ''}`;
-  return b.t;
+  if (b.k === 'edit') return `✏️ ${b.t || ''}`;
+  if (b.k === 'del') return 'Message supprimé';
+  if (b.k === 'pin') return b.on === false ? 'A désépinglé un message' : '📌 A épinglé un message';
+  if (b.k === 'duo') return `🤝 Invitation en duo : ${b.g?.title || 'objectif'}`;
+  if (b.k === 'duoj' || b.k === 'duod' || b.k === 'duox') return '🤝 Duo';
+  if (b.k === 'bg') return b.b ? '🖼️ A changé le fond de la conversation' : '🖼️ A retiré le fond de la conversation';
+  if (b.k === 'bgs') return '🖼️ Fonds partagés';
+  return b.t || '';
 }
 
 /* ---- conversations ---- */
@@ -6801,7 +6808,9 @@ function statsHtml(d){
 function modServer(){ return statsHtml(localStats()); }
 
 /* ---------------- messagerie : réponses, réactions, mentions ---------------- */
-const SILENT_K = ['vote', 'react'];
+// Messages de service (jamais affichés comme des bulles) : votes, réactions, et ceux de l'application Android
+// (modification, suppression, épingle, duo, fond de la conversation)
+const SILENT_K = ['vote', 'react', 'edit', 'del', 'pin', 'duoj', 'duod', 'duox', 'bg', 'bgs'];
 const QUICK_REACTS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '👏'];
 const MORE_REACTS = ['🙏', '💪', '🎉', '😍', '🤣', '😅', '🥳', '😎', '🤔', '👀', '💯', '✅', '⭐', '🙌', '😴', '🤯', '🥲', '😡'];
 const msgById = id => (DB.messages || []).find(m => m.id === id);
