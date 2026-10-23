@@ -13,7 +13,7 @@ const FREEZE_EVERY = 10;
 const notBlocked = (meId: string, col: string) => sql`not exists (select 1 from blocks b where (b.blocker_id = ${meId} and b.blocked_id = ${sql(col)}) or (b.blocker_id = ${sql(col)} and b.blocked_id = ${meId}))`;
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
 /** Réactions possibles sur une publication (encouragement par défaut : la flamme). */
-const REACTIONS = ['fire', 'muscle', 'clap', 'party'] as const;
+const REACTIONS = ['fire', 'muscle', 'clap', 'party', 'laugh', 'heart'] as const;
 const LikeBody = z.object({ reaction: z.enum(REACTIONS).default('fire') }).default({ reaction: 'fire' });
 
 /** Une publication est visible si elle n'est ni supprimée ni bloquée, et selon sa visibilité. */
