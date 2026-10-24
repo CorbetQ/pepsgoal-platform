@@ -4500,7 +4500,7 @@ const GROUP_EMOJIS = ['💬', '🔥', '🏃', '💪', '📚', '🎯', '🧘', '�
 function msgBody(m){
   const raw = m.e2e ? E2E.cache.get(m.id) : m.text;
   if (raw == null) return null;
-  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote','react','edit','del','pin','duoj','duod','duox','bg','bgs','stk','shot','gift'].includes(o.k)) return o; } catch(e){} }
+  if (typeof raw === 'string' && raw.startsWith(RICH)) { try { const o = JSON.parse(raw); if (o && ['photo','voice','goal','text','poll','vote','react','edit','del','pin','duoj','duod','duox','bg','bgs','stk','shot','gift','gifti'].includes(o.k)) return o; } catch(e){} }
   return { pg:1, k:'text', t:String(raw) };
 }
 const fmtDur = s => `${Math.floor((s || 0) / 60)}:${String(Math.round((s || 0) % 60)).padStart(2, '0')}`;
@@ -4524,6 +4524,7 @@ function msgPreview(m){
   if (b.k === 'stk') return `${b.t || '🔥'} Sticker`;
   if (b.k === 'shot') return '📸 A pris une capture d’écran';
   if (b.k === 'gift') return `🎁 ${Number(b.n) || 0} flammes offertes`;
+  if (b.k === 'gifti') return `🎁 Cadeau : ${b.nm || 'article de la boutique'}`;
   return b.t || '';
 }
 
@@ -4663,6 +4664,7 @@ function msgInner(m){
   if (b.k === 'stk') return `<span style="font-size:48px;line-height:1.1" aria-label="Sticker">${esc(b.t || '🔥')}</span>`;
   // Cadeau de flammes de l'application Android (à ouvrir dans l'application)
   if (b.k === 'gift') return `<span>🎁 <b>${Number(b.n) || 0} flammes</b>${b.m ? ` · « ${esc(b.m)} »` : ''}<br><small class="muted">À ouvrir dans l’application Android</small></span>`;
+  if (b.k === 'gifti') return `<span>🎁 <b>${esc(b.nm || 'Article de la boutique')}</b>${b.m ? ` · « ${esc(b.m)} »` : ''}<br><small class="muted">À ouvrir dans l’application Android</small></span>`;
   if (b.k === 'poll') return chatPollHtml(m, b);
   if (b.k === 'goal') {
     const g = b.g || {}, type = TYPES[g.type] ? g.type : 'routine';
