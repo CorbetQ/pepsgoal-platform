@@ -1631,7 +1631,12 @@ const TYPE_GROUPS = [
   ['À plusieurs', ['group','duel']]
 ];
 const MONTH_BONUS = 60;
-const LEVELS = [[0,'Étincelle'],[100,'Braise'],[300,'Flamme'],[700,'Brasier'],[1500,'Incendie'],[3000,'Supernova']];
+// Niveaux (comme l'application Android 6.3) : 10 paliers de 5 niveaux, courbe progressive (Supernova en ~3 ans d'usage régulier)
+const LEVEL_TIERS = ['Étincelle','Braise','Flamme','Brasier','Incendie','Fournaise','Volcan','Étoile','Soleil','Supernova'];
+const LEVEL_MAX = 50, LEVEL_ROMAN = ['I','II','III','IV','V'];
+const levelThreshold = n => n <= 1 ? 0 : n <= LEVEL_MAX ? Math.round(60 * Math.pow(n - 1, 1.9) / 10) * 10 : levelThreshold(LEVEL_MAX) + (n - LEVEL_MAX) * 6000;
+const levelTier = n => Math.min(10, Math.max(1, Math.floor((Math.min(n, LEVEL_MAX) - 1) / 5) + 1));
+const levelName = n => n > LEVEL_MAX ? `Supernova ✦${n - LEVEL_MAX}` : `${LEVEL_TIERS[levelTier(n) - 1]} ${LEVEL_ROMAN[(n - 1) % 5]}`;
 const MILESTONES = [7,14,21,30,50,100,200,365];
 const EMOJIS = [
   '🏃','🚴','🏊','🧘','💪','🏋️','⚽','🎾','🏀','🥾','🧗','🤸','🚶','⛷️',
@@ -1980,9 +1985,10 @@ const canSeePost = (p, v) => p.userId === v || (!isBlockedPair(p.userId, v) && (
 /* ================= calculs : flammes, séries, niveaux ================= */
 function points(id){ return userCheckins(id).reduce((s, c) => s + (c.pts || 0), 0); }
 function level(pts){
-  let i = 0; while (i < LEVELS.length - 1 && pts >= LEVELS[i+1][0]) i++;
-  const cur = LEVELS[i], nxt = LEVELS[i+1];
-  return { idx:i+1, name:cur[1], pts, next: nxt ? nxt[0] : null, nextName: nxt ? nxt[1] : null, pct: nxt ? (pts - cur[0]) / (nxt[0] - cur[0]) : 1 };
+  let n = 1; while (n < 500 && levelThreshold(n + 1) <= pts) n++;
+  const cur = levelThreshold(n), nxt = levelThreshold(n + 1), tier = levelTier(n);
+  // ring : style d'anneau de l'avatar (1 à 6), selon le palier
+  return { idx:n, name:levelName(n), pts, next:nxt, nextName:levelName(n + 1), pct:(pts - cur) / (nxt - cur), tier, ring:[1,2,2,3,3,4,4,5,5,6][tier - 1] };
 }
 function activeDays(id){ return new Set(ckIndex().days.get(id) || []); }
 // Jours qui comptent pour la série : jours actifs + jours protégés par un gel
@@ -2969,7 +2975,7 @@ function render(){
       ${nav.map(([k, l, i]) => `<button class="nav-a" data-act="nav" data-id="${k}" ${navKey === k ? 'aria-current="page"' : ''}>${icon(i)}<span>${l}</span>${nb(k)}</button>`).join('')}
       <div class="side-foot">
         <button class="btn btn-primary" data-act="new-goal">${icon('plus')}Nouvel objectif</button>
-        <button class="me-mini" data-act="nav" data-id="profile"><span class="lv-ring sm lv${level(points(u.id)).idx}">${avatar(u, 38)}</span><span><b>${esc(u.name)}</b><small>@${esc(u.username)}</small></span></button>
+        <button class="me-mini" data-act="nav" data-id="profile"><span class="lv-ring sm lv${level(points(u.id)).ring}">${avatar(u, 38)}</span><span><b>${esc(u.name)}</b><small>@${esc(u.username)}</small></span></button>
       </div>
     </nav>
     <main class="main" id="main">
@@ -3492,7 +3498,7 @@ const TUTO = [
     v:() => `<div class="hero-flame lit">${flame(110)}</div>` },
   { t:'Quatorze façons d’avancer', p:'Les essentiels (routine, objectif chiffré, deadline, abstinence, mensuel), mais aussi limite, durée avec minuteur, mesure en courbe, horaire, projet, challenge, paliers, défi de groupe et duel. Tout se crée depuis le bouton « + ».',
     v:() => `<div class="tuto-types">${['routine','objective','limit','duration','measure','challenge','group','duel'].map(k => `<div class="t-${k}">${icon(TYPE_ICON[k])}${TYPES[k].label}</div>`).join('')}</div>` },
-  { t:'Valide, gagne des flammes', p:'Touche le rond pour valider. Chaque validation rapporte des flammes, qui te font passer de niveau : Étincelle, Braise, Flamme… jusqu’à Supernova.',
+  { t:'Valide, gagne des flammes', p:'Touche le rond pour valider. Chaque validation rapporte des flammes, qui te font passer de niveau : Étincelle, Braise, Flamme… 50 niveaux jusqu’à Supernova.',
     v:() => `<ul class="items" style="width:100%;text-align:left"><li class="item t-routine done"><span class="item-main"><span class="gi">🏃</span><span class="item-txt"><b>Courir 30 minutes</b><small><span class="chip t-routine">+10 flammes</span></small></span></span><span class="check on">${icon('check')}</span></li></ul>` },
   { t:'Ta série', p:'Une validation par jour suffit pour allumer la flamme du jour. Les jours d’affilée forment ta série, visible en haut de l’écran.',
     v:() => `<div class="week">${WD.map((d, i) => `<div class="wd ${i < 5 ? 'on' : 'off'} ${i === 4 ? 'today' : ''}">${flame(22)}<span>${d}</span></div>`).join('')}</div>` },
@@ -6021,7 +6027,7 @@ function viewProfile(){
   const done = DB.goals.filter(g => g.userId === u.id && g.completedAt).length;
   return `
   <section class="glass card">
-    <div class="prof"><button class="av-btn lv-ring lv${level(points(u.id)).idx}" data-act="open-avatar" aria-label="Changer mon icône de profil (anneau de niveau ${esc(level(points(u.id)).name)})">${avatar(u, 76)}<span class="lv-fx" aria-hidden="true"></span><span class="edit">${icon('edit')}</span></button>
+    <div class="prof"><button class="av-btn lv-ring lv${level(points(u.id)).ring}" data-act="open-avatar" aria-label="Changer mon icône de profil (anneau de niveau ${esc(level(points(u.id)).name)})">${avatar(u, 76)}<span class="lv-fx" aria-hidden="true"></span><span class="edit">${icon('edit')}</span></button>
       <div class="prof-main"><div class="prof-top"><h2>${esc(u.name)}</h2><button class="btn sm" data-act="nav-settings">${icon('gear')}Paramètres</button></div>
         <p class="muted">${isGuest(u) ? 'Sans compte · données sur cet appareil' : '@' + esc(u.username)} · Niveau ${lv.idx}, ${lv.name}${isAdmin(u) ? ' · Administrateur' : ''}</p>${isGuest(u) ? `<button class="btn btn-primary sm" style="margin-top:8px" data-act="set-cat-go" data-id="account">${icon('user')}Créer un compte</button>` : ''}${u.bio ? `<p style="margin-top:6px">${esc(u.bio)}</p>` : ''}</div></div>
     <div style="margin-top:16px" class="lvl"><span class="bar"><i style="width:${lv.pct * 100}%"></i></span><small class="muted">${lv.pts} flammes${lv.next ? ` · encore ${lv.next - lv.pts} pour « ${lv.nextName} »` : ''}</small></div>
