@@ -64,6 +64,13 @@
       "when": 1793000000000,
       "tag": "0008_post_reactions",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793100000000,
+      "tag": "0009_refresh_successor",
+      "breakpoints": true
     }
   ]
 }
