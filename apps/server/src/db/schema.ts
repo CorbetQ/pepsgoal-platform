@@ -40,6 +40,8 @@ export const refreshTokens = pgTable('refresh_tokens', {
   device: text('device').notNull().default(''),
   expiresAt: ts('expires_at').notNull(),
   revokedAt: ts('revoked_at'),
+  /** Jeton émis en échange de celui-ci (rotation) : sert à reconnaître une réponse perdue d'un vol. */
+  replacedBy: uuid('replaced_by'),
   createdAt: ts('created_at').notNull().defaultNow()
 }, t => ({ hashIdx: uniqueIndex('refresh_tokens_hash_idx').on(t.tokenHash) }));
 
