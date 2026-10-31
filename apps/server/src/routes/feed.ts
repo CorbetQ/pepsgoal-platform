@@ -6,7 +6,10 @@ import { badRequest, forbidden, notFound } from '../lib/errors.js';
 import { env } from '../env.js';
 import { isBanned, me, requireSocial, requireUser, type AuthUser } from '../lib/guards.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
-import { notify, notifyAdmins } from '../lib/notify.js';
+import { notify, notifyAdmins, officialId } from '../lib/notify.js';
+
+/** Fin de publication « quoi ? » (« quoi? », « quoi » ; casse ignorée), comme Eggs.feur dans l'application. */
+export const FEUR = /(^|[^\p{L}])quoi\s*\?*\s*$/iu;
 
 const FREEZE_EVERY = 10;
 /** Comptes bloqués dans un sens ou dans l'autre : leurs commentaires et encouragements sont masqués. */
@@ -111,6 +114,12 @@ export default async function feedRoutes(app: FastifyInstance) {
       details: [['Auteur', `${u.displayName} (@${u.username}), sous avertissement`], ['Visibilité', body.visibility === 'public' ? 'public' : 'amis'], ['Photo', body.photoUrl ? 'oui' : 'non']],
       excerpt: [body.text.slice(0, 500), poll ? `Sondage : ${poll.options.map(o => o.text).join(' / ')}` : ''].filter(Boolean).join(' — ') || undefined
     });
+    // Surprise « Feur » : une publication visible qui finit par « quoi ? » reçoit la réponse du compte officiel (et
+    // seulement « Feur ») ; l'application débloque la surprise de son côté avec la même règle
+    if (status === 'visible' && FEUR.test(body.text.trim())) {
+      const off = await officialId(sql);
+      if (off) await sql`insert into comments (post_id, author_id, text) values (${p!.id}, ${off}, 'Feur')`;
+    }
     reply.status(201);
     return { id: p!.id, status };
   });
