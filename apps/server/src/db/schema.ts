@@ -40,6 +40,8 @@ export const refreshTokens = pgTable('refresh_tokens', {
   device: text('device').notNull().default(''),
   expiresAt: ts('expires_at').notNull(),
   revokedAt: ts('revoked_at'),
+  /** Jeton émis en échange de celui-ci (rotation) : sert à reconnaître une réponse perdue d'un vol. */
+  replacedBy: uuid('replaced_by'),
   createdAt: ts('created_at').notNull().defaultNow()
 }, t => ({ hashIdx: uniqueIndex('refresh_tokens_hash_idx').on(t.tokenHash) }));
 
@@ -149,6 +151,8 @@ export const pollVotes = pgTable('poll_votes', {
 export const postLikes = pgTable('post_likes', {
   postId: uuid('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  /** Réaction : fire (défaut), muscle, clap ou party. */
+  reaction: text('reaction').notNull().default('fire'),
   createdAt: ts('created_at').notNull().defaultNow()
 }, t => ({ pk: primaryKey({ columns: [t.postId, t.userId] }) }));
 
@@ -379,3 +383,31 @@ export const e2eEnvelopes = pgTable('e2e_envelopes', {
   box: text('box').notNull(),
   createdAt: ts('created_at').notNull().defaultNow()
 }, t => ({ pk: primaryKey({ columns: [t.keyId, t.deviceId] }) }));
+
+/* ---------- défis de la communauté ---------- */
+/** Défi public (« Octobre sans sucre ») : on le rejoint, on valide chaque jour, classement des participants. */
+export const challenges = pgTable('challenges', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: text('title').notNull(),
+  emoji: text('emoji').notNull().default('🏁'),
+  description: text('description').notNull().default(''),
+  startsOn: date('starts_on').notNull(),
+  endsOn: date('ends_on').notNull(),
+  createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: ts('created_at').notNull().defaultNow(),
+  deletedAt: ts('deleted_at')
+}, t => ({ endIdx: index('challenges_ends_idx').on(t.endsOn) }));
+
+export const challengeMembers = pgTable('challenge_members', {
+  challengeId: uuid('challenge_id').notNull().references(() => challenges.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  joinedAt: ts('joined_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.challengeId, t.userId] }) }));
+
+/** Jours validés par un participant (un jour = une ligne : validation idempotente, annulable). */
+export const challengeDays = pgTable('challenge_days', {
+  challengeId: uuid('challenge_id').notNull().references(() => challenges.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  day: date('day').notNull(),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.challengeId, t.userId, t.day] }) }));

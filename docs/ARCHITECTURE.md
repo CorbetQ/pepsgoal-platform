@@ -34,7 +34,8 @@ synchroniser plusieurs appareils, à sauvegarder et à faire fonctionner les fon
 | --- | --- | --- |
 | Interface | `apps/web-legacy/pepsgoal.html` (HTML, CSS et JavaScript sans framework) | Une seule interface, identique sur le web, iOS et Android |
 | Couche connectée | `apps/web/src/cloud.js` | Branche l'interface sur le serveur sans la modifier : comptes, synchro, social, messages chiffrés, modération |
-| App mobile | Expo SDK 51 + react-native-webview | Coque native qui embarque l'interface (hors ligne) ; builds et publication via EAS |
+| App iOS | Expo SDK 51 + react-native-webview | Coque native qui embarque l'interface (hors ligne) ; builds et publication via EAS |
+| App Android | Kotlin + Jetpack Compose (dépôt [pepsgoal-android](https://github.com/CorbetQ/pepsgoal-android)) | Interface entièrement native, logique portée en Kotlin (module `core`, testé contre ce serveur), Material You, Live Updates, notifications enrichies, rappels exacts, synchronisation en arrière-plan (WorkManager), widget Glance |
 | Données locales | stockage de la page (`localStorage`, origine `https://app.pepsgoal.fr`) | Même format que le prototype ; fonctionne sans connexion |
 | Réseau | `navigator.onLine` + `GET /v1/status` (nouvel essai à 5 s, 10 s, 20 s, 40 s puis chaque minute) | Distingue « pas d'internet » de « serveur injoignable » ou « en maintenance » |
 | Jetons | stockage de la page, jeton de renouvellement à usage unique | Un jeton volé et réutilisé révoque toutes les sessions du compte |

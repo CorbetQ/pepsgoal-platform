@@ -2,6 +2,55 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## Serveur — mise à jour depuis Modération › Serveur (23 octobre 2026)
+
+Utilisé par l'application Android 4.9.0 et la version web.
+- `deploy/update.sh` annonce ses étapes (`::step n/total libellé`, `::done`) pour la barre de progression.
+- `POST /v1/admin/update` `{ password, web }` (admin, 5 essais par 10 minutes) : l'API se connecte en SSH en root à la machine hôte avec ce mot de passe (jamais gardé ni journalisé), lance `update.sh` détaché (il survit au redémarrage de l'API) et renvoie `{ status: "started" | "busy" }`.
+- `GET /v1/admin/update` : progression lue dans `deploy/logs/update.log` (monté en lecture seule dans le conteneur) : étape, pourcentage, dernières lignes, fin et code de sortie.
+- `docker-compose.yml` : montage `./logs` et `host.docker.internal` pour le service `server`. Variables facultatives : `UPDATE_SSH_HOST`, `UPDATE_SSH_PORT`, `UPDATE_SSH_FINGERPRINT`, `UPDATE_SCRIPT`, `UPDATE_LOG`.
+- Version web : carte « Mise à jour du serveur » dans Modération › Serveur.
+- Mise en ligne : lancer une fois `/opt/pepsgoal/deploy/update.sh --web` à la main.
+
+## Serveur — réactions sur les publications (22 octobre 2026)
+
+Utilisé par l'application Android 4.1.0.
+- Migration `0008_post_reactions` (appliquée au démarrage du conteneur) : colonne `reaction` sur `post_likes` (`fire` par défaut).
+- `POST /v1/posts/:id/like` accepte un corps facultatif `{ "reaction": "fire" | "muscle" | "clap" | "party" }` (par défaut `fire`). Sur une publication déjà encouragée, seule la réaction change : pas de nouvelle notification ni de crédit de gel.
+- Feed : chaque entrée de `likers` porte sa `reaction` ; chaque publication porte `myReaction` (ou `null`) et `reactions` (nombre par réaction).
+
+## Serveur — mise à jour pour Android 4.0.0 (22 octobre 2026)
+
+Regroupe les défis de la communauté (migration `0007_challenges`) et les ligues de la semaine ci-dessous.
+- Aucune autre modification nécessaire pour Android 4.0.0 : la version mini d'une habitude envoie une validation de valeur 0,5 avec la moitié des points (entiers), déjà acceptée par la synchronisation ; les nouvelles options d'objectif (`mini`…) passent par les données libres de l'objectif.
+- Mise en ligne sur le VPS : `/opt/pepsgoal/deploy/update.sh` (reconstruit l'API, applique la migration au démarrage, redémarre).
+
+## Serveur — ligues de la semaine (22 octobre 2026)
+
+Utilisé par l'application Android 3.9.0.
+- `GET /v1/leagues/week?from=AAAA-MM-JJ` : flammes gagnées et jours actifs de la semaine (du lundi `from` au dimanche) pour soi et ses amis, du premier au dernier (comptes bannis exclus). Aucune migration.
+
+## Serveur — défis de la communauté (22 octobre 2026)
+
+Utilisé par l'application Android 3.5.0.
+- Nouvelles tables `challenges`, `challenge_members` et `challenge_days` (migration `0007_challenges`, appliquée automatiquement au démarrage du conteneur).
+- `GET /v1/challenges` : défis en cours, à venir et terminés depuis moins de 7 jours (participants, défi rejoint, jours validés).
+- `GET /v1/challenges/:id` : détail et classement (50 premiers, comptes bannis exclus).
+- `POST` / `DELETE /v1/challenges/:id/join` : rejoindre ou quitter un défi.
+- `PUT` / `DELETE /v1/challenges/:id/days/:day` : valider ou annuler un jour (dans la période du défi, au plus tard le lendemain).
+- Modération : `POST /v1/admin/challenges` (création) et `DELETE /v1/admin/challenges/:id`.
+
+## 3.0.0 (21 octobre 2026) — application Android native
+
+L'application Android est réécrite en natif (Kotlin, Jetpack Compose) dans le dépôt [pepsgoal-android](https://github.com/CorbetQ/pepsgoal-android) : elle n'embarque plus l'interface web.
+
+### Nouveautés Android
+- Interface entièrement native : accueil, 15 types d'objectifs, feed, stories, amis, messagerie chiffrée de bout en bout (photos, vocaux, sondages, réactions, mentions), profil, récaps, badges, réglages et modération.
+- Material You : Paramètres › Apparence › « Couleurs Material You » applique les couleurs du fond d'écran à toute l'interface.
+- Activités en cours (Live Updates d'Android 16) : minuteur, période en cours et fin de journée quand la série est en jeu, dans la barre d'état, l'écran de verrouillage et la Now Bar.
+- Notifications enrichies : valider depuis un rappel, confirmer la validation d'un ami, répondre à un message ou le marquer comme lu sans ouvrir l'application.
+- Rappels à l'heure exacte, synchronisation en arrière-plan, widget « Ta journée », raccourcis d'application et icône thématique.
+
 ## 2.1.6 (19 octobre 2026)
 
 ### Corrections

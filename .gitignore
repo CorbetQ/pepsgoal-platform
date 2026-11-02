@@ -15,3 +15,6 @@ deploy/app/*
 # Interface embarquée dans l'app mobile (générée par « node apps/web/build.mjs »)
 apps/app/src/webapp.generated.ts
 deploy/pepsgoal-site-hostinger.zip
+# Journal des mises à jour lancées depuis Modération › Serveur
+deploy/logs/*
+!deploy/logs/.gitkeep

@@ -43,6 +43,12 @@ services:
         condition: service_healthy
     volumes:
       - media:/app/apps/server/media
+      # Journal de la mise à jour lancée depuis Modération › Serveur (lecture seule) : la progression reste visible
+      # pendant que l'API redémarre
+      - ./logs:/app/update-logs:ro
+    # Accès SSH à la machine hôte, pour lancer la mise à jour depuis la version web (mot de passe root demandé à chaque fois)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # Port 8080 accessible uniquement par Caddy (réseau interne Docker)
     expose:
       - "8080"
