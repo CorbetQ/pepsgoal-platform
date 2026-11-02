@@ -1,12 +1,14 @@
 import type { Checkin, Goal, GoalGroup, GoalType, PublicUser } from '@pepsgoal/shared';
+import { signAvatar } from './media.js';
 
 // Lignes brutes renvoyées par PostgreSQL (colonnes en snake_case)
 export type Row = Record<string, any>;
 
 const iso = (d: Date | string | null | undefined) => (d == null ? null : new Date(d).toISOString());
 
+// Photo de profil : adresse signée et temporaire (voir media.ts)
 export const toPublicUser = (r: Row): PublicUser => ({
-  id: r.id, username: r.username, displayName: r.display_name, avatar: r.avatar ?? {}, role: r.role
+  id: r.id, username: r.username, displayName: r.display_name, avatar: signAvatar(r.avatar), role: r.role
 });
 
 export const toGoal = (r: Row): Goal => ({

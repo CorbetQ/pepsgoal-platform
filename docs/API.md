@@ -2,7 +2,16 @@
 
 Toutes les routes sont préfixées par `/v1`. Authentification : en-tête `Authorization: Bearer <jeton d'accès>`.
 Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP correspondant (400 données invalides,
-401 session, 403 interdit ou banni, 404, 409 conflit, 429 trop de requêtes, 503 maintenance).
+401 session, 403 interdit ou banni, 404, 409 conflit, 413 quota de stockage atteint, 429 trop de requêtes,
+503 maintenance, 507 stockage du serveur presque plein). Les réponses de `/v1` portent `Cache-Control: no-store`.
+
+Sessions : le jeton d'accès (15 minutes) désigne sa session (`sid`), vérifiée à chaque requête : une déconnexion,
+un changement de mot de passe ou un vol détecté le rendent invalide aussitôt.
+
+Images (photos de profil, publications, stories) : l'API renvoie des adresses signées et temporaires
+(`/media/<fichier>?e=…&s=…`, valables 6 à 12 heures), seulement à ceux qui peuvent voir le contenu ; sans signature
+valide, `/media/…` répond 403. Pour enregistrer une image dans un contenu, renvoyer l'adresse reçue (signée ou non) :
+elle doit avoir été téléversée par le même compte.
 
 ## Public
 | Méthode | Route | Rôle |
@@ -14,9 +23,9 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | --- | --- | --- |
 | POST | `/auth/register` | Inscription (`username`, `displayName`, `password`, `acceptTerms: true`) ; message de bienvenue + dernières nouveautés |
 | POST | `/auth/login` | Connexion |
-| POST | `/auth/refresh` | Nouveau jeton d'accès (le jeton de renouvellement est remplacé) |
-| POST | `/auth/logout` | Révoque le jeton de renouvellement |
-| POST | `/auth/password` | Changement de mot de passe (révoque les autres sessions) |
+| POST | `/auth/refresh` | Nouveau jeton d'accès (le jeton de renouvellement est remplacé, à usage unique). Réponse perdue : l'ancien jeton est accepté encore 2 minutes, depuis le même appareil, tant que son successeur n'a pas servi ; au-delà, la session est révoquée. Réutilisation d'un jeton dont le successeur a servi : toutes les sessions du compte sont révoquées |
+| POST | `/auth/logout` | Révoque la session (jeton de renouvellement et jetons d'accès) |
+| POST | `/auth/password` | Changement de mot de passe (révoque toutes les sessions, puis en ouvre une nouvelle) |
 | GET / PATCH | `/me` | Profil, état de modération, bonus de bienvenue, encouragements reçus comptés pour les gels (`cheersReceived`) ; modification du nom, de la bio, de l'avatar |
 | DELETE | `/me` | Suppression définitive du compte (mot de passe requis) |
 | POST | `/me/freezes/use` | Utilise `count` gels de série (409 s'il n'y en a pas assez) |
@@ -48,7 +57,7 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | POST | `/posts/:id/comments` · DELETE `/comments/:id` | Commenter / supprimer |
 | POST | `/posts/:id/report` | Signaler |
 | GET / POST | `/stories` | Stories des amis (24 h) / publier |
-| POST | `/stories/:id/view` · GET `/stories/:id/views` · DELETE `/stories/:id` | Vue, liste des vues (avec `liked` : a encouragé), suppression (efface aussi la photo) |
+| POST | `/stories/:id/view` · GET `/stories/:id/views` · DELETE `/stories/:id` | Vue (réservée aux amis non bloqués, 404 sinon), liste des vues (avec `liked` : a encouragé), suppression (efface aussi la photo) |
 | POST / DELETE | `/stories/:id/like` | Encourager une story d'un ami encore en ligne (l'auteur est notifié une seule fois) / retirer. `GET /stories` renvoie `liked` et, pour mes stories, `likeCount` |
 | GET | `/me/stories` | Mon archive : mes stories des 365 derniers jours (200 au plus), expirées comprises, avec `viewCount` et `likeCount` ; visible par moi seul |
 | GET | `/conversations` · `/conversations/:userId` | Conversations (PepsGoal Officiel épinglé) / messages |
@@ -59,7 +68,7 @@ Erreurs : `{ "error": "code", "message": "texte lisible" }` avec le code HTTP co
 | Méthode | Route | Rôle |
 |---|---|---|
 | GET | `/push/key` | Clé publique VAPID du serveur (publique) |
-| POST | `/push/subscriptions` | Abonner ce navigateur : `{ "endpoint": "https://…", "keys": { "p256dh", "auth" }, "tz": "Europe/Paris" }` (un navigateur suit le dernier compte connecté) |
+| POST | `/push/subscriptions` | Abonner ce navigateur : `{ "endpoint": "https://…", "keys": { "p256dh", "auth" }, "tz": "Europe/Paris" }` (un navigateur suit le dernier compte connecté, 10 navigateurs par compte). Seuls les services push des navigateurs sont acceptés : FCM, Mozilla, Apple, Windows, en HTTPS sur le port 443 ; les adresses internes sont refusées à chaque envoi |
 | DELETE | `/push/subscriptions` | Désabonner : `{ "endpoint" }` |
 | POST | `/push/test` | Notification d'essai sur tous les navigateurs abonnés du compte : `{ "sent": n }` |
 
@@ -98,9 +107,9 @@ Relais vers Open-Meteo (sans clé, CC BY 4.0) : coordonnées arrondies à 0,01°
 | POST | `/e2e/vault/keys` | Ajout de clés chiffrées au coffre |
 | GET | `/e2e/pending?deviceId=` | Clés détenues par cet appareil qu'un autre appareil de la paire ou d'un membre du groupe n'a pas encore (re-chiffrement automatique) |
 | GET | `/notifications` · POST `/notifications/read-all` | Notifications |
-| POST | `/notify` | Notification à un ami ou à un membre d'un objectif partagé (`to`, `text`, `type`, `goalId`) ; 60 par heure |
+| POST | `/notify` | Notification à un ami ou à un membre d'un objectif partagé (`to`, `text`, `type`, `goalId` partagé entre les deux comptes) ; 60 par heure, refusée à un compte banni et pendant une maintenance |
 | POST | `/appeals` | Demande de débannissement |
-| POST | `/media` | Téléverser une image (multipart, 8 Mo max) |
+| POST | `/media` | Téléverser une image (multipart, 8 Mo max, JPEG, PNG ou WebP) : réencodée (métadonnées EXIF et GPS retirées, 2 560 px au plus), comptée dans le quota du compte (`MEDIA_QUOTA_MB`, pièces jointes comprises), effacée si elle n'est pas utilisée dans les 24 heures. Renvoie `{ url }` (adresse signée) |
 
 ## Modération (compte admin)
 | Méthode | Route | Rôle |

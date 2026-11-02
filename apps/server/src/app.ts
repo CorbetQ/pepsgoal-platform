@@ -1,11 +1,11 @@
 import path from 'node:path';
-import { mkdirSync } from 'node:fs';
+import { createReadStream, mkdirSync } from 'node:fs';
+import { stat } from 'node:fs/promises';
 import Fastify, { type FastifyError } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
-import fastifyStatic from '@fastify/static';
 import { ZodError } from 'zod';
 import { corsOrigins, env } from './env.js';
 import { HttpError } from './lib/errors.js';
@@ -24,21 +24,38 @@ import pushRoutes from './routes/push.js';
 import weatherRoutes from './routes/weather.js';
 import challengeRoutes from './routes/challenges.js';
 import leagueRoutes from './routes/leagues.js';
-import { ATT_SUBDIR } from './lib/files.js';
+import { mediaFile, verifyMediaSignature } from './lib/media.js';
 import { recordResponse } from './lib/metrics.js';
 
 export async function buildApp() {
-  const app = Fastify({ logger: { level: env.NODE_ENV === 'production' ? 'info' : 'debug', redact: ['req.headers.authorization'] }, trustProxy: true });
+  const app = Fastify({ logger: { level: env.NODE_ENV === 'production' ? 'info' : 'debug', redact: ['req.headers.authorization'] }, trustProxy: env.TRUST_PROXY.split(',').map(s => s.trim()).filter(Boolean) });
 
   await app.register(helmet, { crossOriginResourcePolicy: { policy: 'cross-origin' } });
   // Les applications mobiles n'envoient pas d'en-tête Origin : seules les origines web sont filtrées
   await app.register(cors, { origin: (origin, cb) => cb(null, !origin || corsOrigins.includes(origin)), credentials: false });
   await app.register(rateLimit, { max: 300, timeWindow: '1 minute' });
   await app.register(multipart, { limits: { fileSize: 8 * 1024 * 1024, files: 1 } });
-  const mediaDir = path.resolve(env.MEDIA_DIR);
-  mkdirSync(mediaDir, { recursive: true });
-  // Images publiques (photos de profil, publications, stories). Les pièces jointes chiffrées (att/) passent par /v1/attachments.
-  await app.register(fastifyStatic, { root: mediaDir, prefix: '/media/', decorateReply: false, maxAge: '30d', immutable: true, allowedPath: p => { try { return !decodeURIComponent(p).toLowerCase().split(/[\/]+/).includes(ATT_SUBDIR); } catch { return false; } } });
+  mkdirSync(path.resolve(env.MEDIA_DIR), { recursive: true });
+  /**
+   * Images (photos de profil, publications, stories) : uniquement avec une adresse signée et temporaire, remise par
+   * l'API à ceux qui ont le droit de voir le contenu. Les pièces jointes chiffrées passent par /v1/attachments.
+   */
+  const TYPES: Record<string, string> = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
+  app.get('/media/:name', { config: { rateLimit: { max: 1200, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const { name } = req.params as { name: string };
+    const { e, s } = req.query as { e?: string; s?: string };
+    const ttl = verifyMediaSignature(name, e, s);
+    if (!ttl) return reply.status(403).send({ error: 'forbidden', message: 'Lien d’image expiré ou invalide.' });
+    const file = mediaFile(name), st = await stat(file).catch(() => null);
+    if (!st?.isFile()) return reply.status(404).send({ error: 'not_found', message: 'Image introuvable.' });
+    reply.header('Content-Type', TYPES[name.split('.').pop()!]!).header('Content-Length', st.size).header('Cache-Control', `private, max-age=${ttl}`);
+    return reply.send(createReadStream(file));
+  });
+
+  // Réponses de l'API (données du compte, jetons de session) : jamais gardées par un cache intermédiaire ou le navigateur
+  app.addHook('onSend', async (req, reply) => {
+    if (req.url.startsWith('/v1/') && !reply.hasHeader('Cache-Control')) reply.header('Cache-Control', 'no-store');
+  });
 
   // Compteurs de trafic (onglet Serveur de la modération)
   app.addHook('onResponse', async (_req, reply) => { recordResponse(reply.statusCode, reply.elapsedTime); });

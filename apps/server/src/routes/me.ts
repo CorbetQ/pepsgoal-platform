@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { DisplayName } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { revokeAllSessions, verifyPassword } from '../lib/auth.js';
-import { removeUserFiles } from '../lib/files.js';
+import { claimMedia, removeUserFiles } from '../lib/media.js';
 import { notify } from '../lib/notify.js';
 import { conflict, forbidden, unauthorized } from '../lib/errors.js';
 import { isBanned, me, requireUser } from '../lib/guards.js';
@@ -15,8 +15,8 @@ const Avatar = z.object({
   color: z.number().int().min(0).max(31),
   emoji: z.string().max(16).default(''),
   picto: z.string().max(20).default('flame'),
-  // Seules les images téléversées sur ce serveur sont acceptées
-  photoUrl: z.string().url().refine(u => u.startsWith(`${env.PUBLIC_URL}/media/`), 'Image non autorisée').nullable().default(null)
+  // Seules les images téléversées sur ce serveur (par ce compte, vérifié à l'enregistrement) sont acceptées
+  photoUrl: z.string().url().max(500).refine(u => u.startsWith(`${env.PUBLIC_URL}/media/`), 'Image non autorisée').nullable().default(null)
 });
 
 export default async function meRoutes(app: FastifyInstance) {
@@ -41,7 +41,10 @@ export default async function meRoutes(app: FastifyInstance) {
     const id = me(req).id;
     if (body.displayName) await sql`update users set display_name = ${body.displayName} where id = ${id}`;
     if (body.bio !== undefined) await sql`update users set bio = ${body.bio} where id = ${id}`;
-    if (body.avatar) await sql`update users set avatar = ${sql.json(body.avatar)} where id = ${id}`;
+    if (body.avatar) {
+      const photoUrl = body.avatar.kind === 'photo' ? await claimMedia(sql, id, body.avatar.photoUrl) : null;
+      await sql`update users set avatar = ${sql.json({ ...body.avatar, photoUrl })} where id = ${id}`;
+    }
     return { ok: true };
   });
 

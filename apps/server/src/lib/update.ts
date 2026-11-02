@@ -1,8 +1,8 @@
 /**
- * Mise à jour du serveur depuis Modération › Serveur (version web) : connexion SSH en root à la machine hôte avec le
- * mot de passe saisi par l'admin (jamais gardé), lancement de deploy/update.sh en arrière-plan, puis suivi de son
- * journal (deploy/logs/update.log, monté en lecture seule dans le conteneur) : la progression reste lisible pendant que
- * l'API redémarre. L'application Android lance la même commande directement en SSH.
+ * Mise à jour du serveur depuis Modération › Serveur (version web) : connexion SSH à la machine hôte (root, ou le compte
+ * UPDATE_SSH_USER) avec le mot de passe saisi par l'admin (jamais gardé), clé d'hôte vérifiée (UPDATE_SSH_FINGERPRINT),
+ * lancement de deploy/update.sh en arrière-plan, puis suivi de son journal (deploy/logs/update.log, monté en lecture
+ * seule dans le conteneur) : la progression reste lisible pendant que l'API redémarre. L'application Android lance la même commande directement en SSH.
  */
 import { createHash } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
@@ -72,6 +72,11 @@ export const fingerprint = (key: Buffer) => 'SHA256:' + createHash('sha256').upd
 
 /** Se connecte en root et lance la mise à jour. Renvoie « started » ou « busy » (une mise à jour tourne déjà). */
 export function startUpdate(password: string, web: boolean): Promise<'started' | 'busy'> {
+  // Sans empreinte de la clé d'hôte, impossible de savoir à qui l'on parle : on refuse avant toute connexion,
+  // le mot de passe n'est jamais envoyé
+  const expected = env.UPDATE_SSH_FINGERPRINT?.trim();
+  if (!expected) return Promise.reject(new HttpError(503, 'ssh_unconfigured', 'Mise à jour désactivée : ajoute UPDATE_SSH_FINGERPRINT (empreinte de la clé d’hôte SSH) dans deploy/.env.'));
+  if (!/^SHA256:[A-Za-z0-9+/]{43}$/.test(expected)) return Promise.reject(new HttpError(503, 'ssh_unconfigured', 'UPDATE_SSH_FINGERPRINT invalide : recopie « SHA256:… » tel que l’affiche ssh-keygen -lf.'));
   return new Promise((resolve, reject) => {
     const c = new Client();
     let out = '', settled = false;
@@ -91,18 +96,19 @@ export function startUpdate(password: string, web: boolean): Promise<'started' |
       });
     });
     c.on('error', (e: Error & { level?: string }) => {
-      if (e.level === 'client-authentication') fail(new HttpError(403, 'ssh_auth', 'Mot de passe root refusé (ou connexion root par mot de passe désactivée sur le serveur).'));
+      if (e.level === 'client-authentication') fail(new HttpError(403, 'ssh_auth', `Mot de passe refusé pour ${env.UPDATE_SSH_USER} (ou connexion par mot de passe désactivée sur le serveur).`));
       else if (/host denied|verification failed/i.test(e.message)) fail(new HttpError(422, 'ssh_host', 'Clé d’hôte SSH différente de UPDATE_SSH_FINGERPRINT : connexion refusée.'));
       else fail(new HttpError(422, 'ssh', `Connexion SSH impossible : ${e.message}`));
     });
     c.connect({
       host: env.UPDATE_SSH_HOST,
       port: env.UPDATE_SSH_PORT,
-      username: 'root',
+      username: env.UPDATE_SSH_USER,
       password,
       readyTimeout: 15_000,
       tryKeyboard: false,
-      hostVerifier: (key: Buffer) => !env.UPDATE_SSH_FINGERPRINT || fingerprint(key) === env.UPDATE_SSH_FINGERPRINT.trim()
+      // La clé d'hôte est vérifiée avant l'authentification : une clé inattendue coupe la connexion
+      hostVerifier: (key: Buffer) => fingerprint(key) === expected
     });
   });
 }

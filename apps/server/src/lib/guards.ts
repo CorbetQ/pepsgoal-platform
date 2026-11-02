@@ -27,13 +27,18 @@ export const isBanned = (u: Pick<AuthUser, 'banUntil' | 'banPermanent'>) => !!u.
 export async function requireUser(req: FastifyRequest): Promise<void> {
   const h = req.headers.authorization;
   if (!h?.startsWith('Bearer ')) throw unauthorized();
-  let sub: string;
-  try { sub = verifyAccess(h.slice(7)).sub; } catch { throw unauthorized('Session expirée.'); }
-  const [u] = await sql<AuthUser[]>`
+  let sub: string, sid: string | null;
+  try { ({ sub, sid } = verifyAccess(h.slice(7))); } catch { throw unauthorized('Session expirée.'); }
+  // La session du jeton doit être encore active : déconnexion, changement de mot de passe ou vol détecté l'invalident
+  // aussitôt, sans attendre l'expiration du jeton d'accès. (Jetons émis avant les sessions, sans sid : 15 minutes au plus.)
+  const [u] = await sql<(AuthUser & { live: boolean })[]>`
     select id, username, display_name as "displayName", role, ban_until as "banUntil", ban_permanent as "banPermanent",
-           warned_at as "warnedAt", comments_restricted as "commentsRestricted"
+           warned_at as "warnedAt", comments_restricted as "commentsRestricted",
+           ${sid === null ? sql`true` : sql`exists (select 1 from refresh_tokens t where t.family_id = ${sid} and t.user_id = users.id and t.revoked_at is null)`} as live
     from users where id = ${sub} and deleted_at is null`;
   if (!u) throw unauthorized('Compte introuvable.');
+  if (!u.live) throw unauthorized('Session révoquée, reconnecte-toi.');
+  delete (u as Partial<typeof u>).live;
   if (u.role === 'official') throw forbidden('Ce compte ne peut pas se connecter.');
   if (u.role !== 'admin') {
     const m = await currentMaintenance();

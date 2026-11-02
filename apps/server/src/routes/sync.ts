@@ -7,14 +7,21 @@ import {
 } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { forbidden, notFound } from '../lib/errors.js';
-import { me, requireUser, type AuthUser } from '../lib/guards.js';
+import { isBlocked, me, requireUser, type AuthUser } from '../lib/guards.js';
 import { iso, toCheckin, toGoal, toGoalGroup, type Row } from '../lib/mappers.js';
 import { notify } from '../lib/notify.js';
+import { dropBuddy, restoreGoalAccess, revokeGoalAccess } from '../lib/shares.js';
 
 type Tx = postgres.TransactionSql;
 class Reject extends Error { constructor(public reason: RejectReason) { super(reason); } }
 const LIMIT = 500;
 const nextRev = (tx: Tx) => tx`nextval('sync_rev_seq')`;
+/** Aucun blocage entre le propriétaire de l'objectif `g` et ce compte. */
+const notBlockedOwner = (userId: string) => sql`not exists (select 1 from blocks b
+  where (b.blocker_id = g.owner_id and b.blocked_id = ${userId}) or (b.blocker_id = ${userId} and b.blocked_id = g.owner_id))`;
+/** Objectifs auxquels ce compte a accès : les siens, ou ceux où il est binôme ou membre (sans blocage avec le propriétaire). */
+const sharedWith = (userId: string) => sql`(g.owner_id = ${userId} or ((g.buddy_id = ${userId}
+  or exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${userId})) and ${notBlockedOwner(userId)}))`;
 
 async function friendIds(tx: Tx, userId: string): Promise<Set<string>> {
   const rows = await tx<{ id: string }[]>`
@@ -25,7 +32,7 @@ async function friendIds(tx: Tx, userId: string): Promise<Set<string>> {
 
 async function applyOp(tx: Tx, u: AuthUser, op: SyncOp): Promise<void> {
   if (op.entity === 'goal') {
-    const [cur] = await tx<Row[]>`select owner_id, updated_at from goals where id = ${op.id}`;
+    const [cur] = await tx<Row[]>`select owner_id, updated_at, buddy_id from goals where id = ${op.id}`;
     if (cur && cur.owner_id !== u.id) throw new Reject('forbidden');
     const lww = resolveLww(iso(cur?.updated_at), op.clientUpdatedAt);
     if (!lww.accept) throw new Reject('stale');
@@ -47,17 +54,22 @@ async function applyOp(tx: Tx, u: AuthUser, op: SyncOp): Promise<void> {
         group_id = excluded.group_id, archived = excluded.archived, completed_at = excluded.completed_at, failed_at = excluded.failed_at, data = excluded.data,
         buddy_id = excluded.buddy_id, buddy_verify = excluded.buddy_verify, buddy_miss = excluded.buddy_miss, updated_at = excluded.updated_at,
         rev = excluded.rev, deleted_at = null`;
-    if (SOCIAL_GOAL_TYPES.includes(g.type)) {
-      const members = [u.id, ...g.memberIds.filter(id => friends.has(id))];
-      if (members.length < 2) throw new Reject('invalid');
-      await tx`delete from goal_members where goal_id = ${g.id} and not (user_id = any(${members}))`;
-      for (const m of members) await tx`insert into goal_members (goal_id, user_id) values (${g.id}, ${m}) on conflict do nothing`;
-    }
+    // Binôme changé ou retiré : l'ancien perd l'accès
+    if (cur?.buddy_id && cur.buddy_id !== buddyId) await dropBuddy(tx, g.id, cur.buddy_id);
+    if (buddyId) await restoreGoalAccess(tx, g.id, [buddyId]);
+    // Membres : seulement pour un objectif social ; ceux qui sont retirés (ou tous, si l'objectif devient personnel)
+    // perdent l'accès
+    const members = SOCIAL_GOAL_TYPES.includes(g.type) ? [u.id, ...g.memberIds.filter(id => friends.has(id))] : [];
+    if (SOCIAL_GOAL_TYPES.includes(g.type) && members.length < 2) throw new Reject('invalid');
+    const removed = await tx<{ user_id: string }[]>`delete from goal_members where goal_id = ${g.id} and not (user_id = any(${members})) returning user_id`;
+    await revokeGoalAccess(tx, g.id, removed.map(r => r.user_id).filter(id => id !== u.id && id !== buddyId));
+    for (const m of members) await tx`insert into goal_members (goal_id, user_id) values (${g.id}, ${m}) on conflict do nothing`;
+    await restoreGoalAccess(tx, g.id, members.filter(m => m !== u.id));
     return;
   }
 
   if (op.entity === 'checkin') {
-    const [cur] = await tx<Row[]>`select user_id, updated_at from checkins where id = ${op.id}`;
+    const [cur] = await tx<Row[]>`select user_id, updated_at, goal_id, date::text as date, kind, value, points, pending, task_id from checkins where id = ${op.id}`;
     if (cur && cur.user_id !== u.id) throw new Reject('forbidden');
     const lww = resolveLww(iso(cur?.updated_at), op.clientUpdatedAt);
     if (!lww.accept) throw new Reject('stale');
@@ -66,21 +78,28 @@ async function applyOp(tx: Tx, u: AuthUser, op: SyncOp): Promise<void> {
       return;
     }
     const c = CheckinSchema.parse({ points: 0, ...op.data, id: op.id, userId: u.id });
+    // Une validation reste attachée à son objectif
+    if (cur && cur.goal_id !== c.goalId) throw new Reject('invalid');
     const [goal] = await tx<Row[]>`
       select g.type, g.owner_id, g.buddy_id, g.buddy_verify, g.title from goals g
       where g.id = ${c.goalId} and g.deleted_at is null
-        and (g.owner_id = ${u.id} or exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id}))`;
+        and (g.owner_id = ${u.id} or (exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id}) and ${notBlockedOwner(u.id)}))`;
     if (!goal) throw new Reject('not_found');
     // Les points sont plafonnés côté serveur : base du type + bonus éventuel de palier (200 max)
     const base = POINTS[goal.type as GoalType] ?? 10;
     const points = c.kind === 'relapse' || c.kind === 'use' ? 0 : Math.min(c.points || base, base + 200);
-    const pending = !cur && goal.owner_id === u.id && goal.buddy_verify && !!goal.buddy_id && ['done', 'progress', 'measure'].includes(c.kind);
+    // Binôme qui confirme : une validation nouvelle, ou modifiée (date, type, valeur, points, étape), attend
+    // sa confirmation et ne compte pas avant ; une validation inchangée garde son état
+    const needsBuddy = goal.owner_id === u.id && goal.buddy_verify && !!goal.buddy_id && ['done', 'progress', 'measure'].includes(c.kind);
+    const changed = !cur || cur.date !== c.date || cur.kind !== c.kind || Number(cur.value) !== c.value
+      || cur.points !== points || (cur.task_id ?? null) !== (c.taskId ?? null);
+    const pending = changed ? needsBuddy : !!cur.pending;
     await tx`
       insert into checkins (id, goal_id, user_id, date, kind, value, points, pending, task_id, created_at, updated_at, rev)
       values (${c.id}, ${c.goalId}, ${u.id}, ${c.date}, ${c.kind}, ${c.value}, ${points}, ${pending}, ${c.taskId}, ${c.createdAt}, ${lww.effectiveUpdatedAt}, ${nextRev(tx)})
-      on conflict (id) do update set date = excluded.date, kind = excluded.kind, value = excluded.value, points = excluded.points, task_id = excluded.task_id,
-        updated_at = excluded.updated_at, rev = excluded.rev, deleted_at = null`;
-    if (pending) await notify(tx, goal.buddy_id, 'verify', `${u.displayName} te demande de confirmer « ${goal.title} » (${c.date}).`, { checkinId: c.id });
+      on conflict (id) do update set date = excluded.date, kind = excluded.kind, value = excluded.value, points = excluded.points,
+        task_id = excluded.task_id, pending = excluded.pending, updated_at = excluded.updated_at, rev = excluded.rev, deleted_at = null`;
+    if (pending && changed) await notify(tx, goal.buddy_id, 'verify', `${u.displayName} te demande de confirmer « ${goal.title} » (${c.date}).`, { checkinId: c.id });
     return;
   }
 
@@ -135,20 +154,22 @@ export default async function syncRoutes(app: FastifyInstance) {
   app.get('/v1/sync/pull', { preHandler: requireUser }, async (req): Promise<PullResponse> => {
     const u = me(req);
     const { cursor } = PullQuery.parse(req.query);
+    // Objectifs partagés : jamais ceux d'un compte avec qui il y a un blocage
     const goals = await sql<Row[]>`
       select g.*, coalesce((select array_agg(m.user_id) from goal_members m where m.goal_id = g.id), '{}') as member_ids
       from goals g
-      where g.rev > ${cursor} and (g.owner_id = ${u.id} or g.buddy_id = ${u.id} or exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id}))
+      where g.rev > ${cursor} and ${sharedWith(u.id)}
       order by g.rev limit ${LIMIT}`;
     const checkins = await sql<Row[]>`
       select c.* from checkins c
-      where c.rev > ${cursor} and (c.user_id = ${u.id} or c.goal_id in (
-        select id from goals where owner_id = ${u.id} or buddy_id = ${u.id} union select goal_id from goal_members where user_id = ${u.id}))
+      where c.rev > ${cursor} and (c.user_id = ${u.id} or c.goal_id in (select g.id from goals g where ${sharedWith(u.id)}))
       order by c.rev limit ${LIMIT}`;
+    // Accès retirés (blocage, binôme ou membre retiré) : l'appareil supprime sa copie de l'objectif
+    const revoked = await sql<Row[]>`select goal_id as id, rev from goal_revocations where user_id = ${u.id} and rev > ${cursor} order by rev limit ${LIMIT}`;
     const groups = await sql<Row[]>`select * from goal_groups where owner_id = ${u.id} and rev > ${cursor} order by rev limit ${LIMIT}`;
     const [settingsRow] = await sql<Row[]>`select settings, settings_rev from users where id = ${u.id} and settings_rev > ${cursor}`;
 
-    const tables = [goals, checkins, groups];
+    const tables = [goals, checkins, groups, revoked];
     const full = tables.filter(t => t.length === LIMIT);
     const lastRev = (t: Row[]) => Number(t[t.length - 1]?.rev ?? cursor);
     const maxRev = Math.max(cursor, ...tables.map(lastRev), Number(settingsRow?.settings_rev ?? 0));
@@ -158,9 +179,11 @@ export default async function syncRoutes(app: FastifyInstance) {
     const deleted: PullResponse['deleted'] = [];
     const alive = <T>(rows: Row[], entity: 'goal' | 'checkin' | 'goalGroup', map: (r: Row) => T): T[] =>
       rows.filter(r => { if (r.deleted_at) { deleted.push({ entity, id: r.id }); return false; } return true; }).map(map);
+    const liveGoals = alive(goals, 'goal', toGoal);
+    for (const r of revoked) if (!goals.some(g => g.id === r.id && !g.deleted_at)) deleted.push({ entity: 'goal', id: r.id });
     return {
       cursor: next, hasMore: full.length > 0,
-      goals: alive(goals, 'goal', toGoal), checkins: alive(checkins, 'checkin', toCheckin), goalGroups: alive(groups, 'goalGroup', toGoalGroup),
+      goals: liveGoals, checkins: alive(checkins, 'checkin', toCheckin), goalGroups: alive(groups, 'goalGroup', toGoalGroup),
       settings: settingsRow ? UserSettingsSchema.parse(settingsRow.settings ?? {}) : null, deleted
     };
   });
@@ -173,7 +196,7 @@ export default async function syncRoutes(app: FastifyInstance) {
       return sql.begin(async tx => {
         const [c] = await tx<Row[]>`select c.*, g.buddy_id, g.title from checkins c join goals g on g.id = c.goal_id where c.id = ${id} and c.pending and c.deleted_at is null`;
         if (!c) throw notFound('Validation introuvable ou déjà traitée.');
-        if (c.buddy_id !== u.id) throw forbidden();
+        if (c.buddy_id !== u.id || (await isBlocked(u.id, c.user_id))) throw forbidden();
         if (decision === 'confirm') {
           await tx`update checkins set pending = false, rev = ${nextRev(tx)} where id = ${id}`;
           await notify(tx, c.user_id, 'verify', `${u.displayName} a confirmé « ${c.title} ».`);

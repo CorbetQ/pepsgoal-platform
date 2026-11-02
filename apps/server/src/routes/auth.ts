@@ -49,7 +49,7 @@ export default async function authRoutes(app: FastifyInstance) {
     const r = await rotateRefresh(refreshToken, device(req.headers['user-agent']));
     const [u] = await sql<Row[]>`select id, role from users where id = ${r.userId} and deleted_at is null`;
     if (!u) throw unauthorized();
-    return { accessToken: signAccess({ id: u.id, role: u.role }), refreshToken: r.refreshToken, expiresIn: 900 };
+    return { accessToken: signAccess({ id: u.id, role: u.role }, r.sid), refreshToken: r.refreshToken, expiresIn: 900 };
   });
 
   app.post('/v1/auth/logout', async req => {

@@ -22,6 +22,8 @@ Quand l'appareil est en ligne (compte connecté, internet disponible, serveur jo
    - Une opération déjà reçue (même `opId`) n'est jamais appliquée deux fois : renvoyer la file après une coupure est sans danger.
    - Réponse : `applied` (appliquées ou déjà reçues) et `rejected` (avec la raison). Les deux sont retirées de la file : en cas de refus, c'est la version du serveur qui sera récupérée à l'étape suivante.
 2. **Réception** : `GET /v1/sync/pull?cursor=N` renvoie tout ce qui a changé depuis la révision `N` (objectifs, validations, groupes, réglages, suppressions), par pages de 500. Le curseur n'est enregistré qu'après application.
+   - Objectifs partagés (binôme, membres) : jamais ceux d'un compte avec qui il y a un blocage. Un accès retiré (blocage, binôme ou membre retiré, objectif social devenu personnel) arrive dans `deleted` comme une suppression de l'objectif : l'appareil retire sa copie, même s'il était hors ligne au moment du retrait.
+   - Binôme qui confirme : une validation nouvelle, ou modifiée ensuite (date, type, valeur, points, étape), repasse en attente (`pending`) et ne compte qu'après confirmation. Une validation ne change jamais d'objectif.
 
 Déclencheurs : démarrage de l'app, retour de la connexion, retour au premier plan, toutes les 60 secondes, bouton « Synchroniser maintenant ».
 

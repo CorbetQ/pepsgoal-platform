@@ -29,10 +29,19 @@ const Env = z.object({
   // Mise à jour du serveur depuis Modération › Serveur (version web) : SSH root vers la machine hôte
   UPDATE_SSH_HOST: z.string().default('host.docker.internal'),
   UPDATE_SSH_PORT: z.coerce.number().int().default(22),
-  // Empreinte SHA256 de la clé d'hôte SSH (« ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub ») ; vide : réseau Docker interne
-  UPDATE_SSH_FINGERPRINT: z.string().optional(),
+  // Compte SSH utilisé (root par défaut ; de préférence un compte dédié limité à update.sh, voir docs/GUIDE-HOSTINGER.md)
+  UPDATE_SSH_USER: z.string().regex(/^[a-z_][a-z0-9_-]{0,31}$/).default('root'),
+  // Empreinte SHA256 de la clé d'hôte SSH (« ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub ») : obligatoire pour
+  // lancer la mise à jour depuis la version web (sans elle, la fonction est désactivée et aucun mot de passe n'est envoyé)
+  UPDATE_SSH_FINGERPRINT: z.string().trim().optional(),
   UPDATE_SCRIPT: z.string().default('/opt/pepsgoal/deploy/update.sh'),
-  UPDATE_LOG: z.string().default('/app/update-logs/update.log')
+  UPDATE_LOG: z.string().default('/app/update-logs/update.log'),
+  // Proxys dont l'en-tête X-Forwarded-For est cru (adresse réelle du client pour les limites de débit) : Caddy, sur le
+  // réseau Docker interne. Liste d'adresses ou de plages CIDR séparées par des virgules.
+  TRUST_PROXY: z.string().default('127.0.0.1/8,::1/128,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fc00::/7'),
+  // Images téléversées : quota par compte (photos et pièces jointes chiffrées), espace disque à toujours laisser libre
+  MEDIA_QUOTA_MB: z.coerce.number().int().min(1).default(1024),
+  DISK_MIN_FREE_MB: z.coerce.number().int().min(0).default(1024)
 }).superRefine((e, ctx) => {
   if (e.NODE_ENV === 'production' && (!e.ADMIN_BOOTSTRAP_PASSWORD || e.ADMIN_BOOTSTRAP_PASSWORD.length < 12)) {
     ctx.addIssue({ code:'custom', path:['ADMIN_BOOTSTRAP_PASSWORD'], message:'Obligatoire en production (12 caractères minimum).' });

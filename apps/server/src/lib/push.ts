@@ -1,6 +1,7 @@
 import webpush from 'web-push';
 import { sql } from '../db/client.js';
 import { env } from '../env.js';
+import { isAllowedPushEndpoint, pushAgent } from './egress.js';
 import type { Row } from './mappers.js';
 
 /**
@@ -49,8 +50,10 @@ export async function pushToUser(userId: string, payload: PushPayload): Promise<
   const body = JSON.stringify({ title: payload.title.slice(0, 80), body: payload.body.slice(0, 240), tag: payload.tag ?? 'pepsgoal', view: payload.view ?? 'today' });
   let sent = 0;
   await Promise.all(subs.map(async s => {
+    // Abonnement hors des services push connus (enregistré avant ce contrôle) : supprimé sans aucun envoi
+    if (!isAllowedPushEndpoint(s.endpoint)) { await sql`delete from push_subscriptions where id = ${s.id}`; return; }
     try {
-      await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, body, { TTL: payload.ttl ?? 12 * 3600, urgency: payload.urgency ?? 'normal', timeout: 10_000 });
+      await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, body, { TTL: payload.ttl ?? 12 * 3600, urgency: payload.urgency ?? 'normal', timeout: 10_000, agent: pushAgent });
       sent++;
       await sql`update push_subscriptions set last_ok_at = now() where id = ${s.id}`;
     } catch (e) {

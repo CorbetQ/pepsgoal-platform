@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { CommentBody, Id, PollVoteBody, PostBody, ReportBody } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { badRequest, forbidden, notFound } from '../lib/errors.js';
-import { env } from '../env.js';
 import { isBanned, me, requireSocial, requireUser, type AuthUser } from '../lib/guards.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
+import { claimMedia, signMediaUrl } from '../lib/media.js';
 import { notify, notifyAdmins, officialId } from '../lib/notify.js';
 
 /** Fin de publication « quoi ? » (« quoi? », « quoi » ; casse ignorée), comme Eggs.feur dans l'application. */
@@ -61,9 +61,13 @@ export default async function feedRoutes(app: FastifyInstance) {
           : sql`(p.author_id = ${u.id} or p.author_id in (select id from fr))`}
       order by p.created_at desc limit 20`;
     const ids = posts.map(p => p.id);
+    // Bornes appliquées par la base, publication par publication : 20 derniers commentaires, 100 premiers encouragements
     const comments = ids.length ? await sql<Row[]>`
-      select c.*, a.username, a.display_name, a.avatar, a.role from comments c join users a on a.id = c.author_id
-      where c.post_id = any(${ids}) and c.deleted_at is null and a.deleted_at is null and ${notBlocked(u.id, 'c.author_id')} order by c.created_at` : [];
+      select * from (
+        select c.*, a.username, a.display_name, a.avatar, a.role, row_number() over (partition by c.post_id order by c.created_at desc) as n
+        from comments c join users a on a.id = c.author_id
+        where c.post_id = any(${ids}) and c.deleted_at is null and a.deleted_at is null and ${notBlocked(u.id, 'c.author_id')}
+      ) x where n <= 20 order by created_at` : [];
     // Sondages : nombre de voix par option, votants distincts et mes choix
     const pollIds = posts.filter(p => p.poll).map(p => p.id);
     const votes = pollIds.length ? await sql<Row[]>`select post_id, option_id, count(*)::int as n, bool_or(user_id = ${u.id}) as mine
@@ -81,16 +85,22 @@ export default async function feedRoutes(app: FastifyInstance) {
     };
     // Qui a encouragé chaque publication (affiché sous la publication, comme dans l'application)
     const likers = ids.length ? await sql<Row[]>`
-      select l.post_id, l.reaction, a.id, a.username, a.display_name, a.avatar, a.role from post_likes l join users a on a.id = l.user_id
-      where l.post_id = any(${ids}) and a.deleted_at is null and ${notBlocked(u.id, 'l.user_id')} order by l.created_at` : [];
+      select * from (
+        select l.post_id, l.reaction, l.created_at, a.id, a.username, a.display_name, a.avatar, a.role, row_number() over (partition by l.post_id order by l.created_at) as n
+        from post_likes l join users a on a.id = l.user_id
+        where l.post_id = any(${ids}) and a.deleted_at is null and ${notBlocked(u.id, 'l.user_id')}
+      ) x where n <= 100 order by created_at` : [];
+    const reactionCounts = ids.length ? await sql<Row[]>`
+      select l.post_id, l.reaction, count(*)::int as n from post_likes l join users a on a.id = l.user_id
+      where l.post_id = any(${ids}) and a.deleted_at is null and ${notBlocked(u.id, 'l.user_id')} group by l.post_id, l.reaction` : [];
     return {
       posts: posts.map(p => ({
-        id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: p.photo_url, poll: pollOf(p), visibility: p.visibility, goalId: p.goal_id, kind: p.kind,
+        id: p.id, author: toPublicUser({ ...p, id: p.author_id }), text: p.text, photoUrl: signMediaUrl(p.photo_url), poll: pollOf(p), visibility: p.visibility, goalId: p.goal_id, kind: p.kind,
         status: p.status, commentsLocked: p.comments_locked, createdAt: iso(p.created_at), likeCount: p.like_count, liked: p.liked,
-        likers: likers.filter(l => l.post_id === p.id).slice(0, 100).map(l => ({ ...toPublicUser(l), reaction: l.reaction })),
+        likers: likers.filter(l => l.post_id === p.id).map(l => ({ ...toPublicUser(l), reaction: l.reaction })),
         myReaction: p.my_reaction ?? null,
-        reactions: Object.fromEntries(REACTIONS.map(r => [r, likers.filter(l => l.post_id === p.id && l.reaction === r).length])),
-        comments: comments.filter(c => c.post_id === p.id).slice(-20).map(c => ({ id: c.id, author: toPublicUser({ ...c, id: c.author_id }), text: c.text, createdAt: iso(c.created_at) }))
+        reactions: Object.fromEntries(REACTIONS.map(r => [r, reactionCounts.find(x => x.post_id === p.id && x.reaction === r)?.n ?? 0])),
+        comments: comments.filter(c => c.post_id === p.id).map(c => ({ id: c.id, author: toPublicUser({ ...c, id: c.author_id }), text: c.text, createdAt: iso(c.created_at) }))
       })),
       nextBefore: posts.length === 20 ? iso(posts[posts.length - 1]!.created_at) : null
     };
@@ -103,12 +113,12 @@ export default async function feedRoutes(app: FastifyInstance) {
       const [g] = await sql`select 1 from goals where id = ${body.goalId} and owner_id = ${u.id} and deleted_at is null`;
       if (!g) body.goalId = null;
     }
-    // Seules les images téléversées sur ce serveur sont acceptées
-    if (body.photoUrl && !body.photoUrl.startsWith(`${env.PUBLIC_URL}/media/`)) throw badRequest('Photo invalide : téléverse-la d’abord.');
+    // Seules les images téléversées par l'auteur sur ce serveur sont acceptées
+    const photoUrl = await claimMedia(sql, u.id, body.photoUrl);
     const poll = body.poll ? { multi: body.poll.multi, endsAt: new Date(Date.now() + body.poll.hours * 3600_000).toISOString(), options: body.poll.options.map((text, i) => ({ id: `o${i}`, text })) } : null;
     // Compte sous avertissement : la publication attend la validation de la modération
     const status = u.warnedAt ? 'pending' : 'visible';
-    const [p] = await sql<Row[]>`insert into posts (author_id, text, photo_url, poll, visibility, goal_id, status, kind) values (${u.id}, ${body.text}, ${body.photoUrl}, ${poll ? sql.json(poll) : null}, ${body.visibility}, ${body.goalId}, ${status}, ${body.kind}) returning id`;
+    const [p] = await sql<Row[]>`insert into posts (author_id, text, photo_url, poll, visibility, goal_id, status, kind) values (${u.id}, ${body.text}, ${photoUrl}, ${poll ? sql.json(poll) : null}, ${body.visibility}, ${body.goalId}, ${status}, ${body.kind}) returning id`;
     if (status === 'pending') await notifyAdmins(sql, `Nouvelle publication de ${u.displayName} à valider.`, {
       subject: `Publication à valider : ${u.displayName}`,
       details: [['Auteur', `${u.displayName} (@${u.username}), sous avertissement`], ['Visibilité', body.visibility === 'public' ? 'public' : 'amis'], ['Photo', body.photoUrl ? 'oui' : 'non']],

@@ -1,22 +1,13 @@
-import { randomUUID } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
-import path from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import { AppealBody, NotifyBody } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
 import { badRequest, conflict, forbidden } from '../lib/errors.js';
 import { areFriends, isBanned, isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
 import { iso, type Row } from '../lib/mappers.js';
+import { storeImage } from '../lib/media.js';
 import { notify, notifyAdmins } from '../lib/notify.js';
 import { currentMaintenance } from '../lib/maintenance.js';
 import { env } from '../env.js';
-
-// Signatures de fichiers acceptées : on ne se fie jamais au type annoncé par le client
-const MAGIC: { ext: string; test: (b: Buffer) => boolean }[] = [
-  { ext: 'jpg', test: b => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
-  { ext: 'png', test: b => b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) },
-  { ext: 'webp', test: b => b.subarray(0, 4).toString() === 'RIFF' && b.subarray(8, 12).toString() === 'WEBP' }
-];
 
 export default async function miscRoutes(app: FastifyInstance) {
   /** Statut public : l'application l'interroge pour savoir si le serveur est joignable et s'il y a une maintenance. */
@@ -36,10 +27,11 @@ export default async function miscRoutes(app: FastifyInstance) {
   });
 
   /**
-   * Notification vers une autre personne (défi de groupe, duel, binôme, rappel d'un ami) :
-   * uniquement entre amis ou membres d'un même objectif, et jamais si l'un a bloqué l'autre.
+   * Notification vers une autre personne (défi de groupe, duel, binôme, rappel d'un ami) : action sociale, refusée
+   * à un compte banni et pendant une maintenance ; uniquement entre amis ou membres d'un même objectif, jamais si
+   * l'un a bloqué l'autre. L'objectif cité doit être partagé entre les deux comptes.
    */
-  app.post('/v1/notify', { preHandler: requireUser, config: { rateLimit: { max: 60, timeWindow: '1 hour' } } }, async (req, reply) => {
+  app.post('/v1/notify', { preHandler: requireSocial, config: { rateLimit: { max: 60, timeWindow: '1 hour' } } }, async (req, reply) => {
     const b = NotifyBody.parse(req.body);
     const u = me(req);
     if (b.to === u.id) return { ok: true };
@@ -50,7 +42,14 @@ export default async function miscRoutes(app: FastifyInstance) {
         or (exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${u.id}) and exists (select 1 from goal_members m where m.goal_id = g.id and m.user_id = ${b.to}))
       ) limit 1`;
     if ((!shared && !(await areFriends(u.id, b.to))) || (await isBlocked(u.id, b.to))) throw forbidden('Notification impossible vers ce compte.');
-    await notify(sql, b.to, b.type, b.text, b.goalId ? { goalId: b.goalId, from: u.id } : { from: u.id });
+    const [target] = await sql`select 1 from users where id = ${b.to} and deleted_at is null and role <> 'official'`;
+    if (!target) throw forbidden('Notification impossible vers ce compte.');
+    const goalId = b.goalId && (await sql`select 1 from goals g where g.id = ${b.goalId} and g.deleted_at is null
+      and ${u.id} in (select g.owner_id union select g.buddy_id union select user_id from goal_members where goal_id = g.id)
+      and ${b.to} in (select g.owner_id union select g.buddy_id union select user_id from goal_members where goal_id = g.id)`).length ? b.goalId : null;
+    // Texte sans caractères de contrôle ni retours à la ligne en série
+    const text = b.text.replace(/[\u0000-\u0008\u000B-\u001F\u007F\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g, '').replace(/\n{3,}/g, '\n\n');
+    await notify(sql, b.to, b.type, text, goalId ? { goalId, from: u.id } : { from: u.id });
     reply.status(201);
     return { ok: true };
   });
@@ -72,18 +71,15 @@ export default async function miscRoutes(app: FastifyInstance) {
     return { ok: true };
   });
 
-  /** Téléversement d'une image (photo de profil ou story) : 8 Mo max, JPEG, PNG ou WebP. */
+  /**
+   * Téléversement d'une image (photo de profil, publication, story) : 8 Mo max, JPEG, PNG ou WebP. L'image est
+   * réencodée (métadonnées supprimées), comptée dans le quota du compte, et effacée si elle n'est jamais utilisée.
+   */
   app.post('/v1/media', { preHandler: requireSocial, config: { rateLimit: { max: 30, timeWindow: '1 hour' } } }, async (req, reply) => {
     const file = await req.file();
     if (!file) throw badRequest('Aucun fichier reçu.');
-    const buf = await file.toBuffer();
-    const kind = MAGIC.find(m => m.test(buf));
-    if (!kind) throw badRequest('Format non pris en charge : JPEG, PNG ou WebP uniquement.');
-    const dir = path.resolve(env.MEDIA_DIR);
-    await mkdir(dir, { recursive: true });
-    const name = `${randomUUID()}.${kind.ext}`;
-    await writeFile(path.join(dir, name), buf);
+    const url = await storeImage(me(req).id, await file.toBuffer());
     reply.status(201);
-    return { url: `${env.PUBLIC_URL}/media/${name}` };
+    return { url };
   });
 }

@@ -6,6 +6,7 @@ import { badRequest, conflict, forbidden, notFound } from '../lib/errors.js';
 import { isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
 import { iso, toCheckin, toGoal, toPublicUser, type Row } from '../lib/mappers.js';
 import { notify } from '../lib/notify.js';
+import { revokeSharesBetween } from '../lib/shares.js';
 
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
 
@@ -159,7 +160,7 @@ export default async function friendRoutes(app: FastifyInstance) {
     };
   });
 
-  /** Bloquer un compte : supprime l'amitié, masque ses contenus et empêche tout contact. */
+  /** Bloquer un compte : supprime l'amitié et les partages d'objectifs, masque ses contenus et empêche tout contact. */
   app.post('/v1/users/:id/block', { preHandler: requireUser }, async req => {
     const { id } = params(req.params);
     const u = me(req);
@@ -170,6 +171,8 @@ export default async function friendRoutes(app: FastifyInstance) {
     await sql.begin(async tx => {
       await tx`insert into blocks (blocker_id, blocked_id) values (${u.id}, ${id}) on conflict do nothing`;
       await tx`delete from friendships where (requester_id = ${u.id} and addressee_id = ${id}) or (requester_id = ${id} and addressee_id = ${u.id})`;
+      // Objectifs partagés entre les deux comptes (binôme, membre) : accès retiré dans les deux sens
+      await revokeSharesBetween(tx, u.id, id);
     });
     return { ok: true };
   });

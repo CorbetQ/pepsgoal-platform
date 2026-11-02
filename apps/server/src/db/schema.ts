@@ -42,8 +42,10 @@ export const refreshTokens = pgTable('refresh_tokens', {
   revokedAt: ts('revoked_at'),
   /** Jeton émis en échange de celui-ci (rotation) : sert à reconnaître une réponse perdue d'un vol. */
   replacedBy: uuid('replaced_by'),
+  /** Session (connexion sur un appareil) : tous les jetons d'une même chaîne de rotation, et le `sid` des jetons d'accès. */
+  familyId: uuid('family_id'),
   createdAt: ts('created_at').notNull().defaultNow()
-}, t => ({ hashIdx: uniqueIndex('refresh_tokens_hash_idx').on(t.tokenHash) }));
+}, t => ({ hashIdx: uniqueIndex('refresh_tokens_hash_idx').on(t.tokenHash), familyIdx: index('refresh_tokens_family_idx').on(t.familyId) }));
 
 /* ---------- données personnelles synchronisées ---------- */
 export const goalGroups = pgTable('goal_groups', {
@@ -83,6 +85,14 @@ export const goalMembers = pgTable('goal_members', {
   goalId: uuid('goal_id').notNull().references(() => goals.id, { onDelete: 'cascade' }),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' })
 }, t => ({ pk: primaryKey({ columns: [t.goalId, t.userId] }) }));
+
+/** Accès retiré à un objectif partagé (blocage, membre ou binôme retiré) : transmis comme suppression à la synchronisation. */
+export const goalRevocations = pgTable('goal_revocations', {
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  goalId: uuid('goal_id').notNull().references(() => goals.id, { onDelete: 'cascade' }),
+  rev: bigint('rev', { mode: 'number' }).notNull(),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({ pk: primaryKey({ columns: [t.userId, t.goalId] }), revIdx: index('goal_revocations_rev_idx').on(t.userId, t.rev) }));
 
 export const checkins = pgTable('checkins', {
   id: uuid('id').primaryKey(),
@@ -222,6 +232,21 @@ export const storyViews = pgTable('story_views', {
   seenAt: ts('seen_at').notNull().defaultNow()
 }, t => ({ pk: primaryKey({ columns: [t.storyId, t.viewerId] }) }));
 
+/**
+ * Images téléversées (photo de profil, publications, stories) : propriétaire et taille, pour vérifier qui peut les
+ * rattacher à un contenu, appliquer le quota de stockage et effacer celles qui ne servent plus.
+ */
+export const media = pgTable('media', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  ownerId: uuid('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  /** Nom du fichier dans MEDIA_DIR (`<uuid>.jpg|png|webp`). */
+  name: text('name').notNull(),
+  bytes: integer('bytes').notNull().default(0),
+  createdAt: ts('created_at').notNull().defaultNow(),
+  /** Première utilisation dans un contenu ; null : téléversée mais jamais utilisée (effacée après 24 heures). */
+  attachedAt: ts('attached_at')
+}, t => ({ nameIdx: uniqueIndex('media_name_idx').on(t.name), ownerIdx: index('media_owner_idx').on(t.ownerId) }));
+
 /** Groupe de discussion : messages chiffrés de bout en bout avec une clé propre au groupe (docs/E2E.md). */
 export const chatGroups = pgTable('chat_groups', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -265,7 +290,9 @@ export const messages = pgTable('messages', {
   auto: boolean('auto').notNull().default(false),
   createdAt: ts('created_at').notNull().defaultNow(),
   readAt: ts('read_at')
-}, t => ({ convIdx: index('messages_conv_idx').on(t.recipientId, t.senderId, t.createdAt), groupIdx: index('messages_group_idx').on(t.groupId, t.createdAt) }));
+}, t => ({ convIdx: index('messages_conv_idx').on(t.recipientId, t.senderId, t.createdAt), groupIdx: index('messages_group_idx').on(t.groupId, t.createdAt),
+  // Pièces jointes encore citées par un message (nettoyage des fichiers orphelins)
+  attIdx: index('messages_attachments_idx').using('gin', t.attachments) }));
 
 export const notifications = pgTable('notifications', {
   id: uuid('id').primaryKey().defaultRandom(),

@@ -21,7 +21,7 @@ const dup = await call('POST', '/v1/auth/register', { username: 'alice' + suffix
 ok(dup.status === 409, 'nom deja pris refuse');
 const badLogin = await call('POST', '/v1/auth/login', { username: 'alice' + suffix, password: 'faux' });
 ok(badLogin.status === 401, 'mauvais mot de passe refuse');
-const A = reg.data.accessToken, Bt = bob.data.accessToken, aId = reg.data.user.id, bId = bob.data.user.id;
+let A = reg.data.accessToken; const Bt = bob.data.accessToken, aId = reg.data.user.id, bId = bob.data.user.id;
 const conv0 = await call('GET', '/v1/conversations', null, A);
 ok(conv0.data?.[0]?.peer.role === 'official', 'message de bienvenue du compte officiel');
 const ref = await call('POST', '/v1/auth/refresh', { refreshToken: reg.data.refreshToken });
@@ -34,8 +34,11 @@ ok(next.status === 200 && next.data.refreshToken, 'renouvellement apres reprise'
 // Successeur déjà utilisé : réutilisation de l'ancien jeton = vol possible, refusée
 const reuse = await call('POST', '/v1/auth/refresh', { refreshToken: reg.data.refreshToken });
 ok(reuse.status === 401, 'jeton reutilise refuse (rotation)');
-const stale = await call('POST', '/v1/auth/refresh', { refreshToken: ref.data.refreshToken });
-ok(stale.status === 401, 'successeur remplace refuse');
+const replaced = await call('POST', '/v1/auth/refresh', { refreshToken: ref.data.refreshToken });
+ok(replaced.status === 401, 'successeur remplace refuse');
+// Vol détecté : toutes les sessions sont révoquées, jetons d'accès compris
+ok((await call('GET', '/v1/me', null, A)).status === 401, 'jeton d’acces revoque avec la session');
+A = (await call('POST', '/v1/auth/login', { username: 'alice' + suffix, password: 'motdepasse1' })).data.accessToken;
 
 // synchronisation
 const now = new Date().toISOString(), gid = randomUUID(), cid = randomUUID(), today = new Date().toISOString().slice(0, 10);

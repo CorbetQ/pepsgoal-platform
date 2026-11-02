@@ -27,7 +27,8 @@ const toChallenge = (r: Row) => ({
 
 /**
  * Défis de la communauté : créés par la modération, rejoints par chacun, un jour validé à la fois.
- * Le classement (nom, avatar, nombre de jours) est visible par tous les participants.
+ * Le classement (nom, avatar, nombre de jours) est réservé aux participants (et à la modération), sans les comptes
+ * avec qui il y a un blocage.
  */
 export default async function challengeRoutes(app: FastifyInstance) {
   // En cours, à venir et terminés depuis moins de 7 jours
@@ -53,11 +54,12 @@ export default async function challengeRoutes(app: FastifyInstance) {
         (select coalesce(array_agg(d.day order by d.day), '{}') from challenge_days d where d.challenge_id = c.id and d.user_id = ${u.id}) as my_days
       from challenges c where c.id = ${id} and c.deleted_at is null`;
     if (!c) throw notFound('Ce défi n’existe plus.');
-    const board = await sql<Row[]>`
+    const board = !c.joined && u.role !== 'admin' ? [] : await sql<Row[]>`
       select u.id, u.username, u.display_name, u.avatar, u.role,
         (select count(*)::int from challenge_days d where d.challenge_id = ${id} and d.user_id = u.id) as days, m.joined_at
       from challenge_members m join users u on u.id = m.user_id
       where m.challenge_id = ${id} and ${visible}
+        and not exists (select 1 from blocks b where (b.blocker_id = ${u.id} and b.blocked_id = u.id) or (b.blocker_id = u.id and b.blocked_id = ${u.id}))
       order by days desc, m.joined_at asc limit 50`;
     const total = Math.max(1, Math.round((Date.parse(dayStr(c.ends_on)) - Date.parse(dayStr(c.starts_on))) / 86400e3) + 1);
     return {

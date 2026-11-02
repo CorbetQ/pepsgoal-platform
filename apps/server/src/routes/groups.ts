@@ -8,6 +8,7 @@ import { badRequest, conflict, forbidden, notFound, unknownDevice } from '../lib
 import { attachmentPath, ensureAttachmentDir } from '../lib/files.js';
 import { areFriends, isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
+import { reserveStorage } from '../lib/media.js';
 import { notify } from '../lib/notify.js';
 import { pushLater } from '../lib/push.js';
 
@@ -44,11 +45,19 @@ export default async function groupRoutes(app: FastifyInstance) {
     const buf = await file.toBuffer();
     if (!buf.length || buf.length > ATTACHMENT_MAX) throw badRequest('Fichier trop volumineux (6 Mo maximum).');
     const u = me(req);
-    const [a] = await sql<Row[]>`insert into attachments (owner_id, size) values (${u.id}, ${buf.length}) returning id`;
+    // Quota du compte et espace disque vérifiés avant l'écriture ; une pièce jointe jamais envoyée est effacée après 24 heures
+    const a = await sql.begin(async tx => {
+      await reserveStorage(tx, u.id, buf.length);
+      const [row] = await tx<Row[]>`insert into attachments (owner_id, size) values (${u.id}, ${buf.length}) returning id`;
+      return row!;
+    });
     await ensureAttachmentDir();
-    await writeFile(attachmentPath(a!.id), buf);
+    try { await writeFile(attachmentPath(a.id), buf, { flag: 'wx' }); } catch (e) {
+      await sql`delete from attachments where id = ${a.id}`;
+      throw e;
+    }
     reply.status(201);
-    return { id: a!.id, size: buf.length };
+    return { id: a.id, size: buf.length };
   });
 
   /** Téléchargement réservé à l'expéditeur et aux participants de la conversation qui cite la pièce jointe. */
@@ -195,7 +204,9 @@ export default async function groupRoutes(app: FastifyInstance) {
     await checkAttachments(u.id, attachments);
     const [m] = await sql<Row[]>`insert into messages (sender_id, group_id, e2e, attachments) values (${u.id}, ${id}, ${sql.json(e2e)}, ${attachments}) returning id, created_at`;
     await sql`update chat_group_members set last_read_at = now() where group_id = ${id} and user_id = ${u.id}`;
-    const others = await sql<Row[]>`select user_id from chat_group_members where group_id = ${id} and user_id <> ${u.id}`;
+    // Aucune alerte (mention ou push) vers un membre qui a bloqué l'expéditeur, ou qu'il a bloqué
+    const others = await sql<Row[]>`select m.user_id from chat_group_members m where m.group_id = ${id} and m.user_id <> ${u.id}
+      and not exists (select 1 from blocks b where (b.blocker_id = m.user_id and b.blocked_id = ${u.id}) or (b.blocker_id = ${u.id} and b.blocked_id = m.user_id))`;
     const tagged = new Set(mentions);
     for (const o of others) {
       // Mention : notification gardée dans la cloche (le contenu du message reste chiffré)

@@ -2,11 +2,15 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { sql } from '../db/client.js';
 import { me, requireUser } from '../lib/guards.js';
+import { isAllowedPushEndpoint } from '../lib/egress.js';
 import { pushToUser, vapidKeys } from '../lib/push.js';
 
+/** Navigateurs abonnés par compte : au-delà, les plus anciens sont remplacés. */
+const MAX_SUBSCRIPTIONS = 10;
+
 const SubscriptionBody = z.object({
-  // Adresse du service push du navigateur (FCM, Mozilla, Apple, Microsoft) : toujours en HTTPS
-  endpoint: z.string().url().max(1000).refine(u => u.startsWith('https://'), 'Adresse de notification invalide.'),
+  // Adresse du service push du navigateur (FCM, Mozilla, Apple, Microsoft) : uniquement ces services, en HTTPS
+  endpoint: z.string().url().max(1000).refine(isAllowedPushEndpoint, 'Adresse de notification invalide.'),
   keys: z.object({ p256dh: z.string().min(16).max(200), auth: z.string().min(8).max(100) }),
   tz: z.string().max(64).default('Europe/Paris')
 });
@@ -22,6 +26,8 @@ export default async function pushRoutes(app: FastifyInstance) {
     // Un navigateur ne reçoit que les notifications du compte connecté en dernier
     await sql`insert into push_subscriptions (user_id, endpoint, p256dh, auth, tz) values (${me(req).id}, ${b.endpoint}, ${b.keys.p256dh}, ${b.keys.auth}, ${tz})
       on conflict (endpoint) do update set user_id = excluded.user_id, p256dh = excluded.p256dh, auth = excluded.auth, tz = excluded.tz`;
+    await sql`delete from push_subscriptions where id in (select id from push_subscriptions where user_id = ${me(req).id}
+      order by coalesce(last_ok_at, created_at) desc offset ${MAX_SUBSCRIPTIONS})`;
     reply.status(201);
     return { ok: true };
   });

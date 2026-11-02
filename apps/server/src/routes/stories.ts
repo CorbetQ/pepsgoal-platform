@@ -2,18 +2,34 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { Id, StoryBody } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
-import { badRequest, forbidden, notFound } from '../lib/errors.js';
-import { removeMedia } from '../lib/files.js';
-import { areFriends, isBlocked, me, requireSocial, requireUser } from '../lib/guards.js';
+import { badRequest, notFound } from '../lib/errors.js';
+import { claimMedia, releaseMedia, signMediaUrl } from '../lib/media.js';
+import { me, requireSocial, requireUser } from '../lib/guards.js';
 import { notify } from '../lib/notify.js';
 import { iso, toPublicUser, type Row } from '../lib/mappers.js';
-import { env } from '../env.js';
 
 const STORY_TTL_MS = 24 * 3600e3;
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
 
 /** Stories : visibles uniquement par les amis pendant 24 heures, puis gardées un an dans l'archive de leur auteur. */
 const ARCHIVE_DAYS = 365;
+
+/**
+ * Lecture d'une story (vue, encouragement) : l'auteur, ou un ami non bloqué tant qu'elle est en ligne, l'auteur
+ * n'étant ni banni ni supprimé. Même réponse « introuvable » pour une story inexistante ou non autorisée.
+ */
+async function readableStory(id: string, userId: string): Promise<Row> {
+  const [s] = await sql<Row[]>`
+    select s.author_id from stories s join users a on a.id = s.author_id
+    where s.id = ${id} and s.expires_at > now() and a.deleted_at is null
+      and (s.author_id = ${userId} or (
+        not (a.ban_permanent or coalesce(a.ban_until > now(), false))
+        and exists (select 1 from friendships f where f.status = 'accepted'
+          and ((f.requester_id = ${userId} and f.addressee_id = s.author_id) or (f.requester_id = s.author_id and f.addressee_id = ${userId})))
+        and not exists (select 1 from blocks b where (b.blocker_id = ${userId} and b.blocked_id = s.author_id) or (b.blocker_id = s.author_id and b.blocked_id = ${userId}))))`;
+  if (!s) throw notFound('Story introuvable.');
+  return s;
+}
 export default async function storyRoutes(app: FastifyInstance) {
   app.get('/v1/stories', { preHandler: requireUser }, async req => {
     const u = me(req);
@@ -37,7 +53,7 @@ export default async function storyRoutes(app: FastifyInstance) {
       author: toPublicUser({ ...list[0]!, id: list[0]!.author_id }),
       unseen: list[0]!.author_id !== u.id && list.some(s => !s.seen),
       stories: list.map(s => ({
-        id: s.id, kind: s.kind, mediaUrl: s.media_url, data: s.data, text: s.text, createdAt: iso(s.created_at), expiresAt: iso(s.expires_at),
+        id: s.id, kind: s.kind, mediaUrl: signMediaUrl(s.media_url), data: s.data, text: s.text, createdAt: iso(s.created_at), expiresAt: iso(s.expires_at),
         seen: s.seen, liked: s.liked, likeCount: s.author_id === u.id ? s.like_count : undefined, viewCount: s.author_id === u.id ? s.view_count : undefined
       }))
     }));
@@ -46,10 +62,11 @@ export default async function storyRoutes(app: FastifyInstance) {
   app.post('/v1/stories', { preHandler: requireSocial, config: { rateLimit: { max: 20, timeWindow: '1 hour' } } }, async (req, reply) => {
     const body = StoryBody.parse(req.body);
     const u = me(req);
-    if (body.kind === 'photo' && !body.mediaUrl.startsWith(`${env.PUBLIC_URL}/media/`)) throw badRequest('Image non autorisée.');
+    // Une story photo ne peut montrer qu'une image téléversée par son auteur
+    const mediaUrl = body.kind === 'photo' ? await claimMedia(sql, u.id, body.mediaUrl) : null;
     const [s] = await sql<Row[]>`
       insert into stories (author_id, kind, media_url, data, text, expires_at)
-      values (${u.id}, ${body.kind}, ${body.kind === 'photo' ? body.mediaUrl : null}, ${body.kind === 'photo' ? null : sql.json(body.data)}, ${body.text}, ${new Date(Date.now() + STORY_TTL_MS).toISOString()})
+      values (${u.id}, ${body.kind}, ${mediaUrl}, ${body.kind === 'photo' ? null : sql.json(body.data)}, ${body.text}, ${new Date(Date.now() + STORY_TTL_MS).toISOString()})
       returning id`;
     reply.status(201);
     return { id: s!.id };
@@ -57,7 +74,9 @@ export default async function storyRoutes(app: FastifyInstance) {
 
   app.post('/v1/stories/:id/view', { preHandler: requireUser }, async req => {
     const { id } = params(req.params);
-    await sql`insert into story_views (story_id, viewer_id) select ${id}, ${me(req).id} where exists (select 1 from stories where id = ${id} and expires_at > now()) on conflict do nothing`;
+    const u = me(req);
+    const s = await readableStory(id, u.id);
+    if (s.author_id !== u.id) await sql`insert into story_views (story_id, viewer_id) values (${id}, ${u.id}) on conflict do nothing`;
     return { ok: true };
   });
 
@@ -75,10 +94,8 @@ export default async function storyRoutes(app: FastifyInstance) {
   app.post('/v1/stories/:id/like', { preHandler: requireSocial, config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async req => {
     const { id } = params(req.params);
     const u = me(req);
-    const [s] = await sql<Row[]>`select author_id from stories where id = ${id} and expires_at > now()`;
-    if (!s) throw notFound('Story introuvable.');
+    const s = await readableStory(id, u.id);
     if (s.author_id === u.id) throw badRequest('Tu ne peux pas encourager ta propre story.');
-    if (!(await areFriends(u.id, s.author_id)) || (await isBlocked(u.id, s.author_id))) throw forbidden('Story réservée aux amis.');
     await sql`insert into story_views (story_id, viewer_id) values (${id}, ${u.id}) on conflict do nothing`;
     const fresh = await sql`insert into story_likes (story_id, user_id) values (${id}, ${u.id}) on conflict do nothing returning story_id`;
     // Une seule notification par personne et par story, même après un retrait puis un nouvel encouragement
@@ -101,13 +118,13 @@ export default async function storyRoutes(app: FastifyInstance) {
         (select count(*)::int from story_likes l where l.story_id = s.id) as like_count
       from stories s where s.author_id = ${u.id} and s.created_at > now() - make_interval(days => ${ARCHIVE_DAYS})
       order by s.created_at desc limit 200`;
-    return rows.map(s => ({ id: s.id, kind: s.kind, mediaUrl: s.media_url, data: s.data, text: s.text, createdAt: iso(s.created_at), expiresAt: iso(s.expires_at), viewCount: s.view_count, likeCount: s.like_count }));
+    return rows.map(s => ({ id: s.id, kind: s.kind, mediaUrl: signMediaUrl(s.media_url), data: s.data, text: s.text, createdAt: iso(s.created_at), expiresAt: iso(s.expires_at), viewCount: s.view_count, likeCount: s.like_count }));
   });
 
   app.delete('/v1/stories/:id', { preHandler: requireUser }, async req => {
     const { id } = params(req.params);
     const gone = await sql<Row[]>`delete from stories where id = ${id} and author_id = ${me(req).id} returning media_url`;
-    await removeMedia(gone.map(g => g.media_url));
+    await releaseMedia(me(req).id, gone.map(g => g.media_url));
     return { ok: true };
   });
 }
