@@ -411,3 +411,30 @@ export const challengeDays = pgTable('challenge_days', {
   day: date('day').notNull(),
   createdAt: ts('created_at').notNull().defaultNow()
 }, t => ({ pk: primaryKey({ columns: [t.challengeId, t.userId, t.day] }) }));
+
+/**
+ * Contenus téléchargeables (packs de thème, fonds, autocollants, icônes), préparés pour la future plateforme de
+ * création. `content` : JSON validé selon le type (packages/shared/src/content.ts) ; `files` : médias associés
+ * (url, sha256, taille) vérifiés par l'application. Statut : brouillon, publié ou retiré (gardé pour annoncer le
+ * retrait aux appareils qui l'ont en cache). `price` : prix en flammes (0 : gratuit).
+ */
+export const contentItems = pgTable('content_items', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  type: text('type').notNull(),
+  slug: text('slug').notNull(),
+  version: integer('version').notNull().default(1),
+  name: text('name').notNull(),
+  description: text('description').notNull().default(''),
+  author: text('author').notNull().default(''),
+  price: integer('price').notNull().default(0),
+  status: text('status').notNull().default('draft'),
+  content: jsonb('content').$type<Record<string, unknown>>().notNull().default({}),
+  files: jsonb('files').$type<Record<string, unknown>[]>().notNull().default([]),
+  createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: ts('created_at').notNull().defaultNow(),
+  updatedAt: ts('updated_at').notNull().defaultNow(),
+  publishedAt: ts('published_at')
+}, t => ({
+  slugIdx: uniqueIndex('content_items_type_slug_idx').on(t.type, t.slug),
+  statusIdx: index('content_items_status_updated_idx').on(t.status, t.updatedAt)
+}));

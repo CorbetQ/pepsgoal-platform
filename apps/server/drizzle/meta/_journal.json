@@ -71,6 +71,13 @@
       "when": 1793100000000,
       "tag": "0009_refresh_successor",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793981582688,
+      "tag": "0010_content_items",
+      "breakpoints": true
     }
   ]
 }
