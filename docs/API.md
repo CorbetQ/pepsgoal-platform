@@ -120,3 +120,7 @@ Relais vers Open-Meteo (sans clé, CC BY 4.0) : coordonnées arrondies à 0,01°
 | GET | `/admin/modlog` | Journal de modération |
 
 Erreur `unknown_device` (404) sur les routes `/v1/e2e/*` : l'appareil de chiffrement n'est plus connu du serveur (retiré après 90 jours d'inactivité ou au-delà de 25 appareils). L'application en enregistre un nouveau et réessaie.
+
+## Contenus téléchargeables
+
+Catalogue public (`GET /v1/content/catalog`, `GET /v1/content/:id`) et administration (`/v1/admin/content…`) : voir [content-api.md](content-api.md).
