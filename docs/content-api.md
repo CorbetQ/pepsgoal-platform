@@ -147,3 +147,59 @@ slug_taken`, `404 not_found`, `401`/`403` sans droits.
 - Achat : prix en flammes via le porte-monnaie habituel ; la possession est
   enregistrée dans les achats de l'utilisateur (`content:<id>@<prix>`), comme
   les autres articles, et synchronisée entre ses appareils.
+
+## Boutique des créateurs et « PepsGoal Style » (10.0)
+
+Chaque compte peut publier ses propres packs de thème (photo comprise) et fixer un prix en flammes (0 à 5000).
+**100 % du prix revient au créateur.** Toutes les images sont calculées par le serveur, jamais par le téléphone :
+la création d'un pack demande une connexion.
+
+### PepsGoal Style
+
+`POST /v1/style?stylize=1&weather=1&strength=0.8` (compte, multipart `file`, 10 Mo au plus, 20 par heure, deux calculs
+à la fois sur le serveur, sinon `503 busy`).
+
+- `stylize` : stylisation dans le style des fonds PepsGoal (lissage qui garde les bords, aplats par k-moyennes,
+  couleurs rapprochées de la palette PepsGoal, ciel redessiné en dégradé, contours doux).
+- `weather` : découpage du ciel. `foreground` est alors l'image sans le ciel (WebP avec transparence) : l'application
+  dessine le ciel, la météo (pluie, neige, brouillard, nuit), puis ce premier plan par-dessus.
+- Les deux options sont désactivables ; `strength` règle la force de la stylisation (0 à 1).
+
+Réponse `201` : `{ image, foreground | null, colors: ["#RRGGBB"…], skyRatio, width, height, stylized, weather }`. `image`
+et `foreground` sont des fichiers prêts à citer dans `files` (`name`, `url`, `sha256`, `size`, `mime`). Pas de ciel
+trouvé (`skyRatio` < 4 %) : `foreground` est `null` et la météo est dessinée par-dessus toute l'image.
+
+Dans un pack, le fond devient :
+
+```json
+"wallpaper": { "kind": "image", "file": "fond.jpg", "foreground": "premier-plan.webp", "weather": true, "styled": true }
+```
+
+### Publier
+
+| Route | Rôle |
+| --- | --- |
+| `POST /v1/creator/media` | photo du pack (multipart `file`) rangée sous son empreinte |
+| `POST /v1/creator/items` | `{ name, description, price, content, files }` : nouveau pack (`content` au format `theme_pack`) |
+| `PUT /v1/creator/items/:id` | modification (nouvelle version) |
+| `DELETE /v1/creator/items/:id` | retrait de la boutique (supprimé s'il n'a jamais été publié ni obtenu) |
+| `GET /v1/creator/items` | mes packs : statut, `reviewNote`, `sales`, `earned` |
+| `GET /v1/creator/sales?since=` | mes ventes `{ sales: [{ id, contentId, name, price, buyer, createdAt }], cursor, total, count }` |
+
+- Les fichiers cités doivent être des médias de ce serveur (`/media/content/<sha256>.<ext>`, même taille sur le disque) :
+  un créateur ne peut pas faire télécharger une adresse extérieure.
+- L'auteur affiché est le nom du compte, jamais une valeur du corps. Le slug est tiré au hasard (`c-…`). 30 packs au plus.
+- `CREATOR_REVIEW=true` (par défaut) : un nouveau pack est `pending` jusqu'à la validation de la modération ; une
+  modification du nom, de la description ou des images le fait repasser en modération. `false` : publié tout de suite.
+- Modération : `GET /v1/admin/content?status=pending`, `POST /v1/admin/content/:id/publish`,
+  `POST /v1/admin/content/:id/reject` `{ reason }` (statut `rejected`, motif lu par le créateur, qui est prévenu).
+
+### Acheter
+
+`POST /v1/content/:id/purchase` (compte) : enregistre l'achat (ou l'obtention d'un contenu gratuit) une seule fois ;
+rejouer la requête renvoie le même achat (`200`, `fresh: false`). Le porte-monnaie vit dans l'application : le
+serveur vérifie un plafond (flammes gagnées + ventes − achats en ligne ≥ prix, sinon `402 insufficient`). Son propre
+pack : `409 own_item`. Le créateur est prévenu (notification « +N flammes ») et son application crédite chaque vente
+une seule fois (par son `id`). `GET /v1/me/content-purchases` rend la collection sur un nouvel appareil.
+
+Le catalogue porte désormais `creatorId` (null : contenu officiel), `sales` et `preview` (adresse de l'image du fond).

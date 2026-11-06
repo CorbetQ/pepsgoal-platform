@@ -10,13 +10,34 @@ const iso = (d: unknown): string | null => (d == null ? null : new Date(d as str
 
 /** Entrée légère du catalogue : de quoi afficher la vitrine et savoir s'il faut retélécharger (version, taille). */
 export function toCatalogItem(r: Row) {
-  const files = (r.files ?? []) as { size?: number }[];
+  const files = (r.files ?? []) as { name?: string; url?: string; size?: number }[];
   return {
     id: r.id as string, type: r.type as string, slug: r.slug as string, version: r.version as number,
     name: r.name as string, description: r.description as string, author: r.author as string, price: r.price as number,
     size: files.reduce((s, f) => s + (f.size ?? 0), 0),
-    updatedAt: iso(r.updated_at), publishedAt: iso(r.published_at)
+    updatedAt: iso(r.updated_at), publishedAt: iso(r.published_at),
+    // 10.0 : créateur (null : contenu officiel), ventes et image d'aperçu affichables avant le téléchargement
+    creatorId: (r.creator_id as string | null | undefined) ?? null,
+    sales: (r.sales as number | undefined) ?? 0,
+    preview: previewUrl(r.type as string, r.content as Record<string, unknown> | undefined, files)
   };
+}
+
+/** Adresse de l'image principale (fond du pack ou fond seul), pour la vitrine. */
+export function previewUrl(type: string, content: Record<string, unknown> | undefined, files: { name?: string; url?: string }[]): string | null {
+  if (!content) return null;
+  const name = type === 'theme_pack' ? (content.wallpaper as { kind?: string; file?: string } | undefined)?.file : type === 'background' ? content.file as string | undefined : undefined;
+  return (name && files.find(f => f.name === name)?.url) || null;
+}
+
+/** Vue du créateur : son pack, son statut, le motif d'un refus et ce qu'il lui a rapporté. */
+export function toCreatorItem(r: Row) {
+  return { ...toContent(r), reviewNote: (r.review_note as string) ?? '', earned: Number(r.earned ?? 0), createdAt: iso(r.created_at) };
+}
+
+/** Vente vue par le créateur : de quoi créditer son porte-monnaie une seule fois (id) et le prévenir. */
+export function toSale(r: Row) {
+  return { id: r.id as string, contentId: r.content_id as string, name: (r.name as string) ?? '', price: r.price as number, buyer: (r.buyer as string) ?? '', createdAt: iso(r.created_at) };
 }
 
 /**
@@ -31,7 +52,7 @@ export function toContent(r: Row) {
 
 /** Vue d'administration : tout, y compris le statut et les dates de création. */
 export function toAdminContent(r: Row) {
-  return { ...toContent(r), createdAt: iso(r.created_at), createdBy: r.created_by ?? null };
+  return { ...toContent(r), createdAt: iso(r.created_at), createdBy: r.created_by ?? null, reviewNote: r.review_note ?? '' };
 }
 
 /** ETag fort calculé sur le corps : identique tant que la réponse ne change pas. */

@@ -34,8 +34,8 @@ ok(next.status === 200 && next.data.refreshToken, 'renouvellement apres reprise'
 // Successeur déjà utilisé : réutilisation de l'ancien jeton = vol possible, refusée
 const reuse = await call('POST', '/v1/auth/refresh', { refreshToken: reg.data.refreshToken });
 ok(reuse.status === 401, 'jeton reutilise refuse (rotation)');
-const stale = await call('POST', '/v1/auth/refresh', { refreshToken: ref.data.refreshToken });
-ok(stale.status === 401, 'successeur remplace refuse');
+const staleTok = await call('POST', '/v1/auth/refresh', { refreshToken: ref.data.refreshToken });
+ok(staleTok.status === 401, 'successeur remplace refuse');
 
 // synchronisation
 const now = new Date().toISOString(), gid = randomUUID(), cid = randomUUID(), today = new Date().toISOString().slice(0, 10);
