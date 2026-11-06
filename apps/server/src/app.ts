@@ -25,6 +25,7 @@ import weatherRoutes from './routes/weather.js';
 import challengeRoutes from './routes/challenges.js';
 import leagueRoutes from './routes/leagues.js';
 import contentRoutes from './routes/content.js';
+import creatorRoutes from './routes/creator.js';
 import { ATT_SUBDIR } from './lib/files.js';
 import { recordResponse } from './lib/metrics.js';
 
@@ -35,7 +36,7 @@ export async function buildApp() {
   // Les applications mobiles n'envoient pas d'en-tête Origin : seules les origines web sont filtrées
   await app.register(cors, { origin: (origin, cb) => cb(null, !origin || corsOrigins.includes(origin)), credentials: false });
   await app.register(rateLimit, { max: 300, timeWindow: '1 minute' });
-  await app.register(multipart, { limits: { fileSize: 8 * 1024 * 1024, files: 1 } });
+  await app.register(multipart, { limits: { fileSize: 10 * 1024 * 1024, files: 1 } });
   const mediaDir = path.resolve(env.MEDIA_DIR);
   mkdirSync(mediaDir, { recursive: true });
   // Images publiques (photos de profil, publications, stories). Les pièces jointes chiffrées (att/) passent par /v1/attachments.
@@ -56,7 +57,7 @@ export async function buildApp() {
     return reply.status(500).send({ error: 'server', message: 'Erreur interne, réessaie plus tard.' });
   });
 
-  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, groupRoutes, pushRoutes, weatherRoutes, challengeRoutes, leagueRoutes, contentRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
+  for (const routes of [authRoutes, meRoutes, syncRoutes, friendRoutes, feedRoutes, storyRoutes, messageRoutes, groupRoutes, pushRoutes, weatherRoutes, challengeRoutes, leagueRoutes, contentRoutes, creatorRoutes, e2eRoutes, miscRoutes, adminRoutes]) {
     await app.register(routes);
   }
   return app;

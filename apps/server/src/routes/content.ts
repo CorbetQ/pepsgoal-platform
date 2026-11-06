@@ -1,22 +1,15 @@
-import { createHash } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
-import path from 'node:path';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { CatalogQuery, ContentCreateBody, ContentType, ContentUpdateBody, Id, validateContent } from '@pepsgoal/shared';
+import { CatalogQuery, ContentCreateBody, ContentRejectBody, ContentStatus, ContentType, ContentUpdateBody, Id, validateContent } from '@pepsgoal/shared';
 import { sql } from '../db/client.js';
-import { env } from '../env.js';
 import { badRequest, HttpError, notFound } from '../lib/errors.js';
-import { me, requireAdmin } from '../lib/guards.js';
+import { me, requireAdmin, requireSocial } from '../lib/guards.js';
+import { storeContentMedia } from '../lib/content-media.js';
+import { logMod, notify } from '../lib/notify.js';
 import { catalogBody, etagMatches, etagOf, toAdminContent, toContent } from '../lib/content.js';
 import type { Row } from '../lib/mappers.js';
 
 const params = (p: unknown) => z.object({ id: Id }).parse(p);
-const MEDIA_KINDS: { ext: string; mime: string; test: (b: Buffer) => boolean }[] = [
-  { ext: 'jpg', mime: 'image/jpeg', test: b => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
-  { ext: 'png', mime: 'image/png', test: b => b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) },
-  { ext: 'webp', mime: 'image/webp', test: b => b.subarray(0, 4).toString() === 'RIFF' && b.subarray(8, 12).toString() === 'WEBP' }
-];
 const pre = { preHandler: requireAdmin };
 
 /** Réponse conditionnelle : 304 si l'application a déjà cette version (If-None-Match), sinon le corps et son ETag. */
@@ -44,7 +37,7 @@ export default async function contentRoutes(app: FastifyInstance) {
     const since = q.since ? new Date(q.since) : null;
     const type = q.type ?? null;
     const rows = await sql<Row[]>`
-      select id, type, slug, version, name, description, author, price, files, updated_at, published_at from content_items
+      select id, type, slug, version, name, description, author, price, content, files, creator_id, sales, updated_at, published_at from content_items
       where status = 'published' and (${type}::text is null or type = ${type}) and (${since}::timestamptz is null or updated_at > ${since})
       order by updated_at, id limit ${q.limit + 1} offset ${q.offset}`;
     // Retraits annoncés seulement aux appareils qui ont déjà un catalogue (`since`), sur la première page
@@ -63,10 +56,56 @@ export default async function contentRoutes(app: FastifyInstance) {
     return conditional(req, reply, toContent(r), 3600);
   });
 
+  /* ---------- achats (10.0) ---------- */
+
+  /**
+   * Achat ou obtention d'un contenu. Le porte-monnaie de flammes vit dans l'application : le serveur vérifie un
+   * plafond (flammes gagnées + ventes − achats en ligne ≥ prix), enregistre l'achat une seule fois et 100 % du prix
+   * revient au créateur (relevé par GET /v1/creator/sales). Rejouer la requête renvoie l'achat déjà fait.
+   */
+  app.post('/v1/content/:id/purchase', { preHandler: requireSocial, config: { rateLimit: { max: 30, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const { id } = params(req.params);
+    const u = me(req);
+    const out = await sql.begin(async tx => {
+      const [it] = await tx<Row[]>`select id, name, price, creator_id, status from content_items where id = ${id} for update`;
+      if (!it || it.status !== 'published') throw notFound('Ce contenu n’est plus disponible.');
+      if (it.creator_id === u.id) throw new HttpError(409, 'own_item', 'C’est ton propre pack : il est déjà à toi.');
+      const [had] = await tx<Row[]>`select id, price, created_at from content_purchases where content_id = ${id} and buyer_id = ${u.id}`;
+      if (had) return { purchase: had, fresh: false, item: it };
+      const price = it.price as number;
+      if (price > 0) {
+        const [b] = await tx<Row[]>`
+          select (select coalesce(sum(points), 0) from checkins where user_id = ${u.id} and deleted_at is null and pending = false)::int
+               + (select coalesce(sum(price), 0) from content_purchases where seller_id = ${u.id})::int
+               - (select coalesce(sum(price), 0) from content_purchases where buyer_id = ${u.id})::int as balance`;
+        if ((b?.balance ?? 0) < price) throw new HttpError(402, 'insufficient', 'Pas assez de flammes pour ce pack.');
+      }
+      const [p] = await tx<Row[]>`
+        insert into content_purchases (content_id, buyer_id, seller_id, price) values (${id}, ${u.id}, ${it.creator_id ?? null}, ${price})
+        returning id, price, created_at`;
+      await tx`update content_items set sales = sales + 1 where id = ${id}`;
+      return { purchase: p!, fresh: true, item: it };
+    });
+    if (out.fresh && out.item.creator_id) {
+      const price = out.purchase.price as number;
+      await notify(sql, out.item.creator_id, 'shop', price > 0
+        ? `🛍️ ${u.displayName} a acheté ton pack « ${out.item.name} » : +${price} flammes pour toi !`
+        : `🎁 ${u.displayName} a obtenu ton pack « ${out.item.name} ».`, { contentId: id });
+    }
+    reply.status(out.fresh ? 201 : 200);
+    return { id: out.purchase.id, contentId: id, price: out.purchase.price, createdAt: new Date(out.purchase.created_at).toISOString(), fresh: out.fresh };
+  });
+
+  // Contenus achetés ou obtenus par le compte : la collection se retrouve sur un nouvel appareil
+  app.get('/v1/me/content-purchases', { preHandler: requireSocial }, async req => {
+    const rows = await sql<Row[]>`select content_id, price, created_at from content_purchases where buyer_id = ${me(req).id} order by created_at`;
+    return rows.map(r => ({ contentId: r.content_id as string, price: r.price as number, createdAt: new Date(r.created_at).toISOString() }));
+  });
+
   /* ---------- administration ---------- */
 
   app.get('/v1/admin/content', pre, async req => {
-    const q = z.object({ type: ContentType.optional(), status: z.enum(['draft', 'published', 'retired']).optional() }).parse(req.query);
+    const q = z.object({ type: ContentType.optional(), status: ContentStatus.optional() }).parse(req.query);
     const rows = await sql<Row[]>`
       select * from content_items
       where (${q.type ?? null}::text is null or type = ${q.type ?? null}) and (${q.status ?? null}::text is null or status = ${q.status ?? null})
@@ -78,15 +117,10 @@ export default async function contentRoutes(app: FastifyInstance) {
   app.post('/v1/admin/content/media', { ...pre, config: { rateLimit: { max: 60, timeWindow: '1 hour' } } }, async (req, reply) => {
     const file = await req.file();
     if (!file) throw badRequest('Aucun fichier reçu.');
-    const buf = await file.toBuffer();
-    const kind = MEDIA_KINDS.find(m => m.test(buf));
-    if (!kind) throw badRequest('Format non pris en charge : JPEG, PNG ou WebP uniquement.');
-    const sha256 = createHash('sha256').update(buf).digest('hex');
-    const dir = path.join(path.resolve(env.MEDIA_DIR), 'content');
-    await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, `${sha256}.${kind.ext}`), buf);
+    const stored = await storeContentMedia(await file.toBuffer());
+    if (!stored) throw badRequest('Format non pris en charge : JPEG, PNG ou WebP uniquement.');
     reply.status(201);
-    return { name: `${sha256.slice(0, 16)}.${kind.ext}`, url: `${env.PUBLIC_URL}/media/content/${sha256}.${kind.ext}`, sha256, size: buf.length, mime: kind.mime };
+    return stored;
   });
 
   app.get('/v1/admin/content/:id', pre, async req => {
@@ -132,8 +166,26 @@ export default async function contentRoutes(app: FastifyInstance) {
     const v = validateContent(cur.type, cur.content, cur.files);
     if (!v.ok) throw badRequest(v.issues.join(' · '));
     const [r] = await sql<Row[]>`
-      update content_items set status = 'published', published_at = coalesce(published_at, now()), updated_at = now() where id = ${id} returning *`;
+      update content_items set status = 'published', review_note = '', published_at = coalesce(published_at, now()), updated_at = now() where id = ${id} returning *`;
+    // Pack d'un créateur validé : il est prévenu, son pack est en vente
+    if (cur.creator_id && cur.status !== 'published') {
+      await notify(sql, cur.creator_id, 'shop', `🎨 Ton pack « ${cur.name} » est en vente dans la boutique PepsGoal !`, { contentId: id });
+      await logMod(sql, me(req).id, 'content_publish', cur.creator_id, cur.name);
+    }
     return toAdminContent(r!);
+  });
+
+  // Refus d'un pack de créateur : motif gardé et transmis au créateur, qui peut corriger puis republier
+  app.post('/v1/admin/content/:id/reject', pre, async req => {
+    const { id } = params(req.params);
+    const { reason } = ContentRejectBody.parse(req.body);
+    const [r] = await sql<Row[]>`update content_items set status = 'rejected', review_note = ${reason}, updated_at = now() where id = ${id} returning *`;
+    if (!r) throw notFound('Contenu introuvable.');
+    if (r.creator_id) {
+      await notify(sql, r.creator_id, 'shop', `Ton pack « ${r.name} » n’a pas été accepté : ${reason}`, { contentId: id });
+      await logMod(sql, me(req).id, 'content_reject', r.creator_id, `${r.name} : ${reason}`);
+    }
+    return toAdminContent(r);
   });
 
   app.post('/v1/admin/content/:id/retire', pre, async req => {

@@ -2,6 +2,16 @@
 
 Ces notes sont aussi consultables dans l'application : Paramètres › Aide › Notes de version.
 
+## Serveur 10.0.0 — boutique des créateurs et PepsGoal Style (6 novembre 2026)
+
+Utilisé par l'application Android 10.0.0. Détails : `docs/content-api.md`.
+- Migration `0011_creator_market` (appliquée au démarrage du conteneur) : colonnes `creator_id`, `review_note`, `sales` sur `content_items`, table `content_purchases`.
+- Boutique des créateurs : `POST/PUT/DELETE /v1/creator/items`, `GET /v1/creator/items`, `POST /v1/creator/media`, `GET /v1/creator/sales`. 100 % du prix revient au créateur.
+- Achats : `POST /v1/content/:id/purchase` (idempotent, plafond de flammes vérifié), `GET /v1/me/content-purchases`.
+- Modération des packs publiés : statut `pending`, `POST /v1/admin/content/:id/reject`. Variable `CREATOR_REVIEW` (`true` par défaut).
+- PepsGoal Style : `POST /v1/style` stylise une photo dans le style des fonds PepsGoal et découpe le ciel pour la météo (deux options désactivables). Nouvelle dépendance `sharp`.
+- Catalogue : `creatorId`, `sales`, `preview`. Téléversements jusqu'à 10 Mo.
+
 ## Serveur — mise à jour depuis Modération › Serveur (23 octobre 2026)
 
 Utilisé par l'application Android 4.9.0 et la version web.

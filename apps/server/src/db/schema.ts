@@ -431,10 +431,35 @@ export const contentItems = pgTable('content_items', {
   content: jsonb('content').$type<Record<string, unknown>>().notNull().default({}),
   files: jsonb('files').$type<Record<string, unknown>[]>().notNull().default([]),
   createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
+  /** Créateur (10.0) : contenu publié depuis l'application par un utilisateur ; null pour un contenu officiel. */
+  creatorId: uuid('creator_id').references(() => users.id, { onDelete: 'cascade' }),
+  /** Motif d'un refus de la modération (statut « rejected »), lu par le créateur. */
+  reviewNote: text('review_note').notNull().default(''),
+  /** Achats et obtentions (compteur dénormalisé, affiché dans la vitrine). */
+  sales: integer('sales').notNull().default(0),
   createdAt: ts('created_at').notNull().defaultNow(),
   updatedAt: ts('updated_at').notNull().defaultNow(),
   publishedAt: ts('published_at')
 }, t => ({
   slugIdx: uniqueIndex('content_items_type_slug_idx').on(t.type, t.slug),
-  statusIdx: index('content_items_status_updated_idx').on(t.status, t.updatedAt)
+  statusIdx: index('content_items_status_updated_idx').on(t.status, t.updatedAt),
+  creatorIdx: index('content_items_creator_idx').on(t.creatorId)
+}));
+
+/**
+ * Achats de la boutique des créateurs (10.0) : une ligne par contenu et par acheteur (un pack ne s'achète qu'une
+ * fois). 100 % du prix revient au créateur ([sellerId]) : l'application du créateur relève ses ventes et crédite
+ * son porte-monnaie (une seule fois par vente, repérée par son id). Contenu gratuit : prix 0, compté dans les ventes.
+ */
+export const contentPurchases = pgTable('content_purchases', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  contentId: uuid('content_id').notNull().references(() => contentItems.id, { onDelete: 'cascade' }),
+  buyerId: uuid('buyer_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  sellerId: uuid('seller_id').references(() => users.id, { onDelete: 'set null' }),
+  price: integer('price').notNull().default(0),
+  createdAt: ts('created_at').notNull().defaultNow()
+}, t => ({
+  uniq: uniqueIndex('content_purchases_content_buyer_idx').on(t.contentId, t.buyerId),
+  sellerIdx: index('content_purchases_seller_idx').on(t.sellerId, t.createdAt),
+  buyerIdx: index('content_purchases_buyer_idx').on(t.buyerId)
 }));

@@ -32,7 +32,9 @@ const Env = z.object({
   // Empreinte SHA256 de la clé d'hôte SSH (« ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub ») ; vide : réseau Docker interne
   UPDATE_SSH_FINGERPRINT: z.string().optional(),
   UPDATE_SCRIPT: z.string().default('/opt/pepsgoal/deploy/update.sh'),
-  UPDATE_LOG: z.string().default('/app/update-logs/update.log')
+  UPDATE_LOG: z.string().default('/app/update-logs/update.log'),
+  // Boutique des créateurs (10.0) : les packs publiés par les utilisateurs passent d'abord par la modération
+  CREATOR_REVIEW: z.enum(['true', 'false']).default('true').transform(v => v === 'true')
 }).superRefine((e, ctx) => {
   if (e.NODE_ENV === 'production' && (!e.ADMIN_BOOTSTRAP_PASSWORD || e.ADMIN_BOOTSTRAP_PASSWORD.length < 12)) {
     ctx.addIssue({ code:'custom', path:['ADMIN_BOOTSTRAP_PASSWORD'], message:'Obligatoire en production (12 caractères minimum).' });
