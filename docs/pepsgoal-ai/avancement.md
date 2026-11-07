@@ -26,6 +26,16 @@ Suivi de la [feuille de route](roadmap.md). Mis à jour à chaque étape.
   reprise ; durée de plusieurs jours, réseaux compacts privilégiés.
 - Corpus de test complété par des photos personnelles du propriétaire.
 
+## Phase 2 — Prototype Rust · en cours
+
+| Livrable | État |
+| --- | --- |
+| Workspace Cargo ( : crates , , , ) | fait |
+| Décodage sûr (type réel, 20 Mo, 50 Mpx, EXIF), recadrage master 2:3, profils 512 / 768 / 1024, bande 9:19,5 | fait |
+| Baseline de filtres classiques | fait : [rapport](../../apps/pepsgoal-ai/benchmarks/rapports/2026-11-07-baseline-1024.md) (0,6 s, 95 Mo) |
+| Inférence ONNX sur CPU (tract) et sorties  /  /  | fait (à valider avec l'élève entraîné) |
+| Benchmarks 2 threads () | fait |
+
 ## Phases suivantes
 
 2. Prototype Rust : workspace `apps/pepsgoal-ai` (crates engine, imaging, style), baseline de filtres classiques,

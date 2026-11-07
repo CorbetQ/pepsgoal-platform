@@ -1,0 +1,15 @@
+[package]
+name = "pepsgoal-ai"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "PepsGoal AI : photo → fond Braise Pop (style braise-pop-outdoor-v1), inférence CPU locale"
+
+[dependencies]
+anyhow.workspace = true
+image.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+imaging.workspace = true
+style.workspace = true
+engine.workspace = true
