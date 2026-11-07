@@ -2,15 +2,15 @@
 
 Suivi de la [feuille de route](roadmap.md). Mis à jour à chaque étape.
 
-## Phase 1 — Spécification et dataset · en cours
+## Phase 1 — Spécification et dataset · terminée
 
 | Livrable | État |
 | --- | --- |
 | Règles Braise Pop et format des packs | fait : [cahier des charges](cahier-des-charges.md) (norme mesurée sur les 48 fonds + exigences de la feuille de route) |
 | Registre de provenance et licences | fait : [provenance.md](provenance.md) ; droits d'entraînement sur les 48 fonds confirmés par le propriétaire (7 novembre 2026) |
 | Protocole de mesure | fait : [protocole-mesure.md](protocole-mesure.md) |
-| Corpus de test (50 photos, 5 catégories) | **34 / 50** : `apps/pepsgoal-ai/benchmarks/manifest.json` (Unsplash, hors entraînement). Unsplash Lite manque de villes et de monuments : 16 photos à compléter avec des photos personnelles du propriétaire (Angers, Saumur, Rennes, Nantes…), en attente |
-| Corpus d'entraînement | 1 500 photos Unsplash d'extérieur ; paires générées par le maître « fidèle » (force 0,42) en cours |
+| Corpus de test (50 photos, 5 catégories) | **50 / 50** : `apps/pepsgoal-ai/benchmarks/manifest.json` — 34 Unsplash + 16 photos personnelles (château et cathédrale d'Angers, Notre-Dame, Panthéon, château de Nantes, tram, rues…) ; 15 monuments, 10 villes, 9 architecture, 9 végétation, 7 paysages |
+| Corpus d'entraînement | 1 500 photos Unsplash d'extérieur + 101 photos personnelles (traitées en priorité) ; paires générées par le maître « fidèle » (force 0,42) en cours |
 
 ## Travaux antérieurs réutilisés
 
