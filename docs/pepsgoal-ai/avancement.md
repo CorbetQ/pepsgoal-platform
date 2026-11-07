@@ -30,11 +30,11 @@ Suivi de la [feuille de route](roadmap.md). Mis à jour à chaque étape.
 
 | Livrable | État |
 | --- | --- |
-| Workspace Cargo ( : crates , , , ) | fait |
+| Workspace Cargo (`apps/pepsgoal-ai` : crates `imaging`, `style`, `engine`, `cli`) | fait |
 | Décodage sûr (type réel, 20 Mo, 50 Mpx, EXIF), recadrage master 2:3, profils 512 / 768 / 1024, bande 9:19,5 | fait |
 | Baseline de filtres classiques | fait : [rapport](../../apps/pepsgoal-ai/benchmarks/rapports/2026-11-07-baseline-1024.md) (0,6 s, 95 Mo) |
-| Inférence ONNX sur CPU (tract) et sorties  /  /  | fait (à valider avec l'élève entraîné) |
-| Benchmarks 2 threads () | fait |
+| Inférence ONNX sur CPU (tract) ; sorties `wallpaper.webp`, `foreground.webp`, `metadata.json` | fait (à valider avec l'élève entraîné) |
+| Benchmarks 2 threads (`pepsgoal-ai bench`) | fait |
 
 ## Phases suivantes
 
