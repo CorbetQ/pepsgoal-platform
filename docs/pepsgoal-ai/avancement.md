@@ -25,6 +25,14 @@ Suivi de la [feuille de route](roadmap.md). Mis à jour à chaque étape.
 - **Pas de GPU** : l'entraînement se fait sur le processeur de la machine de développement (4 cœurs), avec points de
   reprise ; durée de plusieurs jours, réseaux compacts privilégiés.
 - Corpus de test complété par des photos personnelles du propriétaire.
+- **8 novembre 2026 — cible VPS-4 (OVH, 8 vCores, 24 Go)** : le propriétaire retient la version « surboostée », c'est-à-dire
+  le maître complet en production (SD 1.5 DreamShaper 8 + LCM + LoRA « pgstyle », ControlNet canny puis tile en FHD,
+  Real-ESRGAN, segmentation UperNet ; OpenVINO, poids int8). Comparatif sur 4 photos : 4/4 au contrôle qualité,
+  saturation 0,39–0,46, ~9,6 min sur 4 cœurs fp32 (estimé ~5 min sur 8 vCores), 10–13 Go de RAM. Rendu en tâche de
+  fond, pas en direct. **L'élève distillé pour le KVM 2 (PG-Net, MobileDecoder) est abandonné** ; le moteur Rust reste
+  pour la baseline et les contrôles (bande téléphone, ciel, métadonnées).
+- Phase 3 réorientée : entraînement du LoRA de style v2 (512 × 768, rang 32, recadrages aléatoires, 1 500 étapes) pour
+  affiner les détails et réduire les inventions, puis comparaison v1/v2 sur le corpus de test.
 
 ## Phase 2 — Prototype Rust · en cours
 
@@ -40,4 +48,4 @@ Suivi de la [feuille de route](roadmap.md). Mis à jour à chaque étape.
 
 2. Prototype Rust : workspace `apps/pepsgoal-ai` (crates engine, imaging, style), baseline de filtres classiques,
    inférence ONNX, benchmarks 2 threads.
-3. Entraînement : U-Net compact et MobileNet-décodeur sur les paires fidèles ; comparaison selon le protocole.
+3. Entraînement (réorienté VPS-4) : LoRA de style v2 pour le maître, comparaison v1/v2 sur le corpus de test.
