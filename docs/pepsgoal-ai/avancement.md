@@ -31,6 +31,9 @@ Suivi de la [feuille de route](roadmap.md). Mis à jour à chaque étape.
   saturation 0,39–0,46, ~9,6 min sur 4 cœurs fp32 (estimé ~5 min sur 8 vCores), 10–13 Go de RAM. Rendu en tâche de
   fond, pas en direct. **L'élève distillé pour le KVM 2 (PG-Net, MobileDecoder) est abandonné** ; le moteur Rust reste
   pour la baseline et les contrôles (bande téléphone, ciel, métadonnées).
+- 9 novembre 2026 : LoRA v2 entraîné (1 500 étapes) ; comparatif v1 / v2 / v2c sur le corpus de test
+  ([rapport](../../apps/pepsgoal-ai/benchmarks/rapports/2026-11-09-maitre-v1-v2-v2c.md)) : **v2c retenue**
+  (contours de guidage enrichis + garde-fou de couleur). Scripts du maître versés dans `apps/pepsgoal-ai/maitre`.
 - Phase 3 réorientée : entraînement du LoRA de style v2 (512 × 768, rang 32, recadrages aléatoires, 1 500 étapes) pour
   affiner les détails et réduire les inventions, puis comparaison v1/v2 sur le corpus de test.
 
