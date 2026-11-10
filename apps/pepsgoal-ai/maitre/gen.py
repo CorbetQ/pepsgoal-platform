@@ -1,8 +1,7 @@
-"""Maître PepsGoal Style sur OpenVINO (cible : VPS-4 OVH, 8 vCores, 24 Go, sans carte graphique).
+"""PepsGoal Style sur OpenVINO (cible : VPS KVM 2, 2 vCPU, 8 Go, sans carte graphique).
 Photo → recadrage 9:16 → ciel retiré → dessin 576 × 1024 (UNet + ControlNet canny, LCM) → ciel découpé → ×4 → Full HD
 → seconde passe par tuiles (ControlNet tile) → finition → PNG 1080 × 1920 au ciel transparent.
-Usage : python gen.py <dossier photos> --models <export OpenVINO> --out <dossier> --rs 0.2 --esrgan 1 --strength 0.42 --edges 2 --postfix 1
-(réglages « v2c », retenus après le comparatif du corpus de test ; HF_HOME doit contenir les modèles du maître)."""
+Usage : python pgstyle.py --models <dossier export> --out <dossier> photo1.jpg ..."""
 import os, time, glob, argparse, resource, gc, ctypes
 import numpy as np, cv2, torch, openvino as ov
 from PIL import Image, ImageEnhance, ImageFilter
@@ -19,7 +18,7 @@ ap.add_argument("--threads", type=int, default=0)
 ap.add_argument("--steps", type=int, default=8); ap.add_argument("--strength", type=float, default=0.62)
 ap.add_argument("--cn", type=float, default=1.0); ap.add_argument("--cfg", type=float, default=1.5)
 ap.add_argument("--rs", type=float, default=0.35); ap.add_argument("--rsteps", type=int, default=3)
-ap.add_argument("--edges", type=int, default=1); ap.add_argument("--postfix", type=int, default=0)
+ap.add_argument("--edges", type=int, default=1); ap.add_argument("--tri", type=int, default=1); ap.add_argument("--prod", type=int, default=0); ap.add_argument("--postfix", type=int, default=0)
 ap.add_argument("--refine", type=int, default=1); ap.add_argument("--seed", type=int, default=7)
 a = ap.parse_args()
 W, H = 576, 1024
@@ -91,13 +90,13 @@ def crop_portrait(im):
     else: nh = int(im.width / r); y = (im.height - nh) // 2; im = im.crop((0, y, im.width, y + nh))
     return im.resize((W, H), Image.LANCZOS)
 
-def edges(im):
+def edges(im, thin=None):
     """Contours de guidage : petits morceaux supprimés, contours épaissis (formes rondes, moins pointues)."""
     g = cv2.bilateralFilter(cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY), 15, 90, 90)
     e = cv2.Canny(g, 100, 220)
     n, lab, st, _ = cv2.connectedComponentsWithStats(e, 8)
     e = np.isin(lab, [i for i in range(1, n) if st[i, cv2.CC_STAT_AREA] >= 20]).astype(np.uint8) * 255
-    if a.edges == 2:
+    if a.edges >= 2:
         # v2 : structures peu contrastées (bordures, plaques, joints de mur) ajoutées pour que le dessin ne les invente
         # pas ; seuls les traits allongés sont gardés (la texture des pavés ou de la pierre forme des gribouillis courts)
         g2 = cv2.bilateralFilter(cv2.createCLAHE(2.0, (8, 8)).apply(cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY)), 15, 60, 60)
@@ -106,9 +105,36 @@ def edges(im):
         e2 = np.isin(lab, keep).astype(np.float32)
         # seulement là où le guide est vide (pas de contour fort à moins de 25 px) et sans texture (murs de pierre exclus)
         dens = cv2.boxFilter((e2 > 0).astype(np.float32), -1, (41, 41)) + cv2.boxFilter((e > 0).astype(np.float32), -1, (31, 31))
-        e = np.maximum(e, ((e2 > 0) & (dens < 0.14)).astype(np.uint8) * 255)
+        add = (e2 > 0) & (dens < 0.14)
+        if a.edges >= 3:  # v3 : pas de contours enrichis sur la texture fine (pierre, feuillage, gravier)
+            ge = cv2.Canny(cv2.GaussianBlur(cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY), (3, 3), 0), 40, 100) > 0
+            add &= cv2.boxFilter(ge.astype(np.float32), -1, (31, 31)) < 0.12
+        e = np.maximum(e, add.astype(np.uint8) * 255)
+    if thin is not None: e = np.maximum(e, thin * 255)  # treillis, câbles, éoliennes, mâts
     e = cv2.dilate(e, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
     return Image.fromarray(np.stack([e] * 3, -1))
+
+def colorize_if_gray(im):
+    """Photo noir et blanc (ou presque) : carte de dégradé Braise Pop par luminance (ombres prune, tons moyens
+    terre cuite et ocre, lumières crème) avant le dessin ; sinon le rendu reste gris et échoue au contrôle qualité."""
+    lab = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2LAB).astype(np.float32)
+    if float(np.hypot(lab[..., 1] - 128, lab[..., 2] - 128).mean()) >= 6: return im, False
+    stops = np.array([[0, 46, 30, 58], [.35, 120, 62, 78], [.6, 196, 112, 72], [.8, 232, 176, 96], [1, 252, 236, 206]], np.float32)
+    L = np.array(im.convert("L"), np.float32) / 255
+    rgb = np.stack([np.interp(L, stops[:, 0], stops[:, c]) for c in (1, 2, 3)], -1)
+    return Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8)), True
+
+def thin_on_sky(rgb, sky):
+    """Traits fins (≤ 9 px) et allongés qui se détachent sur le ciel : treillis, câbles, éoliennes, mâts, cimes.
+    Ils sont protégés du retrait du ciel et ajoutés au guide (sinon le ciel les efface et le dessin les invente)."""
+    g = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY); k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
+    th = np.maximum(cv2.morphologyEx(g, cv2.MORPH_BLACKHAT, k), cv2.morphologyEx(g, cv2.MORPH_TOPHAT, k))
+    n, lab, st, _ = cv2.connectedComponentsWithStats((th > 22).astype(np.uint8), 8)
+    near = cv2.dilate((sky > .3).astype(np.uint8), np.ones((15, 15), np.uint8)) > 0
+    cnt = np.bincount(lab.ravel(), minlength=n); on = np.bincount(lab.ravel(), weights=near.ravel().astype(np.float64), minlength=n)
+    keep = [i for i in range(1, n) if max(st[i, cv2.CC_STAT_WIDTH], st[i, cv2.CC_STAT_HEIGHT]) >= 30
+            and st[i, cv2.CC_STAT_AREA] < 0.35 * st[i, cv2.CC_STAT_WIDTH] * st[i, cv2.CC_STAT_HEIGHT] and on[i] >= 0.5 * cnt[i]]
+    return np.isin(lab, keep).astype(np.uint8)
 
 @torch.no_grad()
 def sky_mask(im):
@@ -168,12 +194,23 @@ for f in files:
     m_src = sky_mask(src); m_in = cv2.dilate(m_src, np.ones((7, 7), np.uint8))
     # Tri à l'entrée : photo de jour avec un vrai ciel et un vrai paysage (le maître dérive sur la nuit et les gros plans)
     lum = float(np.array(src.convert("L")).mean() / 255); sr = float(m_src.mean())
-    if lum < 0.3 or sr > 0.6:
+    thin = thin_on_sky(np.array(src), m_src) if a.edges >= 3 else None
+    if thin is not None: m_in = m_in * (1 - cv2.dilate(thin, np.ones((5, 5), np.uint8)))
+    lattice = False
+    if a.edges >= 3:
+        # treillis (pylône, gazomètre) : le ciel est découpé en dentelle ; le retirer détruit la structure.
+        # On garde alors le ciel de la photo (dessiné avec le reste) et il n'y a pas de version météo.
+        mb = (m_src > .5).astype(np.uint8)
+        per = (cv2.morphologyEx(mb, cv2.MORPH_GRADIENT, np.ones((3, 3), np.uint8)) > 0).sum()
+        lattice = mb.sum() > 0 and per / np.sqrt(mb.sum()) > 18
+        if lattice: m_in = np.zeros_like(m_in); thin = None
+    if a.tri and (lum < 0.3 or sr > 0.6):
         open(f"{a.out}/{name}.rej", "w").write(json.dumps({"entree": True, "lum": lum, "ciel": sr})); print(name, "écartée", flush=True); continue
+    if a.edges >= 3: src, gray = colorize_if_gray(src)
     clean = Image.fromarray((np.array(src) * (1 - m_in[..., None]) + np.array(app_sky(src.size)) * m_in[..., None]).astype(np.uint8))
     stage("cn_canny", H, W)
-    out = finish(img2img(clean, edges(clean), "cn_canny", a.strength, a.steps, a.cn, a.seed))
-    m = np.maximum(sky_mask(out), cv2.GaussianBlur(m_src, (5, 5), 0))
+    out = finish(img2img(clean, edges(clean, thin), "cn_canny", a.strength, a.steps, a.cn, a.seed))
+    m = np.maximum(sky_mask(out), cv2.GaussianBlur(m_src if thin is None else m_src * (1 - thin), (5, 5), 0))
     out = upscale(out) if a.esrgan else out.resize((1080, 1920), Image.LANCZOS)
     out = crisp(refine(out))
     if a.postfix:  # garde-fou de couleur (postfix.py) ; le lissage des zones unies n'est pas retenu (il floute)
@@ -184,10 +221,12 @@ for f in files:
     hsv = cv2.cvtColor(np.array(out), cv2.COLOR_RGB2HSV); sat = float((hsv[..., 1] / 255.0)[mf < .5].mean()) if (mf < .5).any() else 0
     low = float(m[int(H * 2 / 3):].mean()); sky = float(m.mean())
     ok = sat >= 0.35 and low < 0.05 and sky < 0.65
+    meteo = low < 0.05 and sky < 0.65 and sky > 0.04 and not lattice  # version météo (ciel animé) possible
+    if a.prod: ok = sat >= 0.35  # production : le fond est toujours livré ; seule la version météo dépend du ciel
     mm = Image.fromarray((mf * 255).astype(np.uint8))
     if ok:
         out.save(f"{a.out}/{name}.jpg", quality=95); mm.save(f"{a.out}/{name}_sky.png")
     else:
         open(f"{a.out}/{name}.rej", "w").write(json.dumps({"sat": sat, "low": low, "sky": sky}))
-    log.write(json.dumps({"id": name, "ok": ok, "sat": round(sat, 3), "sky": round(sky, 3), "s": round(time.time() - t0)}) + "\n"); log.flush()
+    log.write(json.dumps({"id": name, "ok": ok, "sat": round(sat, 3), "sky": round(sky, 3), "meteo": bool(meteo), "s": round(time.time() - t0)}) + "\n"); log.flush()
     print(name, "ok" if ok else "rejet", f"{time.time() - t0:.0f}s", flush=True)

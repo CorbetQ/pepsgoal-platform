@@ -34,6 +34,12 @@ Suivi de la [feuille de route](roadmap.md). Mis à jour à chaque étape.
 - 9 novembre 2026 : LoRA v2 entraîné (1 500 étapes) ; comparatif v1 / v2 / v2c sur le corpus de test
   ([rapport](../../apps/pepsgoal-ai/benchmarks/rapports/2026-11-09-maitre-v1-v2-v2c.md)) : **v2c retenue**
   (contours de guidage enrichis + garde-fou de couleur). Scripts du maître versés dans `apps/pepsgoal-ai/maitre`.
+- 10 novembre 2026 — **v3** (`--edges 3 --tri 0 --prod 1`) : plus de tri d'entrée (le fond est toujours livré, seule
+  la version météo dépend du ciel) ; structures fines sur le ciel (câbles, mâts) protégées du retrait du ciel et
+  ajoutées au guide ; scènes en treillis (pylône, gazomètre) : ciel de la photo conservé, pas de version météo ;
+  photos noir et blanc colorisées en dégradé Braise Pop avant le dessin ; contours enrichis exclus des textures fines
+  (murs de pierre). Essai sur 14 photos : 14/14 rendues et validées (8 étaient écartées en v2c). Restent : éoliennes
+  dessinées en immeubles, brume dessinée en sommet enneigé, motifs inventés sur les sols unis et les reflets.
 - Phase 3 réorientée : entraînement du LoRA de style v2 (512 × 768, rang 32, recadrages aléatoires, 1 500 étapes) pour
   affiner les détails et réduire les inventions, puis comparaison v1/v2 sur le corpus de test.
 
